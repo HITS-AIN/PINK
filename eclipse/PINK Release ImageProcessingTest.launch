@@ -2,10 +2,11 @@
 <launchConfiguration type="org.eclipse.cdt.launch.applicationLaunchType">
 <intAttribute key="org.eclipse.cdt.launch.ATTR_BUILD_BEFORE_LAUNCH_ATTR" value="2"/>
 <stringAttribute key="org.eclipse.cdt.launch.COREFILE_PATH" value=""/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="--gtest_filter=*&#10;--gtest_color=no"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="RadioGalaxyZoo/code-new/Build_Release_Gnu/bin/ImageProcessingTest"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="pink_trunk"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="true"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="cdt.managedbuild.toolchain.gnu.base.1422479075"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value=""/>
 <booleanAttribute key="org.eclipse.cdt.launch.use_terminal" value="true"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/pink_trunk"/>

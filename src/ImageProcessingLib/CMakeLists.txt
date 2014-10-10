@@ -5,7 +5,7 @@ include_directories(
 add_library(
     ImageProcessingLib
     SHARED
-    rotate.c
+    ImageProcessing.c
 )
 
 target_link_libraries(
