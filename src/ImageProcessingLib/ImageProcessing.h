@@ -8,6 +8,7 @@
 #ifndef IMAGEPROCESSING_H_
 #define IMAGEPROCESSING_H_
 
-void rotate();
+//! Plain-C function for image rotation
+void rotate(int height, int width, float *source, float *dest, float angle);
 
 #endif /* IMAGEPROCESSING_H_ */

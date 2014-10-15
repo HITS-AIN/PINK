@@ -6,7 +6,7 @@
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="RadioGalaxyZoo/code-new/Build_Release_Gnu/bin/ImageProcessingTest"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="pink_trunk"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="true"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value=""/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="cdt.managedbuild.toolchain.gnu.base.1422479075"/>
 <booleanAttribute key="org.eclipse.cdt.launch.use_terminal" value="true"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/pink_trunk"/>

@@ -52,6 +52,8 @@ if(Boost_FOUND)
     add_definitions(-DUSE_BOOST -DHAVE_SHARED_POINTER)
 endif(Boost_FOUND)
 
+FIND_PACKAGE(PythonLibs)
+
 FIND_PACKAGE(Doxygen)
 if(DOXYGEN_FOUND)
     configure_file(

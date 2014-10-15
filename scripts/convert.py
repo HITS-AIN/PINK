@@ -4,6 +4,7 @@ import getopt
 import Image
 import matplotlib
 import numpy
+import struct
 import sys
 from matplotlib import pyplot
 
@@ -30,17 +31,18 @@ if __name__ == "__main__":
     print 'Output file is ', outputfile
 
     data = numpy.load(inputfile)
-    
-    #image = Image.fromarray(data, 'RGB')
-    #image.show()
 
-    ax = pyplot.subplot()
-    ax.imshow(data[0], aspect='auto', cmap=matplotlib.cm.jet)
-
+    print 'data.ndim = ', data.ndim
+    print 'data.shape = ', data.shape
     print 'data.size = ', data.size
-    print 'data[0].shape = ', data[0].shape
 
-    data.astype('f').tofile(outputfile)
+    of = open(outputfile, 'wb')
+
+    for i in range(data.ndim):
+        of.write(struct.pack('i', data.shape[i]))
+
+    data.astype('f').tofile(of)
+    of.close()
 
     print 'All done.'
     sys.exit()
