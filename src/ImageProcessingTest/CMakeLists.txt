@@ -18,4 +18,8 @@ target_link_libraries(
     ${PYTHON_LIBRARIES}
 )
 
-ADD_TEST(ImageProcessingTest ${CMAKE_BINARY_DIR}/bin/ImageProcessingTest --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/ImageProcessingTest.xml)
+ADD_TEST(
+    ImageProcessingTest
+    ${CMAKE_BINARY_DIR}/bin/ImageProcessingTest
+    --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/ImageProcessingTest.xml
+)

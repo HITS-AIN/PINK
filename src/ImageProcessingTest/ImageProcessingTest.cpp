@@ -6,8 +6,8 @@
  */
 
 #include "ImageProcessingLib/Image.h"
-#include "ImageProcessingLib/ImageIterator.h"
 #include "gtest/gtest.h"
+#include <cmath>
 
 extern "C" {
     #include "ImageProcessingLib/ImageProcessing.h"
@@ -17,13 +17,26 @@ using namespace PINK;
 
 TEST(ImageProcessingTest, Rotation)
 {
-	ImageIterator<float> iterCur("/home/doserbd/cuda-workspace/pink_trunk/RadioGalaxyZoo/code-new/testInput/boxes.bin");
-	Image<float> image = **iterCur;
+	Image<float> image(10,10,1.0);
 
 	//image.show();
 
 	Image<float> image2(image.getHeight(), image.getWidth());
-	rotate(image.getHeight(), image.getWidth(), &image.getPixel()[0], &image2.getPixel()[0], 30.0);
+	rotate(image.getHeight(), image.getWidth(), &image.getPixel()[0], &image2.getPixel()[0], 45.0*M_PI/180.0);
+
+	std::vector<float> data{
+		0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0,
+		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0,
+		1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
+		1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+		1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
+		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0,
+		0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,
+    };
 
 	//image2.show();
+	EXPECT_EQ(image2.getPixel(), data);
 }

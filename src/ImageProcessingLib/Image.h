@@ -8,7 +8,7 @@
 #ifndef IMAGE_H_
 #define IMAGE_H_
 
-#include <Python.h>
+#include "Python.h"
 #include <fstream>
 #include <stdexcept>
 #include <vector>
@@ -21,9 +21,14 @@ class Image
 {
 public:
 
-	// Parameter constructor
+	// Parameter constructor, pixel not initialized
 	Image(int height, int width)
      : height_(height), width_(width), pixel_(height*width)
+    {}
+
+	// Parameter constructor, pixel initialized
+	Image(int height, int width, T t)
+     : height_(height), width_(width), pixel_(height*width,t)
     {}
 
 	//! Write to file in binary mode
