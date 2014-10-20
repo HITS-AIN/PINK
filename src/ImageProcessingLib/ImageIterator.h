@@ -27,25 +27,33 @@ public:
 	typedef std::shared_ptr<ImageType> PtrImage;
 
 	//! Default constructor
-	ImageIterator();
+	ImageIterator()
+	 : number_(0), count_(0), height_(0), width_(0), ptrStream_(nullptr)
+	{}
 
 	//! Parameter constructor
 	ImageIterator(std::string const& filename)
-	 : stream_(filename)
+	 : number_(0), count_(0), height_(0), width_(0), ptrStream_(new std::ifstream(filename))
 	{
-	    if (!stream_) throw std::runtime_error("ImageIterator: Error opening " + filename);
+	    if (!(*ptrStream_)) throw std::runtime_error("ImageIterator: Error opening " + filename);
 
-	    stream_.read((char*)&number_, sizeof(int));
-	    stream_.read((char*)&height_, sizeof(int));
-	    stream_.read((char*)&width_, sizeof(int));
+	    ptrStream_->read((char*)&number_, sizeof(int));
+	    ptrStream_->read((char*)&height_, sizeof(int));
+	    ptrStream_->read((char*)&width_, sizeof(int));
 
 	    next();
 	}
 
-	//! Comparison
+	//! Equal comparison
 	bool operator == (ImageIterator const& other) const
 	{
-        return stream_ == other.stream_;
+        return ptrStream_ == other.ptrStream_;
+	}
+
+	//! Unequal Comparison
+	bool operator != (ImageIterator const& other) const
+	{
+        return !operator==(other);
 	}
 
 	//! Prefix increment
@@ -66,15 +74,21 @@ private:
 	//! Read next picture
 	void next()
 	{
-		ptrCurrentImage_ = PtrImage(new ImageType(height_,width_));
-	    stream_.read((char*)&ptrCurrentImage_->pixel_[0], height_ * width_ * sizeof(float));
+		if (count_ < number_) {
+		    ptrCurrentImage_ = PtrImage(new ImageType(height_,width_));
+	        ptrStream_->read((char*)&ptrCurrentImage_->pixel_[0], height_ * width_ * sizeof(float));
+	        ++count_;
+		} else {
+			ptrStream_.reset();
+		}
 	}
 
 	int number_;
+	int count_;
 	int height_;
 	int width_;
 
-    std::ifstream stream_;
+	std::shared_ptr<std::ifstream> ptrStream_;
 
     PtrImage ptrCurrentImage_;
 

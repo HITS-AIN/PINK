@@ -34,6 +34,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 FIND_PACKAGE(PythonLibs)
 
 add_subdirectory(src/ImageProcessingLib)
+add_subdirectory(src/Pink)
 
 find_package(CUDA)
 if(CUDA_FOUND)

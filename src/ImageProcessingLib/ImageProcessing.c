@@ -7,6 +7,7 @@
 
 #include "ImageProcessing.h"
 #include <math.h>
+#include <stdlib.h>
 
 void rotate(int height, int width, float *source, float *dest, float alpha)
 {
@@ -26,12 +27,59 @@ void rotate(int height, int width, float *source, float *dest, float alpha)
     }
 }
 
-float calculateEuclideanSimilarity(float *a, float *b, int lenght)
+float calculateEuclideanSimilarity(float *a, float *b, int length)
 {
 	int i;
 	float c = 0.0;
-    for (i = 0; i < lenght; ++i) {
+    for (i = 0; i < length; ++i) {
         c += pow((a[i] - b[i]),2);
     }
     return sqrt(c);
+}
+
+void normalize(float *a, int length)
+{
+	int i;
+	float maxValue;
+    for (i = 0; i < length; ++i) {
+        maxValue = fmax(maxValue, a[i]);
+    }
+
+    float maxValueInv;
+    for (i = 0; i < length; ++i) {
+        a[i] *= maxValueInv;
+    }
+}
+
+float mean(float *a, int length)
+{
+	int i;
+	float sum = 0.0;
+    for (i = 0; i < length; ++i) {
+        sum += a[0];
+    }
+    return sum / length;
+}
+
+float stdDeviation(float *a, int length)
+{
+	int i;
+	float sum = 0.0;
+	float meanValue = mean(a,length);
+
+    for (i = 0; i < length; ++i) {
+    	sum += pow((a[i], meanValue),2);
+    }
+
+	return sqrt(sum/length);
+}
+
+void zeroValuesSmallerThanStdDeviation(float *a, int length, float safety)
+{
+	int i;
+	float threshold = stdDeviation(a,length) * safety;
+
+    for (i = 0; i < length; ++i) {
+    	if (a[i] < threshold) a[i] = 0.0;
+    }
 }
