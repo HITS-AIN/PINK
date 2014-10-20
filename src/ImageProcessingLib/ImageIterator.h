@@ -1,8 +1,7 @@
-/*
- * ImageIterator.h
- *
- *  Created on: Oct 15, 2014
- *      Author: Bernd Doser, HITS gGmbH
+/**
+ * @file   ImageIterator.h
+ * @date   Oct 15, 2014
+ * @author Bernd Doser, HITS gGmbH
  */
 
 #ifndef IMAGEITERATOR_H_
@@ -27,10 +26,10 @@ public:
 
 	typedef std::shared_ptr<ImageType> PtrImage;
 
-	// Default constructor
+	//! Default constructor
 	ImageIterator();
 
-	// Parameter constructor
+	//! Parameter constructor
 	ImageIterator(std::string const& filename)
 	 : stream_(filename)
 	{
@@ -43,20 +42,20 @@ public:
 	    next();
 	}
 
-	// Comparison
+	//! Comparison
 	bool operator == (ImageIterator const& other) const
 	{
         return stream_ == other.stream_;
 	}
 
-	// Prefix increment
+	//! Prefix increment
 	ImageIterator& operator ++ ()
 	{
 	    next();
 	    return *this;
 	}
 
-	// Dereference
+	//! Dereference
 	PtrImage operator * () const
 	{
         return ptrCurrentImage_;
@@ -64,7 +63,7 @@ public:
 
 private:
 
-	// Read next picture
+	//! Read next picture
 	void next()
 	{
 		ptrCurrentImage_ = PtrImage(new ImageType(height_,width_));

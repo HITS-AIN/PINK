@@ -1,17 +1,12 @@
-/*
- * ImageProcessing.c
- *
- *  Created on: Oct 6, 2014
- *      Author: Bernd Doser, HITS gGmbH
+/**
+ * @file   ImageProcessing.c
+ * @brief  Plain-C functions for image processing.
+ * @date   Oct 7, 2014
+ * @author Bernd Doser, HITS gGmbH
  */
 
 #include "ImageProcessing.h"
 #include <math.h>
-
-// x2 = cos(alpha) * (x1 - x0) - sin(alpha) * (y1 - y0) + x0
-// y2 = sin(alpha) * (x1 - x0) + cos(alpha) * (y1 - y0) + y0
-
-// (x0,y0) is the center of rotation
 
 void rotate(int height, int width, float *source, float *dest, float alpha)
 {
@@ -29,4 +24,14 @@ void rotate(int height, int width, float *source, float *dest, float alpha)
             if (x2 > -1 && x2 < width && y2 > -1 && y2 < height) dest[x2*height + y2] = source[x1*height + y1];
         }
     }
+}
+
+float calculateEuclideanSimilarity(float *a, float *b, int lenght)
+{
+	int i;
+	float c = 0.0;
+    for (i = 0; i < lenght; ++i) {
+        c += pow((a[i] - b[i]),2);
+    }
+    return sqrt(c);
 }

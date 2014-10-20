@@ -1,8 +1,7 @@
-/*
- * Image.h
- *
- *  Created on: Oct 15, 2014
- *      Author: Bernd Doser, HITS gGmbH
+/**
+ * @file   Image.h
+ * @date   Oct 15, 2014
+ * @author Bernd Doser, HITS gGmbH
  */
 
 #ifndef IMAGE_H_
@@ -21,12 +20,12 @@ class Image
 {
 public:
 
-	// Parameter constructor, pixel not initialized
+	//! Parameter constructor, pixel not initialized
 	Image(int height, int width)
      : height_(height), width_(width), pixel_(height*width)
     {}
 
-	// Parameter constructor, pixel initialized
+	//! Parameter constructor, pixel initialized
 	Image(int height, int width, T t)
      : height_(height), width_(width), pixel_(height*width,t)
     {}
