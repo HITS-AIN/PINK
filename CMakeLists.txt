@@ -44,6 +44,7 @@ endif(CUDA_FOUND)
 find_package(GTest)
 if(GTEST_FOUND)
     ENABLE_TESTING()
+    add_subdirectory(src/CudaTest)
     add_subdirectory(src/ImageProcessingTest)
 endif(GTEST_FOUND)
 

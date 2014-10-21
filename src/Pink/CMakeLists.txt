@@ -14,5 +14,6 @@ add_executable(
 
 target_link_libraries(
     Pink
+    CudaLib
     ${PYTHON_LIBRARIES}
 )

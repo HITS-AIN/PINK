@@ -1,8 +1,8 @@
-/*
- * cuda_rotate.h
- *
- *  Created on: Oct 17, 2014
- *      Author: Bernd Doser, HITS gGmbH
+/**
+ * @file   cuda_rotate.h
+ * @brief  Image rotataion using CUDA.
+ * @date   Oct 17, 2014
+ * @author Bernd Doser, HITS gGmbH
  */
 
 #ifndef CUDA_ROTATE_H_

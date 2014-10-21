@@ -10,7 +10,8 @@ include_directories(
 
 add_library(
     ImageProcessingLib
-    SHARED
+    STATIC
+    Image.cpp
     ImageProcessing.c
 )
 

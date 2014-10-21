@@ -7,6 +7,7 @@ cuda_add_library(
     CudaLib
     STATIC
     cuda_rotate.cu
+    print_properties.cu
 )
 
 target_link_libraries(

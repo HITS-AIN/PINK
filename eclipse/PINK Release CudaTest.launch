@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.cdt.launch.applicationLaunchType">
+<booleanAttribute key="nvvp.apiTraceProfiling" value="true"/>
+<booleanAttribute key="nvvp.concurrentProfiling" value="true"/>
+<booleanAttribute key="nvvp.environmentProfiling" value="true"/>
+<booleanAttribute key="nvvp.startProfiling" value="true"/>
+<intAttribute key="nvvp.timeout" value="20"/>
+<booleanAttribute key="nvvp.uvmProfiling" value="false"/>
 <intAttribute key="org.eclipse.cdt.launch.ATTR_BUILD_BEFORE_LAUNCH_ATTR" value="2"/>
 <stringAttribute key="org.eclipse.cdt.launch.COREFILE_PATH" value=""/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="--gtest_filter=*&#10;--gtest_color=no"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="RadioGalaxyZoo/code-new/Build_Debug_Gnu/bin/ImageProcessingTest"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="RadioGalaxyZoo/code-new/Build_Release_Gnu/bin/CudaTest"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="pink_trunk"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="true"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="cdt.managedbuild.toolchain.gnu.base.1422479075.1410981274"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="cdt.managedbuild.toolchain.gnu.base.1422479075"/>
 <stringAttribute key="org.eclipse.cdt.launch.WORKING_DIRECTORY" value="${workspace_loc:pink_trunk}/RadioGalaxyZoo/code-new/Build_Debug_Gnu"/>
 <booleanAttribute key="org.eclipse.cdt.launch.use_terminal" value="true"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">

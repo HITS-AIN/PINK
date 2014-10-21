@@ -76,7 +76,7 @@ private:
 	{
 		if (count_ < number_) {
 		    ptrCurrentImage_ = PtrImage(new ImageType(height_,width_));
-	        ptrStream_->read((char*)&ptrCurrentImage_->pixel_[0], height_ * width_ * sizeof(float));
+	        ptrStream_->read((char*)&ptrCurrentImage_->getPixel()[0], height_ * width_ * sizeof(float));
 	        ++count_;
 		} else {
 			ptrStream_.reset();
