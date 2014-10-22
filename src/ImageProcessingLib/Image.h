@@ -28,6 +28,20 @@ public:
      : height_(height), width_(width), pixel_(height*width,t)
     {}
 
+	//! Equal comparison
+	bool operator == (Image const& other) const
+	{
+        return height_ == other.height_
+        	and width_ == other.width_
+        	and pixel_ == other.pixel_;
+	}
+
+	//! Unequal Comparison
+	bool operator != (Image const& other) const
+	{
+        return !operator==(other);
+	}
+
 	//! Write to file in binary mode
 	void writeBinary(std::string const& filename);
 

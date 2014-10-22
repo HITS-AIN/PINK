@@ -5,7 +5,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "CudaLib/print_properties.h"
+#include "CudaLib/cuda_print_properties.h"
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageIterator.h"
 #include "ImageProcessingLib/ImageProcessing.h"
@@ -44,7 +44,7 @@ int main (int argc, char **argv)
 	std::cout << "inputFilename = " << inputFilename << std::endl;
 	std::cout << "outputFilename = " << outputFilename << std::endl;
 
-    print_properties();
+    cuda_print_properties();
 
 	for (PINK::ImageIterator<float> iterCur(inputFilename), iterEnd; iterCur != iterEnd; ++iterCur)
 	{

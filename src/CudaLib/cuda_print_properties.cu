@@ -1,13 +1,13 @@
 /**
- * @file   cuda_rotate.h
+ * @file   cuda_print_properties.h
  * @brief  Print device properties of GPU cards.
- * @date   Oct 17, 2014
+ * @date   Oct 21, 2014
  * @author Bernd Doser, HITS gGmbH
  */
 
 #include <stdio.h>
 
-void print_properties()
+void cuda_print_properties()
 {
     int devCount;
     cudaGetDeviceCount(&devCount);
