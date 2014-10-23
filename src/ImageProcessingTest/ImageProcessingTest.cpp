@@ -20,7 +20,7 @@ TEST(ImageProcessingTest, Rotation)
 	//image.show();
 
 	Image<float> image2(image.getHeight(), image.getWidth());
-	rotate(image.getHeight(), image.getWidth(), image.getPointerOfFirstPixel(), image2.getPointerOfFirstPixel(), 45.0*M_PI/180.0);
+	rotate(image.getHeight(), image.getWidth(), image.getPointerOfFirstPixel(), image2.getPointerOfFirstPixel(), 45.0*M_PI/180.0, NONE);
 
 	std::vector<float> data{
 		0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,
