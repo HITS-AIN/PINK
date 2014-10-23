@@ -11,14 +11,16 @@ void cuda_print_properties()
 {
     int devCount;
     cudaGetDeviceCount(&devCount);
-    printf("CUDA Device Query...\n");
+    printf("\nCUDA Device Query...\n");
     printf("There are %d CUDA devices.\n", devCount);
 
     int i;
     for (i = 0; i < devCount; ++i)
     {
         // Get device properties
-        printf("\nCUDA Device #%d\n", i);
+        printf("\n");
+        printf("CUDA Device #%d\n", i);
+
         cudaDeviceProp devProp;
         cudaGetDeviceProperties(&devProp, i);
 
@@ -41,5 +43,6 @@ void cuda_print_properties()
         printf("Concurrent copy and execution: %s\n",  (devProp.deviceOverlap ? "Yes" : "No"));
         printf("Number of multiprocessors:     %d\n",  devProp.multiProcessorCount);
         printf("Kernel execution timeout:      %s\n",  (devProp.kernelExecTimeoutEnabled ?"Yes" : "No"));
+        printf("\n");
     }
 }

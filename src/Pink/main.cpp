@@ -8,54 +8,89 @@
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageIterator.h"
 #include "ImageProcessingLib/ImageProcessing.h"
-#include <unistd.h>
+#include <getopt.h>
 #include <iostream>
+#include <stdlib.h>
 
 #if PINK_USE_CUDA
     #include "CudaLib/cuda_print_properties.h"
 #endif
 
+using namespace std;
+using namespace PINK;
+
+void print_usage()
+{
+	cout << "  Options:\n" << endl;
+	cout << "    --verbose, -v        Print more output." << endl;
+	cout << "    --images, -i         File " << endl;
+	cout << "    --dimension, -d      Dimension for quadratic SOM matrix (default = 10)." << endl;
+	cout << "    --result, -r         File for final SOM matrix." << endl;
+}
+
 int main (int argc, char **argv)
 {
-	std::string inputFilename, outputFilename;
-	int index;
 	int c;
-
-	opterr = 0;
-
-	while ((c = getopt (argc, argv, "i:o:")) != -1)
-	switch (c)
+	int digit_optind = 0;
+	int verbose = 0;
+	char *imagesFilename = 0;
+	int som_dim = 10;
+	char *resultFilename = 0;
+	static struct option long_options[] = {
+		{"verbose",   0, 0, 'v'},
+		{"images",    1, 0, 'i'},
+		{"dimension", 1, 0, 'd'},
+		{"result",    1, 0, 'r'},
+		{NULL, 0, NULL, 0}
+	};
+	int option_index = 0;
+	while ((c = getopt_long(argc, argv, "vi:d:r:", long_options, &option_index)) != -1)
 	{
-		case 'i':
-			inputFilename = optarg;
+		int this_option_optind = optind ? optind : 1;
+		switch (c) {
+		case 'v':
+			verbose = 1;
 			break;
-		case 'o':
-			outputFilename = optarg;
+		case 'i':
+			imagesFilename = optarg;
+			break;
+		case 'd':
+			som_dim = atoi(optarg);
+			break;
+		case 'r':
+			resultFilename = optarg;
 			break;
 		case '?':
-			if (optopt == 'c')
-			    std::cerr << "Option -" << optopt << "requires an argument." << std::endl;
-			else if (isprint (optopt))
-			    std::cerr << "Unknown option -" << optopt << "." << std::endl;
-			else
-			    std::cerr << "Unknown option character -" << optopt << "." << std::endl;
-			return 1;
+			break;
 		default:
-			abort();
+			printf ("Unkown option %o\n", c);
+			print_usage();
+		}
+	}
+	if (optind < argc) {
+		printf ("non-option ARGV-elements: ");
+		while (optind < argc)
+			printf ("%s ", argv[optind++]);
+		printf ("\n");
 	}
 
-	std::cout << "inputFilename = " << inputFilename << std::endl;
-	std::cout << "outputFilename = " << outputFilename << std::endl;
+	cout << "verbose = " << verbose << endl;
+	cout << "images = " << imagesFilename << endl;
+	cout << "dimension = " << som_dim << endl;
+	cout << "result = " << resultFilename << endl;
 
     #if PINK_USE_CUDA
-        cuda_print_properties();
+	    if (verbose) cuda_print_properties();
     #endif
 
-	for (PINK::ImageIterator<float> iterCur(inputFilename), iterEnd; iterCur != iterEnd; ++iterCur)
-	{
-		float *image = &(*iterCur)->getPixel()[0];
-	}
+    int som_size = som_dim * som_dim;
 
-	std::cout << "All done." << std::endl;
+	ImageIterator<float> iterImage(imagesFilename);
+	if (verbose) cout << "Image dimension = " << iterImage->getWidth() << "x" << iterImage->getHeight() << endl;
+
+	int image_size = iterImage->getWidth() * iterImage->getHeight();
+    float *som = (float *)malloc(som_size*image_size*sizeof(float));
+
+    if (verbose) cout << "\nAll done.\n" << endl;
 	return 0;
 }

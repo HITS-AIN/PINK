@@ -50,7 +50,7 @@ public:
         return ptrStream_ == other.ptrStream_;
 	}
 
-	//! Unequal Comparison
+	//! Unequal comparison
 	bool operator != (ImageIterator const& other) const
 	{
         return !operator==(other);
@@ -64,9 +64,15 @@ public:
 	}
 
 	//! Dereference
-	PtrImage operator * () const
+	ImageType& operator * () const
 	{
-        return ptrCurrentImage_;
+        return *ptrCurrentImage_;
+	}
+
+	//! Dereference
+	ImageType* operator -> () const
+	{
+        return &(operator*());
 	}
 
 private:
