@@ -12,7 +12,7 @@ add_library(
     ImageProcessingLib
     STATIC
     Image.cpp
-    ImageProcessing.c
+    ImageProcessing.cpp
 )
 
 target_link_libraries(

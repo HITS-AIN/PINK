@@ -37,14 +37,17 @@ find_package(CUDA)
 if(CUDA_FOUND)
     set(PINK_USE_CUDA true)
     add_subdirectory(src/CudaLib)
-endif(CUDA_FOUND)
+endif()
 
 find_package(GTest)
 if(GTEST_FOUND)
     ENABLE_TESTING()
-    add_subdirectory(src/CudaTest)
     add_subdirectory(src/ImageProcessingTest)
-endif(GTEST_FOUND)
+endif()
+
+if(GTEST_FOUND AND CUDA_FOUND)
+    add_subdirectory(src/CudaTest)    
+endif()
 
 add_subdirectory(src/ImageProcessingLib)
 add_subdirectory(src/Pink)
@@ -57,4 +60,4 @@ if(DOXYGEN_FOUND)
             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doxygen
             COMMENT "Generating API documentation with Doxygen" VERBATIM
     )    
-endif(DOXYGEN_FOUND)
+endif()

@@ -14,10 +14,12 @@ include_directories(
 add_executable(
     Pink
     main.cpp
+    SelfOrganizingMap.cpp
 )
 
 target_link_libraries(
     Pink
     CudaLib
+    ImageProcessingLib
     ${PYTHON_LIBRARIES}
 )
