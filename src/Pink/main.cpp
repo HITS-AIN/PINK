@@ -30,6 +30,7 @@ void print_usage()
 	cout << "    --dimension, -d      Dimension for quadratic SOM matrix (default = 10)." << endl;
 	cout << "    --layout, -l         Layout of SOM (quadratic, hexagonal, default = quadratic)." << endl;
 	cout << "    --seed, -s           Seed for random number generator (default = 1234)." << endl;
+	cout << "    --numrot, -n         Number of rotations (default = 360)." << endl;
 }
 
 int main (int argc, char **argv)
@@ -41,6 +42,7 @@ int main (int argc, char **argv)
 	int som_dim = 10;
 	char *resultFilename = 0;
 	int seed = 1234;
+	int numberOfRotations = 360;
 	Layout layout = QUADRATIC;
 
 	static struct option long_options[] = {
@@ -50,10 +52,11 @@ int main (int argc, char **argv)
 		{"result",    1, 0, 'r'},
 		{"layout",    1, 0, 'l'},
 		{"seed",      1, 0, 's'},
+		{"numrot",    1, 0, 'n'},
 		{NULL, 0, NULL, 0}
 	};
 	int option_index = 0;
-	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:", long_options, &option_index)) != -1)
 	{
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
@@ -81,6 +84,9 @@ int main (int argc, char **argv)
 		case 's':
 			seed = atoi(optarg);
 			break;
+		case 'n':
+			numberOfRotations = atoi(optarg);
+			break;
 		case '?':
 			break;
 		default:
@@ -103,32 +109,49 @@ int main (int argc, char **argv)
 	cout << "result = " << resultFilename << endl;
 	cout << "layout = " << layout << endl;
 	cout << "seed = " << seed << endl;
+	cout << "numberOfRotations = " << numberOfRotations << endl;
 
     #if PINK_USE_CUDA
 	    if (verbose) cuda_print_properties();
     #endif
 
-    int som_size = som_dim * som_dim;
-
 	ImageIterator<float> iterImage(imagesFilename);
 	if (verbose) cout << "Image dimension = " << iterImage->getWidth() << "x" << iterImage->getHeight() << endl;
 
 	if (iterImage->getWidth() != iterImage->getHeight()) {
-		cout << "Unkown argv elements: ";
+		cout << "Only quadratic images are supported.";
 		return 1;
 	}
 
 	int image_dim = iterImage->getWidth();
 	int image_size = iterImage->getWidth() * iterImage->getHeight();
-    float *som = (float *)malloc(som_size * image_size * sizeof(float));
-    fillRandom(som, som_size * image_size, seed);
+    int som_size = som_dim * som_dim;
 
-    float *similarityMatrix = (float *)malloc(som_size * sizeof(float));
-    generateSimilarityMatrix(similarityMatrix, som_dim, som, image_dim, iterImage->getPointerOfFirstPixel());
+	// Initialize SOM
+	float *som = (float *)malloc(som_size * image_size * sizeof(float));
+	fillRandom(som, som_size * image_size, seed);
 
-    int bestMatch = findBestMatchingNeuron(similarityMatrix, som_dim);
+	for (; iterImage != ImageIterator<float>(); ++iterImage)
+	{
+		float *image = iterImage->getPointerOfFirstPixel();
+		int image_dim = iterImage->getWidth();
+		int image_size = iterImage->getWidth() * iterImage->getHeight();
 
-	cout << "bestMatch = " << bestMatch << endl;
+		float *rotatedImages = (float *)malloc(2 * numberOfRotations * image_size * sizeof(float));
+		generateRotatedImages(rotatedImages, image, numberOfRotations, image_dim);
+
+		float *similarityMatrix = (float *)malloc(som_size * sizeof(float));
+		int *bestRotationMatrix = (int *)malloc(som_size * sizeof(int));
+		generateSimilarityMatrix(similarityMatrix, bestRotationMatrix, som_dim, som, image_dim, numberOfRotations, rotatedImages);
+
+		Point bestMatch = findBestMatchingNeuron(similarityMatrix, som_dim);
+
+		cout << "bestMatch = " << bestMatch << endl;
+
+		updateNeurons(som_dim, som, image_dim, image, bestMatch);
+
+		showSOM(som, som_dim, image_dim);
+	}
 
     if (verbose) cout << "\nAll done.\n" << endl;
 	return 0;

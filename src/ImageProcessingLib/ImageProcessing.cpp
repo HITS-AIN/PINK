@@ -56,6 +56,20 @@ void rotate(int height, int width, float *source, float *dest, float alpha, Inte
 		abort();
 }
 
+void flip(int height, int width, float *source, float *dest)
+{
+	float *pdest = dest;
+	float *psource = source;
+
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+		    pdest[width-j-1] = psource[j];
+		}
+		pdest += width;
+		psource += width;
+	}
+}
+
 float calculateEuclideanSimilarity(float *a, float *b, int length)
 {
 	int i;

@@ -25,6 +25,11 @@ enum InterpolationType { NONE, BILINEAR };
 void rotate(int height, int width, float *source, float *dest, float alpha, InterpolationType interpolation = BILINEAR);
 
 /**
+ * @brief Plain-C function for image mirroring.
+ */
+void flip(int height, int width, float * source, float *dest);
+
+/**
  * @brief Similarity of to float arrays using euclidean norm.
  *
  * Return sqrt((a[i] - b[i])^2)

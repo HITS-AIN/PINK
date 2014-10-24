@@ -10,26 +10,51 @@
 
 #include <iostream>
 
+#define UPDATE_NEURONS_SIGMA     1.1
+#define UPDATE_NEURONS_DAMPING   0.2
+
+struct Point
+{
+	Point(int x = 0, int y = 0) : x(x), y(y) {}
+
+	int x;
+	int y;
+};
+
+//! Pretty printing of Point.
+std::ostream& operator << (std::ostream& os, Point point);
+
 //! Type for SOM layout.
 enum Layout {QUADRATIC, HEXAGONAL};
 
 //! Pretty printing of SOM layout type.
 std::ostream& operator << (std::ostream& os, Layout layout);
 
-/**
- * @brief
- *
- * similarityMatrix
- */
-void generateSimilarityMatrix(float *similarityMatrix, int som_dim, float* som, int image_dim, float* image);
+void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim);
+
+void generateSimilarityMatrix(float *similarityMatrix, int *bestRotationMatrix, int som_dim, float* som,
+	int image_dim, int numberOfRotations, float* image);
 
 /**
- * @brief
- *
- * similarityMatrix
+ * Returns the position of the best matching neuron.
  */
-int findBestMatchingNeuron(float *similarityMatrix, int som_dim);
+Point findBestMatchingNeuron(float *similarityMatrix, int som_dim);
+
+/**
+ * @brief Updating SOM
+ */
+void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch);
+
+void updateSingleNeuron(float* neuron, float* image, int image_size, float factor);
+
+void showSOM(float* som, int som_dim, int image_dim);
+
+float distance(Point pos1, Point pos2);
 
 char* stringToUpper(char* s);
+
+float mexicanHat(float x, float sigma);
+
+float gaussian(float x, float sigma);
 
 #endif /* SELFORGANIZINGMAP_H_ */
