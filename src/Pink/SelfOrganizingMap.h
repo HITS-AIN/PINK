@@ -43,11 +43,13 @@ Point findBestMatchingNeuron(float *similarityMatrix, int som_dim);
 /**
  * @brief Updating SOM
  */
-void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch);
+void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch, int *bestRotationMatrix);
 
 void updateSingleNeuron(float* neuron, float* image, int image_size, float factor);
 
 void showSOM(float* som, int som_dim, int image_dim);
+
+void showRotatedImages(float* images, int image_dim, int numberOfRotations);
 
 float distance(Point pos1, Point pos2);
 

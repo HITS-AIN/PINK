@@ -133,12 +133,16 @@ int main (int argc, char **argv)
 
 	for (; iterImage != ImageIterator<float>(); ++iterImage)
 	{
+		iterImage->show();
+
 		float *image = iterImage->getPointerOfFirstPixel();
 		int image_dim = iterImage->getWidth();
 		int image_size = iterImage->getWidth() * iterImage->getHeight();
 
 		float *rotatedImages = (float *)malloc(2 * numberOfRotations * image_size * sizeof(float));
 		generateRotatedImages(rotatedImages, image, numberOfRotations, image_dim);
+
+		showRotatedImages(rotatedImages, image_dim, numberOfRotations);
 
 		float *similarityMatrix = (float *)malloc(som_size * sizeof(float));
 		int *bestRotationMatrix = (int *)malloc(som_size * sizeof(int));
@@ -148,9 +152,13 @@ int main (int argc, char **argv)
 
 		cout << "bestMatch = " << bestMatch << endl;
 
-		updateNeurons(som_dim, som, image_dim, image, bestMatch);
+		updateNeurons(som_dim, som, image_dim, rotatedImages, bestMatch, bestRotationMatrix);
 
 		showSOM(som, som_dim, image_dim);
+
+		free(rotatedImages);
+		free(similarityMatrix);
+		free(bestRotationMatrix);
 	}
 
     if (verbose) cout << "\nAll done.\n" << endl;

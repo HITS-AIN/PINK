@@ -8,8 +8,9 @@
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMap.h"
-#include <stdlib.h>
 #include <ctype.h>
+#include <float.h>
+#include <stdlib.h>
 #include <cmath>
 
 std::ostream& operator << (std::ostream& os, Layout layout)
@@ -60,12 +61,12 @@ void generateSimilarityMatrix(float *similarityMatrix, int *bestRotationMatrix, 
 	float* psim = similarityMatrix;
 	int* prot = bestRotationMatrix;
 
-    for (int i = 0; i < som_size; ++i) similarityMatrix[i] = 0.0;
+    for (int i = 0; i < som_size; ++i) similarityMatrix[i] = FLT_MAX;
 
     for (int i = 0; i < som_size; ++i, ++psim, ++prot) {
         for (int j = 0; j < numberOfRotations; ++j) {
     	    simTmp = calculateEuclideanSimilarity(som + i*image_size, image + j*image_size, image_size);
-    	    if (simTmp > *psim) {
+    	    if (simTmp < *psim) {
     	    	*psim = simTmp;
                 *prot = j;
     	    }
@@ -81,8 +82,8 @@ Point findBestMatchingNeuron(float *similarityMatrix, int som_dim)
 
     for (int i = 0; i < som_dim; ++i) {
         for (int j = 0; j < som_dim; ++j) {
-			if (similarityMatrix[i] > maxSimilarity) {
-				maxSimilarity = similarityMatrix[i];
+			if (similarityMatrix[i*som_dim+j] > maxSimilarity) {
+				maxSimilarity = similarityMatrix[i*som_dim+j];
 				bestMatch.x = i;
 				bestMatch.y = j;
 			}
@@ -92,7 +93,7 @@ Point findBestMatchingNeuron(float *similarityMatrix, int som_dim)
     return bestMatch;
 }
 
-void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch)
+void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch, int *bestRotationMatrix)
 {
 	float factor;
 	int image_size = image_dim * image_dim;
@@ -101,7 +102,7 @@ void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point c
     for (int i = 0; i < som_dim; ++i) {
         for (int j = 0; j < som_dim; ++j) {
         	factor = gaussian(distance(bestMatch,Point(i,j)), UPDATE_NEURONS_SIGMA) * UPDATE_NEURONS_DAMPING;
-        	updateSingleNeuron(current_neuron, image, image_size, factor);
+        	updateSingleNeuron(current_neuron, image + bestRotationMatrix[i*som_dim+j], image_size, factor);
         	current_neuron += image_size;
     	}
     }
@@ -130,6 +131,18 @@ void showSOM(float* som, int som_dim, int image_dim)
     	}
     }
 
+    image.show();
+}
+
+void showRotatedImages(float* images, int image_dim, int numberOfRotations)
+{
+	int image_size = image_dim * image_dim;
+    PINK::Image<float> image(3*image_dim,image_dim);
+    float *pixel = image.getPointerOfFirstPixel();
+
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < image_size; ++j) pixel[j + i*image_size] = images[j + i*image_size];
+    }
     image.show();
 }
 
