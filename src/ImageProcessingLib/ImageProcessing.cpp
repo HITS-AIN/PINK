@@ -6,9 +6,12 @@
  */
 
 #include "ImageProcessing.h"
+#include "Python.h"
+#include <fstream>
 #include <math.h>
 #include <random>
 #include <stdlib.h>
+#include <stdexcept>
 
 void rotate_none(int height, int width, float *source, float *dest, float alpha)
 {
@@ -18,6 +21,12 @@ void rotate_none(int height, int width, float *source, float *dest, float alpha)
 
     x0 = width / 2;
     y0 = height / 2;
+
+    for (x2 = 0; x2 < width; ++x2) {
+        for (y2 = 0; y2 < height; ++y2) {
+        	dest[x2*height + y2] = 0.0;
+        }
+    }
 
     for (x1 = 0; x1 < width; ++x1) {
         for (y1 = 0; y1 < height; ++y1) {
@@ -74,8 +83,10 @@ float calculateEuclideanSimilarity(float *a, float *b, int length)
 {
 	int i;
 	float c = 0.0;
+	float tmp;
     for (i = 0; i < length; ++i) {
-        c += pow((a[i] - b[i]),2);
+    	tmp = a[i] - b[i];
+        c += tmp * tmp;
     }
     return sqrt(c);
 }
@@ -136,4 +147,40 @@ void fillRandom(float *a, int length, int seed)
     for (int i = 0; i < length; ++i) {
     	a[i] = normal_dist(rng);
     }
+}
+
+void writeImageToBinaryFile(float *image, int height, int width, std::string const& filename)
+{
+    std::ofstream os(filename);
+    if (!os) throw std::runtime_error("Error opening " + filename);
+
+    int one(1);
+    os.write((char*)&one, sizeof(int));
+    os.write((char*)&height, sizeof(int));
+    os.write((char*)&width, sizeof(int));
+    os.write((char*)image, height * width * sizeof(float));
+}
+
+void showImage(float *image, int height, int width)
+{
+	std::string filename("ImageTmp.bin");
+	writeImageToBinaryFile(image, height, width, filename);
+
+    Py_Initialize();
+    PyRun_SimpleString("import numpy");
+    PyRun_SimpleString("import matplotlib.pylab as plt");
+    PyRun_SimpleString("import struct");
+
+    std::string line = "inFile = open(\"" + filename + "\", 'rb')";
+    PyRun_SimpleString(line.c_str());
+	PyRun_SimpleString("size = struct.unpack('iii', inFile.read(12))");
+	PyRun_SimpleString("array = numpy.array(struct.unpack('f'*size[1]*size[2], inFile.read(size[1]*size[2]*4)))");
+	PyRun_SimpleString("data = numpy.ndarray([size[1],size[2]], 'float', array)");
+	PyRun_SimpleString("inFile.close()");
+	PyRun_SimpleString("fig = plt.figure()");
+	PyRun_SimpleString("ax = fig.add_subplot(1,1,1)");
+	PyRun_SimpleString("ax.set_aspect('equal')");
+	PyRun_SimpleString("plt.imshow(data, interpolation='nearest', cmap=plt.cm.ocean)");
+	PyRun_SimpleString("plt.colorbar()");
+	PyRun_SimpleString("plt.show()");
 }

@@ -10,6 +10,7 @@
 #include "SelfOrganizingMap.h"
 #include <ctype.h>
 #include <float.h>
+#include <iostream>
 #include <stdlib.h>
 #include <cmath>
 
@@ -29,7 +30,8 @@ std::ostream& operator << (std::ostream& os, Point p)
 void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim)
 {
 	int image_size = image_dim * image_dim;
-	float angleStepRadians = 360.0 * M_PI / (numberOfRotations * 180.0);
+	float angleStepRadians;
+	if (numberOfRotations) angleStepRadians = 2.0 * M_PI / numberOfRotations;
 
 	// Copy original image on first position
 	for (int i = 0; i < image_size; ++i) {
@@ -38,7 +40,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotat
 
 	// Rotate unfliped image
 	for (int i = 1; i < numberOfRotations; ++i)	{
-		rotate(image_dim, image_dim, image, rotatedImages + i*image_size, i * angleStepRadians);
+		rotate(image_dim, image_dim, image, rotatedImages + i*image_size, i*angleStepRadians);
 	}
 
 	// Flip image
@@ -47,7 +49,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotat
 
 	// Rotate fliped image
 	for (int i = 1; i < numberOfRotations; ++i)	{
-		rotate(image_dim, image_dim, flippedImage, flippedImage + i*image_size, i * angleStepRadians);
+		rotate(image_dim, image_dim, flippedImage, flippedImage + i*image_size, i*angleStepRadians);
 	}
 }
 
@@ -115,6 +117,25 @@ void updateSingleNeuron(float* neuron, float* image, int image_size, float facto
     }
 }
 
+void writeSOM(float* som, int som_dim, int image_dim, std::string const& filename)
+{
+    PINK::Image<float> image(som_dim*image_dim,som_dim*image_dim);
+    float *pixel = image.getPointerOfFirstPixel();
+    float *psom = som;
+
+    for (int i = 0; i < som_dim; ++i) {
+        for (int j = 0; j < som_dim; ++j) {
+            for (int k = 0; k < image_dim; ++k) {
+                for (int l = 0; l < image_dim; ++l) {
+        	        pixel[i*image_dim*som_dim*image_dim + k*image_dim*som_dim + j*image_dim + l] = *psom++;
+            	}
+            }
+    	}
+    }
+
+    image.writeBinary(filename);
+}
+
 void showSOM(float* som, int som_dim, int image_dim)
 {
     PINK::Image<float> image(som_dim*image_dim,som_dim*image_dim);
@@ -134,16 +155,42 @@ void showSOM(float* som, int som_dim, int image_dim)
     image.show();
 }
 
+void writeRotatedImages(float* images, int image_dim, int numberOfRotations, std::string const& filename)
+{
+	int heigth = 2 * numberOfRotations * image_dim;
+	int width = image_dim;
+	int image_size = image_dim * image_dim;
+    float *image = (float *)malloc(heigth * width * sizeof(float));
+
+    for (int i = 0; i < 2 * numberOfRotations; ++i) {
+        for (int j = 0; j < image_size; ++j) image[j + i*image_size] = images[j + i*image_size];
+    }
+
+    writeImageToBinaryFile(image, heigth, width, filename);
+    free(image);
+}
+
 void showRotatedImages(float* images, int image_dim, int numberOfRotations)
 {
+	int heigth = 2 * numberOfRotations * image_dim;
+	int width = image_dim;
 	int image_size = image_dim * image_dim;
-    PINK::Image<float> image(3*image_dim,image_dim);
-    float *pixel = image.getPointerOfFirstPixel();
+    float *image = (float *)malloc(heigth * width * sizeof(float));
 
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < image_size; ++j) pixel[j + i*image_size] = images[j + i*image_size];
+    for (int i = 0; i < 2 * numberOfRotations; ++i) {
+        for (int j = 0; j < image_size; ++j) image[j + i*image_size] = images[j + i*image_size];
     }
-    image.show();
+
+    showImage(image, heigth, width);
+    free(image);
+}
+
+void showRotatedImagesSingle(float* images, int image_dim, int numberOfRotations)
+{
+	int image_size = image_dim * image_dim;
+    for (int i = 0; i < 2 * numberOfRotations; ++i) {
+        showImage(images + i*image_size, image_dim, image_dim);
+    }
 }
 
 float distance(Point pos1, Point pos2)

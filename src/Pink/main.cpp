@@ -11,6 +11,7 @@
 #include "SelfOrganizingMap.h"
 #include <getopt.h>
 #include <iostream>
+#include <sstream>
 #include <stdlib.h>
 
 #if PINK_USE_CUDA
@@ -22,6 +23,8 @@ using namespace PINK;
 
 void print_usage()
 {
+	cout << endl;
+	cout << "  USAGE: Pink -i <path for image-file> -r <path for result-file>\n" << endl;
 	cout << "  Non-optional options:\n" << endl;
 	cout << "    --images, -i         File " << endl;
 	cout << "    --result, -r         File for final SOM matrix.\n" << endl;
@@ -86,6 +89,11 @@ int main (int argc, char **argv)
 			break;
 		case 'n':
 			numberOfRotations = atoi(optarg);
+			if (numberOfRotations < 1 or numberOfRotations > 360) {
+				printf ("Number of rotations must be between 1 and 360.\n\n");
+				print_usage();
+				return 1;
+			}
 			break;
 		case '?':
 			break;
@@ -99,6 +107,11 @@ int main (int argc, char **argv)
 		cout << "Unkown argv elements: ";
 		while (optind < argc) cout << argv[optind++] << " ";
 		cout << endl;
+		print_usage();
+		return 1;
+	}
+
+	if (!imagesFilename or !resultFilename) {
 		print_usage();
 		return 1;
 	}
@@ -131,8 +144,11 @@ int main (int argc, char **argv)
 	float *som = (float *)malloc(som_size * image_size * sizeof(float));
 	fillRandom(som, som_size * image_size, seed);
 
-	for (; iterImage != ImageIterator<float>(); ++iterImage)
+	for (int i = 0; iterImage != ImageIterator<float>(); ++i, ++iterImage)
 	{
+//		stringstream ss;
+//		ss << "image" << i << ".bin";
+//		iterImage->writeBinary(ss.str());
 		iterImage->show();
 
 		float *image = iterImage->getPointerOfFirstPixel();
@@ -142,6 +158,9 @@ int main (int argc, char **argv)
 		float *rotatedImages = (float *)malloc(2 * numberOfRotations * image_size * sizeof(float));
 		generateRotatedImages(rotatedImages, image, numberOfRotations, image_dim);
 
+//		stringstream ss2;
+//		ss2 << "rotatedImage" << i << ".bin";
+//		writeRotatedImages(rotatedImages, image_dim, numberOfRotations, ss2.str());
 		showRotatedImages(rotatedImages, image_dim, numberOfRotations);
 
 		float *similarityMatrix = (float *)malloc(som_size * sizeof(float));
@@ -154,6 +173,9 @@ int main (int argc, char **argv)
 
 		updateNeurons(som_dim, som, image_dim, rotatedImages, bestMatch, bestRotationMatrix);
 
+//		stringstream ss3;
+//		ss3 << "som" << i << ".bin";
+//		writeSOM(som, som_dim, image_dim, ss3.str());
 		showSOM(som, som_dim, image_dim);
 
 		free(rotatedImages);

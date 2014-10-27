@@ -47,9 +47,15 @@ void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point c
 
 void updateSingleNeuron(float* neuron, float* image, int image_size, float factor);
 
+void writeSOM(float* som, int som_dim, int image_dim, std::string const& filename);
+
 void showSOM(float* som, int som_dim, int image_dim);
 
+void writeRotatedImages(float* images, int image_dim, int numberOfRotations, std::string const& filename);
+
 void showRotatedImages(float* images, int image_dim, int numberOfRotations);
+
+void showRotatedImagesSingle(float* images, int image_dim, int numberOfRotations);
 
 float distance(Point pos1, Point pos2);
 

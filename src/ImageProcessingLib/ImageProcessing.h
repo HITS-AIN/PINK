@@ -8,6 +8,8 @@
 #ifndef IMAGEPROCESSING_H_
 #define IMAGEPROCESSING_H_
 
+#include <string>
+
 enum InterpolationType { NONE, BILINEAR };
 
 /**
@@ -69,5 +71,9 @@ void zeroValuesSmallerThanStdDeviation(float *a, int length, float safety);
  * @brief Fill array with random numbers
  */
 void fillRandom(float *a, int length, int seed = 0);
+
+void writeImageToBinaryFile(float *image, int height, int width, std::string const& filename);
+
+void showImage(float *image, int height, int width);
 
 #endif /* IMAGEPROCESSING_H_ */
