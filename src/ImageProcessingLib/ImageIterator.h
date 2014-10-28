@@ -75,6 +75,8 @@ public:
         return &(operator*());
 	}
 
+	int number() const { return number_; }
+
 private:
 
 	//! Read next picture

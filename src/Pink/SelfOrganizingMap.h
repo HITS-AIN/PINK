@@ -32,7 +32,7 @@ std::ostream& operator << (std::ostream& os, Layout layout);
 
 void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim);
 
-void generateSimilarityMatrix(float *similarityMatrix, int *bestRotationMatrix, int som_dim, float* som,
+void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix, int som_dim, float* som,
 	int image_dim, int numberOfRotations, float* image);
 
 /**

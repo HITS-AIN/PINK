@@ -11,6 +11,7 @@
 #include <ctype.h>
 #include <float.h>
 #include <iostream>
+#include <omp.h>
 #include <stdlib.h>
 #include <cmath>
 
@@ -39,6 +40,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotat
 	}
 
 	// Rotate unfliped image
+    #pragma omp parallel for
 	for (int i = 1; i < numberOfRotations; ++i)	{
 		rotate(image_dim, image_dim, image, rotatedImages + i*image_size, i*angleStepRadians);
 	}
@@ -48,44 +50,46 @@ void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotat
 	flip(image_dim, image_dim, image, flippedImage);
 
 	// Rotate fliped image
+    #pragma omp parallel for
 	for (int i = 1; i < numberOfRotations; ++i)	{
 		rotate(image_dim, image_dim, flippedImage, flippedImage + i*image_size, i*angleStepRadians);
 	}
 }
 
-void generateSimilarityMatrix(float *similarityMatrix, int *bestRotationMatrix, int som_dim, float* som,
+void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix, int som_dim, float* som,
 	int image_dim, int numberOfRotations, float* image)
 {
 	int som_size = som_dim * som_dim;
 	int image_size = image_dim * image_dim;
 
-	float simTmp;
-	float* psim = similarityMatrix;
+	float tmp;
+	float* pdist = euclideanDistanceMatrix;
 	int* prot = bestRotationMatrix;
 
-    for (int i = 0; i < som_size; ++i) similarityMatrix[i] = FLT_MAX;
+    for (int i = 0; i < som_size; ++i) euclideanDistanceMatrix[i] = FLT_MAX;
 
-    for (int i = 0; i < som_size; ++i, ++psim, ++prot) {
-        for (int j = 0; j < numberOfRotations; ++j) {
-    	    simTmp = calculateEuclideanSimilarity(som + i*image_size, image + j*image_size, image_size);
-    	    if (simTmp < *psim) {
-    	    	*psim = simTmp;
+    for (int i = 0; i < som_size; ++i, ++pdist, ++prot) {
+        #pragma omp parallel for
+        for (int j = 0; j < 2*numberOfRotations; ++j) {
+    	    tmp = calculateEuclideanDistance(som + i*image_size, image + j*image_size, image_size);
+    	    if (tmp < *pdist) {
+    	    	*pdist = tmp;
                 *prot = j;
     	    }
         }
     }
 }
 
-Point findBestMatchingNeuron(float *similarityMatrix, int som_dim)
+Point findBestMatchingNeuron(float *euclideanDistanceMatrix, int som_dim)
 {
 	int som_size = som_dim * som_dim;
-    float maxSimilarity = 0.0;
+    float minDistance = FLT_MAX;
     Point bestMatch;
 
     for (int i = 0; i < som_dim; ++i) {
         for (int j = 0; j < som_dim; ++j) {
-			if (similarityMatrix[i*som_dim+j] > maxSimilarity) {
-				maxSimilarity = similarityMatrix[i*som_dim+j];
+			if (euclideanDistanceMatrix[i*som_dim+j] > minDistance) {
+				minDistance = euclideanDistanceMatrix[i*som_dim+j];
 				bestMatch.x = i;
 				bestMatch.y = j;
 			}
@@ -104,7 +108,7 @@ void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point c
     for (int i = 0; i < som_dim; ++i) {
         for (int j = 0; j < som_dim; ++j) {
         	factor = gaussian(distance(bestMatch,Point(i,j)), UPDATE_NEURONS_SIGMA) * UPDATE_NEURONS_DAMPING;
-        	updateSingleNeuron(current_neuron, image + bestRotationMatrix[i*som_dim+j], image_size, factor);
+        	updateSingleNeuron(current_neuron, image + bestRotationMatrix[i*som_dim+j]*image_size, image_size, factor);
         	current_neuron += image_size;
     	}
     }

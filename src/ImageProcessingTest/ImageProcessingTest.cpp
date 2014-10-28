@@ -44,5 +44,5 @@ TEST(ImageProcessingTest, EuclideanSimilarity)
 	std::vector<float> a{2.0, -3.9, 0.1};
 	std::vector<float> b{1.9, -4.0, 0.2};
 
-	EXPECT_NEAR(0.1732 ,(calculateEuclideanSimilarity(&a[0], &b[0], a.size())), 1e-4);
+	EXPECT_NEAR(0.1732 ,(calculateEuclideanDistance(&a[0], &b[0], a.size())), 1e-4);
 }

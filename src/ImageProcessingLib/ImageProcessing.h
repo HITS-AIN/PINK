@@ -24,7 +24,7 @@ enum InterpolationType { NONE, BILINEAR };
  * x2 = cos(alpha) * (x1 - x0) - sin(alpha) * (y1 - y0) + x0
  * y2 = sin(alpha) * (x1 - x0) + cos(alpha) * (y1 - y0) + y0
  */
-void rotate(int height, int width, float *source, float *dest, float alpha, InterpolationType interpolation = NONE);
+void rotate(int height, int width, float *source, float *dest, float alpha, InterpolationType interpolation = BILINEAR);
 
 /**
  * @brief Plain-C function for image mirroring.
@@ -32,11 +32,18 @@ void rotate(int height, int width, float *source, float *dest, float alpha, Inte
 void flip(int height, int width, float * source, float *dest);
 
 /**
- * @brief Similarity of to float arrays using euclidean norm.
+ * @brief Euclidean distance of two float arrays.
  *
- * Return sqrt((a[i] - b[i])^2)
+ * Return sqrt(sum((a[i] - b[i])^2))
  */
-float calculateEuclideanSimilarity(float *a, float *b, int length);
+float calculateEuclideanDistance(float *a, float *b, int length);
+
+/**
+ * @brief Same as @calculateEuclideanDistance but without square root to speed up.
+ *
+ * Return sum((a[i] - b[i])^2)
+ */
+float calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length);
 
 /**
  * @brief Normalize image values.

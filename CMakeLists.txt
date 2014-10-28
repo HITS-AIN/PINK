@@ -16,13 +16,15 @@ endif()
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
 if(    NOT cmake_build_type_tolower STREQUAL "debug"
    AND NOT cmake_build_type_tolower STREQUAL "release"
-   AND NOT cmake_build_type_tolower STREQUAL "relwithdebinfo")
+   AND NOT cmake_build_type_tolower STREQUAL "relwithdebinfo"
+   AND NOT cmake_build_type_tolower STREQUAL "profiling")
     message(FATAL_ERROR "Unknown build type \"${CMAKE_BUILD_TYPE}\". Allowed values are Debug, Release, RelWithDebInfo (case-insensitive).")
 endif()
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
+set(CMAKE_CXX_FLAGS_PROFILING "-O3 -g -pg")
 
 # Add openmp
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")

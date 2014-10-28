@@ -9,6 +9,7 @@
 #include "Python.h"
 #include <fstream>
 #include <math.h>
+#include <omp.h>
 #include <random>
 #include <stdlib.h>
 #include <stdexcept>
@@ -19,8 +20,8 @@ void rotate_none(int height, int width, float *source, float *dest, float alpha)
     const float cosAlpha = cos(alpha);
     const float sinAlpha = sin(alpha);
 
-    x0 = width / 2;
-    y0 = height / 2;
+    x0 = width * 0.5;
+    y0 = height * 0.5;
 
     for (x2 = 0; x2 < width; ++x2) {
         for (y2 = 0; y2 < height; ++y2) {
@@ -39,18 +40,18 @@ void rotate_none(int height, int width, float *source, float *dest, float alpha)
 
 void rotate_bilinear(int height, int width, float *source, float *dest, float alpha)
 {
-	float x0, x1, x2, y0, y1, y2;
     const float cosAlpha = cos(alpha);
     const float sinAlpha = sin(alpha);
 
-    x0 = width * 0.5;
-    y0 = height * 0.5;
+    int x0 = width * 0.5;
+    int y0 = height * 0.5;
+    int x1, y1, x2, y2;
 
-    for (x1 = 0; x1 < width; ++x1) {
-        for (y1 = 0; y1 < height; ++y1) {
-        	x2 = (x1 - x0) * cosAlpha - (y1 - y0) * sinAlpha + x0;
-        	y2 = (x1 - x0) * sinAlpha + (y1 - y0) * cosAlpha + y0;
-            //if (x2 > -1 && x2 < width && y2 > -1 && y2 < height) dest[x2*height + y2] = source[x1*height + y1];
+    for (x2 = 0; x2 < width; ++x2) {
+        for (y2 = 0; y2 < height; ++y2) {
+        	x1 = (x2 - x0) * cosAlpha + (y2 - y0) * sinAlpha + x0;
+        	y1 = (y2 - y0) * cosAlpha - (x2 - x0) * sinAlpha + y0;
+            if (x1 >= 0 && x1 < width && y1 >= 0 && y1 < height) dest[x2*height + y2] = source[x1*height + y1];
         }
     }
 }
@@ -79,16 +80,22 @@ void flip(int height, int width, float *source, float *dest)
 	}
 }
 
-float calculateEuclideanSimilarity(float *a, float *b, int length)
+float calculateEuclideanDistance(float *a, float *b, int length)
 {
-	int i;
+    return sqrt(calculateEuclideanDistanceWithoutSquareRoot(a,b,length));
+}
+
+float calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length)
+{
+	float *pa = a;
+	float *pb = b;
 	float c = 0.0;
 	float tmp;
-    for (i = 0; i < length; ++i) {
-    	tmp = a[i] - b[i];
+    for (int i; i < length; ++i, ++pa, ++pb) {
+    	tmp = *pa - *pb;
         c += tmp * tmp;
     }
-    return sqrt(c);
+    return c;
 }
 
 void normalize(float *a, int length)
