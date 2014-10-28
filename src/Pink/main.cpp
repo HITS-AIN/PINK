@@ -17,26 +17,40 @@
 #include <omp.h>
 
 #if PINK_USE_CUDA
-    #include "CudaLib/cuda_print_properties.h"
+    #include "CudaLib/CudaLib.h"
 #endif
 
 using namespace std;
 using namespace PINK;
 
+void print_header()
+{
+	cout << "\n"
+	        "  ************************************************************************\n"
+	        "  *   Parallel orientation Invariant Non-parametric Kohonen-map (PINK)   *\n"
+	        "  ************************************************************************\n" << endl;
+}
+
 void print_usage()
 {
-	cout << endl;
-	cout << "  USAGE: Pink -i <path for image-file> -r <path for result-file>\n" << endl;
-	cout << "  Non-optional options:\n" << endl;
-	cout << "    --images, -i         File " << endl;
-	cout << "    --result, -r         File for final SOM matrix.\n" << endl;
-	cout << "  Optional options:\n" << endl;
-	cout << "    --verbose, -v        Print more output." << endl;
-	cout << "    --dimension, -d      Dimension for quadratic SOM matrix (default = 10)." << endl;
-	cout << "    --layout, -l         Layout of SOM (quadratic, hexagonal, default = quadratic)." << endl;
-	cout << "    --seed, -s           Seed for random number generator (default = 1234)." << endl;
-	cout << "    --numrot, -n         Number of rotations (default = 360)." << endl;
-	cout << "    --numthreads, -t     Number of CPU threads (default = auto)." << endl;
+	cout << "\n"
+	        "  USAGE: Pink -i <path for image-file> -r <path for result-file>\n"
+			"\n"
+	        "  Non-optional options:\n"
+			"\n"
+	        "    --image-file, -i        File with images.\n"
+	        "    --result-file, -r       File for final SOM matrix.\n"
+	        "    --image-dimension, -d   Dimension for quadratic SOM matrix (default = 10).\n"
+			"\n"
+	        "  Optional options:\n"
+			"\n"
+	        "    --verbose, -v           Print more output (default = off).\n"
+	        "    --som-dimension         Dimension for quadratic SOM matrix (default = 10).\n"
+	        "    --layout, -l            Layout of SOM (quadratic, hexagonal, default = quadratic).\n"
+	        "    --seed, -s              Seed for random number generator (default = 1234).\n"
+	        "    --numrot, -n            Number of rotations (default = 360).\n"
+	        "    --numthreads, -t        Number of CPU threads (default = auto).\n"
+	        "    --init, -x              Type of SOM initialization (random, zero, default = zero).\n" << endl;
 }
 
 int main (int argc, char **argv)
@@ -46,25 +60,31 @@ int main (int argc, char **argv)
 	int verbose = 0;
 	char *imagesFilename = 0;
 	int som_dim = 10;
+	int som_image_dim = -1;
 	Layout layout = QUADRATIC;
 	char *resultFilename = 0;
 	int seed = 1234;
 	int numberOfRotations = 360;
 	int numberOfThreads = -1;
+	SOMInitialization init = ZERO;
+
+	print_header();
 
 	static struct option long_options[] = {
-		{"verbose",    0, 0, 'v'},
-		{"images",     1, 0, 'i'},
-		{"dimension",  1, 0, 'd'},
-		{"result",     1, 0, 'r'},
-		{"layout",     1, 0, 'l'},
-		{"seed",       1, 0, 's'},
-		{"numrot",     1, 0, 'n'},
-		{"numthreads", 1, 0, 't'},
+		{"verbose",         0, 0, 'v'},
+		{"image-file",      1, 0, 'i'},
+		{"image-dimension", 1, 0, 'd'},
+		{"som-dimension",   1, 0, 0},
+		{"result-file",     1, 0, 'r'},
+		{"layout",          1, 0, 'l'},
+		{"seed",            1, 0, 's'},
+		{"numrot",          1, 0, 'n'},
+		{"numthreads",      1, 0, 't'},
+		{"init",            1, 0, 'x'},
 		{NULL, 0, NULL, 0}
 	};
 	int option_index = 0;
-	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:t:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:t:x:", long_options, &option_index)) != -1)
 	{
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
@@ -75,6 +95,9 @@ int main (int argc, char **argv)
 			imagesFilename = optarg;
 			break;
 		case 'd':
+			som_image_dim = atoi(optarg);
+			break;
+		case 0:
 			som_dim = atoi(optarg);
 			break;
 		case 'r':
@@ -103,14 +126,26 @@ int main (int argc, char **argv)
 		case 't':
 			numberOfThreads = atoi(optarg);
 			break;
-		case '?':
+		case 'x':
+			if (stringToUpper(optarg) == "ZERO") init = ZERO;
+			else if (optarg == "RANDOM") init = RANDOM;
+			else {
+				printf ("Unkown option %o\n", c);
+				print_usage();
+				return 1;
+			}
 			break;
+		case '?':
+			printf ("Unkown option %o\n", c);
+			print_usage();
+			return 1;
 		default:
 			printf ("Unkown option %o\n", c);
 			print_usage();
 			return 1;
 		}
 	}
+
 	if (optind < argc) {
 		cout << "Unkown argv elements: ";
 		while (optind < argc) cout << argv[optind++] << " ";
@@ -119,7 +154,9 @@ int main (int argc, char **argv)
 		return 1;
 	}
 
-	if (!imagesFilename or !resultFilename) {
+	// Check if all non-optional arguments are set
+	if (!imagesFilename or !resultFilename or som_image_dim == -1) {
+		cout << "Missing non-optional argument." << endl;
 		print_usage();
 		return 1;
 	}
@@ -128,12 +165,14 @@ int main (int argc, char **argv)
 	else omp_set_num_threads(numberOfThreads);
 
 	if (verbose) {
-		cout << "  images = " << imagesFilename << endl;
-		cout << "  dimension = " << som_dim << endl;
-		cout << "  result = " << resultFilename << endl;
-		cout << "  layout = " << layout << endl;
-		cout << "  seed = " << seed << endl;
-		cout << "  number of rotations = " << numberOfRotations << endl;
+		cout << "  Image file = " << imagesFilename << endl;
+		cout << "  SOM dimension = " << som_dim << "x" << som_dim << endl;
+		cout << "  SOM image dimension = " << som_image_dim << "x" << som_image_dim << endl;
+		cout << "  Result file = " << resultFilename << endl;
+		cout << "  Layout = " << layout << endl;
+		cout << "  Initialization type = " << init << endl;
+		cout << "  Seed = " << seed << endl;
+		cout << "  Number of rotations = " << numberOfRotations << endl;
 		cout << "  Number of CPU threads = " << numberOfThreads << endl;
 	}
 
@@ -142,7 +181,7 @@ int main (int argc, char **argv)
     #endif
 
 	ImageIterator<float> iterImage(imagesFilename);
-	if (verbose) cout << "Image dimension = " << iterImage->getWidth() << "x" << iterImage->getHeight() << endl;
+	if (verbose) cout << "  Image dimension = " << iterImage->getWidth() << "x" << iterImage->getHeight() << endl;
 
 	if (iterImage->getWidth() != iterImage->getHeight()) {
 		cout << "Only quadratic images are supported.";
@@ -150,23 +189,41 @@ int main (int argc, char **argv)
 	}
 
 	int numberOfImages = iterImage.number();
-	if (verbose) cout << "number of images = " << numberOfImages << endl;
+	if (verbose) cout << "  Number of images = " << numberOfImages << endl;
 	int image_dim = iterImage->getWidth();
 	int image_size = iterImage->getWidth() * iterImage->getHeight();
     int som_size = som_dim * som_dim;
 
 	// Initialize SOM
+	if (verbose) cout << "  Size of SOM = " << som_size * image_size * sizeof(float) << " bytes" << endl;
 	float *som = (float *)malloc(som_size * image_size * sizeof(float));
-	fillRandom(som, som_size * image_size, seed);
+
+	if (init == RANDOM) fillRandom(som, som_size * image_size, seed);
+	else if (init == ZERO) fillZero(som, som_size * image_size);
+
+    if (verbose) cout << "  Write initial SOM to initial_som.bin ..." << endl;
+	writeSOM(som, som_dim, image_dim, "initial_som.bin");
+
+	if (verbose) cout << "  Size of rotated images = " << 2 * numberOfRotations * image_size * sizeof(float) << " bytes" << endl;
+	float *rotatedImages = (float *)malloc(2 * numberOfRotations * image_size * sizeof(float));
+
+	if (verbose) cout << "  Size of euclidean distance matrix = " << 2 * numberOfRotations * image_size * sizeof(float) << " bytes" << endl;
+	float *euclideanDistanceMatrix = (float *)malloc(som_size * sizeof(float));
+
+	if (verbose) cout << "  Size of best rotation matrix = " << som_size * sizeof(int) << " bytes" << endl;
+	int *bestRotationMatrix = (int *)malloc(som_size * sizeof(int));
 
 	float progress = 0.0;
 	float progressStep = 1.0 / numberOfImages;
 	float nextProgressPrint = 0.0;
+
+	cout << endl;
+
 	for (int i = 0; iterImage != ImageIterator<float>(); ++i, ++iterImage)
 	{
 	    if (verbose) {
 			if (progress >= nextProgressPrint) {
-				cout << "Progress: " << fixed << setprecision(0) << progress*100 << " %" << endl;
+				cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " %" << endl;
 				nextProgressPrint += 0.1;
 			}
 		    progress += progressStep;
@@ -178,10 +235,6 @@ int main (int argc, char **argv)
 //		iterImage->show();
 
 		float *image = iterImage->getPointerOfFirstPixel();
-		int image_dim = iterImage->getWidth();
-		int image_size = iterImage->getWidth() * iterImage->getHeight();
-
-		float *rotatedImages = (float *)malloc(2 * numberOfRotations * image_size * sizeof(float));
 		generateRotatedImages(rotatedImages, image, numberOfRotations, image_dim);
 
 //		stringstream ss2;
@@ -189,13 +242,11 @@ int main (int argc, char **argv)
 //		writeRotatedImages(rotatedImages, image_dim, numberOfRotations, ss2.str());
 //		showRotatedImages(rotatedImages, image_dim, numberOfRotations);
 
-		float *similarityMatrix = (float *)malloc(som_size * sizeof(float));
-		int *bestRotationMatrix = (int *)malloc(som_size * sizeof(int));
-		generateEuclideanDistanceMatrix(similarityMatrix, bestRotationMatrix, som_dim, som, image_dim, numberOfRotations, rotatedImages);
+		generateEuclideanDistanceMatrix(euclideanDistanceMatrix, bestRotationMatrix, som_dim, som, image_dim, numberOfRotations, rotatedImages);
 
-		Point bestMatch = findBestMatchingNeuron(similarityMatrix, som_dim);
+		Point bestMatch = findBestMatchingNeuron(euclideanDistanceMatrix, som_dim);
 
-		//cout << "bestMatch = " << bestMatch << endl;
+		if (verbose >= 2) cout << "bestMatch = " << bestMatch << endl;
 
 		updateNeurons(som_dim, som, image_dim, rotatedImages, bestMatch, bestRotationMatrix);
 
@@ -203,20 +254,20 @@ int main (int argc, char **argv)
 //		ss3 << "som" << i << ".bin";
 //		writeSOM(som, som_dim, image_dim, ss3.str());
 //		showSOM(som, som_dim, image_dim);
-
-		free(rotatedImages);
-		free(similarityMatrix);
-		free(bestRotationMatrix);
 	}
 
+	free(rotatedImages);
+	free(euclideanDistanceMatrix);
+	free(bestRotationMatrix);
+
     if (verbose) {
-	    cout << "Progress: 100 %\n" << endl;
-	    cout << "Write final SOM to " << resultFilename << " ..." << endl;
+	    cout << "  Progress: 100 %\n" << endl;
+	    cout << "  Write final SOM to " << resultFilename << " ..." << endl;
     }
 
 	writeSOM(som, som_dim, image_dim, resultFilename);
 	free(som);
 
-    if (verbose) cout << "\nAll done.\n" << endl;
+    if (verbose) cout << "\n  All done.\n" << endl;
 	return 0;
 }

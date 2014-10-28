@@ -5,9 +5,11 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef PRINT_PROPERTIES_H_
-#define PRINT_PROPERTIES_H_
+#ifndef CUDALIB_H_
+#define CUDALIB_H_
 
 void cuda_print_properties();
 
-#endif /* PRINT_PROPERTIES_H_ */
+void cuda_rotate(int height, int width, float *source, float *dest, float angle);
+
+#endif /* CUDALIB_H_ */

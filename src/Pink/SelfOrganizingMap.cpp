@@ -23,6 +23,14 @@ std::ostream& operator << (std::ostream& os, Layout layout)
 	return os;
 }
 
+std::ostream& operator << (std::ostream& os, SOMInitialization init)
+{
+	if (init == ZERO) os << "zero";
+	else if (init == RANDOM) os << "random";
+	else os << "undefined";
+	return os;
+}
+
 std::ostream& operator << (std::ostream& os, Point p)
 {
 	return os << "(" << p.x << "," << p.y << ")";
@@ -88,7 +96,7 @@ Point findBestMatchingNeuron(float *euclideanDistanceMatrix, int som_dim)
 
     for (int i = 0; i < som_dim; ++i) {
         for (int j = 0; j < som_dim; ++j) {
-			if (euclideanDistanceMatrix[i*som_dim+j] > minDistance) {
+			if (euclideanDistanceMatrix[i*som_dim+j] < minDistance) {
 				minDistance = euclideanDistanceMatrix[i*som_dim+j];
 				bestMatch.x = i;
 				bestMatch.y = j;

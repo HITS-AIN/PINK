@@ -4,7 +4,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "cuda_rotate.h"
+#include "CudaLib.h"
 #include <stdio.h>
 
 /**

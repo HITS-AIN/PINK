@@ -6,7 +6,7 @@
 
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageProcessing.h"
-#include "CudaLib/cuda_rotate.h"
+#include "CudaLib/CudaLib.h"
 #include "gtest/gtest.h"
 #include <cmath>
 

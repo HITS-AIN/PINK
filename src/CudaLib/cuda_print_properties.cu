@@ -5,6 +5,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include "CudaLib.h"
 #include <stdio.h>
 
 void cuda_print_properties()

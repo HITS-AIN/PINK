@@ -37,7 +37,7 @@ if __name__ == "__main__":
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
     ax.set_aspect('equal')
-    plt.imshow(data, interpolation='nearest', cmap=plt.cm.ocean)
+    plt.imshow(data, interpolation='nearest', cmap=plt.cm.jet)
     plt.colorbar()
     plt.show()
 

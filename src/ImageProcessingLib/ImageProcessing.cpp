@@ -156,6 +156,13 @@ void fillRandom(float *a, int length, int seed)
     }
 }
 
+void fillZero(float *a, int length)
+{
+    for (int i = 0; i < length; ++i) {
+    	a[i] = 0.0;
+    }
+}
+
 void writeImageToBinaryFile(float *image, int height, int width, std::string const& filename)
 {
     std::ofstream os(filename);

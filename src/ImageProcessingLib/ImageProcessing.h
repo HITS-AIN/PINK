@@ -79,6 +79,11 @@ void zeroValuesSmallerThanStdDeviation(float *a, int length, float safety);
  */
 void fillRandom(float *a, int length, int seed = 0);
 
+/**
+ * @brief Fill array with zeros
+ */
+void fillZero(float *a, int length);
+
 void writeImageToBinaryFile(float *image, int height, int width, std::string const& filename);
 
 void showImage(float *image, int height, int width);

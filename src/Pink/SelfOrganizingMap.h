@@ -27,8 +27,14 @@ std::ostream& operator << (std::ostream& os, Point point);
 //! Type for SOM layout.
 enum Layout {QUADRATIC, HEXAGONAL};
 
+//! Type for SOM initialization.
+enum SOMInitialization { ZERO, RANDOM };
+
 //! Pretty printing of SOM layout type.
 std::ostream& operator << (std::ostream& os, Layout layout);
+
+//! Pretty printing of SOM layout type.
+std::ostream& operator << (std::ostream& os, SOMInitialization init);
 
 void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim);
 
