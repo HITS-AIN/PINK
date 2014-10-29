@@ -9,6 +9,8 @@
 #include "ImageProcessingLib/ImageIterator.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMap.h"
+#include <cmath>
+#include <chrono>
 #include <getopt.h>
 #include <iostream>
 #include <iomanip>
@@ -22,6 +24,7 @@
 
 using namespace std;
 using namespace PINK;
+using namespace chrono;
 
 void print_header()
 {
@@ -34,18 +37,18 @@ void print_header()
 void print_usage()
 {
 	cout << "\n"
-	        "  USAGE: Pink -i <path for image-file> -r <path for result-file>\n"
+	        "  USAGE: Pink -i <image-file> -r <result-file>\n"
 			"\n"
 	        "  Non-optional options:\n"
 			"\n"
 	        "    --image-file, -i        File with images.\n"
 	        "    --result-file, -r       File for final SOM matrix.\n"
-	        "    --image-dimension, -d   Dimension for quadratic SOM matrix (default = 10).\n"
 			"\n"
 	        "  Optional options:\n"
 			"\n"
 	        "    --verbose, -v           Print more output (default = off).\n"
 	        "    --som-dimension         Dimension for quadratic SOM matrix (default = 10).\n"
+	        "    --neuron-dimension, -d  Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
 	        "    --layout, -l            Layout of SOM (quadratic, hexagonal, default = quadratic).\n"
 	        "    --seed, -s              Seed for random number generator (default = 1234).\n"
 	        "    --numrot, -n            Number of rotations (default = 360).\n"
@@ -55,18 +58,22 @@ void print_usage()
 
 int main (int argc, char **argv)
 {
+	// Start timer
+	const auto startTime = steady_clock::now();
+
 	int c;
 	int digit_optind = 0;
 	int verbose = 0;
 	char *imagesFilename = 0;
 	int som_dim = 10;
-	int som_image_dim = -1;
+	int neuron_dim = -1;
 	Layout layout = QUADRATIC;
 	char *resultFilename = 0;
 	int seed = 1234;
 	int numberOfRotations = 360;
 	int numberOfThreads = -1;
 	SOMInitialization init = ZERO;
+	bool useCuda = false;
 
 	print_header();
 
@@ -95,7 +102,7 @@ int main (int argc, char **argv)
 			imagesFilename = optarg;
 			break;
 		case 'd':
-			som_image_dim = atoi(optarg);
+			neuron_dim = atoi(optarg);
 			break;
 		case 0:
 			som_dim = atoi(optarg);
@@ -155,7 +162,7 @@ int main (int argc, char **argv)
 	}
 
 	// Check if all non-optional arguments are set
-	if (!imagesFilename or !resultFilename or som_image_dim == -1) {
+	if (!imagesFilename or !resultFilename) {
 		cout << "Missing non-optional argument." << endl;
 		print_usage();
 		return 1;
@@ -163,22 +170,6 @@ int main (int argc, char **argv)
 
 	if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
 	else omp_set_num_threads(numberOfThreads);
-
-	if (verbose) {
-		cout << "  Image file = " << imagesFilename << endl;
-		cout << "  SOM dimension = " << som_dim << "x" << som_dim << endl;
-		cout << "  SOM image dimension = " << som_image_dim << "x" << som_image_dim << endl;
-		cout << "  Result file = " << resultFilename << endl;
-		cout << "  Layout = " << layout << endl;
-		cout << "  Initialization type = " << init << endl;
-		cout << "  Seed = " << seed << endl;
-		cout << "  Number of rotations = " << numberOfRotations << endl;
-		cout << "  Number of CPU threads = " << numberOfThreads << endl;
-	}
-
-    #if PINK_USE_CUDA
-	    if (verbose) cuda_print_properties();
-    #endif
 
 	ImageIterator<float> iterImage(imagesFilename);
 	if (verbose) cout << "  Image dimension = " << iterImage->getWidth() << "x" << iterImage->getHeight() << endl;
@@ -189,35 +180,54 @@ int main (int argc, char **argv)
 	}
 
 	int numberOfImages = iterImage.number();
-	if (verbose) cout << "  Number of images = " << numberOfImages << endl;
 	int image_dim = iterImage->getWidth();
 	int image_size = iterImage->getWidth() * iterImage->getHeight();
     int som_size = som_dim * som_dim;
 
-	// Initialize SOM
-	if (verbose) cout << "  Size of SOM = " << som_size * image_size * sizeof(float) << " bytes" << endl;
+    if (neuron_dim == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
+
+	if (verbose) {
+		cout << "  Image file = " << imagesFilename << endl;
+		cout << "  Number of images = " << numberOfImages << endl;
+		cout << "  SOM dimension = " << som_dim << "x" << som_dim << endl;
+		cout << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << endl;
+		cout << "  Result file = " << resultFilename << endl;
+		cout << "  Layout = " << layout << endl;
+		cout << "  Initialization type = " << init << endl;
+		cout << "  Seed = " << seed << endl;
+		cout << "  Number of rotations = " << numberOfRotations << endl;
+		cout << "  Number of CPU threads = " << numberOfThreads << endl;
+	}
+
+    #if PINK_USE_CUDA
+	    if (useCuda and verbose) cuda_print_properties();
+    #endif
+
+	// Memory allocation
+	if (verbose) cout << "\n  Size of SOM = " << som_size * image_size * sizeof(float) << " bytes" << endl;
 	float *som = (float *)malloc(som_size * image_size * sizeof(float));
-
-	if (init == RANDOM) fillRandom(som, som_size * image_size, seed);
-	else if (init == ZERO) fillZero(som, som_size * image_size);
-
-    if (verbose) cout << "  Write initial SOM to initial_som.bin ..." << endl;
-	writeSOM(som, som_dim, image_dim, "initial_som.bin");
 
 	if (verbose) cout << "  Size of rotated images = " << 2 * numberOfRotations * image_size * sizeof(float) << " bytes" << endl;
 	float *rotatedImages = (float *)malloc(2 * numberOfRotations * image_size * sizeof(float));
 
-	if (verbose) cout << "  Size of euclidean distance matrix = " << 2 * numberOfRotations * image_size * sizeof(float) << " bytes" << endl;
+	if (verbose) cout << "  Size of euclidean distance matrix = " << som_size * sizeof(float) << " bytes" << endl;
 	float *euclideanDistanceMatrix = (float *)malloc(som_size * sizeof(float));
 
 	if (verbose) cout << "  Size of best rotation matrix = " << som_size * sizeof(int) << " bytes" << endl;
 	int *bestRotationMatrix = (int *)malloc(som_size * sizeof(int));
 
+	// Initialize SOM
+	if (init == RANDOM) fillRandom(som, som_size * image_size, seed);
+	else if (init == ZERO) fillZero(som, som_size * image_size);
+
+    if (verbose) {
+    	cout << "\n  Write initial SOM to initial_som.bin ...\n" << endl;
+    	writeSOM(som, som_dim, image_dim, "initial_som.bin");
+    }
+
 	float progress = 0.0;
 	float progressStep = 1.0 / numberOfImages;
 	float nextProgressPrint = 0.0;
-
-	cout << endl;
 
 	for (int i = 0; iterImage != ImageIterator<float>(); ++i, ++iterImage)
 	{
@@ -246,7 +256,7 @@ int main (int argc, char **argv)
 
 		Point bestMatch = findBestMatchingNeuron(euclideanDistanceMatrix, som_dim);
 
-		if (verbose >= 2) cout << "bestMatch = " << bestMatch << endl;
+		//cout << "bestMatch = " << bestMatch << endl;
 
 		updateNeurons(som_dim, som, image_dim, rotatedImages, bestMatch, bestRotationMatrix);
 
@@ -268,6 +278,14 @@ int main (int argc, char **argv)
 	writeSOM(som, som_dim, image_dim, resultFilename);
 	free(som);
 
-    if (verbose) cout << "\n  All done.\n" << endl;
+	// Stop and print timer
+	const auto stopTime = steady_clock::now();
+	const auto duration = stopTime - startTime;
+	cout << "\n  Total time (hh:mm:ss): "
+		 << setfill('0') << setw(2) << duration_cast<hours>(duration).count() << ":"
+		 << setfill('0') << setw(2) << duration_cast<minutes>(duration % hours(1)).count() << ":"
+		 << setfill('0') << setw(2) << duration_cast<seconds>(duration % minutes(1)).count() << endl;
+
+    cout << "\n  All done.\n" << endl;
 	return 0;
 }

@@ -77,9 +77,10 @@ void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRo
     for (int i = 0; i < som_size; ++i) euclideanDistanceMatrix[i] = FLT_MAX;
 
     for (int i = 0; i < som_size; ++i, ++pdist, ++prot) {
-        #pragma omp parallel for
+        #pragma omp parallel for private(tmp)
         for (int j = 0; j < 2*numberOfRotations; ++j) {
     	    tmp = calculateEuclideanDistance(som + i*image_size, image + j*image_size, image_size);
+            #pragma omp critical
     	    if (tmp < *pdist) {
     	    	*pdist = tmp;
                 *prot = j;
