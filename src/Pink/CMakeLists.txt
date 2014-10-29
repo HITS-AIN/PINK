@@ -8,7 +8,6 @@ endif(PINK_USE_CUDA)
 
 include_directories(
     ..
-    ${PYTHON_INCLUDE_DIRS}
 )
 
 add_executable(
@@ -21,5 +20,4 @@ target_link_libraries(
     Pink
     CudaLib
     ImageProcessingLib
-    ${PYTHON_LIBRARIES}
 )

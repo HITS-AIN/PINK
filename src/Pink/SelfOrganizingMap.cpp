@@ -13,6 +13,7 @@
 #include <iostream>
 #include <omp.h>
 #include <stdlib.h>
+#include <string.h>
 #include <cmath>
 
 std::ostream& operator << (std::ostream& os, Layout layout)
@@ -36,32 +37,36 @@ std::ostream& operator << (std::ostream& os, Point p)
 	return os << "(" << p.x << "," << p.y << ")";
 }
 
-void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim)
+void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim)
 {
 	int image_size = image_dim * image_dim;
+	int neuron_size = neuron_dim * neuron_dim;
 	float angleStepRadians;
 	if (numberOfRotations) angleStepRadians = 2.0 * M_PI / numberOfRotations;
 
 	// Copy original image on first position
-	for (int i = 0; i < image_size; ++i) {
-		rotatedImages[i] = image[i];
-	}
+	crop(image_dim, image_dim, neuron_dim, neuron_dim, image, rotatedImages);
 
-	// Rotate unfliped image
+	// Rotate unflipped image
     #pragma omp parallel for
 	for (int i = 1; i < numberOfRotations; ++i)	{
-		rotate(image_dim, image_dim, image, rotatedImages + i*image_size, i*angleStepRadians);
+		rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, image, rotatedImages + i*neuron_size, i*angleStepRadians);
 	}
 
 	// Flip image
-	float *flippedImage = rotatedImages + numberOfRotations * image_size;
+	float *flippedImage = (float *)malloc(image_size * sizeof(float));
 	flip(image_dim, image_dim, image, flippedImage);
 
-	// Rotate fliped image
+	float *flippedRotatedImage = rotatedImages + numberOfRotations * neuron_size;
+	crop(image_dim, image_dim, neuron_dim, neuron_dim, flippedImage, flippedRotatedImage);
+
+	// Rotate flipped image
     #pragma omp parallel for
 	for (int i = 1; i < numberOfRotations; ++i)	{
-		rotate(image_dim, image_dim, flippedImage, flippedImage + i*image_size, i*angleStepRadians);
+		rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, flippedImage, flippedRotatedImage + i*neuron_size, i*angleStepRadians);
 	}
+
+	free(flippedImage);
 }
 
 void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix, int som_dim, float* som,
@@ -211,13 +216,9 @@ float distance(Point pos1, Point pos2)
     return sqrt(pow(pos1.x - pos2.x, 2) + pow(pos1.y - pos2.y, 2));
 }
 
-char* stringToUpper(char* s)
+void stringToUpper(char* s)
 {
-	for (; *s != '\0'; ++s)
-	{
-		*s = tolower(*s);
-	}
-	return s;
+	for (char *ps = s; *ps != '\0'; ++ps) *ps = toupper(*ps);
 }
 
 // 2.0 / ( math.sqrt(3.0 * sigma) * math.pow(math.pi, 0.25)) * (1- x**2.0 / sigma**2.0) * math.exp(-x**2.0/(2.0 * sigma**2))

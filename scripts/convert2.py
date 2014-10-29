@@ -16,7 +16,7 @@ height = data.shape[1]
 width = data.shape[2]
 
 for file in files[1:]:
-    data = numpy.load(files[0])
+    data = numpy.load(file)
     total += data.shape[0]
     if (height != data.shape[1]):
         print 'Shape error.'
@@ -29,17 +29,21 @@ of.write(struct.pack('i', total))
 of.write(struct.pack('i', height))
 of.write(struct.pack('i', width))
 
-for file in files:
+data = numpy.load(files[0])
+
+for file in files[1:]:
 
     print 'Input file is ', file
 
-    data = numpy.load(file)
+    data = numpy.concatenate((data,numpy.load(file)))
 
     print 'data.ndim = ', data.ndim
     print 'data.shape = ', data.shape
     print 'data.size = ', data.size
 
-    data.astype('f').tofile(of)
+numpy.random.shuffle(data)
+
+data.astype('f').tofile(of)
 
 of.close()
 

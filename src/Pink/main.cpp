@@ -15,6 +15,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <string.h>
 #include <stdlib.h>
 #include <omp.h>
 
@@ -49,8 +50,10 @@ void print_usage()
 	        "    --verbose, -v           Print more output (default = off).\n"
 	        "    --som-dimension         Dimension for quadratic SOM matrix (default = 10).\n"
 	        "    --neuron-dimension, -d  Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
+	        "    --num-iter              Number of iterations (default = 1).\n"
 	        "    --layout, -l            Layout of SOM (quadratic, hexagonal, default = quadratic).\n"
 	        "    --seed, -s              Seed for random number generator (default = 1234).\n"
+			"    --progress, -p          Print level of progress (default = 10%).\n"
 	        "    --numrot, -n            Number of rotations (default = 360).\n"
 	        "    --numthreads, -t        Number of CPU threads (default = auto).\n"
 	        "    --init, -x              Type of SOM initialization (random, zero, default = zero).\n" << endl;
@@ -74,6 +77,8 @@ int main (int argc, char **argv)
 	int numberOfThreads = -1;
 	SOMInitialization init = ZERO;
 	bool useCuda = false;
+	int numIter = 1;
+	float progressFactor = 0.1;
 
 	print_header();
 
@@ -88,10 +93,12 @@ int main (int argc, char **argv)
 		{"numrot",          1, 0, 'n'},
 		{"numthreads",      1, 0, 't'},
 		{"init",            1, 0, 'x'},
+		{"num-iter",        1, 0, 1},
+		{"progress",        1, 0, 'p'},
 		{NULL, 0, NULL, 0}
 	};
 	int option_index = 0;
-	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:t:x:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:t:x:p:", long_options, &option_index)) != -1)
 	{
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
@@ -107,13 +114,18 @@ int main (int argc, char **argv)
 		case 0:
 			som_dim = atoi(optarg);
 			break;
+		case 1:
+			numIter = atoi(optarg);
+			break;
 		case 'r':
 			resultFilename = optarg;
 			break;
 		case 'l':
-			if (stringToUpper(optarg) == "QUADRATIC") layout = QUADRATIC;
-			else if (optarg == "HEXAGONAL") layout = HEXAGONAL;
+			stringToUpper(optarg);
+			if (strcmp(optarg, "QUADRATIC") != 0) layout = QUADRATIC;
+			else if (strcmp(optarg, "HEXAGONAL") != 0) layout = HEXAGONAL;
 			else {
+				printf ("optarg = %s\n", optarg);
 				printf ("Unkown option %o\n", c);
 				print_usage();
 				return 1;
@@ -122,10 +134,13 @@ int main (int argc, char **argv)
 		case 's':
 			seed = atoi(optarg);
 			break;
+		case 'p':
+			progressFactor = atof(optarg);
+			break;
 		case 'n':
 			numberOfRotations = atoi(optarg);
-			if (numberOfRotations < 1 or numberOfRotations > 360) {
-				printf ("Number of rotations must be between 1 and 360.\n\n");
+			if (numberOfRotations < 0) {
+				printf ("Number of rotations must be larger than 0.\n\n");
 				print_usage();
 				return 1;
 			}
@@ -134,9 +149,11 @@ int main (int argc, char **argv)
 			numberOfThreads = atoi(optarg);
 			break;
 		case 'x':
-			if (stringToUpper(optarg) == "ZERO") init = ZERO;
-			else if (optarg == "RANDOM") init = RANDOM;
+			stringToUpper(optarg);
+			if (strcmp(optarg, "ZERO") != 0) init = ZERO;
+			else if (strcmp(optarg, "RANDOM") != 0) init = RANDOM;
 			else {
+				printf ("optarg = %s\n", optarg);
 				printf ("Unkown option %o\n", c);
 				print_usage();
 				return 1;
@@ -185,12 +202,20 @@ int main (int argc, char **argv)
     int som_size = som_dim * som_dim;
 
     if (neuron_dim == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
+    if (neuron_dim > image_dim) {
+		cout << "Neuron dimension must be smaller or equal to image dimension.";
+		return 1;
+    }
+    if ((image_dim - neuron_dim)%2) --neuron_dim;
+    int neuron_size = neuron_dim * neuron_dim;
 
 	if (verbose) {
 		cout << "  Image file = " << imagesFilename << endl;
 		cout << "  Number of images = " << numberOfImages << endl;
 		cout << "  SOM dimension = " << som_dim << "x" << som_dim << endl;
+		cout << "  Number of iterations = " << numIter << endl;
 		cout << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << endl;
+		cout << "  Progress = " << progressFactor << endl;
 		cout << "  Result file = " << resultFilename << endl;
 		cout << "  Layout = " << layout << endl;
 		cout << "  Initialization type = " << init << endl;
@@ -204,11 +229,11 @@ int main (int argc, char **argv)
     #endif
 
 	// Memory allocation
-	if (verbose) cout << "\n  Size of SOM = " << som_size * image_size * sizeof(float) << " bytes" << endl;
-	float *som = (float *)malloc(som_size * image_size * sizeof(float));
+	if (verbose) cout << "\n  Size of SOM = " << som_size * neuron_size * sizeof(float) << " bytes" << endl;
+	float *som = (float *)malloc(som_size * neuron_size * sizeof(float));
 
-	if (verbose) cout << "  Size of rotated images = " << 2 * numberOfRotations * image_size * sizeof(float) << " bytes" << endl;
-	float *rotatedImages = (float *)malloc(2 * numberOfRotations * image_size * sizeof(float));
+	if (verbose) cout << "  Size of rotated images = " << 2 * numberOfRotations * neuron_size * sizeof(float) << " bytes" << endl;
+	float *rotatedImages = (float *)malloc(2 * numberOfRotations * neuron_size * sizeof(float));
 
 	if (verbose) cout << "  Size of euclidean distance matrix = " << som_size * sizeof(float) << " bytes" << endl;
 	float *euclideanDistanceMatrix = (float *)malloc(som_size * sizeof(float));
@@ -217,53 +242,54 @@ int main (int argc, char **argv)
 	int *bestRotationMatrix = (int *)malloc(som_size * sizeof(int));
 
 	// Initialize SOM
-	if (init == RANDOM) fillRandom(som, som_size * image_size, seed);
-	else if (init == ZERO) fillZero(som, som_size * image_size);
+	if (init == RANDOM) fillRandom(som, som_size * neuron_size, seed);
+	else if (init == ZERO) fillZero(som, som_size * neuron_size);
 
     if (verbose) {
     	cout << "\n  Write initial SOM to initial_som.bin ...\n" << endl;
-    	writeSOM(som, som_dim, image_dim, "initial_som.bin");
+    	writeSOM(som, som_dim, neuron_dim, "initial_som.bin");
     }
 
 	float progress = 0.0;
-	float progressStep = 1.0 / numberOfImages;
+	float progressStep = 1.0 / numIter / numberOfImages;
 	float nextProgressPrint = 0.0;
 
-	for (int i = 0; iterImage != ImageIterator<float>(); ++i, ++iterImage)
+	for (int iter = 0; iter != numIter; ++iter)
 	{
-	    if (verbose) {
-			if (progress >= nextProgressPrint) {
-				cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " %" << endl;
-				nextProgressPrint += 0.1;
+		int i = 0;
+		for (ImageIterator<float> iterImage(imagesFilename),iterEnd; iterImage != iterEnd; ++i, ++iterImage)
+		{
+			if (verbose) {
+				if (progress >= nextProgressPrint) {
+					cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " %" << endl;
+					nextProgressPrint += progressFactor;
+				}
+				progress += progressStep;
 			}
-		    progress += progressStep;
-	    }
 
-//		stringstream ss;
-//		ss << "image" << i << ".bin";
-//		iterImage->writeBinary(ss.str());
-//		iterImage->show();
+	//		stringstream ss;
+	//		ss << "image" << i << ".bin";
+	//		iterImage->writeBinary(ss.str());
 
-		float *image = iterImage->getPointerOfFirstPixel();
-		generateRotatedImages(rotatedImages, image, numberOfRotations, image_dim);
+			float *image = iterImage->getPointerOfFirstPixel();
+			generateRotatedImages(rotatedImages, image, numberOfRotations, image_dim, neuron_dim);
 
-//		stringstream ss2;
-//		ss2 << "rotatedImage" << i << ".bin";
-//		writeRotatedImages(rotatedImages, image_dim, numberOfRotations, ss2.str());
-//		showRotatedImages(rotatedImages, image_dim, numberOfRotations);
+	//		stringstream ss2;
+	//		ss2 << "rotatedImage" << i << ".bin";
+	//		writeRotatedImages(rotatedImages, image_dim, numberOfRotations, ss2.str());
 
-		generateEuclideanDistanceMatrix(euclideanDistanceMatrix, bestRotationMatrix, som_dim, som, image_dim, numberOfRotations, rotatedImages);
+			generateEuclideanDistanceMatrix(euclideanDistanceMatrix, bestRotationMatrix, som_dim, som, neuron_dim, numberOfRotations, rotatedImages);
 
-		Point bestMatch = findBestMatchingNeuron(euclideanDistanceMatrix, som_dim);
+			Point bestMatch = findBestMatchingNeuron(euclideanDistanceMatrix, som_dim);
 
-		//cout << "bestMatch = " << bestMatch << endl;
+			//cout << "bestMatch = " << bestMatch << endl;
 
-		updateNeurons(som_dim, som, image_dim, rotatedImages, bestMatch, bestRotationMatrix);
+			updateNeurons(som_dim, som, neuron_dim, rotatedImages, bestMatch, bestRotationMatrix);
 
-//		stringstream ss3;
-//		ss3 << "som" << i << ".bin";
-//		writeSOM(som, som_dim, image_dim, ss3.str());
-//		showSOM(som, som_dim, image_dim);
+	//		stringstream ss3;
+	//		ss3 << "som" << i << ".bin";
+	//		writeSOM(som, som_dim, image_dim, ss3.str());
+		}
 	}
 
 	free(rotatedImages);
@@ -275,7 +301,7 @@ int main (int argc, char **argv)
 	    cout << "  Write final SOM to " << resultFilename << " ..." << endl;
     }
 
-	writeSOM(som, som_dim, image_dim, resultFilename);
+	writeSOM(som, som_dim, neuron_dim, resultFilename);
 	free(som);
 
 	// Stop and print timer

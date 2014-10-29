@@ -36,7 +36,7 @@ std::ostream& operator << (std::ostream& os, Layout layout);
 //! Pretty printing of SOM layout type.
 std::ostream& operator << (std::ostream& os, SOMInitialization init);
 
-void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim);
+void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim);
 
 void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix, int som_dim, float* som,
 	int image_dim, int numberOfRotations, float* image);
@@ -65,7 +65,7 @@ void showRotatedImagesSingle(float* images, int image_dim, int numberOfRotations
 
 float distance(Point pos1, Point pos2);
 
-char* stringToUpper(char* s);
+void stringToUpper(char* s);
 
 float mexicanHat(float x, float sigma);
 

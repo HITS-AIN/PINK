@@ -24,12 +24,33 @@ enum InterpolationType { NONE, BILINEAR };
  * x2 = cos(alpha) * (x1 - x0) - sin(alpha) * (y1 - y0) + x0
  * y2 = sin(alpha) * (x1 - x0) + cos(alpha) * (y1 - y0) + y0
  */
-void rotate(int height, int width, float *source, float *dest, float alpha, InterpolationType interpolation = BILINEAR);
+void rotate(int height, int width, float *source, float *dest, float alpha,
+	InterpolationType interpolation = BILINEAR);
 
 /**
  * @brief Plain-C function for image mirroring.
  */
 void flip(int height, int width, float * source, float *dest);
+
+/**
+ * @brief Plain-C function for cropping an image.
+ */
+void crop(int height, int width, int height_new, int width_new, float * source, float *dest);
+
+/**
+ * @brief Plain-C function for flipping and cropping an image.
+ *
+ * The combined execution is more efficient.
+ */
+void flipAndCrop(int height, int width, int height_new, int width_new, float *source, float *dest);
+
+/**
+ * @brief Plain-C function for rotating and cropping an image.
+ *
+ * The combined execution is more efficient.
+ */
+void rotateAndCrop(int height, int width, int height_new, int width_new, float *source,
+	float *dest, float alpha, InterpolationType interpolation = BILINEAR);
 
 /**
  * @brief Euclidean distance of two float arrays.
