@@ -7,7 +7,7 @@ import struct
 import sys
 from matplotlib import pyplot
 
-files = ['boxes.npy', 'circles.npy', 'crosses.npy', 'triangles.npy']
+files = sys.argv[1:]
 of = open('result.bin', 'wb')
 
 data = numpy.load(files[0])
