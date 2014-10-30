@@ -51,8 +51,16 @@ void rotate_bilinear(int height, int width, float *source, float *dest, float al
     for (x2 = 0; x2 < width; ++x2) {
         for (y2 = 0; y2 < height; ++y2) {
         	x1 = (x2 - x0) * cosAlpha + (y2 - y0) * sinAlpha + x0;
+            if (x1 < 0 or x1 >= width) {
+            	dest[x2*height + y2] = 0.0;
+            	continue;
+            }
         	y1 = (y2 - y0) * cosAlpha - (x2 - x0) * sinAlpha + y0;
-            if (x1 >= 0 && x1 < width && y1 >= 0 && y1 < height) dest[x2*height + y2] = source[x1*height + y1];
+            if (y1 < 0 && y1 >= height) {
+            	dest[x2*height + y2] = 0.0;
+            	continue;
+            }
+            dest[x2*height + y2] = source[x1*height + y1];
         }
     }
 }
@@ -128,7 +136,15 @@ void rotateAndCrop_bilinear(int height, int width, int height_new, int width_new
     for (x2 = 0; x2 < width_new; ++x2) {
         for (y2 = 0; y2 < height_new; ++y2) {
         	x1 = (x2 + width_margin - x0) * cosAlpha + (y2 + height_margin - y0) * sinAlpha + x0;
+            if (x1 < 0 or x1 >= width) {
+            	dest[x2*height_new + y2] = 0.0;
+            	continue;
+            }
         	y1 = (y2 + height_margin - y0) * cosAlpha - (x2 + width_margin - x0) * sinAlpha + y0;
+            if (y1 < 0 && y1 >= height) {
+            	dest[x2*height_new + y2] = 0.0;
+            	continue;
+            }
             if (x1 >= 0 && x1 < width && y1 >= 0 && y1 < height) dest[x2*height_new + y2] = source[x1*height + y1];
         }
     }
@@ -155,7 +171,7 @@ float calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length
 	float *pb = b;
 	float c = 0.0;
 	float tmp;
-    for (int i; i < length; ++i, ++pa, ++pb) {
+    for (int i = 0; i < length; ++i, ++pa, ++pb) {
     	tmp = *pa - *pb;
         c += tmp * tmp;
     }
@@ -164,14 +180,13 @@ float calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length
 
 void normalize(float *a, int length)
 {
-	int i;
 	float maxValue;
-    for (i = 0; i < length; ++i) {
+    for (int i = 0; i < length; ++i) {
         maxValue = fmax(maxValue, a[i]);
     }
 
     float maxValueInv;
-    for (i = 0; i < length; ++i) {
+    for (int i = 0; i < length; ++i) {
         a[i] *= maxValueInv;
     }
 }

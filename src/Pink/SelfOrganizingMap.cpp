@@ -234,3 +234,13 @@ float gaussian(float x, float sigma)
 {
     return 1.0 / (sigma * sqrt(2.0 * M_PI)) * exp(-0.5 * pow((x/sigma),2));
 }
+
+void checkArrayForNaN(float* a, int length, std::string const& msg)
+{
+	for (int i = 0; i < length; ++i) {
+		if (a[i] != a[i]) {
+			std::cout << msg << ": entry is nan." << std::endl;
+			exit(1);
+		}
+	}
+}

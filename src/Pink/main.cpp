@@ -19,6 +19,10 @@
 #include <stdlib.h>
 #include <omp.h>
 
+#if DEBUG_MODE
+    #include <fenv.h>
+#endif
+
 #if PINK_USE_CUDA
     #include "CudaLib/CudaLib.h"
 #endif
@@ -61,6 +65,10 @@ void print_usage()
 
 int main (int argc, char **argv)
 {
+	#if DEBUG_MODE
+		feenableexcept(FE_INVALID | FE_OVERFLOW);
+	#endif
+
 	// Start timer
 	const auto startTime = steady_clock::now();
 
@@ -272,7 +280,39 @@ int main (int argc, char **argv)
 	//		iterImage->writeBinary(ss.str());
 
 			float *image = iterImage->getPointerOfFirstPixel();
+
+			#if DEBUG_MODE
+		        checkArrayForNaN(image, image_size, "image");
+			#endif
+
+			for (int j = 0; j < image_size; ++j) {
+				if (image[j] != image[j]) image[j] = 0.0;
+			}
+
 			generateRotatedImages(rotatedImages, image, numberOfRotations, image_dim, neuron_dim);
+
+			#if DEBUG_MODE
+				for (int i = 0; i < 2 * numberOfRotations * neuron_size; ++i) {
+					if (rotatedImages[i] != rotatedImages[i]) {
+					    cout << "rotatedImages entry is nan." << endl;
+					    return 1;
+					}
+					if (rotatedImages[i] < 0.0) {
+					    cout << "rotatedImages entry is < 0." << endl;
+					    return 1;
+					}
+				}
+				for (int i = 0; i < som_size * neuron_size; ++i) {
+					if (som[i] != som[i]) {
+					    cout << "rotatedImages entry is nan." << endl;
+					    return 1;
+					}
+					if (som[i] < 0.0) {
+						cout << "rotatedImages entry is < 0." << endl;
+						return 1;
+					}
+				}
+			#endif
 
 	//		stringstream ss2;
 	//		ss2 << "rotatedImage" << i << ".bin";
@@ -295,6 +335,10 @@ int main (int argc, char **argv)
 	free(rotatedImages);
 	free(euclideanDistanceMatrix);
 	free(bestRotationMatrix);
+
+	#if DEBUG_MODE
+	    checkArrayForNaN(som,som_size * neuron_size, "som");
+	#endif
 
     if (verbose) {
 	    cout << "  Progress: 100 %\n" << endl;

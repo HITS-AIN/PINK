@@ -12,4 +12,6 @@ void cuda_print_properties();
 
 void cuda_rotate(int height, int width, float *source, float *dest, float angle);
 
+float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length);
+
 #endif /* CUDALIB_H_ */

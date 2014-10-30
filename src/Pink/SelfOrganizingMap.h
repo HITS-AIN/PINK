@@ -47,7 +47,7 @@ void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRo
 Point findBestMatchingNeuron(float *similarityMatrix, int som_dim);
 
 /**
- * @brief Updating SOM
+ * Updating SOM
  */
 void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch, int *bestRotationMatrix);
 
@@ -70,5 +70,7 @@ void stringToUpper(char* s);
 float mexicanHat(float x, float sigma);
 
 float gaussian(float x, float sigma);
+
+void checkArrayForNaN(float* a, int length, std::string const& msg);
 
 #endif /* SELFORGANIZINGMAP_H_ */
