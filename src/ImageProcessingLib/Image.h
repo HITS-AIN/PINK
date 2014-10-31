@@ -64,9 +64,11 @@ private:
 
 };
 
+//! Template specialization of @writeBinary for float
 template <>
 void Image<float>::writeBinary(std::string const& filename);
 
+//! Template specialization of @show for float
 template <>
 void Image<float>::show();
 

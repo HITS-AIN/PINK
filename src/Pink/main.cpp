@@ -252,11 +252,7 @@ int main (int argc, char **argv)
 	// Initialize SOM
 	if (init == RANDOM) fillRandom(som, som_size * neuron_size, seed);
 	else if (init == ZERO) fillZero(som, som_size * neuron_size);
-
-    if (verbose) {
-    	cout << "\n  Write initial SOM to initial_som.bin ...\n" << endl;
-    	writeSOM(som, som_dim, neuron_dim, "initial_som.bin");
-    }
+    //writeSOM(som, som_dim, neuron_dim, "initial_som.bin");
 
 	float progress = 0.0;
 	float progressStep = 1.0 / numIter / numberOfImages;

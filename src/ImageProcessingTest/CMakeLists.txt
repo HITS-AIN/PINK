@@ -5,7 +5,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 include_directories(
     ..
     ${GTEST_INCLUDE_DIR}
-    ${PYTHON_INCLUDE_DIRS}
 )
 
 add_executable(
@@ -19,7 +18,6 @@ target_link_libraries(
     ImageProcessingTest
     ImageProcessingLib
     ${GTEST_BOTH_LIBRARIES}
-    ${PYTHON_LIBRARIES}
 )
 
 ADD_TEST(

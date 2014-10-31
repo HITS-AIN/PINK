@@ -6,7 +6,6 @@
  */
 
 #include "ImageProcessing.h"
-#include "Python.h"
 #include <fstream>
 #include <iostream>
 #include <math.h>
@@ -14,6 +13,10 @@
 #include <random>
 #include <stdlib.h>
 #include <stdexcept>
+
+#if PINK_USE_PYTHON
+    #include "Python.h"
+#endif
 
 void rotate_none(int height, int width, float *source, float *dest, float alpha)
 {
@@ -256,24 +259,28 @@ void writeImageToBinaryFile(float *image, int height, int width, std::string con
 
 void showImage(float *image, int height, int width)
 {
-	std::string filename("ImageTmp.bin");
-	writeImageToBinaryFile(image, height, width, filename);
+    #if PINK_USE_PYTHON
+		std::string filename("ImageTmp.bin");
+		writeImageToBinaryFile(image, height, width, filename);
 
-    Py_Initialize();
-    PyRun_SimpleString("import numpy");
-    PyRun_SimpleString("import matplotlib.pylab as plt");
-    PyRun_SimpleString("import struct");
+		Py_Initialize();
+		PyRun_SimpleString("import numpy");
+		PyRun_SimpleString("import matplotlib.pylab as plt");
+		PyRun_SimpleString("import struct");
 
-    std::string line = "inFile = open(\"" + filename + "\", 'rb')";
-    PyRun_SimpleString(line.c_str());
-	PyRun_SimpleString("size = struct.unpack('iii', inFile.read(12))");
-	PyRun_SimpleString("array = numpy.array(struct.unpack('f'*size[1]*size[2], inFile.read(size[1]*size[2]*4)))");
-	PyRun_SimpleString("data = numpy.ndarray([size[1],size[2]], 'float', array)");
-	PyRun_SimpleString("inFile.close()");
-	PyRun_SimpleString("fig = plt.figure()");
-	PyRun_SimpleString("ax = fig.add_subplot(1,1,1)");
-	PyRun_SimpleString("ax.set_aspect('equal')");
-	PyRun_SimpleString("plt.imshow(data, interpolation='nearest', cmap=plt.cm.ocean)");
-	PyRun_SimpleString("plt.colorbar()");
-	PyRun_SimpleString("plt.show()");
+		std::string line = "inFile = open(\"" + filename + "\", 'rb')";
+		PyRun_SimpleString(line.c_str());
+		PyRun_SimpleString("size = struct.unpack('iii', inFile.read(12))");
+		PyRun_SimpleString("array = numpy.array(struct.unpack('f'*size[1]*size[2], inFile.read(size[1]*size[2]*4)))");
+		PyRun_SimpleString("data = numpy.ndarray([size[1],size[2]], 'float', array)");
+		PyRun_SimpleString("inFile.close()");
+		PyRun_SimpleString("fig = plt.figure()");
+		PyRun_SimpleString("ax = fig.add_subplot(1,1,1)");
+		PyRun_SimpleString("ax.set_aspect('equal')");
+		PyRun_SimpleString("plt.imshow(data, interpolation='nearest', cmap=plt.cm.ocean)");
+		PyRun_SimpleString("plt.colorbar()");
+		PyRun_SimpleString("plt.show()");
+    #else
+		std::cout << "=== WARNING === Pink must be compiled with python support to show images." << std::endl;
+    #endif
 }
