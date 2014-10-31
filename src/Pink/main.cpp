@@ -281,7 +281,7 @@ int main (int argc, char **argv)
 	if (verbose) cout << "  Size of euclidean distance matrix = " << som_size * sizeof(float) << " bytes" << endl;
 	float *euclideanDistanceMatrix = (float *)malloc(som_size * sizeof(float));
 
-	if (verbose) cout << "  Size of best rotation matrix = " << som_size * sizeof(int) << " bytes" << endl;
+	if (verbose) cout << "  Size of best rotation matrix = " << som_size * sizeof(int) << " bytes\n" << endl;
 	int *bestRotationMatrix = (int *)malloc(som_size * sizeof(int));
 
 	// Initialize SOM
