@@ -1,5 +1,5 @@
 /**
- * @file   main.cpp
+ * @file   Pink/main.cpp
  * @brief  Main routine of PINK.
  * @date   Oct 20, 2014
  * @author Bernd Doser, HITS gGmbH
@@ -51,7 +51,7 @@ void print_usage()
 			"\n"
 	        "  Optional options:\n"
 			"\n"
-	        "    --verbose, -v           Print more output (default = off).\n"
+	        "    --verbose, -v           Print more output (yes, no, default = yes).\n"
 	        "    --som-dimension         Dimension for quadratic SOM matrix (default = 10).\n"
 	        "    --neuron-dimension, -d  Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
 	        "    --num-iter              Number of iterations (default = 1).\n"
@@ -59,8 +59,10 @@ void print_usage()
 	        "    --seed, -s              Seed for random number generator (default = 1234).\n"
 			"    --progress, -p          Print level of progress (default = 10%).\n"
 	        "    --numrot, -n            Number of rotations (default = 360).\n"
+	        "    --flip                  Switch off usage of mirrored images (yes, no, default = yes).\n"
 	        "    --numthreads, -t        Number of CPU threads (default = auto).\n"
-	        "    --init, -x              Type of SOM initialization (random, zero, default = zero).\n" << endl;
+	        "    --init, -x              Type of SOM initialization (random, zero, default = zero).\n"
+            "    --cuda                  Switch off CUDA acceleration (yes, no, default = yes).\n" << endl;
 }
 
 int main (int argc, char **argv)
@@ -74,7 +76,7 @@ int main (int argc, char **argv)
 
 	int c;
 	int digit_optind = 0;
-	int verbose = 0;
+	bool verbose = true;
 	char *imagesFilename = 0;
 	int som_dim = 10;
 	int neuron_dim = -1;
@@ -84,9 +86,10 @@ int main (int argc, char **argv)
 	int numberOfRotations = 360;
 	int numberOfThreads = -1;
 	SOMInitialization init = ZERO;
-	bool useCuda = false;
 	int numIter = 1;
 	float progressFactor = 0.1;
+	bool useFlip = true;
+	bool useCuda = true;
 
 	print_header();
 
@@ -103,15 +106,25 @@ int main (int argc, char **argv)
 		{"init",            1, 0, 'x'},
 		{"num-iter",        1, 0, 1},
 		{"progress",        1, 0, 'p'},
+		{"flip",            1, 0, 2},
+		{"cuda",            1, 0, 3},
 		{NULL, 0, NULL, 0}
 	};
 	int option_index = 0;
-	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:t:x:p:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "v:i:d:r:l:s:n:t:x:p:", long_options, &option_index)) != -1)
 	{
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
 		case 'v':
-			verbose = 1;
+			stringToUpper(optarg);
+			if (strcmp(optarg, "YES") != 0) verbose = true;
+			else if (strcmp(optarg, "NO") != 0) verbose = false;
+			else {
+				printf ("optarg = %s\n", optarg);
+				printf ("Unkown option %o\n", c);
+				print_usage();
+				return 1;
+			}
 			break;
 		case 'i':
 			imagesFilename = optarg;
@@ -160,6 +173,28 @@ int main (int argc, char **argv)
 			stringToUpper(optarg);
 			if (strcmp(optarg, "ZERO") != 0) init = ZERO;
 			else if (strcmp(optarg, "RANDOM") != 0) init = RANDOM;
+			else {
+				printf ("optarg = %s\n", optarg);
+				printf ("Unkown option %o\n", c);
+				print_usage();
+				return 1;
+			}
+			break;
+		case 2:
+			stringToUpper(optarg);
+			if (strcmp(optarg, "YES") != 0) useFlip = true;
+			else if (strcmp(optarg, "NO") != 0) useFlip = false;
+			else {
+				printf ("optarg = %s\n", optarg);
+				printf ("Unkown option %o\n", c);
+				print_usage();
+				return 1;
+			}
+			break;
+		case 3:
+			stringToUpper(optarg);
+			if (strcmp(optarg, "YES") != 0) useCuda = true;
+			else if (strcmp(optarg, "NO") != 0) useCuda = false;
 			else {
 				printf ("optarg = %s\n", optarg);
 				printf ("Unkown option %o\n", c);
