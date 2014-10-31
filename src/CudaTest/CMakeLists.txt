@@ -10,7 +10,7 @@ include_directories(
 add_executable(
     CudaTest
     main.cpp
-    RotationTest.cpp
+    CudaTest.cpp
 )
     
 target_link_libraries(

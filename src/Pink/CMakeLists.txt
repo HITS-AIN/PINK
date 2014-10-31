@@ -21,3 +21,8 @@ target_link_libraries(
     CudaLib
     ImageProcessingLib
 )
+
+install( 
+    TARGETS Pink
+    RUNTIME DESTINATION bin
+)

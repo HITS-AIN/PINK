@@ -22,14 +22,26 @@ kernel(float *a, float *b, float *c, int length)
 
     __shared__ float a_local[BLOCK_SIZE];
     __shared__ float b_local[BLOCK_SIZE];
+    __shared__ float c_local[BLOCK_SIZE];
 
     a_local[tid] = (i < length) ? a[i] : 0.0;
     b_local[tid] = (i < length) ? b[i] : 0.0;
+    c_local[tid] = 0.0;
     __syncthreads();
 
-    float tmp;
-    tmp = a_local[i] - b_local[i];
-    *c += tmp * tmp;
+    float tmp = a_local[i] - b_local[i];
+    c_local[tid] += tmp * tmp;
+
+    for (int s=1; s < blockDim.x; s *= 2) {
+    	if (tid % (2*s) == 0) {
+    	    c_local[tid] += c_local[tid + s];
+    	}
+    	__syncthreads();
+    }
+
+    if (tid == 0)
+        for (int j=0; j < BLOCK_SIZE; j++)
+            *c += c_local[j];
 }
 
 /**
@@ -99,7 +111,6 @@ float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int l
     dim3 dimGrid(length/BLOCK_SIZE);
 
     printf("Starting CUDA Kernel with (%i,%i,%i) blocks and (%i,%i,%i) threads ...\n", dimBlock.x, dimBlock.y, dimBlock.z, dimGrid.x, dimGrid.y, dimGrid.z);
-
     kernel<<<dimGrid, dimBlock>>>(d_a, d_b, d_c, length);
 
     error = cudaGetLastError();
@@ -111,6 +122,15 @@ float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int l
     }
 
     cudaDeviceSynchronize();
+
+    // Copy the device result vector in device memory to the host result vector in host memory.
+    error = cudaMemcpy(&c, d_c, sizeof(float), cudaMemcpyDeviceToHost);
+
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "Failed to copy d_c to host (error code %s)!\n", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
 
     // Free device global memory
     error = cudaFree(d_a);
@@ -126,6 +146,14 @@ float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int l
     if (error != cudaSuccess)
     {
         fprintf(stderr, "Failed to free d_b (error code %s)!\n", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
+
+    error = cudaFree(d_c);
+
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "Failed to free d_c (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 

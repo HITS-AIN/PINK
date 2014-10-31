@@ -1,15 +1,13 @@
-#!/usr/bin/python
-
 import getopt
-import Image
 import matplotlib
+import math
 import numpy
 import struct
 import sys
 from matplotlib import pyplot
 
 def print_usage():
-    print sys.argv[0], ' -o <outputfile> [inputfiles]'
+    print '<command> -o <outputfile> [inputfiles]'
     
 if __name__ == "__main__":
     
@@ -26,66 +24,70 @@ if __name__ == "__main__":
         if opt == '-h':
             print_usage()
             sys.exit()
-        elif opt in ("-i", "--ifile"):
-            inputfile = arg
+        elif opt == "-s":
+            shuffle = True
         elif opt in ("-o", "--ofile"):
             outputfile = arg
     
     files = args
     of = open(outputfile, 'wb')
-    
-    data = numpy.load(files[0])
-    total = data.shape[0]
-    height = data.shape[1]
-    width = data.shape[2]
-    
-    for file in files[1:]:
+
+    total = 0
+    max_height = 0
+    min_height = sys.maxint
+    max_width = 0
+    min_width = sys.maxint
+
+    for file in files:
         data = numpy.load(file)
         total += data.shape[0]
-        if (height != data.shape[1]):
-            print 'Shape error.'
-            sys.exit(1)
-        if (width != data.shape[2]):
-            print 'Shape error.'
-            sys.exit(1)
-            
-    of.write(struct.pack('i', total))
-    of.write(struct.pack('i', height))
-    of.write(struct.pack('i', width))
-    
-    data = numpy.load(files[0])
-    
-    if shuffle:
-        print 'Shuffle'
-        for file in files[1:]:
-        
-            print 'Input file is ', file
-        
-            data = numpy.concatenate((data,numpy.load(file)))
-        
-            print 'data.ndim = ', data.ndim
-            print 'data.shape = ', data.shape
-            print 'data.size = ', data.size
-        
-        numpy.random.shuffle(data)
-        
-        data.astype('f').tofile(of)
-    else:
-        print 'No shuffle'
-        for file in files[1:]:
-        
-            print 'Input file is ', file
-        
-            data = numpy.load(file)
-        
-            print 'data.ndim = ', data.ndim
-            print 'data.shape = ', data.shape
-            print 'data.size = ', data.size
+        for i in xrange(len(data)):
+            if (data[i].shape[0] > max_height):
+                max_height = data[i].shape[0]
+            if (data[i].shape[0] < min_height):
+                min_height = data[i].shape[0]
+            if (data[i].shape[1] > max_width):
+                max_width = data[i].shape[1]
+            if (data[i].shape[1] < min_width):
+                min_width = data[i].shape[1]
 
-            data.astype('f').tofile(of)
+    print 'number = ', total
+    print 'max_height = ', max_height
+    print 'min_height = ', min_height
+    print 'max_width  = ', max_width
+    print 'min_width  = ', min_width
+
+    dim = min(min_height,min_width)
+    print 'dim = ', dim
+
+    of.write(struct.pack('i', total))
+    of.write(struct.pack('i', dim))
+    of.write(struct.pack('i', dim))
+    
+    for file in files:
+    
+        print 'Input file is ', file
+    
+        data = numpy.load(file)
+
+        for i in xrange(len(data)):
+
+            image = data[i]
+            image = 1.0 * image / numpy.max(image)
+            indices = numpy.where(image<numpy.std(image)*3.0)
+            image[indices] = 0
+
+            if numpy.isnan(image.any()):
+                print 'image entry is nan.'
+                sys.exit(1)
+
+            if (image.shape[0] != dim or image.shape[1] != dim):
+                image[(image.shape[0]-dim)/2:(image.shape[0]+dim)/2, (image.shape[1]-dim)/2:(image.shape[1]+dim)/2].astype('f').tofile(of)
+            else:
+                image.astype('f').tofile(of)
 
     of.close()
     
     print 'All done.'
     sys.exit(0)
-    
+

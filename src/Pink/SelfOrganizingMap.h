@@ -73,4 +73,6 @@ float gaussian(float x, float sigma);
 
 void checkArrayForNaN(float* a, int length, std::string const& msg);
 
+void checkArrayForNanAndNegative(float* a, int length, std::string const& msg);
+
 #endif /* SELFORGANIZINGMAP_H_ */
