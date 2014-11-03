@@ -1,0 +1,7 @@
+
+/**
+ * \mainpage PINK
+ *
+ * \image html galaxies_som.png
+ *
+ */

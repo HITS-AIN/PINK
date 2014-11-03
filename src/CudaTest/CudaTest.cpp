@@ -28,17 +28,14 @@ TEST(CudaTest, Rotation)
 
 TEST(CudaTest, EuclideanDistance)
 {
-	int length = 32;
+	int length = 72;
 	float *a = new float[length];
 	fillRandom(a, length, 0);
 	float *b = new float[length];
-	fillRandom(b, length, 0);
+	fillRandom(b, length, 1);
 
 	float c = calculateEuclideanDistanceWithoutSquareRoot(a, b, length);
 	float d = cuda_calculateEuclideanDistanceWithoutSquareRoot(a, b, length);
-
-	std::cout << "c = " << c << std::endl;
-	std::cout << "d = " << d << std::endl;
 
 	EXPECT_FLOAT_EQ(c, d);
 }

@@ -5,6 +5,7 @@
  */
 
 #include "CudaLib.h"
+#include "cublas_v2.h"
 #include <stdio.h>
 
 #define BLOCK_SIZE 32
@@ -27,11 +28,12 @@ kernel(float *a, float *b, float *c, int length)
     a_local[tid] = (i < length) ? a[i] : 0.0;
     b_local[tid] = (i < length) ? b[i] : 0.0;
     c_local[tid] = 0.0;
+
+    float tmp = a_local[tid] - b_local[tid];
+    c_local[tid] += tmp * tmp;
     __syncthreads();
 
-    float tmp = a_local[i] - b_local[i];
-    c_local[tid] += tmp * tmp;
-
+    // parallel reduction
     for (int s=1; s < blockDim.x; s *= 2) {
     	if (tid % (2*s) == 0) {
     	    c_local[tid] += c_local[tid + s];
@@ -39,9 +41,7 @@ kernel(float *a, float *b, float *c, int length)
     	__syncthreads();
     }
 
-    if (tid == 0)
-        for (int j=0; j < BLOCK_SIZE; j++)
-            *c += c_local[j];
+    if (tid == 0) c[blockIdx.x] = c_local[0];
 }
 
 /**
@@ -53,7 +53,7 @@ float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int l
     unsigned int sizeInBytes = length * sizeof(float);
 
     // Allocate device memory
-    float *d_a, *d_b, *d_c;
+    float *d_a, *d_b;
 
     cudaError_t error;
 
@@ -73,14 +73,6 @@ float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int l
         exit(EXIT_FAILURE);
     }
 
-    error = cudaMalloc((void **) &d_c, sizeof(float));
-
-    if (error != cudaSuccess)
-    {
-        printf("cudaMalloc d_c returned error code %d, line(%d)\n", error, __LINE__);
-        exit(EXIT_FAILURE);
-    }
-
     error = cudaMemcpy(d_a, a, sizeInBytes, cudaMemcpyHostToDevice);
 
     if (error != cudaSuccess)
@@ -97,21 +89,23 @@ float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int l
         exit(EXIT_FAILURE);
     }
 
-    error = cudaMemcpy(d_c, &c, sizeof(float), cudaMemcpyHostToDevice);
+    // Setup execution parameters
+    dim3 dimBlock(BLOCK_SIZE);
+    dim3 dimGrid(ceil((float)length/BLOCK_SIZE));
+
+    // Array for intermediate sum
+    float *d_isum;
+    error = cudaMalloc((void **) &d_isum, dimGrid.x * sizeof(float));
 
     if (error != cudaSuccess)
     {
-        printf("cudaMemcpy d_b returned error code %d, line(%d)\n", error, __LINE__);
+        printf("cudaMalloc d_isum returned error code %d, line(%d)\n", error, __LINE__);
         exit(EXIT_FAILURE);
     }
 
-
-    // Setup execution parameters
-    dim3 dimBlock(BLOCK_SIZE);
-    dim3 dimGrid(length/BLOCK_SIZE);
-
-    printf("Starting CUDA Kernel with (%i,%i,%i) blocks and (%i,%i,%i) threads ...\n", dimBlock.x, dimBlock.y, dimBlock.z, dimGrid.x, dimGrid.y, dimGrid.z);
-    kernel<<<dimGrid, dimBlock>>>(d_a, d_b, d_c, length);
+    // Start kernel
+    //printf("Starting CUDA Kernel with (%i,%i,%i) blocks and (%i,%i,%i) threads ...\n", dimGrid.x, dimGrid.y, dimGrid.z, dimBlock.x, dimBlock.y, dimBlock.z);
+    kernel<<<dimGrid, dimBlock>>>(d_a, d_b, d_isum, length);
 
     error = cudaGetLastError();
 
@@ -122,15 +116,6 @@ float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int l
     }
 
     cudaDeviceSynchronize();
-
-    // Copy the device result vector in device memory to the host result vector in host memory.
-    error = cudaMemcpy(&c, d_c, sizeof(float), cudaMemcpyDeviceToHost);
-
-    if (error != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to copy d_c to host (error code %s)!\n", cudaGetErrorString(error));
-        exit(EXIT_FAILURE);
-    }
 
     // Free device global memory
     error = cudaFree(d_a);
@@ -149,11 +134,16 @@ float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int l
         exit(EXIT_FAILURE);
     }
 
-    error = cudaFree(d_c);
+    cublasStatus_t ret;
+    cublasHandle_t handle;
+    ret = cublasCreate(&handle);
+    ret = cublasSasum(handle, dimGrid.x, d_isum, 1, &c);
+
+    error = cudaFree(d_isum);
 
     if (error != cudaSuccess)
     {
-        fprintf(stderr, "Failed to free d_c (error code %s)!\n", cudaGetErrorString(error));
+        fprintf(stderr, "Failed to free d_isum (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 

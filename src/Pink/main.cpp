@@ -229,7 +229,10 @@ int main (int argc, char **argv)
 	}
 
 	if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
-	else omp_set_num_threads(numberOfThreads);
+	if (useCuda) {
+		cout << "  === WARNING === Number of CPU threads is set to one using CUDA." << endl;
+		numberOfThreads = 1;
+	} else omp_set_num_threads(numberOfThreads);
 
 	ImageIterator<float> iterImage(imagesFilename);
 	if (verbose) cout << "  Image dimension = " << iterImage->getWidth() << "x" << iterImage->getHeight() << endl;
