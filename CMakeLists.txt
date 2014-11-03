@@ -56,6 +56,7 @@ endif()
 
 add_subdirectory(src/ImageProcessingLib)
 add_subdirectory(src/Pink)
+add_subdirectory(src/UtilitiesLib)
 
 FIND_PACKAGE(Doxygen)
 if(DOXYGEN_FOUND)

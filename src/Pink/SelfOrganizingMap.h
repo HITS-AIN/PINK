@@ -8,6 +8,7 @@
 #ifndef SELFORGANIZINGMAP_H_
 #define SELFORGANIZINGMAP_H_
 
+#include "UtilitiesLib/InputData.h"
 #include <iostream>
 
 #define UPDATE_NEURONS_SIGMA     1.1
@@ -24,17 +25,8 @@ struct Point
 //! Pretty printing of Point.
 std::ostream& operator << (std::ostream& os, Point point);
 
-//! Type for SOM layout.
-enum Layout {QUADRATIC, HEXAGONAL};
-
-//! Type for SOM initialization.
-enum SOMInitialization { ZERO, RANDOM };
-
-//! Pretty printing of SOM layout type.
-std::ostream& operator << (std::ostream& os, Layout layout);
-
-//! Pretty printing of SOM layout type.
-std::ostream& operator << (std::ostream& os, SOMInitialization init);
+//! Main CPU based routine for SOM training.
+void trainSelfOrganizingMap(InputData const& inputData);
 
 void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim);
 
@@ -64,8 +56,6 @@ void showRotatedImages(float* images, int image_dim, int numberOfRotations);
 void showRotatedImagesSingle(float* images, int image_dim, int numberOfRotations);
 
 float distance(Point pos1, Point pos2);
-
-void stringToUpper(char* s);
 
 float mexicanHat(float x, float sigma);
 

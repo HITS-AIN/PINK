@@ -216,11 +216,6 @@ float distance(Point pos1, Point pos2)
     return sqrt(pow(pos1.x - pos2.x, 2) + pow(pos1.y - pos2.y, 2));
 }
 
-void stringToUpper(char* s)
-{
-	for (char *ps = s; *ps != '\0'; ++ps) *ps = toupper(*ps);
-}
-
 // 2.0 / ( math.sqrt(3.0 * sigma) * math.pow(math.pi, 0.25)) * (1- x**2.0 / sigma**2.0) * math.exp(-x**2.0/(2.0 * sigma**2))
 float mexicanHat(float x, float sigma)
 {
