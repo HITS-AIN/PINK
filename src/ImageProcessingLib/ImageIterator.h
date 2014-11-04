@@ -75,6 +75,7 @@ public:
         return &(operator*());
 	}
 
+	//! Return number of images.
 	int number() const { return number_; }
 
 private:

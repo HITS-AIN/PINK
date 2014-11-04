@@ -284,3 +284,76 @@ void showImage(float *image, int height, int width)
 		std::cout << "=== WARNING === Pink must be compiled with python support to show images." << std::endl;
     #endif
 }
+
+void create_viewable_SOM(float* image, float* som, int som_dim, int image_dim)
+{
+	int total_image_dim = som_dim * image_dim;
+    float *pimage = image;
+    float *psom = som;
+
+    for (int i = 0; i < som_dim; ++i) {
+        for (int j = 0; j < som_dim; ++j) {
+            for (int k = 0; k < image_dim; ++k) {
+                for (int l = 0; l < image_dim; ++l) {
+        	        pimage[i*image_dim*som_dim*image_dim + k*image_dim*som_dim + j*image_dim + l] = *psom++;
+            	}
+            }
+    	}
+    }
+}
+
+void writeSOM(float* som, int som_dim, int image_dim, std::string const& filename)
+{
+	int total_image_dim = som_dim*image_dim;
+	float *image = (float *)malloc(total_image_dim * total_image_dim * sizeof(float));
+	create_viewable_SOM(image, som, som_dim, image_dim);
+    writeImageToBinaryFile(image, total_image_dim, total_image_dim, filename);
+    free(image);
+}
+
+void showSOM(float* som, int som_dim, int image_dim)
+{
+	int total_image_dim = som_dim*image_dim;
+	float *image = (float *)malloc(total_image_dim * total_image_dim * sizeof(float));
+	create_viewable_SOM(image, som, som_dim, image_dim);
+    showImage(image, total_image_dim, total_image_dim);
+    free(image);
+}
+
+void writeRotatedImages(float* images, int image_dim, int numberOfRotations, std::string const& filename)
+{
+	int heigth = 2 * numberOfRotations * image_dim;
+	int width = image_dim;
+	int image_size = image_dim * image_dim;
+    float *image = (float *)malloc(heigth * width * sizeof(float));
+
+    for (int i = 0; i < 2 * numberOfRotations; ++i) {
+        for (int j = 0; j < image_size; ++j) image[j + i*image_size] = images[j + i*image_size];
+    }
+
+    writeImageToBinaryFile(image, heigth, width, filename);
+    free(image);
+}
+
+void showRotatedImages(float* images, int image_dim, int numberOfRotations)
+{
+	int heigth = 2 * numberOfRotations * image_dim;
+	int width = image_dim;
+	int image_size = image_dim * image_dim;
+    float *image = (float *)malloc(heigth * width * sizeof(float));
+
+    for (int i = 0; i < 2 * numberOfRotations; ++i) {
+        for (int j = 0; j < image_size; ++j) image[j + i*image_size] = images[j + i*image_size];
+    }
+
+    showImage(image, heigth, width);
+    free(image);
+}
+
+void showRotatedImagesSingle(float* images, int image_dim, int numberOfRotations)
+{
+	int image_size = image_dim * image_dim;
+    for (int i = 0; i < 2 * numberOfRotations; ++i) {
+        showImage(images + i*image_size, image_dim, image_dim);
+    }
+}

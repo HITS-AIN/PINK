@@ -35,7 +35,8 @@ InputData::InputData(int argc, char **argv)
     image_dim(0),
     image_size(0),
     som_size(0),
-    neuron_size(0)
+    neuron_size(0),
+    som_total_size(0)
 {
 	static struct option long_options[] = {
 		{"verbose",         0, 0, 'v'},
@@ -67,7 +68,7 @@ InputData::InputData(int argc, char **argv)
 				printf ("optarg = %s\n", optarg);
 				printf ("Unkown option %o\n", c);
 				print_usage();
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 			break;
 		case 'i':
@@ -93,7 +94,7 @@ InputData::InputData(int argc, char **argv)
 				printf ("optarg = %s\n", optarg);
 				printf ("Unkown option %o\n", c);
 				print_usage();
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 			break;
 		case 's':
@@ -107,7 +108,7 @@ InputData::InputData(int argc, char **argv)
 			if (numberOfRotations < 0) {
 				printf ("Number of rotations must be larger than 0.\n\n");
 				print_usage();
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 			break;
 		case 't':
@@ -121,7 +122,7 @@ InputData::InputData(int argc, char **argv)
 				printf ("optarg = %s\n", optarg);
 				printf ("Unkown option %o\n", c);
 				print_usage();
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 			break;
 		case 2:
@@ -132,7 +133,7 @@ InputData::InputData(int argc, char **argv)
 				printf ("optarg = %s\n", optarg);
 				printf ("Unkown option %o\n", c);
 				print_usage();
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 			break;
 		case 3:
@@ -143,17 +144,17 @@ InputData::InputData(int argc, char **argv)
 				printf ("optarg = %s\n", optarg);
 				printf ("Unkown option %o\n", c);
 				print_usage();
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 			break;
 		case '?':
 			printf ("Unkown option %o\n", c);
 			print_usage();
-			exit(1);
+			exit(EXIT_FAILURE);
 		default:
 			printf ("Unkown option %o\n", c);
 			print_usage();
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -162,14 +163,14 @@ InputData::InputData(int argc, char **argv)
 		while (optind < argc) cout << argv[optind++] << " ";
 		cout << endl;
 		print_usage();
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	// Check if all non-optional arguments are set
 	if (imagesFilename.empty() or resultFilename.empty()) {
 		cout << "Missing non-optional argument." << endl;
 		print_usage();
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	PINK::ImageIterator<float> iterImage(imagesFilename);
@@ -177,7 +178,7 @@ InputData::InputData(int argc, char **argv)
 
 	if (iterImage->getWidth() != iterImage->getHeight()) {
 		cout << "Only quadratic images are supported.";
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	numberOfImages = iterImage.number();
@@ -188,10 +189,12 @@ InputData::InputData(int argc, char **argv)
     if (neuron_dim == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
     if (neuron_dim > image_dim) {
 		cout << "Neuron dimension must be smaller or equal to image dimension.";
-		exit(1);
+		exit(EXIT_FAILURE);
     }
     if ((image_dim - neuron_dim)%2) --neuron_dim;
+
     neuron_size = neuron_dim * neuron_dim;
+	som_total_size = som_size * neuron_size;
 }
 
 void InputData::print() const

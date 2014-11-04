@@ -109,4 +109,16 @@ void writeImageToBinaryFile(float *image, int height, int width, std::string con
 
 void showImage(float *image, int height, int width);
 
+void create_viewable_SOM(float* image, float* som, int som_dim, int image_dim);
+
+void writeSOM(float* som, int som_dim, int image_dim, std::string const& filename);
+
+void showSOM(float* som, int som_dim, int image_dim);
+
+void writeRotatedImages(float* images, int image_dim, int numberOfRotations, std::string const& filename);
+
+void showRotatedImages(float* images, int image_dim, int numberOfRotations);
+
+void showRotatedImagesSingle(float* images, int image_dim, int numberOfRotations);
+
 #endif /* IMAGEPROCESSING_H_ */

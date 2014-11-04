@@ -51,6 +51,7 @@ struct InputData
 	int image_size;
     int som_size;
     int neuron_size;
+    int som_total_size;
 };
 
 void stringToUpper(char* s);
