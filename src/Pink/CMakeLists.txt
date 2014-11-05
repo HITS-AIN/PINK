@@ -13,14 +13,13 @@ include_directories(
 add_executable(
     Pink
     main.cpp
-    trainSelfOrganizingMap.cpp
-    SelfOrganizingMap.cpp
 )
 
 target_link_libraries(
     Pink
     CudaLib
     ImageProcessingLib
+    SelfOrganizingMapLib
     UtilitiesLib
 )
 

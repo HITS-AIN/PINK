@@ -39,8 +39,8 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 	if (inputData.verbose) cout << "  Size of euclidean distance matrix = " << inputData.som_size * sizeof(float) << " bytes" << endl;
 	float *d_euclideanDistanceMatrix = cuda_alloc_float(inputData.som_size);
 
-	if (inputData.verbose) cout << "  Size of best rotation matrix = " << inputData.som_size * sizeof(float) << " bytes\n" << endl;
-	float *d_bestRotationMatrix = cuda_alloc_float(inputData.som_size);
+	if (inputData.verbose) cout << "  Size of best rotation matrix = " << inputData.som_size * sizeof(int) << " bytes\n" << endl;
+	int *d_bestRotationMatrix = cuda_alloc_int(inputData.som_size);
 
 	if (inputData.verbose) cout << "  Size of image = " << inputData.image_size * sizeof(float) << " bytes\n" << endl;
 	float *d_image = cuda_alloc_float(inputData.image_size);
@@ -71,19 +71,17 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 
 			cuda_copyHostToDevice_float(iterImage->getPointerOfFirstPixel(), d_image, inputData.image_size);
 
-#if 0
-			generateRotatedImages(rotatedImages, image, inputData.numberOfRotations,
-				inputData.image_dim, inputData.neuron_dim);
+			//generateRotatedImages(rotatedImages, image, inputData.numberOfRotations,
+			//	inputData.image_dim, inputData.neuron_dim);
 
-			generateEuclideanDistanceMatrix(euclideanDistanceMatrix, bestRotationMatrix,
-				inputData.som_dim, som, inputData.neuron_dim, inputData.numberOfRotations, rotatedImages);
+			cuda_generateEuclideanDistanceMatrix_algo2(d_euclideanDistanceMatrix, d_bestRotationMatrix,
+				inputData.som_dim, d_som, inputData.neuron_dim, inputData.numberOfRotations, d_rotatedImages);
 
-			Point bestMatch = findBestMatchingNeuron(euclideanDistanceMatrix, inputData.som_dim);
+			//Point bestMatch = findBestMatchingNeuron(euclideanDistanceMatrix, inputData.som_dim);
 
 			//cout << "bestMatch = " << bestMatch << endl;
 
-			updateNeurons(inputData.som_dim, som, inputData.neuron_dim, rotatedImages, bestMatch, bestRotationMatrix);
-#endif
+			//updateNeurons(inputData.som_dim, som, inputData.neuron_dim, rotatedImages, bestMatch, bestRotationMatrix);
 		}
 	}
 

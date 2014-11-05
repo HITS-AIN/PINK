@@ -8,7 +8,7 @@
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageIterator.h"
 #include "ImageProcessingLib/ImageProcessing.h"
-#include "SelfOrganizingMap.h"
+#include "SelfOrganizingMapLib/SelfOrganizingMap.h"
 #include "UtilitiesLib/InputData.h"
 #include <cmath>
 #include <chrono>

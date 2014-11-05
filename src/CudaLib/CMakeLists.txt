@@ -22,9 +22,14 @@ cuda_add_library(
     STATIC
     cuda_calculateEuclideanDistanceWithoutSquareRoot.cu
     cuda_functions.cu
+    cuda_generateEuclideanDistanceMatrix_algo2.cu
+    cuda_generateEuclideanDistanceMatrix_algo2_secondStep.cu
+    cuda_generateEuclideanDistanceMatrix.cu
+    cuda_generateEuclideanDistanceMatrix_secondStep.cu
     cuda_trainSelfOrganizingMap.cpp
     cuda_rotate.cu
     cuda_print_properties.cu
+    rotateAndCrop.cu
 )
 
 target_link_libraries(

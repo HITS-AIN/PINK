@@ -211,6 +211,7 @@ void InputData::print() const
 		cout << "  Initialization type = " << init << endl;
 		cout << "  Seed = " << seed << endl;
 		cout << "  Number of rotations = " << numberOfRotations << endl;
+		cout << "  Use mirrored image = " << useFlip << endl;
 		cout << "  Number of CPU threads = " << numberOfThreads << endl;
 		cout << "  Use CUDA = " << useCuda << endl;
 	}

@@ -10,13 +10,15 @@ include_directories(
 add_executable(
     CudaTest
     main.cpp
-    CudaTest.cpp
+    EuclideanDistanceTest.cpp
+    RotationTest.cpp
 )
     
 target_link_libraries(
     CudaTest
     CudaLib
     ImageProcessingLib
+    SelfOrganizingMapLib
     ${GTEST_BOTH_LIBRARIES}
 )
 

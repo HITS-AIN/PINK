@@ -9,6 +9,7 @@
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMap.h"
 #include "UtilitiesLib/InputData.h"
+#include "UtilitiesLib/CheckArrays.h"
 #include <iostream>
 #include <iomanip>
 
@@ -30,7 +31,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	if (inputData.verbose) cout << "  Size of euclidean distance matrix = " << euclideanDistanceMatrix_sizeInBytes << " bytes" << endl;
 	float *euclideanDistanceMatrix = (float *)malloc(euclideanDistanceMatrix_sizeInBytes);
 
-	int bestRotationMatrix_sizeInBytes = inputData.som_size * sizeof(float);
+	int bestRotationMatrix_sizeInBytes = inputData.som_size * sizeof(int);
 	if (inputData.verbose) cout << "  Size of best rotation matrix = " << bestRotationMatrix_sizeInBytes << " bytes\n" << endl;
 	int *bestRotationMatrix = (int *)malloc(bestRotationMatrix_sizeInBytes);
 
@@ -74,8 +75,8 @@ void trainSelfOrganizingMap(InputData const& inputData)
 				inputData.image_dim, inputData.neuron_dim);
 
 			#if DEBUG_MODE
-		        checkArrayForNanAndNegative(rotatedImages, 2 * numberOfRotations * neuron_size, "rotatedImages");
-		        checkArrayForNanAndNegative(som, som_size * neuron_size, "som");
+		        checkArrayForNanAndNegative(rotatedImages, 2 * inputData.numberOfRotations * inputData.neuron_size, "rotatedImages");
+		        checkArrayForNanAndNegative(som, inputData.som_size * inputData.neuron_size, "som");
 			#endif
 
 	//		stringstream ss2;
@@ -102,7 +103,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	free(bestRotationMatrix);
 
 	#if DEBUG_MODE
-	    checkArrayForNanAndNegative(som,som_size * neuron_size, "som");
+	    checkArrayForNanAndNegative(som, inputData.som_size * inputData.neuron_size, "som");
 	#endif
 
     if (inputData.verbose) {

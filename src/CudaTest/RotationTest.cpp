@@ -12,7 +12,7 @@
 #include <iostream>
 #include <vector>
 
-TEST(CudaTest, Rotation)
+TEST(Rotation, 45degree)
 {
 	PINK::Image<float> image(64, 64, 1.0);
 	float angle = 45.0*M_PI/180.0;
@@ -24,18 +24,4 @@ TEST(CudaTest, Rotation)
 	//cuda_rotate(image.getHeight(), image.getWidth(), &image.getPixel()[0], &image3.getPixel()[0], angle);
 
 	EXPECT_EQ(image2,image3);
-}
-
-TEST(CudaTest, EuclideanDistance)
-{
-	int length = 72;
-	float *a = new float[length];
-	fillRandom(a, length, 0);
-	float *b = new float[length];
-	fillRandom(b, length, 1);
-
-	float c = calculateEuclideanDistanceWithoutSquareRoot(a, b, length);
-	float d = cuda_calculateEuclideanDistanceWithoutSquareRoot(a, b, length);
-
-	EXPECT_FLOAT_EQ(c, d);
 }

@@ -32,11 +32,6 @@ std::ostream& operator << (std::ostream& os, SOMInitialization init)
 	return os;
 }
 
-std::ostream& operator << (std::ostream& os, Point p)
-{
-	return os << "(" << p.x << "," << p.y << ")";
-}
-
 void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim)
 {
 	int image_size = image_dim * image_dim;
@@ -152,28 +147,4 @@ float mexicanHat(float x, float sigma)
 float gaussian(float x, float sigma)
 {
     return 1.0 / (sigma * sqrt(2.0 * M_PI)) * exp(-0.5 * pow((x/sigma),2));
-}
-
-void checkArrayForNan(float* a, int length, std::string const& msg)
-{
-	for (int i = 0; i < length; ++i) {
-		if (a[i] != a[i]) {
-			std::cout << msg << ": entry is nan." << std::endl;
-			exit(1);
-		}
-	}
-}
-
-void checkArrayForNanAndNegative(float* a, int length, std::string const& msg)
-{
-	for (int i = 0; i < length; ++i) {
-		if (a[i] != a[i]) {
-			std::cout << msg << ": entry is nan." << std::endl;
-			exit(1);
-		}
-		if (a[i] < 0.0) {
-			std::cout << msg << ": entry is < 0." << std::endl;
-			exit(1);
-		}
-	}
 }

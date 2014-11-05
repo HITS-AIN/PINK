@@ -9,21 +9,11 @@
 #define SELFORGANIZINGMAP_H_
 
 #include "UtilitiesLib/InputData.h"
+#include "UtilitiesLib/Point.h"
 #include <iostream>
 
 #define UPDATE_NEURONS_SIGMA     1.1
 #define UPDATE_NEURONS_DAMPING   0.2
-
-struct Point
-{
-	Point(int x = 0, int y = 0) : x(x), y(y) {}
-
-	int x;
-	int y;
-};
-
-//! Pretty printing of Point.
-std::ostream& operator << (std::ostream& os, Point point);
 
 //! Main CPU based routine for SOM training.
 void trainSelfOrganizingMap(InputData const& inputData);
@@ -50,9 +40,5 @@ float distance(Point pos1, Point pos2);
 float mexicanHat(float x, float sigma);
 
 float gaussian(float x, float sigma);
-
-void checkArrayForNaN(float* a, int length, std::string const& msg);
-
-void checkArrayForNanAndNegative(float* a, int length, std::string const& msg);
 
 #endif /* SELFORGANIZINGMAP_H_ */
