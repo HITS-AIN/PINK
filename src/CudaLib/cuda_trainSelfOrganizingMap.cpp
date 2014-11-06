@@ -69,7 +69,7 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 				progress += progressStep;
 			}
 
-			cuda_copyHostToDevice_float(iterImage->getPointerOfFirstPixel(), d_image, inputData.image_size);
+			cuda_copyHostToDevice_float(d_image, iterImage->getPointerOfFirstPixel(), inputData.image_size);
 
 			//generateRotatedImages(rotatedImages, image, inputData.numberOfRotations,
 			//	inputData.image_dim, inputData.neuron_dim);
@@ -96,7 +96,7 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 	}
 
 	vector<float> som(inputData.som_total_size);
-	cuda_copyDeviceToHost_float(d_som, &som[0], inputData.som_total_size);
+	cuda_copyDeviceToHost_float(&som[0], d_som, inputData.som_total_size);
 	writeSOM(&som[0], inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
 
 	// Free memory

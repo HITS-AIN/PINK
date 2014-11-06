@@ -71,9 +71,9 @@ void cuda_free(int* d)
 	}
 }
 
-void cuda_copyHostToDevice_float(float *h, float *d, int size)
+void cuda_copyHostToDevice_float(float *dest, float *source, int size)
 {
-	cudaError_t error = cudaMemcpy(d, h, size * sizeof(float), cudaMemcpyHostToDevice);
+	cudaError_t error = cudaMemcpy(dest, source, size * sizeof(float), cudaMemcpyHostToDevice);
 
     if (error != cudaSuccess)
     {
@@ -82,9 +82,9 @@ void cuda_copyHostToDevice_float(float *h, float *d, int size)
     }
 }
 
-void cuda_copyHostToDevice_int(int *h, int *d, int size)
+void cuda_copyHostToDevice_int(int *dest, int *source, int size)
 {
-	cudaError_t error = cudaMemcpy(d, h, size * sizeof(int), cudaMemcpyHostToDevice);
+	cudaError_t error = cudaMemcpy(dest, source, size * sizeof(int), cudaMemcpyHostToDevice);
 
     if (error != cudaSuccess)
     {
@@ -93,9 +93,9 @@ void cuda_copyHostToDevice_int(int *h, int *d, int size)
     }
 }
 
-void cuda_copyDeviceToHost_float(float *d, float *h, int size)
+void cuda_copyDeviceToHost_float(float *dest, float *source, int size)
 {
-	cudaError_t error = cudaMemcpy(h, d, size * sizeof(float), cudaMemcpyDeviceToHost);
+	cudaError_t error = cudaMemcpy(dest, source, size * sizeof(float), cudaMemcpyDeviceToHost);
 
 	if (error != cudaSuccess)
 	{
@@ -104,9 +104,9 @@ void cuda_copyDeviceToHost_float(float *d, float *h, int size)
 	}
 }
 
-void cuda_copyDeviceToHost_int(int *d, int *h, int size)
+void cuda_copyDeviceToHost_int(int *dest, int *source, int size)
 {
-	cudaError_t error = cudaMemcpy(h, d, size * sizeof(int), cudaMemcpyDeviceToHost);
+	cudaError_t error = cudaMemcpy(dest, source, size * sizeof(int), cudaMemcpyDeviceToHost);
 
 	if (error != cudaSuccess)
 	{

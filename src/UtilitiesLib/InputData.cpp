@@ -36,7 +36,8 @@ InputData::InputData(int argc, char **argv)
     image_size(0),
     som_size(0),
     neuron_size(0),
-    som_total_size(0)
+    som_total_size(0),
+    numberOfRotationsAndFlip(0)
 {
 	static struct option long_options[] = {
 		{"verbose",         0, 0, 'v'},
@@ -195,6 +196,8 @@ InputData::InputData(int argc, char **argv)
 
     neuron_size = neuron_dim * neuron_dim;
 	som_total_size = som_size * neuron_size;
+
+    numberOfRotationsAndFlip = useFlip ? 2*numberOfRotations : numberOfRotations;
 }
 
 void InputData::print() const

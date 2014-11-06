@@ -84,7 +84,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	//		writeRotatedImages(rotatedImages, image_dim, numberOfRotations, ss2.str());
 
 			generateEuclideanDistanceMatrix(euclideanDistanceMatrix, bestRotationMatrix,
-				inputData.som_dim, som, inputData.neuron_dim, inputData.numberOfRotations, rotatedImages);
+				inputData.som_dim, som, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, rotatedImages);
 
 			Point bestMatch = findBestMatchingNeuron(euclideanDistanceMatrix, inputData.som_dim);
 

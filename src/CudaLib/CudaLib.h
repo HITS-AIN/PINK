@@ -58,15 +58,15 @@ void cuda_free(float *d);
 void cuda_free(int *d);
 
 //! Copy memory from host to device.
-void cuda_copyHostToDevice_float(float *h, float *d, int size);
+void cuda_copyHostToDevice_float(float *dest, float *source, int size);
 
 //! Copy memory from host to device.
-void cuda_copyHostToDevice_int(int *h, int *d, int size);
+void cuda_copyHostToDevice_int(int *dest, int *source, int size);
 
 //! Copy memory from device to host.
-void cuda_copyDeviceToHost_float(float *h, float *d, int size);
+void cuda_copyDeviceToHost_float(float *dest, float *source, int size);
 
 //! Copy memory from device to host.
-void cuda_copyDeviceToHost_int(int *h, int *d, int size);
+void cuda_copyDeviceToHost_int(int *dest, int *source, int size);
 
 #endif /* CUDALIB_H_ */

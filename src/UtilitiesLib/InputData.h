@@ -52,6 +52,7 @@ struct InputData
     int som_size;
     int neuron_size;
     int som_total_size;
+	int numberOfRotationsAndFlip;
 };
 
 void stringToUpper(char* s);

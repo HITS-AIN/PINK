@@ -65,7 +65,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotat
 }
 
 void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix, int som_dim, float* som,
-	int image_dim, int numberOfRotations, float* rotatedImages)
+	int image_dim, int num_rot, float* rotatedImages)
 {
 	int som_size = som_dim * som_dim;
 	int image_size = image_dim * image_dim;
@@ -77,10 +77,11 @@ void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRo
     for (int i = 0; i < som_size; ++i) euclideanDistanceMatrix[i] = FLT_MAX;
 
     for (int i = 0; i < som_size; ++i, ++pdist, ++prot) {
-        #pragma omp parallel for private(tmp)
-        for (int j = 0; j < 2*numberOfRotations; ++j) {
+        //#pragma omp parallel for private(tmp)
+        for (int j = 0; j < num_rot; ++j) {
     	    tmp = calculateEuclideanDistanceWithoutSquareRoot(som + i*image_size, rotatedImages + j*image_size, image_size);
-            #pragma omp critical
+    	    std::cout << "tmp = " << tmp << std::endl;
+            //#pragma omp critical
     	    if (tmp < *pdist) {
     	    	*pdist = tmp;
                 *prot = j;

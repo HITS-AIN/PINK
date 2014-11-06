@@ -6,7 +6,6 @@
 
 #include "CudaLib.h"
 #include "cublas_v2.h"
-#include <float.h>
 #include <stdio.h>
 
 #define BLOCK_SIZE 64
@@ -24,7 +23,8 @@ second_step_kernel(float *euclideanDistanceMatrix, int *bestRotationMatrix, floa
 
     float *pFirstStep = firstStep + i*num_rot;
     float *pDist = euclideanDistanceMatrix + i;
-    *pDist = FLT_MAX;
+    *pDist = pFirstStep[0];
+	bestRotationMatrix[i] = 0;
 
     for (int n=1; n < num_rot; ++n) {
         if (pFirstStep[n] < *pDist) {

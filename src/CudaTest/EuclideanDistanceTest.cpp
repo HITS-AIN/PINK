@@ -68,11 +68,11 @@ TEST(EuclideanDistanceTest, Array)
 
 TEST(EuclideanDistanceTest, SOM)
 {
-	int som_dim = 3;
+	int som_dim = 2;
+	int image_dim = 3;
+	int num_rot = 1;
 	int som_size = som_dim * som_dim;
-	int image_dim = 64;
 	int image_size = image_dim * image_dim;
-	int num_rot = 3;
 
 	float *som = new float[som_size * image_size];
 	float *rotatedImages = new float[num_rot * image_size];
@@ -85,13 +85,17 @@ TEST(EuclideanDistanceTest, SOM)
 	generateEuclideanDistanceMatrix(cpu_euclideanDistanceMatrix, cpu_bestRotationMatrix, som_dim, som,
 	    image_dim, num_rot, rotatedImages);
 
+	for (int i=0; i < som_size; ++i) {
+		std::cout << "cpu eucl " << i << ": " << calculateEuclideanDistanceWithoutSquareRoot(som + i*image_size, rotatedImages, image_size) << std::endl;
+    }
+
 	float *d_som = cuda_alloc_float(som_size * image_size);
 	float *d_rotatedImages = cuda_alloc_float(num_rot * image_size);
 	float *d_euclideanDistanceMatrix = cuda_alloc_float(som_size);
 	int *d_bestRotationMatrix = cuda_alloc_int(som_size);
 
-	cuda_copyHostToDevice_float(som, d_som, som_size * image_size);
-	cuda_copyHostToDevice_float(rotatedImages, d_rotatedImages, num_rot * image_size);
+	cuda_copyHostToDevice_float(d_som, som, som_size * image_size);
+	cuda_copyHostToDevice_float(d_rotatedImages, rotatedImages, num_rot * image_size);
 
 	cuda_generateEuclideanDistanceMatrix_algo2(d_euclideanDistanceMatrix, d_bestRotationMatrix, som_dim, d_som,
 	    image_dim, num_rot, d_rotatedImages);
@@ -99,12 +103,16 @@ TEST(EuclideanDistanceTest, SOM)
 	float *gpu_euclideanDistanceMatrix = new float[som_size];
 	int *gpu_bestRotationMatrix = new int[som_size];
 
-	cuda_copyDeviceToHost_float(d_euclideanDistanceMatrix, gpu_euclideanDistanceMatrix, som_size);
-	cuda_copyDeviceToHost_int(d_bestRotationMatrix, gpu_bestRotationMatrix, som_size);
+	cuda_copyDeviceToHost_float(gpu_euclideanDistanceMatrix, d_euclideanDistanceMatrix, som_size);
+	cuda_copyDeviceToHost_int(gpu_bestRotationMatrix, d_bestRotationMatrix, som_size);
 
 	EXPECT_TRUE(EqualFloatArrays(cpu_euclideanDistanceMatrix, gpu_euclideanDistanceMatrix, som_size));
 	EXPECT_TRUE(EqualFloatArrays(cpu_bestRotationMatrix, gpu_bestRotationMatrix, som_size));
 
+	delete [] gpu_bestRotationMatrix;
+	delete [] gpu_euclideanDistanceMatrix;
+	delete [] cpu_bestRotationMatrix;
+	delete [] cpu_euclideanDistanceMatrix;
 	delete [] rotatedImages;
 	delete [] som;
 }
