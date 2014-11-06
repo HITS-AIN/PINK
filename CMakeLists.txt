@@ -1,5 +1,7 @@
-project(SelfOrganizingMap C CXX)
-set(SelfOrganizingMap VERSION "0.1.1")
+project(Pink C CXX)
+
+set(PINK_VERSION_MAJOR 0)
+set(PINK_VERSION_MINOR 1)
 
 cmake_minimum_required(VERSION 2.6.2)
 
@@ -28,6 +30,11 @@ set(CMAKE_CXX_FLAGS_PROFILING "-O3 -g -pg -DDEBUG_MODE")
 
 # Add openmp
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+
+configure_file (
+  "${PROJECT_SOURCE_DIR}/src/UtilitiesLib/Version.h.in"
+  "${PROJECT_SOURCE_DIR}/src/UtilitiesLib/Version.h"
+)
 
 set(CMAKE_VERBOSE_MAKEFILE false)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)

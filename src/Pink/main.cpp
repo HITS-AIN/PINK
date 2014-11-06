@@ -31,14 +31,6 @@ using namespace std;
 using namespace PINK;
 using namespace chrono;
 
-void print_header()
-{
-	cout << "\n"
-	        "  ************************************************************************\n"
-	        "  *   Parallel orientation Invariant Non-parametric Kohonen-map (PINK)   *\n"
-	        "  ************************************************************************\n" << endl;
-}
-
 int main (int argc, char **argv)
 {
 	#if DEBUG_MODE
@@ -48,14 +40,10 @@ int main (int argc, char **argv)
 	// Start timer
 	const auto startTime = steady_clock::now();
 
-	print_header();
-
 	InputData inputData(argc, argv);
 
 	if (inputData.numberOfThreads == -1) inputData.numberOfThreads = omp_get_num_procs();
 	omp_set_num_threads(inputData.numberOfThreads);
-
-	inputData.print();
 
     #if PINK_USE_CUDA
 	    if (inputData.useCuda)

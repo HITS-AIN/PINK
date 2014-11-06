@@ -1,5 +1,5 @@
 /**
- * @file   cuda_calculateEuclideanDistanceWithoutSquareRoot.cu
+ * @file   cuda_generateEuclideanDistanceMatrix_algo2_secondStep.cu
  * @date   Oct 30, 2014
  * @author Bernd Doser, HITS gGmbH
  */

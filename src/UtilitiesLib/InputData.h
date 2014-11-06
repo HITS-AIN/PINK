@@ -7,6 +7,7 @@
 #ifndef INPUTDATA_H_
 #define INPUTDATA_H_
 
+#include "Version.h"
 #include <string>
 
 //! Type for SOM layout.
@@ -26,8 +27,11 @@ struct InputData
 	//! Read input data from arguments.
 	InputData(int argc, char **argv);
 
+	//! Print program header.
+	void print_header() const;
+
 	//! Print input data.
-	void print() const;
+	void print_parameters() const;
 
 	//! Print usage output for input arguments.
 	void print_usage() const;

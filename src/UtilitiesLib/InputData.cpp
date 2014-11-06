@@ -11,6 +11,7 @@
 #include <getopt.h>
 #include <iostream>
 #include <string.h>
+#include <sstream>
 #include <stdlib.h>
 
 using namespace std;
@@ -40,7 +41,6 @@ InputData::InputData(int argc, char **argv)
     numberOfRotationsAndFlip(0)
 {
 	static struct option long_options[] = {
-		{"verbose",         0, 0, 'v'},
 		{"image-file",      1, 0, 'i'},
 		{"image-dimension", 1, 0, 'd'},
 		{"som-dimension",   1, 0, 0},
@@ -54,14 +54,16 @@ InputData::InputData(int argc, char **argv)
 		{"progress",        1, 0, 'p'},
 		{"flip",            1, 0, 2},
 		{"cuda",            1, 0, 3},
+		{"verbose",         0, 0, 4},
+		{"version",         1, 0, 'v'},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
-	while ((c = getopt_long(argc, argv, "v:i:d:r:l:s:n:t:x:p:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:t:x:p:", long_options, &option_index)) != -1)
 	{
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
-		case 'v':
+		case 4:
 			stringToUpper(optarg);
 			if (strcmp(optarg, "YES") == 0) verbose = true;
 			else if (strcmp(optarg, "NO") == 0) verbose = false;
@@ -148,6 +150,9 @@ InputData::InputData(int argc, char **argv)
 				exit(EXIT_FAILURE);
 			}
 			break;
+		case 'v':
+			cout << "Pink version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR << endl;
+			exit(0);
 		case '?':
 			printf ("Unkown option %o\n", c);
 			print_usage();
@@ -175,8 +180,6 @@ InputData::InputData(int argc, char **argv)
 	}
 
 	PINK::ImageIterator<float> iterImage(imagesFilename);
-	if (verbose) cout << "  Image dimension = " << iterImage->getWidth() << "x" << iterImage->getHeight() << endl;
-
 	if (iterImage->getWidth() != iterImage->getHeight()) {
 		cout << "Only quadratic images are supported.";
 		exit(EXIT_FAILURE);
@@ -184,7 +187,7 @@ InputData::InputData(int argc, char **argv)
 
 	numberOfImages = iterImage.number();
 	image_dim = iterImage->getWidth();
-	image_size = iterImage->getWidth() * iterImage->getHeight();
+	image_size = image_dim * image_dim;
     som_size = som_dim * som_dim;
 
     if (neuron_dim == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
@@ -198,30 +201,54 @@ InputData::InputData(int argc, char **argv)
 	som_total_size = som_size * neuron_size;
 
     numberOfRotationsAndFlip = useFlip ? 2*numberOfRotations : numberOfRotations;
+
+    print_header();
+    print_parameters();
 }
 
-void InputData::print() const
+void InputData::print_header() const
+{
+	string rawHeader = "Parallel orientation Invariant Non-parametric Kohonen-map (PINK)";
+
+	stringstream ssVersion;
+	ssVersion << "Version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR;
+
+	int diff = rawHeader.size() - ssVersion.str().size();
+	int leftBlanks = diff / 2;
+	int rightBlanks = diff / 2;
+	rightBlanks += diff % 2 ? 1 : 0;
+
+	cout << "\n"
+	        "  ************************************************************************\n"
+	        "  *   Parallel orientation Invariant Non-parametric Kohonen-map (PINK)   *\n"
+	        "  *   " << string(leftBlanks,' ') << ssVersion.str() << string(rightBlanks,' ') << "   *\n"
+	        "  ************************************************************************\n" << endl;
+}
+
+void InputData::print_parameters() const
 {
 	if (verbose) {
-		cout << "  Image file = " << imagesFilename << endl;
-		cout << "  Number of images = " << numberOfImages << endl;
-		cout << "  SOM dimension = " << som_dim << "x" << som_dim << endl;
-		cout << "  Number of iterations = " << numIter << endl;
-		cout << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << endl;
-		cout << "  Progress = " << progressFactor << endl;
-		cout << "  Result file = " << resultFilename << endl;
-		cout << "  Layout = " << layout << endl;
-		cout << "  Initialization type = " << init << endl;
-		cout << "  Seed = " << seed << endl;
-		cout << "  Number of rotations = " << numberOfRotations << endl;
-		cout << "  Use mirrored image = " << useFlip << endl;
-		cout << "  Number of CPU threads = " << numberOfThreads << endl;
-		cout << "  Use CUDA = " << useCuda << endl;
+		cout << "  Image file = " << imagesFilename << endl
+		     << "  Number of images = " << numberOfImages << endl
+		     << "  Image dimension = " << image_dim << "x" << image_dim << endl
+		     << "  SOM dimension = " << som_dim << "x" << som_dim << endl
+		     << "  Number of iterations = " << numIter << endl
+		     << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << endl
+		     << "  Progress = " << progressFactor << endl
+		     << "  Result file = " << resultFilename << endl
+		     << "  Layout = " << layout << endl
+		     << "  Initialization type = " << init << endl
+		     << "  Seed = " << seed << endl
+		     << "  Number of rotations = " << numberOfRotations << endl
+		     << "  Use mirrored image = " << useFlip << endl
+		     << "  Number of CPU threads = " << numberOfThreads << endl
+		     << "  Use CUDA = " << useCuda << endl;
 	}
 }
 
 void InputData::print_usage() const
 {
+    print_header();
 	cout << "\n"
 	        "  USAGE: Pink -i <image-file> -r <result-file>\n"
 			"\n"
@@ -232,7 +259,6 @@ void InputData::print_usage() const
 			"\n"
 	        "  Optional options:\n"
 			"\n"
-	        "    --verbose, -v           Print more output (yes, no, default = yes).\n"
 	        "    --som-dimension         Dimension for quadratic SOM matrix (default = 10).\n"
 	        "    --neuron-dimension, -d  Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
 	        "    --num-iter              Number of iterations (default = 1).\n"
@@ -243,7 +269,9 @@ void InputData::print_usage() const
 	        "    --flip                  Switch off usage of mirrored images (yes, no, default = yes).\n"
 	        "    --numthreads, -t        Number of CPU threads (default = auto).\n"
 	        "    --init, -x              Type of SOM initialization (random, zero, default = zero).\n"
-            "    --cuda                  Switch off CUDA acceleration (yes, no, default = yes).\n" << endl;
+            "    --cuda                  Switch off CUDA acceleration (yes, no, default = yes).\n"
+            "    --version, -v           Print version number.\n"
+            "    --verbose               Print more output (yes, no, default = yes).\n" << endl;
 }
 
 void stringToUpper(char* s)

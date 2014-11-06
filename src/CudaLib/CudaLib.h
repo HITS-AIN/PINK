@@ -39,6 +39,10 @@ void cuda_generateEuclideanDistanceMatrix_algo2(float *d_euclideanDistanceMatrix
     int image_dim, int num_rot, float* d_rotatedImages);
 
 //! Host routine starting kernel for euclideanDistanceMatrix second algorithm second part.
+void cuda_generateEuclideanDistanceMatrix_algo2_firstStep(float *d_som, float *d_rotatedImages,
+    float* d_firstStep, int som_size, int num_rot, int image_size);
+
+//! Host routine starting kernel for euclideanDistanceMatrix second algorithm second part.
 void cuda_generateEuclideanDistanceMatrix_algo2_secondStep(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix,
     float* d_firstStep, int som_size, int num_rot);
 

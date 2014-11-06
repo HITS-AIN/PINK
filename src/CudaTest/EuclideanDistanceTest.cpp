@@ -66,11 +66,16 @@ TEST(EuclideanDistanceTest, Array)
 	delete [] a;
 }
 
-TEST(EuclideanDistanceTest, SOM)
+TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix_algo2_firstStep)
+{
+
+}
+
+TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix_algo2)
 {
 	int som_dim = 2;
 	int image_dim = 3;
-	int num_rot = 1;
+	int num_rot = 2;
 	int som_size = som_dim * som_dim;
 	int image_size = image_dim * image_dim;
 

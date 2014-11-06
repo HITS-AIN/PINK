@@ -134,10 +134,9 @@ float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int l
         exit(EXIT_FAILURE);
     }
 
-    cublasStatus_t ret;
     cublasHandle_t handle;
-    ret = cublasCreate(&handle);
-    ret = cublasSasum(handle, dimGrid.x, d_isum, 1, &c);
+    cublasCreate(&handle);
+    cublasSasum(handle, dimGrid.x, d_isum, 1, &c);
 
     error = cudaFree(d_isum);
 

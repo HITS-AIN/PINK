@@ -1,0 +1,13 @@
+/**
+ * @file   Version.h
+ * @date   Nov 6, 2014
+ * @author Bernd Doser, HITS gGmbH
+ */
+
+#ifndef VERSION_H_
+#define VERSION_H_
+
+#define PINK_VERSION_MAJOR @PINK_VERSION_MAJOR@
+#define PINK_VERSION_MINOR @PINK_VERSION_MINOR@
+
+#endif /* VERSION_H_ */
