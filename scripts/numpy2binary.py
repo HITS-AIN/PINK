@@ -12,6 +12,7 @@ def print_usage():
 if __name__ == "__main__":
     
     shuffle = False
+    norm = False
     outputfile = 'result.bin'
     
     try:
@@ -73,9 +74,11 @@ if __name__ == "__main__":
         for i in xrange(len(data)):
 
             image = data[i]
-            image = 1.0 * image / numpy.max(image)
-            indices = numpy.where(image<numpy.std(image)*3.0)
-            image[indices] = 0
+
+            if norm:
+                image = 1.0 * image / numpy.max(image)
+                indices = numpy.where(image<numpy.std(image)*3.0)
+                image[indices] = 0
 
             if numpy.isnan(image.any()):
                 print 'image entry is nan.'

@@ -17,7 +17,6 @@
 #include <sstream>
 #include <string.h>
 #include <stdlib.h>
-#include <omp.h>
 
 #if DEBUG_MODE
     #include <fenv.h>
@@ -41,9 +40,6 @@ int main (int argc, char **argv)
 	const auto startTime = steady_clock::now();
 
 	InputData inputData(argc, argv);
-
-	if (inputData.numberOfThreads == -1) inputData.numberOfThreads = omp_get_num_procs();
-	omp_set_num_threads(inputData.numberOfThreads);
 
     #if PINK_USE_CUDA
 	    if (inputData.useCuda)

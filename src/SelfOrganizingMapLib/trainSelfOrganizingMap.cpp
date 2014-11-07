@@ -63,13 +63,9 @@ void trainSelfOrganizingMap(InputData const& inputData)
 
 			float *image = iterImage->getPointerOfFirstPixel();
 
-			#if DEBUG_MODE
-		        //checkArrayForNanAndNegative(image, image_size, "image");
-			#endif
-
-			for (int j = 0; j < inputData.image_size; ++j) {
-				if (image[j] != image[j]) image[j] = 0.0;
-			}
+			//#if DEBUG_MODE
+		        checkArrayForNanAndNegative(image, inputData.image_size, "image");
+			//#endif
 
 			generateRotatedImages(rotatedImages, image, inputData.numberOfRotations,
 				inputData.image_dim, inputData.neuron_dim, inputData.useFlip);

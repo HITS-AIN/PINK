@@ -10,6 +10,7 @@
 #include <cmath>
 #include <getopt.h>
 #include <iostream>
+#include <omp.h>
 #include <string.h>
 #include <sstream>
 #include <stdlib.h>
@@ -57,10 +58,11 @@ InputData::InputData(int argc, char **argv)
 		{"cuda",            1, 0, 3},
 		{"verbose",         0, 0, 4},
 		{"version",         1, 0, 'v'},
+		{"algo",            1, 0, 'a'},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
-	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:t:x:p:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:t:x:p:a:", long_options, &option_index)) != -1)
 	{
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
@@ -80,6 +82,9 @@ InputData::InputData(int argc, char **argv)
 			break;
 		case 'd':
 			neuron_dim = atoi(optarg);
+			break;
+		case 'a':
+			algo = atoi(optarg);
 			break;
 		case 0:
 			som_dim = atoi(optarg);
@@ -203,6 +208,9 @@ InputData::InputData(int argc, char **argv)
 
     numberOfRotationsAndFlip = useFlip ? 2*numberOfRotations : numberOfRotations;
 
+	if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
+	omp_set_num_threads(numberOfThreads);
+
     print_header();
     print_parameters();
 }
@@ -222,7 +230,10 @@ void InputData::print_header() const
 	cout << "\n"
 	        "  ************************************************************************\n"
 	        "  *   Parallel orientation Invariant Non-parametric Kohonen-map (PINK)   *\n"
+	        "  *                                                                      *\n"
 	        "  *   " << string(leftBlanks,' ') << ssVersion.str() << string(rightBlanks,' ') << "   *\n"
+	        "  *                                                                      *\n"
+	        "  *   Kai Polsterer, Bernd Doser, HITS gGmbH                             *\n"
 	        "  ************************************************************************\n" << endl;
 }
 
@@ -244,7 +255,7 @@ void InputData::print_parameters() const
 		     << "  Use mirrored image = " << useFlip << endl
 		     << "  Number of CPU threads = " << numberOfThreads << endl
 		     << "  Use CUDA = " << useCuda << endl
-	         << "  Algorithm = " << algo << endl;
+	         << "  CUDA algorithm = " << algo << endl;
 	}
 }
 
@@ -261,6 +272,9 @@ void InputData::print_usage() const
 			"\n"
 	        "  Optional options:\n"
 			"\n"
+	        "    --algo, -a              Specific GPU algorithm (default = 0).\n"
+			"                            0: FindBestNeuron on GPU, ImageRotation and UpdateSOM on CPU"
+			"                            1: ImageRotation and FindBestNeuron on GPU, UpdateSOM on CPU"
 	        "    --som-dimension         Dimension for quadratic SOM matrix (default = 10).\n"
 	        "    --neuron-dimension, -d  Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
 	        "    --num-iter              Number of iterations (default = 1).\n"
