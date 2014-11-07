@@ -18,7 +18,7 @@
 //! Main CPU based routine for SOM training.
 void trainSelfOrganizingMap(InputData const& inputData);
 
-void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim);
+void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim, bool useFlip);
 
 void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix, int som_dim, float* som,
 	int image_dim, int numberOfRotations, float* image);

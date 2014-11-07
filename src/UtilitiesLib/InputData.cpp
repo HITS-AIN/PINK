@@ -38,7 +38,8 @@ InputData::InputData(int argc, char **argv)
     som_size(0),
     neuron_size(0),
     som_total_size(0),
-    numberOfRotationsAndFlip(0)
+    numberOfRotationsAndFlip(0),
+    algo(0)
 {
 	static struct option long_options[] = {
 		{"image-file",      1, 0, 'i'},
@@ -242,7 +243,8 @@ void InputData::print_parameters() const
 		     << "  Number of rotations = " << numberOfRotations << endl
 		     << "  Use mirrored image = " << useFlip << endl
 		     << "  Number of CPU threads = " << numberOfThreads << endl
-		     << "  Use CUDA = " << useCuda << endl;
+		     << "  Use CUDA = " << useCuda << endl
+	         << "  Algorithm = " << algo << endl;
 	}
 }
 

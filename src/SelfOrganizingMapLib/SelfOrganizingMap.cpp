@@ -32,7 +32,7 @@ std::ostream& operator << (std::ostream& os, SOMInitialization init)
 	return os;
 }
 
-void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim)
+void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim, bool useFlip)
 {
 	int image_size = image_dim * image_dim;
 	int neuron_size = neuron_dim * neuron_dim;
@@ -48,20 +48,23 @@ void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotat
 		rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, image, rotatedImages + i*neuron_size, i*angleStepRadians);
 	}
 
-	// Flip image
-	float *flippedImage = (float *)malloc(image_size * sizeof(float));
-	flip(image_dim, image_dim, image, flippedImage);
+	if (useFlip)
+	{
+		// Flip image
+		float *flippedImage = (float *)malloc(image_size * sizeof(float));
+		flip(image_dim, image_dim, image, flippedImage);
 
-	float *flippedRotatedImage = rotatedImages + numberOfRotations * neuron_size;
-	crop(image_dim, image_dim, neuron_dim, neuron_dim, flippedImage, flippedRotatedImage);
+		float *flippedRotatedImage = rotatedImages + numberOfRotations * neuron_size;
+		crop(image_dim, image_dim, neuron_dim, neuron_dim, flippedImage, flippedRotatedImage);
 
-	// Rotate flipped image
-    #pragma omp parallel for
-	for (int i = 1; i < numberOfRotations; ++i)	{
-		rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, flippedImage, flippedRotatedImage + i*neuron_size, i*angleStepRadians);
+		// Rotate flipped image
+		#pragma omp parallel for
+		for (int i = 1; i < numberOfRotations; ++i)	{
+			rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, flippedImage, flippedRotatedImage + i*neuron_size, i*angleStepRadians);
+		}
+
+		free(flippedImage);
 	}
-
-	free(flippedImage);
 }
 
 void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix, int som_dim, float* som,

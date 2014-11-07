@@ -72,10 +72,10 @@ void trainSelfOrganizingMap(InputData const& inputData)
 			}
 
 			generateRotatedImages(rotatedImages, image, inputData.numberOfRotations,
-				inputData.image_dim, inputData.neuron_dim);
+				inputData.image_dim, inputData.neuron_dim, inputData.useFlip);
 
 			#if DEBUG_MODE
-		        checkArrayForNanAndNegative(rotatedImages, 2 * inputData.numberOfRotations * inputData.neuron_size, "rotatedImages");
+		        checkArrayForNanAndNegative(rotatedImages, inputData.numberOfRotationsAndFlip * inputData.neuron_size, "rotatedImages");
 		        checkArrayForNanAndNegative(som, inputData.som_size * inputData.neuron_size, "som");
 			#endif
 

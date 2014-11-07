@@ -46,6 +46,9 @@ void cuda_generateEuclideanDistanceMatrix_algo2_firstStep(float *d_som, float *d
 void cuda_generateEuclideanDistanceMatrix_algo2_secondStep(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix,
     float* d_firstStep, int som_size, int num_rot);
 
+//! Host routine starting kernel for rotated images.
+void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_rot, int image_dim, int neuron_dim, bool flip);
+
 //! Basic allocation for device memory.
 float* cuda_alloc_float(int size);
 
