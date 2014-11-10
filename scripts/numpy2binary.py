@@ -35,6 +35,10 @@ if __name__ == "__main__":
                 sys.exit(1)
             BrokenImageBehavior = arg
 
+    if len(args) == 0:
+        print_usage()
+        sys.exit(1)
+
     files = args
     of = open(outputfile, 'wb')
 
