@@ -69,7 +69,7 @@ if __name__ == "__main__":
             if (data[i].shape[1] < min_width):
                 min_width = data[i].shape[1]
 
-        total += data.shape[0]
+            total += 1
 
     print 'Number of images = ', total
     print 'Number of images containing NaN elements = ', nbBrokenImages
