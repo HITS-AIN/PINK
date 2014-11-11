@@ -4,50 +4,14 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include "CudaLib/CudaLib.h"
+#include "EqualFloatArrays.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
-#include "CudaLib/CudaLib.h"
 #include "gtest/gtest.h"
 #include <cmath>
 #include <iostream>
 #include <vector>
-
-const float FLOAT_INEQUALITY_TOLERANCE = float(1.0 / (1 << 22));
-
-template <class T>
-::testing::AssertionResult EqualFloatArrays(
-                                const T* const expected,
-                                const T* const actual,
-                                unsigned long length)
-{
-    ::testing::AssertionResult result = ::testing::AssertionFailure();
-    int errorsFound = 0;
-    const char* separator = " ";
-    for (unsigned long index = 0; index < length; index++)
-    {
-        if (fabs(expected[index] - actual[index]) > FLOAT_INEQUALITY_TOLERANCE)
-        {
-            if (errorsFound == 0)
-            {
-                result << "Differences found:";
-            }
-            if (errorsFound < 3)
-            {
-                result << separator
-                        << expected[index] << " != " << actual[index]
-                        << " @ " << index;
-                separator = ", ";
-            }
-            errorsFound++;
-        }
-    }
-    if (errorsFound > 0)
-    {
-        result << separator << errorsFound << " differences in total";
-        return result;
-    }
-    return ::testing::AssertionSuccess();
-}
 
 TEST(EuclideanDistanceTest, Array)
 {
@@ -64,11 +28,6 @@ TEST(EuclideanDistanceTest, Array)
 
 	delete [] b;
 	delete [] a;
-}
-
-TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix_algo2_firstStep)
-{
-
 }
 
 TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix_algo2)
@@ -90,9 +49,9 @@ TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix_algo2)
 	generateEuclideanDistanceMatrix(cpu_euclideanDistanceMatrix, cpu_bestRotationMatrix, som_dim, som,
 	    image_dim, num_rot, rotatedImages);
 
-	for (int i=0; i < som_size; ++i) {
-		std::cout << "cpu eucl " << i << ": " << calculateEuclideanDistanceWithoutSquareRoot(som + i*image_size, rotatedImages, image_size) << std::endl;
-    }
+//	for (int i=0; i < som_size; ++i) {
+//		std::cout << "cpu eucl " << i << ": " << calculateEuclideanDistanceWithoutSquareRoot(som + i*image_size, rotatedImages, image_size) << std::endl;
+//    }
 
 	float *d_som = cuda_alloc_float(som_size * image_size);
 	float *d_rotatedImages = cuda_alloc_float(num_rot * image_size);

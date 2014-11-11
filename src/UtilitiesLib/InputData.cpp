@@ -54,10 +54,10 @@ InputData::InputData(int argc, char **argv)
 		{"init",            1, 0, 'x'},
 		{"num-iter",        1, 0, 1},
 		{"progress",        1, 0, 'p'},
-		{"flip",            1, 0, 2},
-		{"cuda",            1, 0, 3},
+		{"flip-off",        0, 0, 2},
+		{"cuda-off",        0, 0, 3},
 		{"verbose",         0, 0, 4},
-		{"version",         1, 0, 'v'},
+		{"version",         0, 0, 'v'},
 		{"algo",            1, 0, 'a'},
 		{NULL, 0, NULL, 0}
 	};
@@ -122,6 +122,11 @@ InputData::InputData(int argc, char **argv)
 			break;
 		case 't':
 			numberOfThreads = atoi(optarg);
+			if (useCuda and numberOfThreads > 1) {
+				printf ("Number of CPU threads must be 1 using CUDA.\n\n");
+				print_usage();
+				exit(EXIT_FAILURE);
+			}
 			break;
 		case 'x':
 			stringToUpper(optarg);
@@ -135,26 +140,10 @@ InputData::InputData(int argc, char **argv)
 			}
 			break;
 		case 2:
-			stringToUpper(optarg);
-			if (strcmp(optarg, "YES") == 0) useFlip = true;
-			else if (strcmp(optarg, "NO") == 0) useFlip = false;
-			else {
-				printf ("optarg = %s\n", optarg);
-				printf ("Unkown option %o\n", c);
-				print_usage();
-				exit(EXIT_FAILURE);
-			}
+			useFlip = false;
 			break;
 		case 3:
-			stringToUpper(optarg);
-			if (strcmp(optarg, "YES") == 0) useCuda = true;
-			else if (strcmp(optarg, "NO") == 0) useCuda = false;
-			else {
-				printf ("optarg = %s\n", optarg);
-				printf ("Unkown option %o\n", c);
-				print_usage();
-				exit(EXIT_FAILURE);
-			}
+			useCuda = false;
 			break;
 		case 'v':
 			cout << "Pink version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR << endl;
@@ -209,6 +198,7 @@ InputData::InputData(int argc, char **argv)
     numberOfRotationsAndFlip = useFlip ? 2*numberOfRotations : numberOfRotations;
 
 	if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
+    if (useCuda) numberOfThreads = 1;
 	omp_set_num_threads(numberOfThreads);
 
     print_header();
@@ -273,8 +263,8 @@ void InputData::print_usage() const
 	        "  Optional options:\n"
 			"\n"
 	        "    --algo, -a              Specific GPU algorithm (default = 0).\n"
-			"                            0: FindBestNeuron on GPU, ImageRotation and UpdateSOM on CPU"
-			"                            1: ImageRotation and FindBestNeuron on GPU, UpdateSOM on CPU"
+			"                            0: FindBestNeuron on GPU, ImageRotation and UpdateSOM on CPU\n"
+			"                            1: ImageRotation and FindBestNeuron on GPU, UpdateSOM on CPU\n"
 	        "    --som-dimension         Dimension for quadratic SOM matrix (default = 10).\n"
 	        "    --neuron-dimension, -d  Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
 	        "    --num-iter              Number of iterations (default = 1).\n"
@@ -282,10 +272,10 @@ void InputData::print_usage() const
 	        "    --seed, -s              Seed for random number generator (default = 1234).\n"
 			"    --progress, -p          Print level of progress (default = 10%).\n"
 	        "    --numrot, -n            Number of rotations (default = 360).\n"
-	        "    --flip                  Switch off usage of mirrored images (yes, no, default = yes).\n"
+	        "    --flip-off              Switch off usage of mirrored images (default = on).\n"
 	        "    --numthreads, -t        Number of CPU threads (default = auto).\n"
 	        "    --init, -x              Type of SOM initialization (random, zero, default = zero).\n"
-            "    --cuda                  Switch off CUDA acceleration (yes, no, default = yes).\n"
+            "    --cuda-off              Switch off CUDA acceleration (default = on).\n"
             "    --version, -v           Print version number.\n"
             "    --verbose               Print more output (yes, no, default = yes).\n" << endl;
 }

@@ -19,7 +19,7 @@ include_directories(
 
 cuda_add_library(
     CudaLib
-    STATIC
+    SHARED
     cuda_calculateEuclideanDistanceWithoutSquareRoot.cu
     cuda_functions.cu
     cuda_generateEuclideanDistanceMatrix_algo2.cu
