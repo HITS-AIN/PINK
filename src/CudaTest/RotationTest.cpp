@@ -32,8 +32,8 @@ TEST(RotationTest, 45degree)
 //! Compare rotated images between CPU and GPU version.
 TEST(RotationTest, cuda_generateRotatedImages)
 {
-	int image_dim = 3;
-	int neuron_dim = 2;
+	int image_dim = 64;
+	int neuron_dim = 44;
 	int image_size = image_dim * image_dim;
 	int neuron_size = neuron_dim * neuron_dim;
 	int num_rot = 2;
@@ -46,6 +46,7 @@ TEST(RotationTest, cuda_generateRotatedImages)
 
 	generateRotatedImages(cpu_rotatedImages, image, num_rot, image_dim, neuron_dim, flip);
 
+	writeRotatedImages(cpu_rotatedImages, neuron_dim, num_rot, "cpu_rot.bin");
 //	for (int i=0; i < num_rot * neuron_size; ++i) {
 //		std::cout << "cpu_rotatedImages " << i << ": " << cpu_rotatedImages[i] << std::endl;
 //	}
@@ -77,6 +78,8 @@ TEST(RotationTest, cuda_generateRotatedImages)
 
 	float *gpu_rotatedImages = new float[num_rot * neuron_size];
 	cuda_copyDeviceToHost_float(gpu_rotatedImages, d_rotatedImages, num_rot * neuron_size);
+
+	writeRotatedImages(gpu_rotatedImages, neuron_dim, num_rot, "gpu_rot.bin");
 
 //	for (int i=0; i < num_rot * neuron_size; ++i) {
 //		std::cout << "gpu_rotatedImages " << i << ": " << gpu_rotatedImages[i] << std::endl;

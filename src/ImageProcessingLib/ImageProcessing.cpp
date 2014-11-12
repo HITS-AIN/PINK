@@ -129,9 +129,6 @@ void rotateAndCrop_bilinear(int height, int width, int height_new, int width_new
     const float cosAlpha = cos(alpha);
     const float sinAlpha = sin(alpha);
 
-	//std::cout << "cosAlpha = " << cosAlpha << std::endl;
-	//std::cout << "sinAlpha = " << sinAlpha << std::endl;
-
     int x0 = width * 0.5;
     int y0 = height * 0.5;
     int x1, y1, x2, y2;
@@ -148,7 +145,7 @@ void rotateAndCrop_bilinear(int height, int width, int height_new, int width_new
             	dest[x2*height_new + y2] = 0.0;
             	continue;
             }
-            if (x1 >= 0 && x1 < width && y1 >= 0 && y1 < height) dest[x2*height_new + y2] = source[x1*height + y1];
+            dest[x2*height_new + y2] = source[x1*height + y1];
         }
     }
 }
@@ -320,14 +317,14 @@ void showSOM(float* som, int som_dim, int image_dim)
     free(image);
 }
 
-void writeRotatedImages(float* images, int image_dim, int numberOfRotations, std::string const& filename)
+void writeRotatedImages(float* images, int image_dim, int numberOfImages, std::string const& filename)
 {
-	int heigth = 2 * numberOfRotations * image_dim;
+	int heigth = numberOfImages * image_dim;
 	int width = image_dim;
 	int image_size = image_dim * image_dim;
     float *image = (float *)malloc(heigth * width * sizeof(float));
 
-    for (int i = 0; i < 2 * numberOfRotations; ++i) {
+    for (int i = 0; i < numberOfImages; ++i) {
         for (int j = 0; j < image_size; ++j) image[j + i*image_size] = images[j + i*image_size];
     }
 

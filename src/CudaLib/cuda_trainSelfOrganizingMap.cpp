@@ -65,7 +65,7 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 	float *sinAlpha = (float *)malloc(inputData.numberOfRotations * sizeof(float));
 	float *d_sinAlpha = cuda_alloc_float(inputData.numberOfRotations);
 
-	for (int i = 1; i < inputData.numberOfRotations; ++i) {
+	for (int i = 0; i < inputData.numberOfRotations; ++i) {
 		angle = i * angleStepRadians;
 	    cosAlpha[i] = cos(angle);
         sinAlpha[i] = sin(angle);
@@ -99,6 +99,9 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 					generateRotatedImages(rotatedImages, iterImage->getPointerOfFirstPixel(), inputData.numberOfRotations,
                         inputData.image_dim, inputData.neuron_dim, inputData.useFlip);
 
+//					writeRotatedImages(rotatedImages, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, "check0.bin");
+//					exit(1);
+
 					cuda_copyHostToDevice_float(d_rotatedImages, rotatedImages, inputData.numberOfRotationsAndFlip * inputData.neuron_size);
 
 					cuda_generateEuclideanDistanceMatrix_algo2(d_euclideanDistanceMatrix, d_bestRotationMatrix,
@@ -121,6 +124,10 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 
 					cuda_generateRotatedImages(d_rotatedImages, d_image, inputData.numberOfRotations,
 						inputData.image_dim, inputData.neuron_dim, inputData.useFlip, d_cosAlpha, d_sinAlpha);
+
+                    cuda_copyDeviceToHost_float(rotatedImages, d_rotatedImages, inputData.numberOfRotationsAndFlip * inputData.neuron_size);
+//					writeRotatedImages(rotatedImages, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, "check1.bin");
+//					exit(1);
 
 					cuda_generateEuclideanDistanceMatrix_algo2(d_euclideanDistanceMatrix, d_bestRotationMatrix,
 						inputData.som_dim, d_som, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, d_rotatedImages);
