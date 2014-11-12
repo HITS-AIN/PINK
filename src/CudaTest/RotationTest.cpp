@@ -1,5 +1,5 @@
 /**
- * @file   RotationTest.cpp
+ * @file   CudaTest/RotationTest.cpp
  * @date   Oct 6, 2014
  * @author Bernd Doser, HITS gGmbH
  */
@@ -14,6 +14,7 @@
 #include <iostream>
 #include <vector>
 
+//! Check CUDA image rotation with CPU function.
 TEST(RotationTest, 45degree)
 {
 	PINK::Image<float> image(64, 64, 1.0);
@@ -28,24 +29,29 @@ TEST(RotationTest, 45degree)
 	EXPECT_EQ(image2,image3);
 }
 
+//! Compare rotated images between CPU and GPU version.
 TEST(RotationTest, cuda_generateRotatedImages)
 {
 	int image_dim = 3;
-	int image_size = image_dim * image_dim;
 	int neuron_dim = 2;
+	int image_size = image_dim * image_dim;
+	int neuron_size = neuron_dim * neuron_dim;
 	int num_rot = 2;
 	bool flip = false;
 
 	float *image = new float[image_size];
-	float *cpu_rotatedImages = new float[num_rot * image_size];
+	float *cpu_rotatedImages = new float[num_rot * neuron_size];
 
 	fillRandom(image, image_size, 0);
 
 	generateRotatedImages(cpu_rotatedImages, image, num_rot, image_dim, neuron_dim, flip);
 
-	float *gpu_rotatedImages = new float[num_rot * image_size];
+//	for (int i=0; i < num_rot * neuron_size; ++i) {
+//		std::cout << "cpu_rotatedImages " << i << ": " << cpu_rotatedImages[i] << std::endl;
+//	}
+
 	float *d_image = cuda_alloc_float(image_size);
-	float *d_rotatedImages = cuda_alloc_float(num_rot * image_size);
+	float *d_rotatedImages = cuda_alloc_float(num_rot * neuron_size);
 
 	cuda_copyHostToDevice_float(d_image, image, image_size);
 
@@ -58,7 +64,7 @@ TEST(RotationTest, cuda_generateRotatedImages)
 	float *sinAlpha = (float *)malloc(num_rot * sizeof(float));
 	float *d_sinAlpha = cuda_alloc_float(num_rot);
 
-	for (int i = 1; i < num_rot; ++i) {
+	for (int i = 0; i < num_rot; ++i) {
 		angle = i * angleStepRadians;
 	    cosAlpha[i] = cos(angle);
         sinAlpha[i] = sin(angle);
@@ -69,8 +75,21 @@ TEST(RotationTest, cuda_generateRotatedImages)
 
 	cuda_generateRotatedImages(d_rotatedImages, d_image, num_rot, image_dim, neuron_dim, flip, d_cosAlpha, d_sinAlpha);
 
-	EXPECT_TRUE(EqualFloatArrays(cpu_rotatedImages, gpu_rotatedImages, num_rot * image_size));
+	float *gpu_rotatedImages = new float[num_rot * neuron_size];
+	cuda_copyDeviceToHost_float(gpu_rotatedImages, d_rotatedImages, num_rot * neuron_size);
 
+//	for (int i=0; i < num_rot * neuron_size; ++i) {
+//		std::cout << "gpu_rotatedImages " << i << ": " << gpu_rotatedImages[i] << std::endl;
+//	}
+
+	EXPECT_TRUE(EqualFloatArrays(cpu_rotatedImages, gpu_rotatedImages, num_rot * neuron_size));
+
+	cuda_free(d_cosAlpha);
+	cuda_free(d_sinAlpha);
+	cuda_free(d_image);
+	cuda_free(d_rotatedImages);
+	delete [] cosAlpha;
+	delete [] sinAlpha;
 	delete [] image;
 	delete [] cpu_rotatedImages;
 	delete [] gpu_rotatedImages;

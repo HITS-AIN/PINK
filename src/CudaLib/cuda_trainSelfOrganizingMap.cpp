@@ -1,5 +1,5 @@
 /**
- * @file   cuda_trainSelfOrganizingMap.cu
+ * @file   CudaLib/cuda_trainSelfOrganizingMap.cpp
  * @date   Nov 3, 2014
  * @author Bernd Doser, HITS gGmbH
  */

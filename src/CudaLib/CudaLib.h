@@ -1,6 +1,6 @@
 /**
- * @file   CudaLib.h
- * @brief  Print device properties of GPU cards.
+ * @file   CudaLib/CudaLib.h
+ * @brief  Header for all CUDA functions
  * @date   Oct 21, 2014
  * @author Bernd Doser, HITS gGmbH
  */

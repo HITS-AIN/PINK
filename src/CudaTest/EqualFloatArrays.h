@@ -7,13 +7,13 @@
 #include "gtest/gtest.h"
 #include <cmath>
 
+//! Threshold for equality check of two floating point numbers.
 const float FLOAT_INEQUALITY_TOLERANCE = float(1.0 / (1 << 22));
 
+//! Equality check of two floating point numbers.
 template <class T>
-::testing::AssertionResult EqualFloatArrays(
-                                const T* const expected,
-                                const T* const actual,
-                                unsigned long length)
+::testing::AssertionResult EqualFloatArrays(const T* const expected,
+    const T* const actual, unsigned long length)
 {
     ::testing::AssertionResult result = ::testing::AssertionFailure();
     int errorsFound = 0;

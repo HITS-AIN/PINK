@@ -1,5 +1,5 @@
 /**
- * @file   cuda_generateEuclideanDistanceMatrix_algo2.cu
+ * @file   CudaLib/cuda_generateEuclideanDistanceMatrix_algo2.cu
  * @date   Oct 30, 2014
  * @author Bernd Doser, HITS gGmbH
  */
@@ -11,8 +11,8 @@
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
-void cuda_generateEuclideanDistanceMatrix_algo2(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix, int som_dim, float* d_som,
-    int image_dim, int num_rot, float* d_rotatedImages)
+void cuda_generateEuclideanDistanceMatrix_algo2(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix,
+    int som_dim, float* d_som, int image_dim, int num_rot, float* d_rotatedImages)
 {
 	unsigned int image_size = image_dim * image_dim;
 	unsigned int som_size = som_dim * som_dim;

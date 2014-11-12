@@ -1,5 +1,5 @@
 /**
- * @file   cuda_generateEuclideanDistanceMatrix_algo2_firstStep.cu
+ * @file   CudaLib/cuda_generateEuclideanDistanceMatrix_algo2_firstStep.cu
  * @date   Oct 30, 2014
  * @author Bernd Doser, HITS gGmbH
  */

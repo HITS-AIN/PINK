@@ -1,5 +1,5 @@
 /**
- * @file   cuda_print_properties.h
+ * @file   CudaLib/cuda_print_properties.cu
  * @brief  Print device properties of GPU cards.
  * @date   Oct 21, 2014
  * @author Bernd Doser, HITS gGmbH

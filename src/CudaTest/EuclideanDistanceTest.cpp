@@ -1,5 +1,6 @@
 /**
- * @file   EuclideanDistanceTest.cpp
+ * @file   CudaTest/EuclideanDistanceTest.cpp
+ * @brief  Unit tests for calculating euclidean distance using CUDA.
  * @date   Nov 5, 2014
  * @author Bernd Doser, HITS gGmbH
  */
@@ -13,6 +14,7 @@
 #include <iostream>
 #include <vector>
 
+//! Compare squared euclidean distance between CPU and GPU version.
 TEST(EuclideanDistanceTest, Array)
 {
 	int length = 72;
@@ -30,6 +32,7 @@ TEST(EuclideanDistanceTest, Array)
 	delete [] a;
 }
 
+//! Compare squared euclidean distance matrix (algo 2) between CPU and GPU version.
 TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix_algo2)
 {
 	int som_dim = 2;
