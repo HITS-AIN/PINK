@@ -36,6 +36,7 @@ InputData::InputData(int argc, char **argv)
     numberOfImages(0),
     image_dim(0),
     image_size(0),
+    image_size_using_flip(0),
     som_size(0),
     neuron_size(0),
     som_total_size(0),
@@ -59,10 +60,11 @@ InputData::InputData(int argc, char **argv)
 		{"verbose",         0, 0, 4},
 		{"version",         0, 0, 'v'},
 		{"algo",            1, 0, 'a'},
+		{"help",            0, 0, 'h'},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
-	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:t:x:p:a:", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:t:x:p:a:h", long_options, &option_index)) != -1)
 	{
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
@@ -148,6 +150,9 @@ InputData::InputData(int argc, char **argv)
 		case 'v':
 			cout << "Pink version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR << endl;
 			exit(0);
+		case 'h':
+			print_usage();
+			exit(0);
 		case '?':
 			printf ("Unkown option %o\n", c);
 			print_usage();
@@ -196,6 +201,7 @@ InputData::InputData(int argc, char **argv)
 	som_total_size = som_size * neuron_size;
 
     numberOfRotationsAndFlip = useFlip ? 2*numberOfRotations : numberOfRotations;
+	image_size_using_flip = useFlip ? 2*image_size : image_size;
 
 	if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
     if (useCuda) numberOfThreads = 1;
@@ -265,17 +271,18 @@ void InputData::print_usage() const
 	        "    --algo, -a              Specific GPU algorithm (default = 0).\n"
 			"                            0: FindBestNeuron on GPU, ImageRotation and UpdateSOM on CPU\n"
 			"                            1: ImageRotation and FindBestNeuron on GPU, UpdateSOM on CPU\n"
-	        "    --som-dimension         Dimension for quadratic SOM matrix (default = 10).\n"
-	        "    --neuron-dimension, -d  Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
-	        "    --num-iter              Number of iterations (default = 1).\n"
-	        "    --layout, -l            Layout of SOM (quadratic, hexagonal, default = quadratic).\n"
-	        "    --seed, -s              Seed for random number generator (default = 1234).\n"
-			"    --progress, -p          Print level of progress (default = 10%).\n"
-	        "    --numrot, -n            Number of rotations (default = 360).\n"
-	        "    --flip-off              Switch off usage of mirrored images (default = on).\n"
-	        "    --numthreads, -t        Number of CPU threads (default = auto).\n"
-	        "    --init, -x              Type of SOM initialization (random, zero, default = zero).\n"
             "    --cuda-off              Switch off CUDA acceleration (default = on).\n"
+	        "    --flip-off              Switch off usage of mirrored images (default = on).\n"
+			"    --help, -h              Print this lines\n"
+	        "    --init, -x              Type of SOM initialization (random, zero, default = zero).\n"
+	        "    --layout, -l            Layout of SOM (quadratic, hexagonal, default = quadratic).\n"
+	        "    --neuron-dimension, -d  Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
+	        "    --numrot, -n            Number of rotations (default = 360).\n"
+	        "    --numthreads, -t        Number of CPU threads (default = auto).\n"
+	        "    --num-iter              Number of iterations (default = 1).\n"
+			"    --progress, -p          Print level of progress (default = 10%).\n"
+	        "    --seed, -s              Seed for random number generator (default = 1234).\n"
+	        "    --som-dimension         Dimension for quadratic SOM matrix (default = 10).\n"
             "    --version, -v           Print version number.\n"
             "    --verbose               Print more output (yes, no, default = yes).\n" << endl;
 }

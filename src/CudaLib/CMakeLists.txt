@@ -31,7 +31,7 @@ cuda_add_library(
     cuda_trainSelfOrganizingMap.cpp
     cuda_rotate.cu
     cuda_print_properties.cu
-    rotateAndCrop.cu
+    cuda_updateNeurons.cu
 )
 
 target_link_libraries(

@@ -9,6 +9,7 @@
 #define CUDALIB_H_
 
 #include "UtilitiesLib/InputData.h"
+#include "UtilitiesLib/Point.h"
 
 //! Print CUDA device properties.
 void cuda_print_properties();
@@ -49,6 +50,10 @@ void cuda_generateEuclideanDistanceMatrix_algo2_secondStep(float *d_euclideanDis
 //! Host routine starting kernel for rotated images.
 void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_rot, int image_dim, int neuron_dim,
     bool flip, float *d_cosAlpha, float *d_sinAlpha);
+
+//! Host routine starting kernel for updating neurons.
+void cuda_updateNeurons(float* d_som, float* d_rotatedImages, int* d_bestRotationMatrix, Point bestMatch, int som_dim,
+    int neuron_dim, int num_rot);
 
 //! Basic allocation for device memory.
 float* cuda_alloc_float(int size);

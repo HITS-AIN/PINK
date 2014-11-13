@@ -53,6 +53,7 @@ struct InputData
 	int numberOfImages;
 	int image_dim;
 	int image_size;
+	int image_size_using_flip;
     int som_size;
     int neuron_size;
     int som_total_size;

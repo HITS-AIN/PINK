@@ -42,7 +42,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotat
 	crop(image_dim, image_dim, neuron_dim, neuron_dim, image, rotatedImages);
 
 	// Rotate unflipped image
-    //#pragma omp parallel for
+    #pragma omp parallel for
 	for (int i = 1; i < numberOfRotations; ++i) {
 		rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, image, rotatedImages + i*neuron_size, i*angleStepRadians);
 	}
@@ -57,7 +57,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotat
 		crop(image_dim, image_dim, neuron_dim, neuron_dim, flippedImage, flippedRotatedImage);
 
 		// Rotate flipped image
-		//#pragma omp parallel for
+		#pragma omp parallel for
 		for (int i = 1; i < numberOfRotations; ++i)	{
 			rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, flippedImage, flippedRotatedImage + i*neuron_size, i*angleStepRadians);
 		}

@@ -85,3 +85,5 @@ if(DOXYGEN_FOUND)
             COMMENT "Generating API documentation with Doxygen" VERBATIM
     )    
 endif()
+
+install(FILES ${PROJECT_SOURCE_DIR}/scripts/show.py ${PROJECT_SOURCE_DIR}/scripts/numpy2binary.py DESTINATION scripts)

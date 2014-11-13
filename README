@@ -1,0 +1,48 @@
+PINK
+====
+
+Parallel orientation Invariant Non-parametric Kohonen-map (PINK)
+
+Requirements
+------------
+
+- cmake (Version >= 2.6.6, http://www.cmake.org)
+- CUDA (recommended)
+- gtest (optional)
+- doxygen (optional)
+
+Installation
+------------
+
+1) Make build directory and change into it:
+  
+    mkdir build && cd build
+
+2) Generate Makefile using cmake:
+
+    cmake -DCMAKE_INSTALL_PREFIX=<INSTALL_PATH> ..
+
+3) Compile:
+
+    make -j <number of cores>
+
+4) Execute the Tests
+
+    make test
+
+5) Generate API documentation (only if doxygen is available)
+
+    make doc
+
+6) Install
+
+    make install
+
+9) Set environmental variables
+
+    source <INSTALL_PATH>/bashrc
+
+Usage
+-----
+
+Please execute 'Pink -h' for current usage and options.    
