@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.ui.externaltools.ProgramLaunchConfigurationType">
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="/sw/pub/Linux/Ubuntu/14.04/x86_64/cmake/3.0.0/bin/cmake"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-DCMAKE_BUILD_TYPE=Release&#10;-DCMAKE_INSTALL_PREFIX=/home/doserbd/Work/AIN_PINK/install/Pink&#10;-DCMAKE_PREFIX_PATH=/sw/pub/Linux/Ubuntu/14.04/x86_64/gtest/1.7.0&#10;.."/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-DCMAKE_BUILD_TYPE=Release&#10;-DCMAKE_INSTALL_PREFIX=/home/doserbd/Work/AIN_PINK/install/Pink/0.3&#10;-DCMAKE_PREFIX_PATH=/sw/pub/Linux/Ubuntu/14.04/x86_64/gtest/1.7.0&#10;.."/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${workspace_loc:/pink_trunk/RadioGalaxyZoo/code-new/Build_Release_Gnu}"/>
 </launchConfiguration>

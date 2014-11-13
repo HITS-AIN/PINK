@@ -39,3 +39,8 @@ target_link_libraries(
     ${CUDA_LIBRARIES}
     ${CUDA_CUBLAS_LIBRARIES}
 )
+
+install( 
+    TARGETS CudaLib
+    LIBRARY DESTINATION lib
+)
