@@ -50,7 +50,7 @@ euclidean_distance_kernel(float *som, float *rotatedImages, float *firstStep, in
 	}
 
 	// Copy accumulated local value to global array firstStep
-	if (tid == 0) atomicAdd(firstStep + blockIdx.x + blockIdx.y * gridDim.x, firstStep_local[tid]);
+	if (tid == 0) atomicExch(firstStep + blockIdx.x + blockIdx.y * gridDim.x, firstStep_local[tid]);
 }
 
 /**

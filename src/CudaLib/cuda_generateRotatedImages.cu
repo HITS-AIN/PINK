@@ -22,8 +22,6 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
 	int neuron_size = neuron_dim * neuron_dim;
 	int image_size = image_dim * image_dim;
 
-	cuda_fill_zero(d_rotatedImages, num_rot * neuron_size);
-
 	{
 		// Setup execution parameters
 		int gridSize = ceil((float)neuron_dim/BLOCK_SIZE);

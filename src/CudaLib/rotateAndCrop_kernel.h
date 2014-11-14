@@ -34,8 +34,8 @@ rotateAndCrop_kernel(float *rotatedImages, float *image, int neuron_size,
     //pCurRot[x*neuron_dim + y] = tex2D(image_texture, tx+0.5f, ty+0.5f);
 
     if (x1 >= 0 and x1 < image_dim and y1 >= 0 and y1 < image_dim) {
-    	atomicAdd(pCurRot + x2*neuron_dim + y2, image[x1*image_dim + y1]);
+    	atomicExch(pCurRot + x2*neuron_dim + y2, image[x1*image_dim + y1]);
     } else {
-    	atomicAdd(pCurRot + x2*neuron_dim + y2, 0.0f);
+    	atomicExch(pCurRot + x2*neuron_dim + y2, 0.0f);
     }
 }

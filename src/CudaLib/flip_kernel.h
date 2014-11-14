@@ -16,6 +16,5 @@ flip_kernel(float *dest, float *source, int dim)
 
 	if (x >= dim or y >= dim) return;
 
-    //dest[(dim-x-1)*dim + y] = source[x*dim + y];
-    dest[x*dim + dim-y-1] = source[x*dim + y];
+    dest[(dim-x-1)*dim + y] = source[x*dim + y];
 }

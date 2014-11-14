@@ -18,7 +18,6 @@ void cuda_generateEuclideanDistanceMatrix_algo2(float *d_euclideanDistanceMatrix
 	unsigned int som_size = som_dim * som_dim;
 
     float *d_firstStep = cuda_alloc_float(som_size * num_rot);
-    cuda_fill_zero(d_firstStep, som_size * num_rot);
 
     // First step ...
     cuda_generateEuclideanDistanceMatrix_algo2_firstStep(d_som, d_rotatedImages,
