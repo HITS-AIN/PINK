@@ -12,9 +12,6 @@
 #include "UtilitiesLib/Point.h"
 #include <iostream>
 
-#define UPDATE_NEURONS_SIGMA     1.1
-#define UPDATE_NEURONS_DAMPING   0.2
-
 //! Main CPU based routine for SOM training.
 void trainSelfOrganizingMap(InputData const& inputData);
 
@@ -28,17 +25,10 @@ void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRo
  */
 Point findBestMatchingNeuron(float *similarityMatrix, int som_dim);
 
-/**
- * Updating SOM
- */
+//! Updating self organizing map.
 void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch, int *bestRotationMatrix);
 
+//! Updating one single neuron.
 void updateSingleNeuron(float* neuron, float* image, int image_size, float factor);
-
-float distance(Point pos1, Point pos2);
-
-float mexicanHat(float x, float sigma);
-
-float gaussian(float x, float sigma);
 
 #endif /* SELFORGANIZINGMAP_H_ */

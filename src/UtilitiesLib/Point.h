@@ -20,4 +20,7 @@ struct Point
 //! Pretty printing of Point.
 std::ostream& operator << (std::ostream& os, Point point);
 
+//! Return the distance of two points.
+float distance(Point pos1, Point pos2);
+
 #endif /* POINT_H_ */

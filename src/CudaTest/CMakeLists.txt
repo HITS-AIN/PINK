@@ -12,6 +12,7 @@ add_executable(
     main.cpp
     EuclideanDistanceTest.cpp
     RotationTest.cpp
+    UpdateNeuronsTest.cpp
 )
     
 target_link_libraries(

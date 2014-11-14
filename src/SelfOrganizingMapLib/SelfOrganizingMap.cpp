@@ -8,6 +8,7 @@
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMap.h"
+#include "UtilitiesLib/DistributionFunctions.h"
 #include <ctype.h>
 #include <float.h>
 #include <iostream>
@@ -130,23 +131,4 @@ void updateSingleNeuron(float* neuron, float* image, int image_size, float facto
     for (int i = 0; i < image_size; ++i) {
     	neuron[i] -= (neuron[i] - image[i]) * factor;
     }
-}
-
-float distance(Point pos1, Point pos2)
-{
-    return sqrt(pow(pos1.x - pos2.x, 2) + pow(pos1.y - pos2.y, 2));
-}
-
-// 2.0 / ( math.sqrt(3.0 * sigma) * math.pow(math.pi, 0.25)) * (1- x**2.0 / sigma**2.0) * math.exp(-x**2.0/(2.0 * sigma**2))
-float mexicanHat(float x, float sigma)
-{
-	float x2 = x * x;
-	float sigma2 = sigma * sigma;
-    return 2.0 / (sqrt(3.0 * sigma) * pow(M_PI, 0.25)) * (1.0 - x2/sigma2) * exp(-x2 / (2.0 * sigma2));
-}
-
-// 1.0 / (sigma * math.sqrt(2.0 * math.pi)) * math.exp(-1.0/2.0 * (x / sigma)**2 );
-float gaussian(float x, float sigma)
-{
-    return 1.0 / (sigma * sqrt(2.0 * M_PI)) * exp(-0.5 * pow((x/sigma),2));
 }

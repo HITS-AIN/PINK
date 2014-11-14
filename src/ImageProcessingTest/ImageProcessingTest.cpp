@@ -6,9 +6,10 @@
  */
 
 #include "ImageProcessingLib/Image.h"
+#include "ImageProcessingLib/ImageProcessing.h"
+#include "UtilitiesLib/Filler.h"
 #include "gtest/gtest.h"
 #include <cmath>
-#include "ImageProcessingLib/ImageProcessing.h"
 
 
 using namespace PINK;
@@ -50,7 +51,7 @@ TEST(ImageProcessingTest, Flip)
 
 	std::vector<float> va(size);
 	float *a = &va[0];
-	fillRandom(a,size);
+	fillWithRandomNumbers(a,size);
 
 	std::vector<float> vb(size);
 	float *b = &vb[0];
@@ -72,7 +73,7 @@ TEST(ImageProcessingTest, Crop)
 
 	std::vector<float> va(size);
 	float *a = &va[0];
-	fillRandom(a,size);
+	fillWithRandomNumbers(a,size);
 
 	std::vector<float> vb(crop_size);
 	float *b = &vb[0];
@@ -94,7 +95,7 @@ TEST(ImageProcessingTest, FlipAndCrop)
 
 	std::vector<float> va(size);
 	float *a = &va[0];
-	fillRandom(a,size);
+	fillWithRandomNumbers(a,size);
 
 	std::vector<float> vb(crop_size);
 	float *b = &vb[0];
@@ -120,7 +121,7 @@ TEST(ImageProcessingTest, RotateAndCrop)
 
 	std::vector<float> va(size);
 	float *a = &va[0];
-	fillRandom(a,size);
+	fillWithRandomNumbers(a,size);
 
 	std::vector<float> vb(crop_size);
 	float *b = &vb[0];

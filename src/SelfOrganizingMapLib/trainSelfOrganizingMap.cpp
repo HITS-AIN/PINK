@@ -10,6 +10,7 @@
 #include "SelfOrganizingMap.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/CheckArrays.h"
+#include "UtilitiesLib/Filler.h"
 #include <iostream>
 #include <iomanip>
 
@@ -36,8 +37,8 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	int *bestRotationMatrix = (int *)malloc(bestRotationMatrix_sizeInBytes);
 
 	// Initialize SOM
-	if (inputData.init == RANDOM) fillRandom(som, inputData.som_size * inputData.neuron_size, inputData.seed);
-	else if (inputData.init == ZERO) fillZero(som, inputData.som_size * inputData.neuron_size);
+	if (inputData.init == RANDOM) fillWithRandomNumbers(som, inputData.som_size * inputData.neuron_size, inputData.seed);
+	else if (inputData.init == ZERO) fillWithValue(som, inputData.som_size * inputData.neuron_size);
     //writeSOM(som, som_dim, neuron_dim, "initial_som.bin");
 
 	float progress = 0.0;
@@ -63,9 +64,9 @@ void trainSelfOrganizingMap(InputData const& inputData)
 
 			float *image = iterImage->getPointerOfFirstPixel();
 
-			//#if DEBUG_MODE
+			#if DEBUG_MODE
 		        checkArrayForNanAndNegative(image, inputData.image_size, "image");
-			//#endif
+			#endif
 
 			generateRotatedImages(rotatedImages, image, inputData.numberOfRotations,
 				inputData.image_dim, inputData.neuron_dim, inputData.useFlip);

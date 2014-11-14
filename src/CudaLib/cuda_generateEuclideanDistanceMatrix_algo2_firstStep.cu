@@ -26,6 +26,8 @@ euclidean_distance_kernel(float *som, float *rotatedImages, float *firstStep, in
 	__shared__ float firstStep_local[block_size];
 	firstStep_local[tid] = 0.0f;
 
+	__syncthreads();
+
     while(i < image_size)
     {
     	diff = som[i + blockIdx.y * image_size] - rotatedImages[i + blockIdx.x * image_size];

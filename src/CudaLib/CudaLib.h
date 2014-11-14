@@ -52,8 +52,8 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
     bool flip, float *d_cosAlpha, float *d_sinAlpha);
 
 //! Host routine starting kernel for updating neurons.
-void cuda_updateNeurons(float* d_som, float* d_rotatedImages, int* d_bestRotationMatrix, Point bestMatch, int som_dim,
-    int neuron_dim, int num_rot);
+void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,
+    int som_dim, int neuron_dim, int num_rot);
 
 //! Basic allocation for device memory.
 float* cuda_alloc_float(int size);

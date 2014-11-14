@@ -5,7 +5,9 @@
  */
 
 #include "CudaLib.h"
+#include "updateNeurons_kernel.h"
 #include "cublas_v2.h"
+#include <float.h>
 #include <stdio.h>
 
 #define BLOCK_SIZE 32
@@ -13,49 +15,71 @@
 /**
  * CUDA Kernel Device code
  *
- * Computes multiple rotations of an image. cosine and sin
+ * Find the position where the euclidean distance is minimal between image and neuron.
  */
-template <unsigned int block_size>
 __global__ void
-kernel()
+findBestMatchingNeuron_kernel(float *euclideanDistanceMatrix, int *bestMatch_x, int *bestMatch_y, int som_dim)
 {
+    float minDistance = FLT_MAX;
 
-//    for (int i = 0; i < som_dim; ++i) {
-//        for (int j = 0; j < som_dim; ++j) {
-//        	factor = gaussian(distance(bestMatch,Point(i,j)), UPDATE_NEURONS_SIGMA) * UPDATE_NEURONS_DAMPING;
-//        	updateSingleNeuron(current_neuron, image + bestRotationMatrix[i*som_dim+j]*image_size, image_size, factor);
-//        	current_neuron += image_size;
-//    	}
-//    }
-//}
-//
-//void updateSingleNeuron(float* neuron, float* image, int image_size, float factor)
-//{
-//    for (int i = 0; i < image_size; ++i) {
-//    	neuron[i] -= (neuron[i] - image[i]) * factor;
-//    }
-
+    for (int i = 0, ij = 0; i < som_dim; ++i) {
+        for (int j = 0; j < som_dim; ++j, ++ij) {
+			if (euclideanDistanceMatrix[ij] < minDistance) {
+				minDistance = euclideanDistanceMatrix[ij];
+				*bestMatch_x = i;
+				*bestMatch_y = j;
+			}
+		}
+    }
 }
 
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
-void cuda_updateNeurons(float* d_som, float* d_rotatedImages, int* d_bestRotationMatrix, Point bestMatch, int som_dim,
-    int neuron_dim, int num_rot)
+void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,
+    int som_dim, int neuron_dim, int num_rot)
 {
-    // Setup execution parameters
-	int gridSize = ceil((float)neuron_dim/BLOCK_SIZE);
-    dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
-    dim3 dimGrid(gridSize, gridSize, num_rot);
+    int *d_bestMatch_x = cuda_alloc_int(1);
+    int *d_bestMatch_y = cuda_alloc_int(1);
 
-    // Start kernel
-    kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>();
-
-    cudaError_t error = cudaGetLastError();
-
-    if (error != cudaSuccess)
     {
-        fprintf(stderr, "Failed to launch CUDA kernel cuda_updateNeurons (error code %s)!\n", cudaGetErrorString(error));
-        exit(EXIT_FAILURE);
+    	// Start kernel
+        findBestMatchingNeuron_kernel<<<1,1>>>(d_euclideanDistanceMatrix, d_bestMatch_x, d_bestMatch_y, som_dim);
+
+        cudaError_t error = cudaGetLastError();
+
+        if (error != cudaSuccess)
+        {
+            fprintf(stderr, "Failed to launch CUDA kernel findBestMatchingNeuron_kernel (error code %s)!\n", cudaGetErrorString(error));
+            exit(EXIT_FAILURE);
+        }
     }
+//    int bestMatch_x;
+//    int bestMatch_y;
+//    cuda_copyDeviceToHost_int(&bestMatch_x, d_bestMatch_x, 1);
+//    cuda_copyDeviceToHost_int(&bestMatch_y, d_bestMatch_y, 1);
+//    printf("bestMatch_x = %i\n", bestMatch_x);
+//    printf("bestMatch_y = %i\n", bestMatch_y);
+    {
+		// Setup execution parameters
+		int neuron_size = neuron_dim * neuron_dim;
+		int gridSize = ceil((float)neuron_size/BLOCK_SIZE);
+		dim3 dimBlock(BLOCK_SIZE);
+		dim3 dimGrid(gridSize, som_dim, som_dim);
+
+		// Start kernel
+		updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+			d_bestMatch_x, d_bestMatch_y, neuron_size);
+
+		cudaError_t error = cudaGetLastError();
+
+		if (error != cudaSuccess)
+		{
+			fprintf(stderr, "Failed to launch CUDA kernel updateNeurons_kernel (error code %s)!\n", cudaGetErrorString(error));
+			exit(EXIT_FAILURE);
+		}
+    }
+
+	cuda_free(d_bestMatch_x);
+	cuda_free(d_bestMatch_y);
 }

@@ -9,6 +9,7 @@
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
+#include "UtilitiesLib/Filler.h"
 #include "gtest/gtest.h"
 #include <cmath>
 #include <iostream>
@@ -71,7 +72,7 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 	float *image = new float[image_size];
 	float *cpu_rotatedImages = new float[num_rot_using_flip * neuron_size];
 
-	fillRandom(image, image_size, 0);
+	fillWithRandomNumbers(image, image_size, 0);
 
 	generateRotatedImages(cpu_rotatedImages, image, data.num_rot, data.image_dim, data.neuron_dim, data.useFlip);
 

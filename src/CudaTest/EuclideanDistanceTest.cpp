@@ -9,6 +9,7 @@
 #include "EqualFloatArrays.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
+#include "UtilitiesLib/Filler.h"
 #include "gtest/gtest.h"
 #include <cmath>
 #include <iostream>
@@ -19,9 +20,9 @@ TEST(EuclideanDistanceTest, Array)
 {
 	int length = 72;
 	float *a = new float[length];
-	fillRandom(a, length, 0);
+	fillWithRandomNumbers(a, length, 0);
 	float *b = new float[length];
-	fillRandom(b, length, 1);
+	fillWithRandomNumbers(b, length, 1);
 
 	float cpu_result = calculateEuclideanDistanceWithoutSquareRoot(a, b, length);
 	float gpu_result = cuda_calculateEuclideanDistanceWithoutSquareRoot(a, b, length);
@@ -46,8 +47,8 @@ TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix_algo2)
 	float *cpu_euclideanDistanceMatrix = new float[som_size];
 	int *cpu_bestRotationMatrix = new int[som_size];
 
-	fillRandom(som, som_size * image_size, 0);
-	fillRandom(rotatedImages, num_rot * image_size, 1);
+	fillWithRandomNumbers(som, som_size * image_size, 0);
+	fillWithRandomNumbers(rotatedImages, num_rot * image_size, 1);
 
 	generateEuclideanDistanceMatrix(cpu_euclideanDistanceMatrix, cpu_bestRotationMatrix, som_dim, som,
 	    image_dim, num_rot, rotatedImages);

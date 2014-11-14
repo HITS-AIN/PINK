@@ -148,10 +148,8 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 					cuda_generateEuclideanDistanceMatrix_algo2(d_euclideanDistanceMatrix, d_bestRotationMatrix,
 						inputData.som_dim, d_som, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, d_rotatedImages);
 
-					Point bestMatch = findBestMatchingNeuron(euclideanDistanceMatrix, inputData.som_dim);
-
-					cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, bestMatch, inputData.som_dim,
-						inputData.neuron_dim, inputData.numberOfRotationsAndFlip);
+					cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix,
+					    inputData.som_dim, inputData.neuron_dim, inputData.numberOfRotationsAndFlip);
 
 					break;
 			    }

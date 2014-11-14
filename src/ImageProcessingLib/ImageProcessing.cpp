@@ -10,7 +10,6 @@
 #include <iostream>
 #include <math.h>
 #include <omp.h>
-#include <random>
 #include <stdlib.h>
 #include <stdexcept>
 
@@ -221,24 +220,6 @@ void zeroValuesSmallerThanStdDeviation(float *a, int length, float safety)
 
     for (i = 0; i < length; ++i) {
     	if (a[i] < threshold) a[i] = 0.0;
-    }
-}
-
-void fillRandom(float *a, int length, int seed)
-{
-	typedef std::mt19937 MyRNG;
-	MyRNG rng(seed);
-	std::normal_distribution<float> normal_dist(0.0, 0.1);
-
-    for (int i = 0; i < length; ++i) {
-    	a[i] = normal_dist(rng);
-    }
-}
-
-void fillZero(float *a, int length)
-{
-    for (int i = 0; i < length; ++i) {
-    	a[i] = 0.0;
     }
 }
 
