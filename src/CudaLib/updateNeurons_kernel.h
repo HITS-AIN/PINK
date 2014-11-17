@@ -25,6 +25,8 @@ updateNeurons_kernel(float *som, float *rotatedImages, int *bestRotationMatrix, 
     int *bestMatch_y, int neuron_size)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
+    if (i >= neuron_size) return;
+
     int ij = blockIdx.z*gridDim.y + blockIdx.y;
 
 	float factor = d_gaussian(d_distance(*bestMatch_x, *bestMatch_y, blockIdx.z, blockIdx.y), UPDATE_NEURONS_SIGMA) * UPDATE_NEURONS_DAMPING;

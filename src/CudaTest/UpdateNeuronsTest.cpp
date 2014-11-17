@@ -19,9 +19,9 @@ struct FullUpdateNeuronsTestData
 	FullUpdateNeuronsTestData(int som_dim, int neuron_dim, int num_rot)
 	  : som_dim(som_dim), neuron_dim(neuron_dim), num_rot(num_rot)
 	{
-		rot_size = num_rot * neuron_size;
 		som_size = som_dim * som_dim;
         neuron_size = neuron_dim * neuron_dim;
+		rot_size = num_rot * neuron_size;
 		som_total_size = som_size * neuron_size;
 	}
 
@@ -29,9 +29,9 @@ struct FullUpdateNeuronsTestData
 	int neuron_dim;
 	int num_rot;
 
-	int rot_size;
 	int som_size;
 	int neuron_size;
+	int rot_size;
 	int som_total_size;
 };
 
@@ -67,12 +67,12 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 	cuda_copyHostToDevice_int(d_bestRotationMatrix, bestRotationMatrix, data.som_size);
 	cuda_copyHostToDevice_float(d_euclideanDistanceMatrix, euclideanDistanceMatrix, data.som_size);
 
-//	cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix,
-//	    data.som_dim, data.neuron_dim, data.num_rot);
-//
-//	cuda_copyDeviceToHost_float(gpu_som, d_som, data.som_total_size);
-//
-//	EXPECT_TRUE(EqualFloatArrays(cpu_som, gpu_som, data.som_total_size));
+	cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix,
+	    data.som_dim, data.neuron_dim, data.num_rot);
+
+	cuda_copyDeviceToHost_float(gpu_som, d_som, data.som_total_size);
+
+	EXPECT_TRUE(EqualFloatArrays(cpu_som, gpu_som, data.som_total_size));
 
 	cuda_free(d_euclideanDistanceMatrix);
 	cuda_free(d_bestRotationMatrix);
