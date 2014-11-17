@@ -165,23 +165,31 @@ InputData::InputData(int argc, char **argv)
 	}
 
 	if (optind < argc) {
-		cout << "Unkown argv elements: ";
+		print_usage();
+		cout << "ERROR: Unkown argv elements: ";
 		while (optind < argc) cout << argv[optind++] << " ";
 		cout << endl;
-		print_usage();
 		exit(EXIT_FAILURE);
 	}
 
 	// Check if all non-optional arguments are set
 	if (imagesFilename.empty() or resultFilename.empty()) {
-		cout << "Missing non-optional argument." << endl;
 		print_usage();
+		cout << "ERROR: Missing non-optional argument." << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if (layout == HEXAGONAL) {
+		print_usage();
+		cout << "ERROR: Only quadratic SOM layout is supported.";
 		exit(EXIT_FAILURE);
 	}
 
 	PINK::ImageIterator<float> iterImage(imagesFilename);
+
 	if (iterImage->getWidth() != iterImage->getHeight()) {
-		cout << "Only quadratic images are supported.";
+		print_usage();
+		cout << "ERROR: Only quadratic images are supported.";
 		exit(EXIT_FAILURE);
 	}
 
@@ -192,7 +200,8 @@ InputData::InputData(int argc, char **argv)
 
     if (neuron_dim == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
     if (neuron_dim > image_dim) {
-		cout << "Neuron dimension must be smaller or equal to image dimension.";
+		print_usage();
+		cout << "ERROR: Neuron dimension must be smaller or equal to image dimension.";
 		exit(EXIT_FAILURE);
     }
     if ((image_dim - neuron_dim)%2) --neuron_dim;

@@ -11,7 +11,7 @@ __device__ float d_gaussian(float x, float sigma)
     return 1.0 / (sigma * sqrt(2.0 * M_PI)) * exp(-0.5 * pow((x/sigma),2));
 }
 
-__device__ float d_distance(int x1, int y1, int x2, int y2)
+__device__ float d_distance_square(int x1, int y1, int x2, int y2)
 {
     return sqrt(powf(x1 - x2, 2) + powf(y1 - y2, 2));
 }
@@ -29,7 +29,7 @@ updateNeurons_kernel(float *som, float *rotatedImages, int *bestRotationMatrix, 
 
     int ij = blockIdx.z*gridDim.y + blockIdx.y;
 
-	float factor = d_gaussian(d_distance(*bestMatch_x, *bestMatch_y, blockIdx.z, blockIdx.y), UPDATE_NEURONS_SIGMA) * UPDATE_NEURONS_DAMPING;
+	float factor = d_gaussian(d_distance_square(*bestMatch_x, *bestMatch_y, blockIdx.z, blockIdx.y), UPDATE_NEURONS_SIGMA) * UPDATE_NEURONS_DAMPING;
 
 	som[ij*neuron_size + i] -= (som[ij*neuron_size + i] - rotatedImages[bestRotationMatrix[ij]*neuron_size + i]) * factor;
 }

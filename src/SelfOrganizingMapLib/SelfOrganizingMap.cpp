@@ -119,7 +119,7 @@ void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point c
 
     for (int i = 0; i < som_dim; ++i) {
         for (int j = 0; j < som_dim; ++j) {
-        	factor = gaussian(distance(bestMatch,Point(i,j)), UPDATE_NEURONS_SIGMA) * UPDATE_NEURONS_DAMPING;
+        	factor = gaussian(distance_square(bestMatch,Point(i,j)), UPDATE_NEURONS_SIGMA) * UPDATE_NEURONS_DAMPING;
         	updateSingleNeuron(current_neuron, image + bestRotationMatrix[i*som_dim+j]*image_size, image_size, factor);
         	current_neuron += image_size;
     	}

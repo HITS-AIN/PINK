@@ -122,7 +122,6 @@ void cuda_trainSelfOrganizingMap_algo0(InputData const& inputData)
 	writeSOM(som, inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
 
 	// Free memory
-	free(d_image);
 	free(bestRotationMatrix);
 	free(euclideanDistanceMatrix);
 	free(rotatedImages);
