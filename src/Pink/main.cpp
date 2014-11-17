@@ -43,8 +43,31 @@ int main (int argc, char **argv)
 
     #if PINK_USE_CUDA
 	    if (inputData.useCuda)
-	    	cuda_trainSelfOrganizingMap(inputData);
-	    else
+	    {
+			switch (inputData.algo)
+			{
+			    case 0:
+				{
+			    	cuda_trainSelfOrganizingMap_algo0(inputData);
+					break;
+			    }
+			    case 1:
+				{
+			    	cuda_trainSelfOrganizingMap_algo1(inputData);
+					break;
+			    }
+			    case 2:
+				{
+			    	cuda_trainSelfOrganizingMap_algo2(inputData);
+					break;
+			    }
+			    default:
+				{
+			    	cout << "Unkown algorithm number (" << inputData.algo << ")." << endl;
+				    exit(EXIT_FAILURE);
+			    }
+			}
+		} else
     #endif
 	    	trainSelfOrganizingMap(inputData);
 

@@ -41,7 +41,7 @@ InputData::InputData(int argc, char **argv)
     neuron_size(0),
     som_total_size(0),
     numberOfRotationsAndFlip(0),
-    algo(0)
+    algo(2)
 {
 	static struct option long_options[] = {
 		{"image-file",      1, 0, 'i'},
@@ -268,9 +268,10 @@ void InputData::print_usage() const
 			"\n"
 	        "  Optional options:\n"
 			"\n"
-	        "    --algo, -a              Specific GPU algorithm (default = 0).\n"
+	        "    --algo, -a              Specific GPU algorithm (default = 2).\n"
 			"                            0: FindBestNeuron on GPU, ImageRotation and UpdateSOM on CPU\n"
 			"                            1: ImageRotation and FindBestNeuron on GPU, UpdateSOM on CPU\n"
+			"                            2: ImageRotation and FindBestNeuron and UpdateSOM on GPU\n"
             "    --cuda-off              Switch off CUDA acceleration (default = on).\n"
 	        "    --flip-off              Switch off usage of mirrored images (default = on).\n"
 			"    --help, -h              Print this lines\n"

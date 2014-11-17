@@ -28,7 +28,9 @@ cuda_add_library(
     cuda_generateEuclideanDistanceMatrix.cu
     cuda_generateEuclideanDistanceMatrix_secondStep.cu
     cuda_generateRotatedImages.cu
-    cuda_trainSelfOrganizingMap.cpp
+    cuda_trainSelfOrganizingMap_algo0.cpp
+    cuda_trainSelfOrganizingMap_algo1.cpp
+    cuda_trainSelfOrganizingMap_algo2.cpp
     cuda_rotate.cu
     cuda_print_properties.cu
     cuda_updateNeurons.cu
