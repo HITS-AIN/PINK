@@ -93,6 +93,11 @@ InputData::InputData(int argc, char **argv)
 			break;
 		case 1:
 			numIter = atoi(optarg);
+			if (numIter < 0) {
+				print_usage();
+				printf ("ERROR: Number of iterations must be larger than 0.\n");
+				exit(EXIT_FAILURE);
+			}
 			break;
 		case 'r':
 			resultFilename = optarg;
@@ -117,16 +122,16 @@ InputData::InputData(int argc, char **argv)
 		case 'n':
 			numberOfRotations = atoi(optarg);
 			if (numberOfRotations < 0) {
-				printf ("Number of rotations must be larger than 0.\n\n");
 				print_usage();
+				printf ("ERROR: Number of rotations must be larger than 0.\n");
 				exit(EXIT_FAILURE);
 			}
 			break;
 		case 't':
 			numberOfThreads = atoi(optarg);
 			if (useCuda and numberOfThreads > 1) {
-				printf ("Number of CPU threads must be 1 using CUDA.\n\n");
 				print_usage();
+				printf ("ERROR: Number of CPU threads must be 1 using CUDA.\n");
 				exit(EXIT_FAILURE);
 			}
 			break;

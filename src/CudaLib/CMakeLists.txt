@@ -34,6 +34,7 @@ cuda_add_library(
     cuda_rotate.cu
     cuda_print_properties.cu
     cuda_updateNeurons.cu
+    trigonometricValues.cpp
 )
 
 target_link_libraries(

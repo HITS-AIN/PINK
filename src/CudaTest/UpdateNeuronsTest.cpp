@@ -61,13 +61,14 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 	float *d_som = cuda_alloc_float(data.som_total_size);
 	int *d_bestRotationMatrix = cuda_alloc_int(data.som_size);
 	float *d_euclideanDistanceMatrix = cuda_alloc_float(data.som_size);
+    int *d_bestMatch = cuda_alloc_int(2);
 
 	cuda_copyHostToDevice_float(d_rotatedImages, rotatedImages, data.rot_size);
 	cuda_copyHostToDevice_float(d_som, gpu_som, data.som_total_size);
 	cuda_copyHostToDevice_int(d_bestRotationMatrix, bestRotationMatrix, data.som_size);
 	cuda_copyHostToDevice_float(d_euclideanDistanceMatrix, euclideanDistanceMatrix, data.som_size);
 
-	cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix,
+	cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
 	    data.som_dim, data.neuron_dim, data.num_rot);
 
 	cuda_copyDeviceToHost_float(gpu_som, d_som, data.som_total_size);
@@ -78,6 +79,7 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 	cuda_free(d_bestRotationMatrix);
 	cuda_free(d_som);
 	cuda_free(d_rotatedImages);
+	cuda_free(d_bestMatch);
 
 	delete [] euclideanDistanceMatrix;
 	delete [] bestRotationMatrix;

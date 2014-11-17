@@ -60,22 +60,8 @@ void cuda_trainSelfOrganizingMap_algo0(InputData const& inputData)
 	}
 
     // Prepare trigonometric values
-	float angleStepRadians = inputData.numberOfRotations ? 2.0 * M_PI / inputData.numberOfRotations : 0.0;
-
-	float angle;
-	float *cosAlpha = (float *)malloc(inputData.numberOfRotations * sizeof(float));
-	float *d_cosAlpha = cuda_alloc_float(inputData.numberOfRotations);
-	float *sinAlpha = (float *)malloc(inputData.numberOfRotations * sizeof(float));
-	float *d_sinAlpha = cuda_alloc_float(inputData.numberOfRotations);
-
-	for (int i = 0; i < inputData.numberOfRotations - 1; ++i) {
-		angle = (i+1) * angleStepRadians;
-	    cosAlpha[i] = cos(angle);
-        sinAlpha[i] = sin(angle);
-	}
-
-	cuda_copyHostToDevice_float(d_cosAlpha, cosAlpha, inputData.numberOfRotations);
-	cuda_copyHostToDevice_float(d_sinAlpha, sinAlpha, inputData.numberOfRotations);
+	float *d_cosAlpha = NULL, *d_sinAlpha = NULL;
+	trigonometricValues(&d_cosAlpha, &d_sinAlpha, inputData.numberOfRotations - 1);
 
 	// Progress status
 	float progress = 0.0;
@@ -126,10 +112,8 @@ void cuda_trainSelfOrganizingMap_algo0(InputData const& inputData)
 	free(euclideanDistanceMatrix);
 	free(rotatedImages);
 	free(som);
-	free(cosAlpha);
-	free(sinAlpha);
-	cuda_free(d_cosAlpha);
-	cuda_free(d_sinAlpha);
+	if (d_cosAlpha) cuda_free(d_cosAlpha);
+	if (d_sinAlpha) cuda_free(d_sinAlpha);
     cuda_free(d_image);
     cuda_free(d_bestRotationMatrix);
     cuda_free(d_euclideanDistanceMatrix);

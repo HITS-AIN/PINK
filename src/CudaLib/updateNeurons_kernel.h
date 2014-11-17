@@ -21,15 +21,14 @@ __device__ float d_distance_square(int x1, int y1, int x2, int y2)
  */
 template <unsigned int block_size>
 __global__ void
-updateNeurons_kernel(float *som, float *rotatedImages, int *bestRotationMatrix, int *bestMatch_x,
-    int *bestMatch_y, int neuron_size)
+updateNeurons_kernel(float *som, float *rotatedImages, int *bestRotationMatrix, int *bestMatch, int neuron_size)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i >= neuron_size) return;
 
     int ij = blockIdx.z*gridDim.y + blockIdx.y;
 
-	float factor = d_gaussian(d_distance_square(*bestMatch_x, *bestMatch_y, blockIdx.z, blockIdx.y), UPDATE_NEURONS_SIGMA) * UPDATE_NEURONS_DAMPING;
+	float factor = d_gaussian(d_distance_square(bestMatch[0], bestMatch[1], blockIdx.z, blockIdx.y), UPDATE_NEURONS_SIGMA) * UPDATE_NEURONS_DAMPING;
 
 	som[ij*neuron_size + i] -= (som[ij*neuron_size + i] - rotatedImages[bestRotationMatrix[ij]*neuron_size + i]) * factor;
 }

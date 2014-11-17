@@ -9,10 +9,9 @@
 #include "ImageProcessingLib/ImageIterator.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
-#include "cublas_v2.h"
+#include "UtilitiesLib/Filler.h"
 #include <iostream>
 #include <iomanip>
-#include <omp.h>
 #include <stdio.h>
 
 using namespace std;
@@ -25,51 +24,37 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
     	cuda_print_properties();
     }
 
-    cudaError_t error;
-
-    float *d_som = NULL, *d_rotatedImages = NULL, *d_euclideanDistanceMatrix = NULL, *d_image = NULL;
-    int *d_bestRotationMatrix = NULL;
-
 	// Memory allocation
 	if (inputData.verbose) cout << "\n  Size of SOM = " << inputData.som_total_size * sizeof(float) << " bytes" << endl;
-	d_som = cuda_alloc_float(inputData.som_total_size);
+	float *d_som = cuda_alloc_float(inputData.som_total_size);
 
 	if (inputData.verbose) cout << "  Size of rotated images = " << inputData.numberOfRotationsAndFlip * inputData.neuron_size * sizeof(float)<< " bytes" << endl;
-	d_rotatedImages = cuda_alloc_float(inputData.numberOfRotationsAndFlip * inputData.neuron_size);
+	float *d_rotatedImages = cuda_alloc_float(inputData.numberOfRotationsAndFlip * inputData.neuron_size);
 
 	if (inputData.verbose) cout << "  Size of euclidean distance matrix = " << inputData.som_size * sizeof(float) << " bytes" << endl;
-	d_euclideanDistanceMatrix = cuda_alloc_float(inputData.som_size);
+	float *d_euclideanDistanceMatrix = cuda_alloc_float(inputData.som_size);
 
 	if (inputData.verbose) cout << "  Size of best rotation matrix = " << inputData.som_size * sizeof(int) << " bytes\n" << endl;
-	d_bestRotationMatrix = cuda_alloc_int(inputData.som_size);
+	int *d_bestRotationMatrix = cuda_alloc_int(inputData.som_size);
 
 	if (inputData.verbose) cout << "  Size of image = " << inputData.image_size * sizeof(float) << " bytes\n" << endl;
-	d_image = cuda_alloc_float(inputData.image_size_using_flip);
+	float *d_image = cuda_alloc_float(inputData.image_size_using_flip);
+
+	// Best matching position (x,y)
+    int *d_bestMatch = cuda_alloc_int(2);
 
     // Initialize SOM
 	if (inputData.init == ZERO) cuda_fill_zero(d_som, inputData.som_total_size);
 	else {
-        printf("Random initialization not implemented yet.");
-        exit(EXIT_FAILURE);
+		float *som = (float *)malloc(inputData.som_total_size * sizeof(float));
+		fillWithValue(som, inputData.som_total_size);
+		cuda_copyHostToDevice_float(d_som, som, inputData.som_total_size);
+		free(som);
 	}
 
     // Prepare trigonometric values
-	float angleStepRadians = inputData.numberOfRotations ? 2.0 * M_PI / inputData.numberOfRotations : 0.0;
-
-	float angle;
-	float *cosAlpha = (float *)malloc(inputData.numberOfRotations * sizeof(float));
-	float *d_cosAlpha = cuda_alloc_float(inputData.numberOfRotations);
-	float *sinAlpha = (float *)malloc(inputData.numberOfRotations * sizeof(float));
-	float *d_sinAlpha = cuda_alloc_float(inputData.numberOfRotations);
-
-	for (int i = 0; i < inputData.numberOfRotations - 1; ++i) {
-		angle = (i+1) * angleStepRadians;
-	    cosAlpha[i] = cos(angle);
-        sinAlpha[i] = sin(angle);
-	}
-
-	cuda_copyHostToDevice_float(d_cosAlpha, cosAlpha, inputData.numberOfRotations);
-	cuda_copyHostToDevice_float(d_sinAlpha, sinAlpha, inputData.numberOfRotations);
+	float *d_cosAlpha = NULL, *d_sinAlpha = NULL;
+	trigonometricValues(&d_cosAlpha, &d_sinAlpha, inputData.numberOfRotations - 1);
 
 	// Progress status
 	float progress = 0.0;
@@ -97,20 +82,19 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
 			cuda_generateEuclideanDistanceMatrix_algo2(d_euclideanDistanceMatrix, d_bestRotationMatrix,
 				inputData.som_dim, d_som, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, d_rotatedImages);
 
-			cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix,
+			cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
 				inputData.som_dim, inputData.neuron_dim, inputData.numberOfRotationsAndFlip);
 		}
 	}
 
 	// Free memory
-	free(cosAlpha);
-	free(sinAlpha);
-	cuda_free(d_cosAlpha);
-	cuda_free(d_sinAlpha);
+	if (d_cosAlpha) cuda_free(d_cosAlpha);
+	if (d_sinAlpha) cuda_free(d_sinAlpha);
     cuda_free(d_image);
     cuda_free(d_bestRotationMatrix);
     cuda_free(d_euclideanDistanceMatrix);
     cuda_free(d_rotatedImages);
+    cuda_free(d_bestMatch);
 
 	if (inputData.verbose) {
 		cout << "  Progress: 100 %\n" << endl;
