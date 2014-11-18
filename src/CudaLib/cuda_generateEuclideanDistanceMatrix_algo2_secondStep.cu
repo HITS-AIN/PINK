@@ -17,9 +17,10 @@
  */
 template <unsigned int block_size>
 __global__ void
-second_step_kernel(float *euclideanDistanceMatrix, int *bestRotationMatrix, float *firstStep, int num_rot)
+second_step_kernel(float *euclideanDistanceMatrix, int *bestRotationMatrix, float *firstStep, int num_rot, int som_size)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
+    if (i >= som_size) return;
 
     float *pFirstStep = firstStep + i*num_rot;
     float *pDist = euclideanDistanceMatrix + i;
@@ -45,7 +46,7 @@ void cuda_generateEuclideanDistanceMatrix_algo2_secondStep(float *d_euclideanDis
     dim3 dimGrid(ceil((float)som_size/BLOCK_SIZE));
 
     // Start kernel
-    second_step_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_euclideanDistanceMatrix, d_bestRotationMatrix, d_firstStep, num_rot);
+    second_step_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_euclideanDistanceMatrix, d_bestRotationMatrix, d_firstStep, num_rot, som_size);
 
     cudaError_t error = cudaGetLastError();
 

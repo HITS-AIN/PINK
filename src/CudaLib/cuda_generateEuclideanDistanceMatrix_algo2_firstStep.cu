@@ -8,7 +8,7 @@
 #include "cublas_v2.h"
 #include <stdio.h>
 
-#define BLOCK_SIZE 32
+#define BLOCK_SIZE 128
 
 /**
  * CUDA Kernel Device code
@@ -41,15 +41,23 @@ euclidean_distance_kernel(float *som, float *rotatedImages, float *firstStep, in
     if (block_size >= 256) { if (tid < 128) { firstStep_local[tid] += firstStep_local[tid + 128]; } __syncthreads(); }
     if (block_size >= 128) { if (tid <  64) { firstStep_local[tid] += firstStep_local[tid +  64]; } __syncthreads(); }
 
-	if (tid < 32)
-	{
-		if (block_size >= 64) { firstStep_local[tid] += firstStep_local[tid + 32]; __syncthreads(); }
-		if (block_size >= 32) { firstStep_local[tid] += firstStep_local[tid + 16]; __syncthreads(); }
-		if (block_size >= 16) { firstStep_local[tid] += firstStep_local[tid +  8]; __syncthreads(); }
-		if (block_size >=  8) { firstStep_local[tid] += firstStep_local[tid +  4]; __syncthreads(); }
-		if (block_size >=  4) { firstStep_local[tid] += firstStep_local[tid +  2]; __syncthreads(); }
-		if (block_size >=  2) { firstStep_local[tid] += firstStep_local[tid +  1]; __syncthreads(); }
-	}
+    if (block_size >=  64) { if (tid <  32) { firstStep_local[tid] += firstStep_local[tid +  32]; } __syncthreads(); }
+    if (block_size >=  32) { if (tid <  16) { firstStep_local[tid] += firstStep_local[tid +  16]; } __syncthreads(); }
+    if (block_size >=  16) { if (tid <   8) { firstStep_local[tid] += firstStep_local[tid +   8]; } __syncthreads(); }
+    if (block_size >=   8) { if (tid <   4) { firstStep_local[tid] += firstStep_local[tid +   4]; } __syncthreads(); }
+    if (block_size >=   4) { if (tid <   2) { firstStep_local[tid] += firstStep_local[tid +   2]; } __syncthreads(); }
+    if (block_size >=   2) { if (tid <   1) { firstStep_local[tid] += firstStep_local[tid +   1]; } __syncthreads(); }
+
+    // ATTENTION!!! Static loop unrolling only work with block_size = 128.
+//	if (tid < 32)
+//	{
+//		if (block_size >= 64) { firstStep_local[tid] += firstStep_local[tid + 32]; }
+//		if (block_size >= 32) { firstStep_local[tid] += firstStep_local[tid + 16]; }
+//		if (block_size >= 16) { firstStep_local[tid] += firstStep_local[tid +  8]; }
+//		if (block_size >=  8) { firstStep_local[tid] += firstStep_local[tid +  4]; }
+//		if (block_size >=  4) { firstStep_local[tid] += firstStep_local[tid +  2]; }
+//		if (block_size >=  2) { firstStep_local[tid] += firstStep_local[tid +  1]; }
+//	}
 
 	// Copy accumulated local value to global array firstStep
 	if (tid == 0) atomicExch(firstStep + blockIdx.x + blockIdx.y * gridDim.x, firstStep_local[tid]);

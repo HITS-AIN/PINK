@@ -19,12 +19,13 @@ void cuda_generateEuclideanDistanceMatrix_algo2(float *d_euclideanDistanceMatrix
 
     float *d_firstStep = cuda_alloc_float(som_size * num_rot);
 
-    // Zero filling should not needed
-    //cuda_fill_zero(d_firstStep, som_size * num_rot);
-
     // First step ...
     cuda_generateEuclideanDistanceMatrix_algo2_firstStep(d_som, d_rotatedImages,
         d_firstStep, som_size, num_rot, image_size);
+
+//    float firstStep;
+//	cuda_copyDeviceToHost_float(&firstStep, d_firstStep, 1);
+//	printf("firstStep = %f", firstStep);
 
     // Second step ...
     cuda_generateEuclideanDistanceMatrix_algo2_secondStep(d_euclideanDistanceMatrix, d_bestRotationMatrix,

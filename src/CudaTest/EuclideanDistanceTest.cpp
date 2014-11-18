@@ -53,10 +53,6 @@ TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix_algo2)
 	generateEuclideanDistanceMatrix(cpu_euclideanDistanceMatrix, cpu_bestRotationMatrix, som_dim, som,
 	    image_dim, num_rot, rotatedImages);
 
-//	for (int i=0; i < som_size; ++i) {
-//		std::cout << "cpu eucl " << i << ": " << calculateEuclideanDistanceWithoutSquareRoot(som + i*image_size, rotatedImages, image_size) << std::endl;
-//    }
-
 	float *d_som = cuda_alloc_float(som_size * image_size);
 	float *d_rotatedImages = cuda_alloc_float(num_rot * image_size);
 	float *d_euclideanDistanceMatrix = cuda_alloc_float(som_size);
