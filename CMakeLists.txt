@@ -1,7 +1,7 @@
 project(Pink C CXX)
 
 set(PINK_VERSION_MAJOR 0)
-set(PINK_VERSION_MINOR 5)
+set(PINK_VERSION_MINOR 6)
 
 cmake_minimum_required(VERSION 2.6.2)
 

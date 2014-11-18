@@ -41,7 +41,11 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
 	float *d_image = cuda_alloc_float(inputData.image_size_using_flip);
 
 	// Best matching position (x,y)
+    vector<int> bestMatch(2);
     int *d_bestMatch = cuda_alloc_int(2);
+
+    // Counting updates of each neuron
+	vector<int> updateCounter(inputData.som_size);
 
     // Initialize SOM
 	if (inputData.init == ZERO) cuda_fill_zero(d_som, inputData.som_total_size);
@@ -84,6 +88,9 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
 
 			cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
 				inputData.som_dim, inputData.neuron_dim, inputData.numberOfRotationsAndFlip);
+
+			cuda_copyDeviceToHost_int(&bestMatch[0], d_bestMatch, 2);
+			++updateCounter[bestMatch[0]*inputData.som_dim + bestMatch[1]];
 		}
 	}
 
@@ -104,6 +111,14 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
 	vector<float> som(inputData.som_total_size);
 	cuda_copyDeviceToHost_float(&som[0], d_som, inputData.som_total_size);
 	writeSOM(&som[0], inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
+
+	cout << "  Number of updates of each neuron:\n" << endl;
+	for (int i=0; i != inputData.som_dim; ++i) {
+		for (int j=0; j != inputData.som_dim; ++j) {
+			cout << setw(6) << updateCounter[i*inputData.som_dim + j] << " ";
+		}
+		cout << endl;
+	}
 
 	// Free memory
     cuda_free(d_som);
