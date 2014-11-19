@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export PATH=@CMAKE_INSTALL_PREFIX@/bin:$PATH
+export PATH=@CMAKE_INSTALL_PREFIX@/scripts:$PATH

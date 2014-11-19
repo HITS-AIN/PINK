@@ -32,6 +32,11 @@ set(CMAKE_CXX_FLAGS_PROFILING "-O3 -g -pg -DDEBUG_MODE")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 
 configure_file (
+  "${PROJECT_SOURCE_DIR}/bashrc.in"
+  "${PROJECT_SOURCE_DIR}/bashrc"
+)
+
+configure_file (
   "${PROJECT_SOURCE_DIR}/src/UtilitiesLib/Version.h.in"
   "${PROJECT_SOURCE_DIR}/src/UtilitiesLib/Version.h"
 )
@@ -88,3 +93,4 @@ if(DOXYGEN_FOUND)
 endif()
 
 install(FILES ${PROJECT_SOURCE_DIR}/scripts/show.py ${PROJECT_SOURCE_DIR}/scripts/numpy2binary.py DESTINATION scripts)
+install(FILES ${PROJECT_SOURCE_DIR}/bashrc DESTINATION .)
