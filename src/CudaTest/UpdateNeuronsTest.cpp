@@ -5,7 +5,7 @@
  */
 
 #include "CudaLib/CudaLib.h"
-#include "EqualFloatArrays.h"
+#include "UtilitiesLib/EqualFloatArrays.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
 #include "UtilitiesLib/Filler.h"

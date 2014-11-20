@@ -33,37 +33,42 @@ std::ostream& operator << (std::ostream& os, SOMInitialization init)
 	return os;
 }
 
-void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim, bool useFlip)
+void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int image_dim, int neuron_dim, bool useFlip)
 {
 	int image_size = image_dim * image_dim;
 	int neuron_size = neuron_dim * neuron_dim;
-	float angleStepRadians = numberOfRotations ? 2.0 * M_PI / numberOfRotations : 0.0;
+	float angleStepRadians = num_rot ? 0.5 * M_PI / num_rot : 0.0;
 
-	// Copy original image on first position
+	int num_real_rot = num_rot/4;
+	int num_real_rot_offset1 =     num_real_rot * neuron_size;
+	int num_real_rot_offset2 = 2 * num_real_rot * neuron_size;
+	int num_real_rot_offset3 = 3 * num_real_rot * neuron_size;
+
+	// Copy original image to first position of image array
 	crop(image_dim, image_dim, neuron_dim, neuron_dim, image, rotatedImages);
+	rotate_90degrees(neuron_dim, neuron_dim, rotatedImages, rotatedImages + num_real_rot_offset1);
+	rotate_90degrees(neuron_dim, neuron_dim, rotatedImages + num_real_rot_offset1, rotatedImages + num_real_rot_offset2);
+	rotate_90degrees(neuron_dim, neuron_dim, rotatedImages + num_real_rot_offset2, rotatedImages + num_real_rot_offset3);
 
-	// Rotate unflipped image
+	// Rotate images
     #pragma omp parallel for
-	for (int i = 1; i < numberOfRotations; ++i) {
-		rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, image, rotatedImages + i*neuron_size, i*angleStepRadians);
+	for (int i = 1; i < num_real_rot; ++i) {
+		float *currentImage = rotatedImages + i*neuron_size;
+		rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, image, currentImage, i*angleStepRadians);
+		rotate_90degrees(neuron_dim, neuron_dim, currentImage, currentImage + num_real_rot_offset1);
+		rotate_90degrees(neuron_dim, neuron_dim, currentImage + num_real_rot_offset1, currentImage + num_real_rot_offset2);
+		rotate_90degrees(neuron_dim, neuron_dim, currentImage + num_real_rot_offset2, currentImage + num_real_rot_offset3);
 	}
 
+	// Flip images
 	if (useFlip)
 	{
-		// Flip image
-		float *flippedImage = (float *)malloc(image_size * sizeof(float));
-		flip(image_dim, image_dim, image, flippedImage);
+		float *flippedRotatedImages = rotatedImages + num_rot * neuron_size;
 
-		float *flippedRotatedImage = rotatedImages + numberOfRotations * neuron_size;
-		crop(image_dim, image_dim, neuron_dim, neuron_dim, flippedImage, flippedRotatedImage);
-
-		// Rotate flipped image
 		#pragma omp parallel for
-		for (int i = 1; i < numberOfRotations; ++i)	{
-			rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, flippedImage, flippedRotatedImage + i*neuron_size, i*angleStepRadians);
+		for (int i = 0; i < num_rot; ++i)	{
+			flip(neuron_dim, neuron_dim, rotatedImages + i*neuron_size, flippedRotatedImages + i*neuron_size);
 		}
-
-		free(flippedImage);
 	}
 }
 

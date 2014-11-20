@@ -8,6 +8,7 @@
 #include "ImageProcessing.h"
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <math.h>
 #include <omp.h>
 #include <stdlib.h>
@@ -17,26 +18,31 @@
     #include "Python.h"
 #endif
 
+using namespace std;
+
 void rotate_none(int height, int width, float *source, float *dest, float alpha)
 {
-	int x0, x1, x2, y0, y1, y2;
     const float cosAlpha = cos(alpha);
     const float sinAlpha = sin(alpha);
 
-    x0 = width * 0.5;
-    y0 = height * 0.5;
+    float x0 = (width-1) * 0.5;
+    float y0 = (height-1) * 0.5;
+    float x1, y1;
 
-    for (x2 = 0; x2 < width; ++x2) {
-        for (y2 = 0; y2 < height; ++y2) {
-        	dest[x2*height + y2] = 0.0;
-        }
-    }
+    for (int x2 = 0; x2 < width; ++x2) {
+        for (int y2 = 0; y2 < height; ++y2) {
 
-    for (x1 = 0; x1 < width; ++x1) {
-        for (y1 = 0; y1 < height; ++y1) {
-        	x2 = (x1 - x0) * cosAlpha - (y1 - y0) * sinAlpha + x0;
-        	y2 = (x1 - x0) * sinAlpha + (y1 - y0) * cosAlpha + y0;
-            if (x2 > -1 && x2 < width && y2 > -1 && y2 < height) dest[x2*height + y2] = source[x1*height + y1];
+        	x1 = ((float)x2 - x0) * cosAlpha + ((float)y2 - y0) * sinAlpha + x0 + 0.1;
+            if (x1 < 0 or x1 >= width) {
+            	dest[x2*height + y2] = 0.0;
+            	continue;
+            }
+        	y1 = ((float)y2 - y0) * cosAlpha - ((float)x2 - x0) * sinAlpha + y0 + 0.1;
+            if (y1 < 0 && y1 >= height) {
+            	dest[x2*height + y2] = 0.0;
+            	continue;
+            }
+            dest[x2*height + y2] = source[(int)x1*height + (int)y1];
         }
     }
 }
@@ -46,23 +52,33 @@ void rotate_bilinear(int height, int width, float *source, float *dest, float al
     const float cosAlpha = cos(alpha);
     const float sinAlpha = sin(alpha);
 
-    int x0 = width * 0.5;
-    int y0 = height * 0.5;
-    int x1, y1, x2, y2;
+    float x0 = (width-1) * 0.5;
+    float y0 = (height-1) * 0.5;
+    float x1, y1;
 
-    for (x2 = 0; x2 < width; ++x2) {
-        for (y2 = 0; y2 < height; ++y2) {
-        	x1 = (x2 - x0) * cosAlpha + (y2 - y0) * sinAlpha + x0;
+    for (int x2 = 0; x2 < width; ++x2) {
+        for (int y2 = 0; y2 < height; ++y2) {
+
+        	x1 = ((float)x2 - x0) * cosAlpha + ((float)y2 - y0) * sinAlpha + x0 + 0.1;
             if (x1 < 0 or x1 >= width) {
             	dest[x2*height + y2] = 0.0;
             	continue;
             }
-        	y1 = (y2 - y0) * cosAlpha - (x2 - x0) * sinAlpha + y0;
+        	y1 = ((float)y2 - y0) * cosAlpha - ((float)x2 - x0) * sinAlpha + y0 + 0.1;
             if (y1 < 0 && y1 >= height) {
             	dest[x2*height + y2] = 0.0;
             	continue;
             }
-            dest[x2*height + y2] = source[x1*height + y1];
+            dest[x2*height + y2] = source[(int)x1*height + (int)y1];
+        }
+    }
+}
+
+void rotate_90degrees(int height, int width, float *source, float *dest)
+{
+    for (int x = 0; x < width; ++x) {
+        for (int y = 0; y < height; ++y) {
+            dest[(height-y-1)*width + x] = source[x*height + y];
         }
     }
 }
@@ -221,6 +237,17 @@ void zeroValuesSmallerThanStdDeviation(float *a, int length, float safety)
     for (i = 0; i < length; ++i) {
     	if (a[i] < threshold) a[i] = 0.0;
     }
+}
+
+void printImage(float *image, int height, int width)
+{
+    for (int j = 0; j < height; ++j) {
+        for (int i = 0; i < width; ++i) {
+            cout << setw(10) << fixed << setprecision(3) << image[i*height+j] << " ";
+    	}
+        cout << endl;
+    }
+    cout << endl;
 }
 
 void writeImageToBinaryFile(float *image, int height, int width, std::string const& filename)

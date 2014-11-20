@@ -121,9 +121,9 @@ InputData::InputData(int argc, char **argv)
 			break;
 		case 'n':
 			numberOfRotations = atoi(optarg);
-			if (numberOfRotations < 0) {
+			if (numberOfRotations <= 0 or (numberOfRotations != 1 and numberOfRotations % 4)) {
 				print_usage();
-				printf ("ERROR: Number of rotations must be larger than 0.\n");
+				printf ("ERROR: Number of rotations must be 1 or a multiple of 4.\n");
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -292,7 +292,7 @@ void InputData::print_usage() const
 	        "    --init, -x              Type of SOM initialization (random, zero, default = zero).\n"
 	        "    --layout, -l            Layout of SOM (quadratic, hexagonal, default = quadratic).\n"
 	        "    --neuron-dimension, -d  Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
-	        "    --numrot, -n            Number of rotations (default = 360).\n"
+	        "    --numrot, -n            Number of rotations (1 or a multiple of 4, default = 360).\n"
 	        "    --numthreads, -t        Number of CPU threads (default = auto).\n"
 	        "    --num-iter              Number of iterations (default = 1).\n"
 			"    --progress, -p          Print level of progress (default = 10%).\n"

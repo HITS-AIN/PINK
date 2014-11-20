@@ -7,33 +7,48 @@
 
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageProcessing.h"
+#include "UtilitiesLib/EqualFloatArrays.h"
 #include "UtilitiesLib/Filler.h"
 #include "gtest/gtest.h"
 #include <cmath>
+#include <vector>
 
-
+using namespace std;
 using namespace PINK;
 
-TEST(ImageProcessingTest, Rotation)
+TEST(ImageProcessingTest, Rotation90)
 {
-	Image<float> image(10,10,1.0);
-	Image<float> image2(image.getHeight(), image.getWidth());
-	rotate(image.getHeight(), image.getWidth(), image.getPointerOfFirstPixel(), image2.getPointerOfFirstPixel(), 45.0*M_PI/180.0, NONE);
+	int height = 4;
+	int width = 3;
+	int size = height * width;
+	vector<float> image(size), image2(size), image3(size);
+	fillWithRandomNumbers(&image[0], size);
 
-	std::vector<float> data{
-		0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0,
-		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0,
-		1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
-		1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0,
-		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-		1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
-		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0,
-		0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,
-    };
+	// 4 times rotating by 90 degrees should result in original image
+	rotate_90degrees(height, width, &image[0], &image2[0]);
+	rotate_90degrees(width, height, &image2[0], &image3[0]);
+	rotate_90degrees(height, width, &image3[0], &image2[0]);
+	rotate_90degrees(width, height, &image2[0], &image3[0]);
 
-	EXPECT_EQ(image2.getPixel(), data);
+	EXPECT_TRUE(EqualFloatArrays(&image[0], &image3[0], size));
+}
+
+TEST(ImageProcessingTest, CompareRotation90WithRotation)
+{
+	int height = 13;
+	int width = 13;
+	int size = height * width;
+	vector<float> image(size), image2(size), image3(size);
+	fillWithRandomNumbers(&image[0], size);
+	//printImage(&image[0], height, width);
+
+	// 4 times rotating by 90 degrees should result in original image
+	rotate_90degrees(height, width, &image[0], &image2[0]);
+	//printImage(&image2[0], width, height);
+	rotate(height, width, &image[0], &image3[0], 0.5*M_PI, NONE);
+	//printImage(&image3[0], width, height);
+
+	EXPECT_TRUE(EqualFloatArrays(&image2[0], &image3[0], size));
 }
 
 TEST(ImageProcessingTest, EuclideanSimilarity)

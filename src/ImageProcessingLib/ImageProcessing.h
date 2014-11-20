@@ -28,6 +28,11 @@ void rotate(int height, int width, float *source, float *dest, float alpha,
 	InterpolationType interpolation = BILINEAR);
 
 /**
+ * @brief Special rotation of 90 degrees clockwise.
+ */
+void rotate_90degrees(int height, int width, float *source, float *dest);
+
+/**
  * @brief Plain-C function for image mirroring.
  */
 void flip(int height, int width, float * source, float *dest);
@@ -94,6 +99,9 @@ float stdDeviation(float *a, int length);
  * stdDeviation = sqrt(mean(abs(x - x.mean())**2)).
  */
 void zeroValuesSmallerThanStdDeviation(float *a, int length, float safety);
+
+//! For debugging: printing images on stdout.
+void printImage(float *image, int height, int width);
 
 void writeImageToBinaryFile(float *image, int height, int width, std::string const& filename);
 

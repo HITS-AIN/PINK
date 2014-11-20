@@ -5,7 +5,7 @@
  */
 
 /**
- * CUDA Kernel Device code for combined rotation and cropping of a list of images.
+ * CUDA Kernel Device code for combined rotation and cropping of a list of quadratic images.
  */
 template <unsigned int block_size>
 __global__ void
@@ -17,24 +17,20 @@ rotateAndCrop_kernel(float *rotatedImages, float *image, int neuron_size,
 
 	if (x2 >= neuron_dim or y2 >= neuron_dim) return;
 
-	int x0 = image_dim * 0.5;
-	int y0 = image_dim * 0.5;
-	int margin = (image_dim - neuron_dim) * 0.5;
-	int x0margin = x0 - margin;
-	int y0margin = y0 - margin;
+	float center = (image_dim-1) * 0.5;
+	float margin = (image_dim - neuron_dim) * 0.5;
+	float center_margin = center - margin;
 
 	float cosAlpha_local = cosAlpha[blockIdx.z];
 	float sinAlpha_local = sinAlpha[blockIdx.z];
 
-	int x1 = (x2-x0margin)*cosAlpha_local + (y2-y0margin)*sinAlpha_local + x0;
-	int y1 = (y2-y0margin)*cosAlpha_local - (x2-x0margin)*sinAlpha_local + y0;
+	float x1 = (x2-center_margin)*cosAlpha_local + (y2-center_margin)*sinAlpha_local + center + 0.1;
+	float y1 = (y2-center_margin)*cosAlpha_local - (x2-center_margin)*sinAlpha_local + center + 0.1;
 
 	float *pCurRot = rotatedImages + blockIdx.z * neuron_size;
 
-    //pCurRot[x*neuron_dim + y] = tex2D(image_texture, tx+0.5f, ty+0.5f);
-
     if (x1 >= 0 and x1 < image_dim and y1 >= 0 and y1 < image_dim) {
-    	atomicExch(pCurRot + x2*neuron_dim + y2, image[x1*image_dim + y1]);
+    	atomicExch(pCurRot + x2*neuron_dim + y2, image[(int)x1*image_dim + (int)y1]);
     } else {
     	atomicExch(pCurRot + x2*neuron_dim + y2, 0.0f);
     }

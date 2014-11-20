@@ -5,7 +5,7 @@
  */
 
 #include "CudaLib/CudaLib.h"
-#include "EqualFloatArrays.h"
+#include "UtilitiesLib/EqualFloatArrays.h"
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
@@ -124,8 +124,9 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 
 INSTANTIATE_TEST_CASE_P(FullRotationTest_all, FullRotationTest,
     ::testing::Values(
-        FullRotationTestData(3,3,2,false),
-        FullRotationTestData(2,2,2,true),
-        FullRotationTestData(64,44,2,false),
-        FullRotationTestData(64,44,2,true)
+        FullRotationTestData(3,3,4,false),
+        FullRotationTestData(2,2,4,false),
+        FullRotationTestData(2,2,4,true),
+        FullRotationTestData(64,44,4,false),
+        FullRotationTestData(64,44,4,true)
 ));
