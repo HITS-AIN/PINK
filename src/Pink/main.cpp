@@ -77,7 +77,8 @@ int main (int argc, char **argv)
 	cout << "\n  Total time (hh:mm:ss): "
 		 << setfill('0') << setw(2) << duration_cast<hours>(duration).count() << ":"
 		 << setfill('0') << setw(2) << duration_cast<minutes>(duration % hours(1)).count() << ":"
-		 << setfill('0') << setw(2) << duration_cast<seconds>(duration % minutes(1)).count() << endl;
+		 << setfill('0') << setw(2) << duration_cast<seconds>(duration % minutes(1)).count()
+	     << "     (= " << duration_cast<seconds>(duration).count() << "s)" << endl;
 
     cout << "\n  Successfully finished. Have a nice day.\n" << endl;
 	return 0;
