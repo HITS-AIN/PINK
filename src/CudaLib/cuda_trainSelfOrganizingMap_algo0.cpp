@@ -9,7 +9,7 @@
 #include "ImageProcessingLib/ImageIterator.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
-#include "cublas_v2.h"
+#include "cuda_runtime_api.h"
 #include <iostream>
 #include <iomanip>
 #include <omp.h>
@@ -61,7 +61,7 @@ void cuda_trainSelfOrganizingMap_algo0(InputData const& inputData)
 
     // Prepare trigonometric values
 	float *d_cosAlpha = NULL, *d_sinAlpha = NULL;
-	trigonometricValues(&d_cosAlpha, &d_sinAlpha, inputData.numberOfRotations - 1);
+	trigonometricValues(&d_cosAlpha, &d_sinAlpha, inputData.numberOfRotations/4);
 
 	// Progress status
 	float progress = 0.0;

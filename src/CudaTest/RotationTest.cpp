@@ -33,15 +33,21 @@ TEST(RotationTest, 45degree)
 //! Check CUDA image flipping.
 TEST(FlipTest, 0)
 {
-	int image_dim = 2;
-	int image_size = image_dim * image_dim;
-	float *image = new float[image_size];
-	float *flippedImage = new float[image_size];
+	int dim = 2;
+	int size = dim * dim;
+	float *image = new float[size];
+	fillWithRandomNumbers(image, size);
 
-	EXPECT_TRUE(EqualFloatArrays(image,flippedImage,image_size));
+	float *d_image = cuda_alloc_float(size);
+	cuda_copyHostToDevice_float(d_image, image, size);
+
+	float *image2 = new float[size];
+	cuda_copyDeviceToHost_float(image2, d_image, size);
+
+	EXPECT_TRUE(EqualFloatArrays(image, image2, size));
 
 	delete [] image;
-	delete [] flippedImage;
+	delete [] image2;
 }
 
 struct FullRotationTestData
@@ -76,7 +82,11 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 
 	generateRotatedImages(cpu_rotatedImages, image, data.num_rot, data.image_dim, data.neuron_dim, data.useFlip);
 
-	//writeRotatedImages(cpu_rotatedImages, neuron_dim, num_rot, "cpu_rot.bin");
+//	printImage(cpu_rotatedImages, data.neuron_dim, data.neuron_dim);
+//	printImage(cpu_rotatedImages + neuron_size, data.neuron_dim, data.neuron_dim);
+//	printImage(cpu_rotatedImages + 2*neuron_size, data.neuron_dim, data.neuron_dim);
+//	printImage(cpu_rotatedImages + 3*neuron_size, data.neuron_dim, data.neuron_dim);
+	//writeRotatedImages(cpu_rotatedImages, data.neuron_dim, data.num_rot, "cpu_rot.bin");
 
 	float *d_image = cuda_alloc_float(image_size_using_flip);
 	float *d_rotatedImages = cuda_alloc_float(num_rot_using_flip * neuron_size);
@@ -84,22 +94,8 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 	cuda_copyHostToDevice_float(d_image, image, image_size);
 
     // Prepare trigonometric values
-	float angleStepRadians = 2.0 * M_PI / data.num_rot;
-
-	float angle;
-	float *cosAlpha = (float *)malloc(data.num_rot * sizeof(float));
-	float *d_cosAlpha = cuda_alloc_float(data.num_rot);
-	float *sinAlpha = (float *)malloc(data.num_rot * sizeof(float));
-	float *d_sinAlpha = cuda_alloc_float(data.num_rot);
-
-	for (int i = 0; i < data.num_rot-1; ++i) {
-		angle = (i+1) * angleStepRadians;
-	    cosAlpha[i] = cos(angle);
-        sinAlpha[i] = sin(angle);
-	}
-
-	cuda_copyHostToDevice_float(d_cosAlpha, cosAlpha, data.num_rot);
-	cuda_copyHostToDevice_float(d_sinAlpha, sinAlpha, data.num_rot);
+	float *d_cosAlpha = NULL, *d_sinAlpha = NULL;
+	trigonometricValues(&d_cosAlpha, &d_sinAlpha, data.num_rot/4);
 
 	cuda_generateRotatedImages(d_rotatedImages, d_image, data.num_rot, data.image_dim, data.neuron_dim,
 		data.useFlip, d_cosAlpha, d_sinAlpha);
@@ -107,7 +103,11 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 	float *gpu_rotatedImages = new float[num_rot_using_flip * neuron_size];
 	cuda_copyDeviceToHost_float(gpu_rotatedImages, d_rotatedImages, num_rot_using_flip * neuron_size);
 
-	//writeRotatedImages(gpu_rotatedImages, neuron_dim, num_rot, "gpu_rot.bin");
+//	printImage(gpu_rotatedImages, data.neuron_dim, data.neuron_dim);
+//	printImage(gpu_rotatedImages + neuron_size, data.neuron_dim, data.neuron_dim);
+//	printImage(gpu_rotatedImages + 2*neuron_size, data.neuron_dim, data.neuron_dim);
+//	printImage(gpu_rotatedImages + 3*neuron_size, data.neuron_dim, data.neuron_dim);
+	//writeRotatedImages(gpu_rotatedImages, data.neuron_dim, data.num_rot, "gpu_rot.bin");
 
 	EXPECT_TRUE(EqualFloatArrays(cpu_rotatedImages, gpu_rotatedImages, num_rot_using_flip * neuron_size));
 
@@ -115,8 +115,6 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 	cuda_free(d_sinAlpha);
 	cuda_free(d_image);
 	cuda_free(d_rotatedImages);
-	delete [] cosAlpha;
-	delete [] sinAlpha;
 	delete [] image;
 	delete [] cpu_rotatedImages;
 	delete [] gpu_rotatedImages;
@@ -127,6 +125,11 @@ INSTANTIATE_TEST_CASE_P(FullRotationTest_all, FullRotationTest,
         FullRotationTestData(3,3,4,false),
         FullRotationTestData(2,2,4,false),
         FullRotationTestData(2,2,4,true),
+        FullRotationTestData(8,2,4,false),
         FullRotationTestData(64,44,4,false),
-        FullRotationTestData(64,44,4,true)
+        FullRotationTestData(64,44,4,true),
+        FullRotationTestData(10,10,8,false),
+        FullRotationTestData(4,2,360,false),
+        FullRotationTestData(3,3,360,true),
+        FullRotationTestData(4,2,360,true)
 ));

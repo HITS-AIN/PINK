@@ -8,6 +8,7 @@
 #include "crop_kernel.h"
 #include "flip_kernel.h"
 #include "rotateAndCrop_kernel.h"
+#include "rotate90degreesList_kernel.h"
 #include "cublas_v2.h"
 #include <stdio.h>
 
@@ -20,8 +21,8 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
     bool useFlip, float *d_cosAlpha, float *d_sinAlpha)
 {
 	int neuron_size = neuron_dim * neuron_dim;
-	int image_size = image_dim * image_dim;
 
+	// Crop first image
 	{
 		// Setup execution parameters
 		int gridSize = ceil((float)neuron_dim/BLOCK_SIZE);
@@ -39,21 +40,46 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
 			exit(EXIT_FAILURE);
 		}
 	}
+
+	// Rotate images between 0 and 90 degrees
+	{
+		// Setup execution parameters
+		int gridSize = ceil((float)neuron_dim/BLOCK_SIZE);
+		int num_real_rot = num_rot/4-1;
+
+		if (num_real_rot) {
+			dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
+			dim3 dimGrid(gridSize, gridSize, num_real_rot);
+
+			// Start kernel
+			rotateAndCrop_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + neuron_size, d_image,
+				neuron_size, neuron_dim, image_dim, d_cosAlpha, d_sinAlpha);
+
+			cudaError_t error = cudaGetLastError();
+
+			if (error != cudaSuccess)
+			{
+				fprintf(stderr, "Failed to launch CUDA kernel rotateAndCrop_kernel (error code %s)!\n", cudaGetErrorString(error));
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+
+	// Special 90 degree rotation for remaining rotations between 90 and 360 degrees
 	{
 		// Setup execution parameters
 		int gridSize = ceil((float)neuron_dim/BLOCK_SIZE);
 		dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
-		dim3 dimGrid(gridSize, gridSize, num_rot-1);
+		dim3 dimGrid(gridSize, gridSize, num_rot/4);
 
 		// Start kernel
-		rotateAndCrop_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + neuron_size, d_image,
-			neuron_size, neuron_dim, image_dim, d_cosAlpha, d_sinAlpha);
+		rotate90degreesList_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages, neuron_dim, neuron_size, num_rot/4*neuron_size);
 
 		cudaError_t error = cudaGetLastError();
 
 		if (error != cudaSuccess)
 		{
-			fprintf(stderr, "Failed to launch CUDA kernel rotateAndCrop_kernel (error code %s)!\n", cudaGetErrorString(error));
+			fprintf(stderr, "Failed to launch CUDA kernel rotate90degrees_kernel (error code %s)!\n", cudaGetErrorString(error));
 			exit(EXIT_FAILURE);
 		}
 	}

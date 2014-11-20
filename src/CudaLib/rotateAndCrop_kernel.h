@@ -17,7 +17,7 @@ rotateAndCrop_kernel(float *rotatedImages, float *image, int neuron_size,
 
 	if (x2 >= neuron_dim or y2 >= neuron_dim) return;
 
-	float center = (image_dim-1) * 0.5;
+	float center = (image_dim - 1) * 0.5;
 	float margin = (image_dim - neuron_dim) * 0.5;
 	float center_margin = center - margin;
 

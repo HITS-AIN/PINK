@@ -6,6 +6,7 @@
  */
 
 #include "ImageProcessing.h"
+#include "UtilitiesLib/Error.h"
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -38,7 +39,7 @@ void rotate_none(int height, int width, float *source, float *dest, float alpha)
             	continue;
             }
         	y1 = ((float)y2 - y0) * cosAlpha - ((float)x2 - x0) * sinAlpha + y0 + 0.1;
-            if (y1 < 0 && y1 >= height) {
+            if (y1 < 0 or y1 >= height) {
             	dest[x2*height + y2] = 0.0;
             	continue;
             }
@@ -65,7 +66,7 @@ void rotate_bilinear(int height, int width, float *source, float *dest, float al
             	continue;
             }
         	y1 = ((float)y2 - y0) * cosAlpha - ((float)x2 - x0) * sinAlpha + y0 + 0.1;
-            if (y1 < 0 && y1 >= height) {
+            if (y1 < 0 or y1 >= height) {
             	dest[x2*height + y2] = 0.0;
             	continue;
             }
@@ -90,8 +91,7 @@ void rotate(int height, int width, float *source, float *dest, float alpha, Inte
 	else if (interpolation == BILINEAR)
 		rotate_bilinear(height, width, source, dest, alpha);
 	else {
-		printf("FATAL ERROR: rotateAndCrop: unknown interpolation\n");
-		abort();
+		fatalError("rotateAndCrop: unknown interpolation\n");
 	}
 }
 
@@ -136,42 +136,72 @@ void flipAndCrop(int height, int width, int height_new, int width_new, float *so
 	}
 }
 
-void rotateAndCrop_bilinear(int height, int width, int height_new, int width_new, float *source, float *dest, float alpha)
+void rotateAndCrop_none(int height, int width, int height_new, int width_new, float *source, float *dest, float alpha)
 {
-	int width_margin = (width - width_new) / 2;
-	int height_margin = (height - height_new) / 2;
+	const int width_margin = (width - width_new) * 0.5;
+	const int height_margin = (height - height_new) * 0.5;
 
     const float cosAlpha = cos(alpha);
     const float sinAlpha = sin(alpha);
 
-    int x0 = width * 0.5;
-    int y0 = height * 0.5;
-    int x1, y1, x2, y2;
+    const float x0 = (width-1) * 0.5;
+    const float y0 = (height-1) * 0.5;
+    float x1, y1;
 
-    for (x2 = 0; x2 < width_new; ++x2) {
-        for (y2 = 0; y2 < height_new; ++y2) {
-        	x1 = (x2 + width_margin - x0) * cosAlpha + (y2 + height_margin - y0) * sinAlpha + x0;
+    for (int x2 = 0; x2 < width_new; ++x2) {
+        for (int y2 = 0; y2 < height_new; ++y2) {
+        	x1 = ((float)x2 + width_margin - x0) * cosAlpha + ((float)y2 + height_margin - y0) * sinAlpha + x0 + 0.1;
             if (x1 < 0 or x1 >= width) {
-            	dest[x2*height_new + y2] = 0.0;
+            	dest[x2*height_new + y2] = 0.0f;
             	continue;
             }
-        	y1 = (y2 + height_margin - y0) * cosAlpha - (x2 + width_margin - x0) * sinAlpha + y0;
-            if (y1 < 0 && y1 >= height) {
-            	dest[x2*height_new + y2] = 0.0;
+        	y1 = ((float)y2 + height_margin - y0) * cosAlpha - ((float)x2 + width_margin - x0) * sinAlpha + y0 + 0.1;
+            if (y1 < 0 or y1 >= height) {
+            	dest[x2*height_new + y2] = 0.0f;
             	continue;
             }
-            dest[x2*height_new + y2] = source[x1*height + y1];
+            dest[x2*height_new + y2] = source[(int)x1*height + (int)y1];
+        }
+    }
+}
+
+void rotateAndCrop_bilinear(int height, int width, int height_new, int width_new, float *source, float *dest, float alpha)
+{
+	const int width_margin = (width - width_new) * 0.5;
+	const int height_margin = (height - height_new) * 0.5;
+
+    const float cosAlpha = cos(alpha);
+    const float sinAlpha = sin(alpha);
+
+    const float x0 = (width-1) * 0.5;
+    const float y0 = (height-1) * 0.5;
+    float x1, y1;
+
+    for (int x2 = 0; x2 < width_new; ++x2) {
+        for (int y2 = 0; y2 < height_new; ++y2) {
+        	x1 = ((float)x2 + width_margin - x0) * cosAlpha + ((float)y2 + height_margin - y0) * sinAlpha + x0 + 0.1;
+            if (x1 < 0 or x1 >= width) {
+            	dest[x2*height_new + y2] = 0.0f;
+            	continue;
+            }
+        	y1 = ((float)y2 + height_margin - y0) * cosAlpha - ((float)x2 + width_margin - x0) * sinAlpha + y0 + 0.1;
+            if (y1 < 0 or y1 >= height) {
+            	dest[x2*height_new + y2] = 0.0f;
+            	continue;
+            }
+            dest[x2*height_new + y2] = source[(int)x1*height + (int)y1];
         }
     }
 }
 
 void rotateAndCrop(int height, int width, int height_new, int width_new, float *source, float *dest, float alpha, InterpolationType interpolation)
 {
-	if (interpolation == BILINEAR)
+	if (interpolation == NONE)
+		rotateAndCrop_none(height, width, height_new, width_new, source, dest, alpha);
+	else if (interpolation == BILINEAR)
 		rotateAndCrop_bilinear(height, width, height_new, width_new, source, dest, alpha);
 	else {
-		printf("FATAL ERROR: rotateAndCrop: unknown interpolation\n");
-		abort();
+		fatalError("rotateAndCrop: unknown interpolation");
 	}
 }
 

@@ -37,9 +37,10 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
 {
 	int image_size = image_dim * image_dim;
 	int neuron_size = neuron_dim * neuron_dim;
-	float angleStepRadians = num_rot ? 0.5 * M_PI / num_rot : 0.0;
 
 	int num_real_rot = num_rot/4;
+	float angleStepRadians = num_rot ? 0.5 * M_PI / num_real_rot : 0.0;
+
 	int num_real_rot_offset1 =     num_real_rot * neuron_size;
 	int num_real_rot_offset2 = 2 * num_real_rot * neuron_size;
 	int num_real_rot_offset3 = 3 * num_real_rot * neuron_size;

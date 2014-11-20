@@ -20,6 +20,7 @@ add_library(
 
 target_link_libraries(
     ImageProcessingLib
+    UtilitiesLib
     ${GTEST_BOTH_LIBRARIES}
 )
 

@@ -61,7 +61,7 @@ void cuda_trainSelfOrganizingMap_algo1(InputData const& inputData)
 
     // Prepare trigonometric values
 	float *d_cosAlpha = NULL, *d_sinAlpha = NULL;
-	trigonometricValues(&d_cosAlpha, &d_sinAlpha, inputData.numberOfRotations - 1);
+	trigonometricValues(&d_cosAlpha, &d_sinAlpha, inputData.numberOfRotations/4);
 
 	// Progress status
 	float progress = 0.0;
