@@ -7,14 +7,21 @@
 #ifndef INPUTDATA_H_
 #define INPUTDATA_H_
 
+#include "ImageProcessingLib/ImageProcessing.h"
 #include "Version.h"
 #include <string>
 
 //! Type for SOM layout.
-enum Layout {QUADRATIC, HEXAGONAL};
+enum Layout {
+	QUADRATIC,
+	HEXAGONAL
+};
 
 //! Type for SOM initialization.
-enum SOMInitialization { ZERO, RANDOM };
+enum SOMInitialization {
+	ZERO,
+	RANDOM
+};
 
 //! Pretty printing of SOM layout type.
 std::ostream& operator << (std::ostream& os, Layout layout);
@@ -59,6 +66,7 @@ struct InputData
     int som_total_size;
 	int numberOfRotationsAndFlip;
 	int algo;
+	Interpolation interpolation;
 };
 
 void stringToUpper(char* s);

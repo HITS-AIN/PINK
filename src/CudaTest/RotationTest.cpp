@@ -52,14 +52,15 @@ TEST(FlipTest, 0)
 
 struct FullRotationTestData
 {
-	FullRotationTestData(int image_dim, int neuron_dim, int num_rot, bool useFlip)
-	  : image_dim(image_dim), neuron_dim(neuron_dim), num_rot(num_rot), useFlip(useFlip)
+	FullRotationTestData(int image_dim, int neuron_dim, int num_rot, bool useFlip, Interpolation interpolation)
+	  : image_dim(image_dim), neuron_dim(neuron_dim), num_rot(num_rot), useFlip(useFlip), interpolation(interpolation)
 	{}
 
 	int image_dim;
 	int neuron_dim;
 	int num_rot;
 	bool useFlip;
+	Interpolation interpolation;
 };
 
 class FullRotationTest : public ::testing::TestWithParam<FullRotationTestData>
@@ -80,7 +81,8 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 
 	fillWithRandomNumbers(image, image_size, 0);
 
-	generateRotatedImages(cpu_rotatedImages, image, data.num_rot, data.image_dim, data.neuron_dim, data.useFlip);
+	generateRotatedImages(cpu_rotatedImages, image, data.num_rot, data.image_dim, data.neuron_dim,
+        data.useFlip, data.interpolation);
 
 //	printImage(cpu_rotatedImages, data.neuron_dim, data.neuron_dim);
 //	printImage(cpu_rotatedImages + neuron_size, data.neuron_dim, data.neuron_dim);
@@ -122,14 +124,14 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 
 INSTANTIATE_TEST_CASE_P(FullRotationTest_all, FullRotationTest,
     ::testing::Values(
-        FullRotationTestData(3,3,4,false),
-        FullRotationTestData(2,2,4,false),
-        FullRotationTestData(2,2,4,true),
-        FullRotationTestData(8,2,4,false),
-        FullRotationTestData(64,44,4,false),
-        FullRotationTestData(64,44,4,true),
-        FullRotationTestData(10,10,8,false),
-        FullRotationTestData(4,2,360,false),
-        FullRotationTestData(3,3,360,true),
-        FullRotationTestData(4,2,360,true)
+        FullRotationTestData(3,3,4,false,NEAREST_NEIGHBOR),
+        FullRotationTestData(2,2,4,false,NEAREST_NEIGHBOR),
+        FullRotationTestData(2,2,4,true,NEAREST_NEIGHBOR),
+        FullRotationTestData(8,2,4,false,NEAREST_NEIGHBOR),
+        FullRotationTestData(64,44,4,false,NEAREST_NEIGHBOR),
+        FullRotationTestData(64,44,4,true,NEAREST_NEIGHBOR),
+        FullRotationTestData(10,10,8,false,NEAREST_NEIGHBOR),
+        FullRotationTestData(4,2,360,false,NEAREST_NEIGHBOR),
+        FullRotationTestData(3,3,360,true,NEAREST_NEIGHBOR),
+        FullRotationTestData(4,2,360,true,NEAREST_NEIGHBOR)
 ));

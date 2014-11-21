@@ -17,6 +17,22 @@
 
 using namespace std;
 
+std::ostream& operator << (std::ostream& os, Layout layout)
+{
+	if (layout == QUADRATIC) os << "quadratic";
+	else if (layout == HEXAGONAL) os << "hexagonal";
+	else os << "undefined";
+	return os;
+}
+
+std::ostream& operator << (std::ostream& os, SOMInitialization init)
+{
+	if (init == ZERO) os << "zero";
+	else if (init == RANDOM) os << "random";
+	else os << "undefined";
+	return os;
+}
+
 InputData::InputData(int argc, char **argv)
  :
 	verbose(true),
@@ -41,7 +57,8 @@ InputData::InputData(int argc, char **argv)
     neuron_size(0),
     som_total_size(0),
     numberOfRotationsAndFlip(0),
-    algo(2)
+    algo(2),
+    interpolation(BILINEAR)
 {
 	static struct option long_options[] = {
 		{"image-file",      1, 0, 'i'},
@@ -61,6 +78,7 @@ InputData::InputData(int argc, char **argv)
 		{"version",         0, 0, 'v'},
 		{"algo",            1, 0, 'a'},
 		{"help",            0, 0, 'h'},
+		{"interpolation",   1, 0, 5},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
@@ -68,17 +86,6 @@ InputData::InputData(int argc, char **argv)
 	{
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
-		case 4:
-			stringToUpper(optarg);
-			if (strcmp(optarg, "YES") == 0) verbose = true;
-			else if (strcmp(optarg, "NO") == 0) verbose = false;
-			else {
-				printf ("optarg = %s\n", optarg);
-				printf ("Unkown option %o\n", c);
-				print_usage();
-				exit(EXIT_FAILURE);
-			}
-			break;
 		case 'i':
 			imagesFilename = optarg;
 			break;
@@ -151,6 +158,28 @@ InputData::InputData(int argc, char **argv)
 			break;
 		case 3:
 			useCuda = false;
+			break;
+		case 4:
+			stringToUpper(optarg);
+			if (strcmp(optarg, "YES") == 0) verbose = true;
+			else if (strcmp(optarg, "NO") == 0) verbose = false;
+			else {
+				printf ("optarg = %s\n", optarg);
+				printf ("Unkown option %o\n", c);
+				print_usage();
+				exit(EXIT_FAILURE);
+			}
+			break;
+		case 5:
+			stringToUpper(optarg);
+			if (strcmp(optarg, "NEAREST_NEIGHBOR") == 0) interpolation = NEAREST_NEIGHBOR;
+			else if (strcmp(optarg, "BILINEAR") == 0) interpolation = BILINEAR;
+			else {
+				print_usage();
+				printf ("optarg = %s\n", optarg);
+				printf ("Unkown option %o\n", c);
+				exit(EXIT_FAILURE);
+			}
 			break;
 		case 'v':
 			cout << "Pink version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR << endl;
@@ -260,6 +289,7 @@ void InputData::print_parameters() const
 		     << "  Result file = " << resultFilename << endl
 		     << "  Layout = " << layout << endl
 		     << "  Initialization type = " << init << endl
+		     << "  Interpolation type = " << interpolation << endl
 		     << "  Seed = " << seed << endl
 		     << "  Number of rotations = " << numberOfRotations << endl
 		     << "  Use mirrored image = " << useFlip << endl
@@ -290,6 +320,7 @@ void InputData::print_usage() const
 	        "    --flip-off              Switch off usage of mirrored images (default = on).\n"
 			"    --help, -h              Print this lines\n"
 	        "    --init, -x              Type of SOM initialization (random, zero, default = zero).\n"
+	        "    --interpolation         Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
 	        "    --layout, -l            Layout of SOM (quadratic, hexagonal, default = quadratic).\n"
 	        "    --neuron-dimension, -d  Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
 	        "    --numrot, -n            Number of rotations (1 or a multiple of 4, default = 360).\n"

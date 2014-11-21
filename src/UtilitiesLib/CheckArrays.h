@@ -9,7 +9,7 @@
 
 #include <string>
 
-void checkArrayForNaN(float* a, int length, std::string const& msg);
+void checkArrayForNan(float* a, int length, std::string const& msg);
 
 void checkArrayForNanAndNegative(float* a, int length, std::string const& msg);
 

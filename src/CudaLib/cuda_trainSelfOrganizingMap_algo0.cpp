@@ -82,7 +82,7 @@ void cuda_trainSelfOrganizingMap_algo0(InputData const& inputData)
 			}
 
 			generateRotatedImages(rotatedImages, iterImage->getPointerOfFirstPixel(), inputData.numberOfRotations,
-				inputData.image_dim, inputData.neuron_dim, inputData.useFlip);
+				inputData.image_dim, inputData.neuron_dim, inputData.useFlip, inputData.interpolation);
 
 			cuda_copyHostToDevice_float(d_rotatedImages, rotatedImages, inputData.numberOfRotationsAndFlip * inputData.neuron_size);
 

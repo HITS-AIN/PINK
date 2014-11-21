@@ -17,23 +17,8 @@
 #include <string.h>
 #include <cmath>
 
-std::ostream& operator << (std::ostream& os, Layout layout)
-{
-	if (layout == QUADRATIC) os << "quadratic";
-	else if (layout == HEXAGONAL) os << "hexagonal";
-	else os << "undefined";
-	return os;
-}
-
-std::ostream& operator << (std::ostream& os, SOMInitialization init)
-{
-	if (init == ZERO) os << "zero";
-	else if (init == RANDOM) os << "random";
-	else os << "undefined";
-	return os;
-}
-
-void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int image_dim, int neuron_dim, bool useFlip)
+void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int image_dim, int neuron_dim,
+    bool useFlip, Interpolation interpolation)
 {
 	int image_size = image_dim * image_dim;
 	int neuron_size = neuron_dim * neuron_dim;
@@ -55,7 +40,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
     #pragma omp parallel for
 	for (int i = 1; i < num_real_rot; ++i) {
 		float *currentImage = rotatedImages + i*neuron_size;
-		rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, image, currentImage, i*angleStepRadians);
+		rotateAndCrop(image_dim, image_dim, neuron_dim, neuron_dim, image, currentImage, i*angleStepRadians, interpolation);
 		rotate_90degrees(neuron_dim, neuron_dim, currentImage, currentImage + num_real_rot_offset1);
 		rotate_90degrees(neuron_dim, neuron_dim, currentImage + num_real_rot_offset1, currentImage + num_real_rot_offset2);
 		rotate_90degrees(neuron_dim, neuron_dim, currentImage + num_real_rot_offset2, currentImage + num_real_rot_offset3);

@@ -8,6 +8,7 @@
 #ifndef SELFORGANIZINGMAP_H_
 #define SELFORGANIZINGMAP_H_
 
+#include "ImageProcessingLib/ImageProcessing.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Point.h"
 #include <iostream>
@@ -15,14 +16,13 @@
 //! Main CPU based routine for SOM training.
 void trainSelfOrganizingMap(InputData const& inputData);
 
-void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim, bool useFlip);
+void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim,
+    bool useFlip, Interpolation interpolation);
 
 void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix, int som_dim, float* som,
 	int image_dim, int numberOfRotations, float* image);
 
-/**
- * Returns the position of the best matching neuron.
- */
+//! Returns the position of the best matching neuron.
 Point findBestMatchingNeuron(float *similarityMatrix, int som_dim);
 
 //! Updating self organizing map.

@@ -1,8 +1,8 @@
-/*
- * ImageProcessingTest.cpp
- *
- *  Created on: Oct 6, 2014
- *      Author: Bernd Doser, HITS gGmbH
+/**
+ * @file   ImageProcessingTest/ImageProcessingTest.cpp
+ * @brief  Unit tests for image processing.
+ * @date   Oct 6, 2014
+ * @author Bernd Doser, HITS gGmbH
  */
 
 #include "ImageProcessingLib/Image.h"
@@ -40,12 +40,24 @@ TEST(ImageProcessingTest, CompareRotation90WithRotation)
 	int size = height * width;
 	vector<float> image(size), image2(size), image3(size);
 	fillWithRandomNumbers(&image[0], size);
-	//printImage(&image[0], height, width);
 
-	// 4 times rotating by 90 degrees should result in original image
+	rotate_90degrees(height, width, &image[0], &image2[0]);
+	rotate(height, width, &image[0], &image3[0], 0.5*M_PI, NEAREST_NEIGHBOR);
+
+	EXPECT_TRUE(EqualFloatArrays(&image2[0], &image3[0], size));
+}
+
+TEST(ImageProcessingTest, BilinearInterpolation)
+{
+	int height = 12;
+	int width = 12;
+	int size = height * width;
+	vector<float> image(size), image2(size), image3(size);
+	fillWithRandomNumbers(&image[0], size);
+
 	rotate_90degrees(height, width, &image[0], &image2[0]);
 	//printImage(&image2[0], width, height);
-	rotate(height, width, &image[0], &image3[0], 0.5*M_PI, NONE);
+	rotate(height, width, &image[0], &image3[0], 0.5*M_PI, BILINEAR);
 	//printImage(&image3[0], width, height);
 
 	EXPECT_TRUE(EqualFloatArrays(&image2[0], &image3[0], size));
@@ -95,8 +107,7 @@ TEST(ImageProcessingTest, Crop)
 	crop(dim,dim,crop_dim,crop_dim,a,b);
 
 	float suma = a[5] + a[6] + a[9] + a[10];
-	float sumb = 0.0;
-	for (int i = 0; i < crop_size; ++i) sumb += b[i];
+	float sumb = b[0] + b[1] + b[2] + b[3];
 
 	EXPECT_FLOAT_EQ(suma, sumb);
 }
@@ -121,8 +132,7 @@ TEST(ImageProcessingTest, FlipAndCrop)
 	flip(crop_dim,crop_dim,b,c);
 
 	float suma = a[5] + a[6] + a[9] + a[10];
-	float sumb = 0.0;
-	for (int i = 0; i < crop_size; ++i) sumb += b[i];
+	float sumb = b[0] + b[1] + b[2] + b[3];
 
 	EXPECT_FLOAT_EQ(suma, sumb);
 }
@@ -142,9 +152,8 @@ TEST(ImageProcessingTest, RotateAndCrop)
 	float *b = &vb[0];
 	rotateAndCrop(dim, dim, crop_dim, crop_dim, a, b, 2.0*M_PI);
 
-	float suma = a[1] + a[5] + a[6] + a[10];
-	float sumb = 0.0;
-	for (int i = 0; i < crop_size; ++i) sumb += b[i];
+	float suma = a[5] + a[6] + a[9] + a[10];
+	float sumb = b[0] + b[1] + b[2] + b[3];
 
 	EXPECT_FLOAT_EQ(suma, sumb);
 }

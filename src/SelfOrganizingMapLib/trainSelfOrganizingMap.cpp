@@ -58,40 +58,26 @@ void trainSelfOrganizingMap(InputData const& inputData)
 				progress += progressStep;
 			}
 
-	//		stringstream ss;
-	//		ss << "image" << i << ".bin";
-	//		iterImage->writeBinary(ss.str());
-
 			float *image = iterImage->getPointerOfFirstPixel();
 
 			#if DEBUG_MODE
-		        checkArrayForNanAndNegative(image, inputData.image_size, "image");
+		        checkArrayForNan(image, inputData.image_size, "image");
 			#endif
 
 			generateRotatedImages(rotatedImages, image, inputData.numberOfRotations,
-				inputData.image_dim, inputData.neuron_dim, inputData.useFlip);
+				inputData.image_dim, inputData.neuron_dim, inputData.useFlip, inputData.interpolation);
 
 			#if DEBUG_MODE
-		        checkArrayForNanAndNegative(rotatedImages, inputData.numberOfRotationsAndFlip * inputData.neuron_size, "rotatedImages");
-		        checkArrayForNanAndNegative(som, inputData.som_size * inputData.neuron_size, "som");
+		        checkArrayForNan(rotatedImages, inputData.numberOfRotationsAndFlip * inputData.neuron_size, "rotatedImages");
+		        checkArrayForNan(som, inputData.som_size * inputData.neuron_size, "som");
 			#endif
-
-	//		stringstream ss2;
-	//		ss2 << "rotatedImage" << i << ".bin";
-	//		writeRotatedImages(rotatedImages, image_dim, numberOfRotations, ss2.str());
 
 			generateEuclideanDistanceMatrix(euclideanDistanceMatrix, bestRotationMatrix,
 				inputData.som_dim, som, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, rotatedImages);
 
 			Point bestMatch = findBestMatchingNeuron(euclideanDistanceMatrix, inputData.som_dim);
 
-			//cout << "bestMatch = " << bestMatch << endl;
-
 			updateNeurons(inputData.som_dim, som, inputData.neuron_dim, rotatedImages, bestMatch, bestRotationMatrix);
-
-	//		stringstream ss3;
-	//		ss3 << "som" << i << ".bin";
-	//		writeSOM(som, som_dim, image_dim, ss3.str());
 		}
 	}
 
@@ -100,7 +86,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	free(bestRotationMatrix);
 
 	#if DEBUG_MODE
-	    checkArrayForNanAndNegative(som, inputData.som_size * inputData.neuron_size, "som");
+	    checkArrayForNan(som, inputData.som_size * inputData.neuron_size, "som");
 	#endif
 
     if (inputData.verbose) {

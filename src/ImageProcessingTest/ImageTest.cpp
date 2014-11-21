@@ -1,8 +1,8 @@
-/*
- * ImageProcessingTest.cpp
- *
- *  Created on: Oct 6, 2014
- *      Author: Bernd Doser, HITS gGmbH
+/**
+ * @file   ImageProcessingTest/ImageTest.cpp
+ * @brief  Unit tests for image class and iterator.
+ * @date   Oct 6, 2014
+ * @author Bernd Doser, HITS gGmbH
  */
 
 #include "ImageProcessingLib/ImageIterator.h"
