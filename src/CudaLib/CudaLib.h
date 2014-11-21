@@ -55,7 +55,7 @@ void cuda_generateEuclideanDistanceMatrix_algo2_secondStep(float *d_euclideanDis
 
 //! Host routine starting kernel for rotated images.
 void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_rot, int image_dim, int neuron_dim,
-    bool flip, float *d_cosAlpha, float *d_sinAlpha);
+    bool flip, Interpolation interpolation, float *d_cosAlpha, float *d_sinAlpha);
 
 //! Host routine starting kernel for updating neurons.
 void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix, int* d_bestMatch,

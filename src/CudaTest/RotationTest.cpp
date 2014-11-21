@@ -100,7 +100,7 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 	trigonometricValues(&d_cosAlpha, &d_sinAlpha, data.num_rot/4);
 
 	cuda_generateRotatedImages(d_rotatedImages, d_image, data.num_rot, data.image_dim, data.neuron_dim,
-		data.useFlip, d_cosAlpha, d_sinAlpha);
+		data.useFlip, data.interpolation, d_cosAlpha, d_sinAlpha);
 
 	float *gpu_rotatedImages = new float[num_rot_using_flip * neuron_size];
 	cuda_copyDeviceToHost_float(gpu_rotatedImages, d_rotatedImages, num_rot_using_flip * neuron_size);

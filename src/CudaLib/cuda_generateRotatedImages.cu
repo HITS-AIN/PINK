@@ -8,8 +8,8 @@
 #include "crop_kernel.h"
 #include "flip_kernel.h"
 #include "rotateAndCrop_kernel.h"
+#include "rotateAndCropBilinear_kernel.h"
 #include "rotate90degreesList_kernel.h"
-#include "cublas_v2.h"
 #include <stdio.h>
 
 #define BLOCK_SIZE 32
@@ -18,7 +18,7 @@
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
 void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_rot, int image_dim, int neuron_dim,
-    bool useFlip, float *d_cosAlpha, float *d_sinAlpha)
+    bool useFlip, Interpolation interpolation, float *d_cosAlpha, float *d_sinAlpha)
 {
 	int neuron_size = neuron_dim * neuron_dim;
 
@@ -52,8 +52,16 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
 			dim3 dimGrid(gridSize, gridSize, num_real_rot);
 
 			// Start kernel
-			rotateAndCrop_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + neuron_size, d_image,
-				neuron_size, neuron_dim, image_dim, d_cosAlpha, d_sinAlpha);
+			if (interpolation == NEAREST_NEIGHBOR)
+			    rotateAndCrop_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + neuron_size, d_image,
+				    neuron_size, neuron_dim, image_dim, d_cosAlpha, d_sinAlpha);
+			else if (interpolation == BILINEAR)
+			    rotateAndCropBilinear_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + neuron_size, d_image,
+				    neuron_size, neuron_dim, image_dim, d_cosAlpha, d_sinAlpha);
+			else {
+				fprintf(stderr, "cuda_generateRotatedImages: unkown interpolation type!\n");
+				exit(EXIT_FAILURE);
+			}
 
 			cudaError_t error = cudaGetLastError();
 
