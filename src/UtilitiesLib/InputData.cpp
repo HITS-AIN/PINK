@@ -7,6 +7,7 @@
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageIterator.h"
 #include "InputData.h"
+#include "UtilitiesLib/Error.h"
 #include <cmath>
 #include <getopt.h>
 #include <iostream>
@@ -36,11 +37,9 @@ std::ostream& operator << (std::ostream& os, SOMInitialization init)
 InputData::InputData(int argc, char **argv)
  :
 	verbose(true),
-	imagesFilename(),
 	som_dim(10),
 	neuron_dim(-1),
 	layout(QUADRATIC),
-	resultFilename(),
 	seed(1234),
 	numberOfRotations(360),
 	numberOfThreads(-1),
@@ -58,13 +57,12 @@ InputData::InputData(int argc, char **argv)
     som_total_size(0),
     numberOfRotationsAndFlip(0),
     algo(2),
-    interpolation(BILINEAR)
+    interpolation(BILINEAR),
+    executionPath(UNDEFINED)
 {
 	static struct option long_options[] = {
-		{"image-file",      1, 0, 'i'},
 		{"image-dimension", 1, 0, 'd'},
 		{"som-dimension",   1, 0, 0},
-		{"result-file",     1, 0, 'r'},
 		{"layout",          1, 0, 'l'},
 		{"seed",            1, 0, 's'},
 		{"numrot",          1, 0, 'n'},
@@ -79,152 +77,209 @@ InputData::InputData(int argc, char **argv)
 		{"algo",            1, 0, 'a'},
 		{"help",            0, 0, 'h'},
 		{"interpolation",   1, 0, 5},
+		{"train",           1, 0, 6},
+		{"map",             1, 0, 7},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
-	while ((c = getopt_long(argc, argv, "vi:d:r:l:s:n:t:x:p:a:h", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "vd:l:s:n:t:x:p:a:h", long_options, &option_index)) != -1)
 	{
-		int this_option_optind = optind ? optind : 1;
-		switch (c) {
-		case 'i':
-			imagesFilename = optarg;
-			break;
-		case 'd':
-			neuron_dim = atoi(optarg);
-			break;
-		case 'a':
-			algo = atoi(optarg);
-			break;
-		case 0:
-			som_dim = atoi(optarg);
-			break;
-		case 1:
-			numIter = atoi(optarg);
-			if (numIter < 0) {
-				print_usage();
-				printf ("ERROR: Number of iterations must be larger than 0.\n");
-				exit(EXIT_FAILURE);
+		switch (c)
+		{
+			case 'd':
+			{
+				neuron_dim = atoi(optarg);
+				break;
 			}
-			break;
-		case 'r':
-			resultFilename = optarg;
-			break;
-		case 'l':
-			stringToUpper(optarg);
-			if (strcmp(optarg, "QUADRATIC") == 0) layout = QUADRATIC;
-			else if (strcmp(optarg, "HEXAGONAL") == 0) layout = HEXAGONAL;
-			else {
-				printf ("optarg = %s\n", optarg);
+			case 'a':
+			{
+				algo = atoi(optarg);
+				break;
+			}
+			case 0:
+			{
+				som_dim = atoi(optarg);
+				break;
+			}
+			case 1:
+			{
+				numIter = atoi(optarg);
+				if (numIter < 0) {
+					print_usage();
+					printf ("ERROR: Number of iterations must be larger than 0.\n");
+					exit(EXIT_FAILURE);
+				}
+				break;
+			}
+			case 'l':
+			{
+				stringToUpper(optarg);
+				if (strcmp(optarg, "QUADRATIC") == 0) layout = QUADRATIC;
+				else if (strcmp(optarg, "HEXAGONAL") == 0) layout = HEXAGONAL;
+				else {
+					printf ("optarg = %s\n", optarg);
+					printf ("Unkown option %o\n", c);
+					print_usage();
+					exit(EXIT_FAILURE);
+				}
+				break;
+			}
+			case 's':
+			{
+				seed = atoi(optarg);
+				break;
+			}
+			case 'p':
+			{
+				progressFactor = atof(optarg);
+				break;
+			}
+			case 'n':
+			{
+				numberOfRotations = atoi(optarg);
+				if (numberOfRotations <= 0 or (numberOfRotations != 1 and numberOfRotations % 4)) {
+					print_usage();
+					printf ("ERROR: Number of rotations must be 1 or a multiple of 4.\n");
+					exit(EXIT_FAILURE);
+				}
+				break;
+			}
+			case 't':
+			{
+				numberOfThreads = atoi(optarg);
+				if (useCuda and numberOfThreads > 1) {
+					print_usage();
+					printf ("ERROR: Number of CPU threads must be 1 using CUDA.\n");
+					exit(EXIT_FAILURE);
+				}
+				break;
+			}
+			case 'x':
+			{
+				stringToUpper(optarg);
+				if (strcmp(optarg, "ZERO") == 0) init = ZERO;
+				else if (strcmp(optarg, "RANDOM") == 0) init = RANDOM;
+				else {
+					printf ("optarg = %s\n", optarg);
+					printf ("Unkown option %o\n", c);
+					print_usage();
+					exit(EXIT_FAILURE);
+				}
+				break;
+			}
+			case 2:
+			{
+				useFlip = false;
+				break;
+			}
+			case 3:
+			{
+				useCuda = false;
+				break;
+			}
+			case 4:
+			{
+				stringToUpper(optarg);
+				if (strcmp(optarg, "YES") == 0) verbose = true;
+				else if (strcmp(optarg, "NO") == 0) verbose = false;
+				else {
+					printf ("optarg = %s\n", optarg);
+					printf ("Unkown option %o\n", c);
+					print_usage();
+					exit(EXIT_FAILURE);
+				}
+				break;
+			}
+			case 5:
+			{
+				stringToUpper(optarg);
+				if (strcmp(optarg, "NEAREST_NEIGHBOR") == 0) interpolation = NEAREST_NEIGHBOR;
+				else if (strcmp(optarg, "BILINEAR") == 0) interpolation = BILINEAR;
+				else {
+					print_usage();
+					printf ("optarg = %s\n", optarg);
+					printf ("Unkown option %o\n", c);
+					exit(EXIT_FAILURE);
+				}
+				break;
+			}
+			case 6:
+			{
+				executionPath = TRAIN;
+				int index = optind - 1;
+				if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --train option.");
+				imagesFilename = strdup(argv[index++]);
+				if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --train option.");
+				resultFilename = strdup(argv[index++]);
+				optind = index - 1;
+				break;
+			}
+			case 7:
+			{
+				executionPath = MAP;
+				int index = optind - 1;
+				if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --map option.");
+				somFilename = strdup(argv[index++]);
+				if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --map option.");
+				imagesFilename = strdup(argv[index++]);
+				if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --map option.");
+				resultFilename = strdup(argv[index++]);
+				optind = index - 1;
+				break;
+		    }
+			case 'v':
+			{
+				cout << "Pink version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR << endl;
+				exit(0);
+			}
+			case 'h':
+			{
+				print_usage();
+				exit(0);
+			}
+			case '?':
+			{
 				printf ("Unkown option %o\n", c);
 				print_usage();
 				exit(EXIT_FAILURE);
 			}
-			break;
-		case 's':
-			seed = atoi(optarg);
-			break;
-		case 'p':
-			progressFactor = atof(optarg);
-			break;
-		case 'n':
-			numberOfRotations = atoi(optarg);
-			if (numberOfRotations <= 0 or (numberOfRotations != 1 and numberOfRotations % 4)) {
-				print_usage();
-				printf ("ERROR: Number of rotations must be 1 or a multiple of 4.\n");
-				exit(EXIT_FAILURE);
-			}
-			break;
-		case 't':
-			numberOfThreads = atoi(optarg);
-			if (useCuda and numberOfThreads > 1) {
-				print_usage();
-				printf ("ERROR: Number of CPU threads must be 1 using CUDA.\n");
-				exit(EXIT_FAILURE);
-			}
-			break;
-		case 'x':
-			stringToUpper(optarg);
-			if (strcmp(optarg, "ZERO") == 0) init = ZERO;
-			else if (strcmp(optarg, "RANDOM") == 0) init = RANDOM;
-			else {
-				printf ("optarg = %s\n", optarg);
+			default:
+			{
 				printf ("Unkown option %o\n", c);
 				print_usage();
 				exit(EXIT_FAILURE);
 			}
-			break;
-		case 2:
-			useFlip = false;
-			break;
-		case 3:
-			useCuda = false;
-			break;
-		case 4:
-			stringToUpper(optarg);
-			if (strcmp(optarg, "YES") == 0) verbose = true;
-			else if (strcmp(optarg, "NO") == 0) verbose = false;
-			else {
-				printf ("optarg = %s\n", optarg);
-				printf ("Unkown option %o\n", c);
-				print_usage();
-				exit(EXIT_FAILURE);
-			}
-			break;
-		case 5:
-			stringToUpper(optarg);
-			if (strcmp(optarg, "NEAREST_NEIGHBOR") == 0) interpolation = NEAREST_NEIGHBOR;
-			else if (strcmp(optarg, "BILINEAR") == 0) interpolation = BILINEAR;
-			else {
-				print_usage();
-				printf ("optarg = %s\n", optarg);
-				printf ("Unkown option %o\n", c);
-				exit(EXIT_FAILURE);
-			}
-			break;
-		case 'v':
-			cout << "Pink version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR << endl;
-			exit(0);
-		case 'h':
-			print_usage();
-			exit(0);
-		case '?':
-			printf ("Unkown option %o\n", c);
-			print_usage();
-			exit(EXIT_FAILURE);
-		default:
-			printf ("Unkown option %o\n", c);
-			print_usage();
-			exit(EXIT_FAILURE);
 		}
 	}
 
-	if (optind < argc) {
+//	if (optind < argc) {
+//		print_usage();
+//		cout << "ERROR: Unkown argv elements: ";
+//		while (optind < argc) cout << argv[optind++] << " ";
+//		cout << endl;
+//		exit(EXIT_FAILURE);
+//	}
+
+	if (executionPath == UNDEFINED) {
 		print_usage();
-		cout << "ERROR: Unkown argv elements: ";
-		while (optind < argc) cout << argv[optind++] << " ";
-		cout << endl;
-		exit(EXIT_FAILURE);
+		fatalError("Unkown execution path.");
 	}
 
-	// Check if all non-optional arguments are set
-	if (imagesFilename.empty() or resultFilename.empty()) {
+	if (executionPath == MAP) {
 		print_usage();
-		cout << "ERROR: Missing non-optional argument." << endl;
-		exit(EXIT_FAILURE);
+		fatalError("Execution path MAP is not implemented yet.");
 	}
 
 	if (layout == HEXAGONAL) {
 		print_usage();
-		cout << "ERROR: Only quadratic SOM layout is supported.";
-		exit(EXIT_FAILURE);
+		fatalError("Hexagonal SOM layout is not implemented yet.");
 	}
 
 	PINK::ImageIterator<float> iterImage(imagesFilename);
 
 	if (iterImage->getWidth() != iterImage->getHeight()) {
 		print_usage();
-		cout << "ERROR: Only quadratic images are supported.";
-		exit(EXIT_FAILURE);
+		fatalError("Only quadratic images are supported.");
 	}
 
 	numberOfImages = iterImage.number();
@@ -280,13 +335,14 @@ void InputData::print_parameters() const
 {
 	if (verbose) {
 		cout << "  Image file = " << imagesFilename << endl
-		     << "  Number of images = " << numberOfImages << endl
+			 << "  Result file = " << resultFilename << endl;
+		if (executionPath == MAP) cout << "  SOM file = " << somFilename << endl;
+		cout << "  Number of images = " << numberOfImages << endl
 		     << "  Image dimension = " << image_dim << "x" << image_dim << endl
 		     << "  SOM dimension = " << som_dim << "x" << som_dim << endl
 		     << "  Number of iterations = " << numIter << endl
 		     << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << endl
 		     << "  Progress = " << progressFactor << endl
-		     << "  Result file = " << resultFilename << endl
 		     << "  Layout = " << layout << endl
 		     << "  Initialization type = " << init << endl
 		     << "  Interpolation type = " << interpolation << endl
@@ -303,14 +359,12 @@ void InputData::print_usage() const
 {
     print_header();
 	cout << "\n"
-	        "  USAGE: Pink -i <image-file> -r <result-file>\n"
+	        "  Usage:\n"
 			"\n"
-	        "  Non-optional options:\n"
+	        "    Pink [Options] --train <image-file> <result-file>\n"
+	        "    Pink [Options] --map <SOM-file> <image-file> <result-file>\n"
 			"\n"
-	        "    --image-file, -i        File with images.\n"
-	        "    --result-file, -r       File for final SOM matrix.\n"
-			"\n"
-	        "  Optional options:\n"
+	        "  Options:\n"
 			"\n"
 	        "    --algo, -a              Specific GPU algorithm (default = 2).\n"
 			"                            0: FindBestNeuron on GPU, ImageRotation and UpdateSOM on CPU\n"

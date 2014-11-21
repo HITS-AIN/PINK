@@ -23,6 +23,13 @@ enum SOMInitialization {
 	RANDOM
 };
 
+//! Type for execution path.
+enum ExecutionPath {
+	UNDEFINED,
+	TRAIN,
+	MAP
+};
+
 //! Pretty printing of SOM layout type.
 std::ostream& operator << (std::ostream& os, Layout layout);
 
@@ -43,12 +50,14 @@ struct InputData
 	//! Print usage output for input arguments.
 	void print_usage() const;
 
-	bool verbose;
 	std::string imagesFilename;
+	std::string resultFilename;
+	std::string somFilename;
+
+	bool verbose;
 	int som_dim;
 	int neuron_dim;
 	Layout layout;
-	std::string resultFilename;
 	int seed;
 	int numberOfRotations;
 	int numberOfThreads;
@@ -67,6 +76,7 @@ struct InputData
 	int numberOfRotationsAndFlip;
 	int algo;
 	Interpolation interpolation;
+	ExecutionPath executionPath;
 };
 
 void stringToUpper(char* s);
