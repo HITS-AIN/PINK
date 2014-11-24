@@ -14,6 +14,7 @@
 //! Type for SOM layout.
 enum Layout {
 	QUADRATIC,
+	QUADHEX,
 	HEXAGONAL
 };
 
@@ -67,6 +68,7 @@ struct InputData
 	bool useFlip;
 	bool useCuda;
 	int numberOfImages;
+	int numberOfChannels;
 	int image_dim;
 	int image_size;
 	int image_size_using_flip;

@@ -316,6 +316,7 @@ void writeImageToBinaryFile(float *image, int height, int width, std::string con
 
     int one(1);
     os.write((char*)&one, sizeof(int));
+    os.write((char*)&one, sizeof(int));
     os.write((char*)&height, sizeof(int));
     os.write((char*)&width, sizeof(int));
     os.write((char*)image, height * width * sizeof(float));

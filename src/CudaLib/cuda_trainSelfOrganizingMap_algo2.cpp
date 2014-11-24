@@ -10,12 +10,14 @@
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
 #include "UtilitiesLib/Filler.h"
+#include <chrono>
 #include <iostream>
 #include <iomanip>
 #include <stdio.h>
 
 using namespace std;
 using namespace PINK;
+using namespace chrono;
 
 void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
 {
@@ -63,20 +65,35 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
 	// Progress status
 	float progress = 0.0;
 	float progressStep = 1.0 / inputData.numIter / inputData.numberOfImages;
-	float nextProgressPrint = 0.0;
+	float nextProgressPrint = inputData.progressFactor;
+
+	// Start timer
+	auto startTime = steady_clock::now();
+
+	vector<float> som(inputData.som_total_size);
 
 	for (int iter = 0; iter != inputData.numIter; ++iter)
 	{
 		int i = 0;
-		for (ImageIterator<float> iterImage(inputData.imagesFilename),iterEnd; iterImage != iterEnd; ++i, ++iterImage)
+		for (ImageIterator<float> iterImage(inputData.imagesFilename),iterEnd; iterImage != iterEnd; ++i, iterImage += iterImage.getNumberOfChannels())
 		{
-			if (inputData.verbose) {
-				if (progress >= nextProgressPrint) {
-					cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " %" << endl;
-					nextProgressPrint += inputData.progressFactor;
-				}
-				progress += progressStep;
+			if (progress >= nextProgressPrint)
+			{
+				const auto stopTime = steady_clock::now();
+				const auto duration = stopTime - startTime;
+
+				cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " % ("
+					 << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
+				cout << "  Write intermediate SOM to " << inputData.resultFilename << " ... " << flush;
+
+				cuda_copyDeviceToHost_float(&som[0], d_som, inputData.som_total_size);
+				writeSOM(&som[0], inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
+				cout << "done." << endl;
+
+				nextProgressPrint += inputData.progressFactor;
+				startTime = steady_clock::now();
 			}
+			progress += progressStep;
 
 			cuda_copyHostToDevice_float(d_image, iterImage->getPointerOfFirstPixel(), inputData.image_size);
 
@@ -103,16 +120,15 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
     cuda_free(d_rotatedImages);
     cuda_free(d_bestMatch);
 
-	if (inputData.verbose) {
-		cout << "  Progress: 100 %\n" << endl;
-		cout << "  Write final SOM to " << inputData.resultFilename << " ..." << endl;
-	}
+    cout << "  Progress: 100 % ("
+	     << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
+	cout << "  Write final SOM to " << inputData.resultFilename << " ... " << flush;
 
-	vector<float> som(inputData.som_total_size);
 	cuda_copyDeviceToHost_float(&som[0], d_som, inputData.som_total_size);
 	writeSOM(&som[0], inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
+	cout << "done." << endl;
 
-	cout << "  Number of updates of each neuron:\n" << endl;
+	cout << "\n  Number of updates of each neuron:\n" << endl;
 	for (int i=0; i != inputData.som_dim; ++i) {
 		for (int j=0; j != inputData.som_dim; ++j) {
 			cout << setw(6) << updateCounter[i*inputData.som_dim + j] << " ";

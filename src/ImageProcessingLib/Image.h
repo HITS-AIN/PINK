@@ -1,5 +1,5 @@
 /**
- * @file   Image.h
+ * @file   ImageProcessingLib/Image.h
  * @date   Oct 15, 2014
  * @author Bernd Doser, HITS gGmbH
  */

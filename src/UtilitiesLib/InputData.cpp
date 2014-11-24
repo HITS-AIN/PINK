@@ -22,6 +22,7 @@ std::ostream& operator << (std::ostream& os, Layout layout)
 {
 	if (layout == QUADRATIC) os << "quadratic";
 	else if (layout == HEXAGONAL) os << "hexagonal";
+	else if (layout == QUADHEX) os << "quadhex";
 	else os << "undefined";
 	return os;
 }
@@ -49,6 +50,7 @@ InputData::InputData(int argc, char **argv)
 	useFlip(true),
 	useCuda(true),
     numberOfImages(0),
+    numberOfChannels(0),
     image_dim(0),
     image_size(0),
     image_size_using_flip(0),
@@ -219,11 +221,11 @@ InputData::InputData(int argc, char **argv)
 				executionPath = MAP;
 				int index = optind - 1;
 				if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --map option.");
-				somFilename = strdup(argv[index++]);
-				if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --map option.");
 				imagesFilename = strdup(argv[index++]);
 				if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --map option.");
 				resultFilename = strdup(argv[index++]);
+				if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --map option.");
+				somFilename = strdup(argv[index++]);
 				optind = index - 1;
 				break;
 		    }
@@ -270,7 +272,7 @@ InputData::InputData(int argc, char **argv)
 		fatalError("Execution path MAP is not implemented yet.");
 	}
 
-	if (layout == HEXAGONAL) {
+	if (layout == HEXAGONAL or layout == QUADHEX) {
 		print_usage();
 		fatalError("Hexagonal SOM layout is not implemented yet.");
 	}
@@ -282,7 +284,8 @@ InputData::InputData(int argc, char **argv)
 		fatalError("Only quadratic images are supported.");
 	}
 
-	numberOfImages = iterImage.number();
+	numberOfImages = iterImage.getNumberOfImages();
+	numberOfChannels = iterImage.getNumberOfChannels();
 	image_dim = iterImage->getWidth();
 	image_size = image_dim * image_dim;
     som_size = som_dim * som_dim;
@@ -338,6 +341,7 @@ void InputData::print_parameters() const
 			 << "  Result file = " << resultFilename << endl;
 		if (executionPath == MAP) cout << "  SOM file = " << somFilename << endl;
 		cout << "  Number of images = " << numberOfImages << endl
+		     << "  Number of channels = " << numberOfChannels << endl
 		     << "  Image dimension = " << image_dim << "x" << image_dim << endl
 		     << "  SOM dimension = " << som_dim << "x" << som_dim << endl
 		     << "  Number of iterations = " << numIter << endl
@@ -362,7 +366,7 @@ void InputData::print_usage() const
 	        "  Usage:\n"
 			"\n"
 	        "    Pink [Options] --train <image-file> <result-file>\n"
-	        "    Pink [Options] --map <SOM-file> <image-file> <result-file>\n"
+	        "    Pink [Options] --map   <image-file> <result-file> <SOM-file>\n"
 			"\n"
 	        "  Options:\n"
 			"\n"

@@ -28,16 +28,17 @@ public:
 
 	//! Default constructor
 	ImageIterator()
-	 : number_(0), count_(0), height_(0), width_(0), ptrStream_(nullptr)
+	 : numberOfImages_(0), count_(0), height_(0), width_(0), ptrStream_(nullptr)
 	{}
 
 	//! Parameter constructor
 	ImageIterator(std::string const& filename)
-	 : number_(0), count_(0), height_(0), width_(0), ptrStream_(new std::ifstream(filename))
+	 : numberOfImages_(0), count_(0), height_(0), width_(0), ptrStream_(new std::ifstream(filename))
 	{
 	    if (!(*ptrStream_)) throw std::runtime_error("ImageIterator: Error opening " + filename);
 
-	    ptrStream_->read((char*)&number_, sizeof(int));
+	    ptrStream_->read((char*)&numberOfImages_, sizeof(int));
+	    ptrStream_->read((char*)&numberOfChannels_, sizeof(int));
 	    ptrStream_->read((char*)&height_, sizeof(int));
 	    ptrStream_->read((char*)&width_, sizeof(int));
 
@@ -63,6 +64,14 @@ public:
 	    return *this;
 	}
 
+	//! Addition assignment operator
+	ImageIterator& operator += (int step)
+	{
+		ptrStream_->seekg(step - 1, ptrStream_->cur);
+	    next();
+	    return *this;
+	}
+
 	//! Dereference
 	ImageType& operator * () const
 	{
@@ -76,14 +85,17 @@ public:
 	}
 
 	//! Return number of images.
-	int number() const { return number_; }
+	int getNumberOfImages() const { return numberOfImages_; }
+
+	//! Return number of channels.
+	int getNumberOfChannels() const { return numberOfChannels_; }
 
 private:
 
 	//! Read next picture
 	void next()
 	{
-		if (count_ < number_) {
+		if (count_ < numberOfImages_) {
 		    ptrCurrentImage_ = PtrImage(new ImageType(height_,width_));
 	        ptrStream_->read((char*)&ptrCurrentImage_->getPixel()[0], height_ * width_ * sizeof(float));
 	        ++count_;
@@ -92,7 +104,8 @@ private:
 		}
 	}
 
-	int number_;
+	int numberOfImages_;
+	int numberOfChannels_;
 	int count_;
 	int height_;
 	int width_;

@@ -11,11 +11,13 @@
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/CheckArrays.h"
 #include "UtilitiesLib/Filler.h"
+#include <chrono>
 #include <iostream>
 #include <iomanip>
 
 using namespace std;
 using namespace PINK;
+using namespace chrono;
 
 void trainSelfOrganizingMap(InputData const& inputData)
 {
@@ -45,18 +47,30 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	float progressStep = 1.0 / inputData.numIter / inputData.numberOfImages;
 	float nextProgressPrint = 0.0;
 
+	// Start timer
+	auto startTime = steady_clock::now();
+
 	for (int iter = 0; iter != inputData.numIter; ++iter)
 	{
 		int i = 0;
-		for (ImageIterator<float> iterImage(inputData.imagesFilename),iterEnd; iterImage != iterEnd; ++i, ++iterImage)
+		for (ImageIterator<float> iterImage(inputData.imagesFilename),iterEnd; iterImage != iterEnd; ++i, iterImage += iterImage.getNumberOfChannels())
 		{
-			if (inputData.verbose) {
-				if (progress >= nextProgressPrint) {
-					cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " %" << endl;
-					nextProgressPrint += inputData.progressFactor;
-				}
-				progress += progressStep;
+			if (progress >= nextProgressPrint)
+			{
+				const auto stopTime = steady_clock::now();
+				const auto duration = stopTime - startTime;
+
+				cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " % ("
+					 << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
+				cout << "  Write intermediate SOM to " << inputData.resultFilename << " ... " << flush;
+
+				writeSOM(som, inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
+				cout << "done." << endl;
+
+				nextProgressPrint += inputData.progressFactor;
+				startTime = steady_clock::now();
 			}
+			progress += progressStep;
 
 			float *image = iterImage->getPointerOfFirstPixel();
 
@@ -89,11 +103,12 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	    checkArrayForNan(som, inputData.som_size * inputData.neuron_size, "som");
 	#endif
 
-    if (inputData.verbose) {
-	    cout << "  Progress: 100 %\n" << endl;
-	    cout << "  Write final SOM to " << inputData.resultFilename << " ..." << endl;
-    }
+	cout << "  Progress: 100 % ("
+		 << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
+	cout << "  Write final SOM to " << inputData.resultFilename << " ... " << flush;
 
 	writeSOM(som, inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
+	cout << "done." << endl;
+
 	free(som);
 }

@@ -92,5 +92,14 @@ if(DOXYGEN_FOUND)
     )    
 endif()
 
-install(FILES ${PROJECT_SOURCE_DIR}/scripts/show.py ${PROJECT_SOURCE_DIR}/scripts/numpy2binary.py DESTINATION scripts)
-install(FILES ${PROJECT_SOURCE_DIR}/bashrc DESTINATION .)
+install(FILES
+    ${PROJECT_SOURCE_DIR}/scripts/jpg2binary.py
+    ${PROJECT_SOURCE_DIR}/scripts/numpy2binary.py
+    ${PROJECT_SOURCE_DIR}/scripts/show.py
+    DESTINATION scripts
+)
+
+install(FILES
+    ${PROJECT_SOURCE_DIR}/bashrc
+    DESTINATION .
+)
