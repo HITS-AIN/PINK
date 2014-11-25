@@ -67,7 +67,7 @@ public:
 	//! Addition assignment operator
 	ImageIterator& operator += (int step)
 	{
-		ptrStream_->seekg(step - 1, ptrStream_->cur);
+		ptrStream_->seekg((step - 1) * height_ * width_ * sizeof(float), ptrStream_->cur);
 	    next();
 	    return *this;
 	}

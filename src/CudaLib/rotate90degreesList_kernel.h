@@ -16,9 +16,5 @@ rotate90degreesList_kernel(float *images, int dim, int size, int offset)
 
 	if (x >= dim or y >= dim) return;
 
-    images[  offset + blockIdx.z*size + (dim-y-1)*dim + x] = images[           blockIdx.z*size + x*dim + y];
-    __syncthreads();
-    images[2*offset + blockIdx.z*size + (dim-y-1)*dim + x] = images[1*offset + blockIdx.z*size + x*dim + y];
-    __syncthreads();
-    images[3*offset + blockIdx.z*size + (dim-y-1)*dim + x] = images[2*offset + blockIdx.z*size + x*dim + y];
+    images[offset + blockIdx.z*size + (dim-y-1)*dim + x] = images[blockIdx.z*size + x*dim + y];
 }

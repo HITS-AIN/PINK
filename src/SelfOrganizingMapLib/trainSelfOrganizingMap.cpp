@@ -38,6 +38,9 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	if (inputData.verbose) cout << "  Size of best rotation matrix = " << bestRotationMatrix_sizeInBytes << " bytes\n" << endl;
 	int *bestRotationMatrix = (int *)malloc(bestRotationMatrix_sizeInBytes);
 
+    // Counting updates of each neuron
+	vector<int> updateCounter(inputData.som_size);
+
 	// Initialize SOM
 	if (inputData.init == RANDOM) fillWithRandomNumbers(som, inputData.som_size * inputData.neuron_size, inputData.seed);
 	else if (inputData.init == ZERO) fillWithValue(som, inputData.som_size * inputData.neuron_size);
@@ -45,7 +48,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 
 	float progress = 0.0;
 	float progressStep = 1.0 / inputData.numIter / inputData.numberOfImages;
-	float nextProgressPrint = 0.0;
+	float nextProgressPrint = inputData.progressFactor;
 
 	// Start timer
 	auto startTime = steady_clock::now();
@@ -90,6 +93,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 				inputData.som_dim, som, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, rotatedImages);
 
 			Point bestMatch = findBestMatchingNeuron(euclideanDistanceMatrix, inputData.som_dim);
+			++updateCounter[bestMatch.x*inputData.som_dim + bestMatch.y];
 
 			updateNeurons(inputData.som_dim, som, inputData.neuron_dim, rotatedImages, bestMatch, bestRotationMatrix);
 		}
@@ -109,6 +113,14 @@ void trainSelfOrganizingMap(InputData const& inputData)
 
 	writeSOM(som, inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
 	cout << "done." << endl;
+
+	cout << "\n  Number of updates of each neuron:\n" << endl;
+	for (int i=0; i != inputData.som_dim; ++i) {
+		for (int j=0; j != inputData.som_dim; ++j) {
+			cout << setw(6) << updateCounter[i*inputData.som_dim + j] << " ";
+		}
+		cout << endl;
+	}
 
 	free(som);
 }

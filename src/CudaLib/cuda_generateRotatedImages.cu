@@ -80,8 +80,12 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
 		dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
 		dim3 dimGrid(gridSize, gridSize, num_rot/4);
 
+		int offset = num_rot/4 * neuron_size;
+
 		// Start kernel
-		rotate90degreesList_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages, neuron_dim, neuron_size, num_rot/4*neuron_size);
+		rotate90degreesList_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages, neuron_dim, neuron_size, offset);
+		rotate90degreesList_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + offset, neuron_dim, neuron_size, offset);
+		rotate90degreesList_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + 2*offset, neuron_dim, neuron_size, offset);
 
 		cudaError_t error = cudaGetLastError();
 
