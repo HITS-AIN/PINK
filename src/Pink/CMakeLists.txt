@@ -17,11 +17,17 @@ add_executable(
 
 target_link_libraries(
     Pink
-    CudaLib
     ImageProcessingLib
     SelfOrganizingMapLib
     UtilitiesLib
 )
+
+if(PINK_USE_CUDA)
+    target_link_libraries(
+        Pink
+        CudaLib
+    )
+endif()
 
 install( 
     TARGETS Pink
