@@ -96,7 +96,8 @@ void cuda_trainSelfOrganizingMap_algo1(InputData const& inputData)
 			cuda_copyDeviceToHost_float(som, d_som, inputData.som_total_size);
 
 			Point bestMatch = findBestMatchingNeuron(euclideanDistanceMatrix, inputData.som_dim);
-			updateNeurons(inputData.som_dim, som, inputData.neuron_dim, rotatedImages, bestMatch, bestRotationMatrix);
+			updateNeurons(inputData.som_dim, som, inputData.neuron_dim, rotatedImages, bestMatch,
+			    bestRotationMatrix, inputData.numberOfChannels);
 
 			cuda_copyHostToDevice_float(d_som, som, inputData.som_total_size);
 		}
@@ -107,7 +108,7 @@ void cuda_trainSelfOrganizingMap_algo1(InputData const& inputData)
 		cout << "  Write final SOM to " << inputData.resultFilename << " ..." << endl;
 	}
 
-	writeSOM(som, inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
+	writeSOM(som, inputData.numberOfChannels, inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
 
 	// Free memory
 	free(bestRotationMatrix);

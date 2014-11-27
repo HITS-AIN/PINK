@@ -52,7 +52,7 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 	float *euclideanDistanceMatrix = new float[data.som_size];
 	fillWithValue(euclideanDistanceMatrix, data.som_size);
 
-	updateNeurons(data.som_dim, cpu_som, data.neuron_dim, rotatedImages, Point(0,0), bestRotationMatrix);
+	updateNeurons(data.som_dim, cpu_som, data.neuron_dim, rotatedImages, Point(0,0), bestRotationMatrix, 1);
 
 	float *gpu_som = new float[data.som_total_size];
 	fillWithRandomNumbers(gpu_som, data.som_total_size, 1);

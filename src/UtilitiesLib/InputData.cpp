@@ -31,6 +31,8 @@ std::ostream& operator << (std::ostream& os, SOMInitialization init)
 {
 	if (init == ZERO) os << "zero";
 	else if (init == RANDOM) os << "random";
+    else if (init == RANDOM_WITH_PREFERRED_DIRECTION) os << "random_with_preferred_direction";
+    else if (init == FILEINIT) os << "file_init";
 	else os << "undefined";
 	return os;
 }
@@ -158,14 +160,14 @@ InputData::InputData(int argc, char **argv)
 			}
 			case 'x':
 			{
-				stringToUpper(optarg);
-				if (strcmp(optarg, "ZERO") == 0) init = ZERO;
-				else if (strcmp(optarg, "RANDOM") == 0) init = RANDOM;
+			    char* upper_optarg = strdup(optarg);
+				stringToUpper(upper_optarg);
+				if (strcmp(upper_optarg, "ZERO") == 0) init = ZERO;
+				else if (strcmp(upper_optarg, "RANDOM") == 0) init = RANDOM;
+                else if (strcmp(upper_optarg, "RANDOM_WITH_PREFERRED_DIRECTION") == 0) init = RANDOM_WITH_PREFERRED_DIRECTION;
 				else {
-					printf ("optarg = %s\n", optarg);
-					printf ("Unkown option %o\n", c);
-					print_usage();
-					exit(EXIT_FAILURE);
+				    init = FILEINIT;
+				    initSomFilename = optarg;
 				}
 				break;
 			}
@@ -253,14 +255,6 @@ InputData::InputData(int argc, char **argv)
 			}
 		}
 	}
-
-//	if (optind < argc) {
-//		print_usage();
-//		cout << "ERROR: Unkown argv elements: ";
-//		while (optind < argc) cout << argv[optind++] << " ";
-//		cout << endl;
-//		exit(EXIT_FAILURE);
-//	}
 
 	if (executionPath == UNDEFINED) {
 		print_usage();
@@ -370,25 +364,26 @@ void InputData::print_usage() const
 			"\n"
 	        "  Options:\n"
 			"\n"
-	        "    --algo, -a              Specific GPU algorithm (default = 2).\n"
-			"                            0: FindBestNeuron on GPU, ImageRotation and UpdateSOM on CPU\n"
-			"                            1: ImageRotation and FindBestNeuron on GPU, UpdateSOM on CPU\n"
-			"                            2: ImageRotation and FindBestNeuron and UpdateSOM on GPU\n"
-            "    --cuda-off              Switch off CUDA acceleration (default = on).\n"
-	        "    --flip-off              Switch off usage of mirrored images (default = on).\n"
-			"    --help, -h              Print this lines\n"
-	        "    --init, -x              Type of SOM initialization (random, zero, default = zero).\n"
-	        "    --interpolation         Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
-	        "    --layout, -l            Layout of SOM (quadratic, hexagonal, default = quadratic).\n"
-	        "    --neuron-dimension, -d  Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
-	        "    --numrot, -n            Number of rotations (1 or a multiple of 4, default = 360).\n"
-	        "    --numthreads, -t        Number of CPU threads (default = auto).\n"
-	        "    --num-iter              Number of iterations (default = 1).\n"
-			"    --progress, -p          Print level of progress (default = 10%).\n"
-	        "    --seed, -s              Seed for random number generator (default = 1234).\n"
-	        "    --som-dimension         Dimension for quadratic SOM matrix (default = 10).\n"
-            "    --version, -v           Print version number.\n"
-            "    --verbose               Print more output (yes, no, default = yes).\n" << endl;
+	        "    --algo, -a                 Specific GPU algorithm (default = 2).\n"
+			"                               0: FindBestNeuron on GPU, ImageRotation and UpdateSOM on CPU\n"
+			"                               1: ImageRotation and FindBestNeuron on GPU, UpdateSOM on CPU\n"
+			"                               2: ImageRotation and FindBestNeuron and UpdateSOM on GPU\n"
+            "    --cuda-off                 Switch off CUDA acceleration (default = on).\n"
+            "    --dist-func, -f            Distribution function for SOM update (default = gaussian 1.1 0.2).\n"
+	        "    --flip-off                 Switch off usage of mirrored images (default = on).\n"
+			"    --help, -h                 Print this lines\n"
+	        "    --init, -x                 Type of SOM initialization (zero = default, random, random_with_preferred_direction, SOM-filename).\n"
+	        "    --interpolation            Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
+	        "    --layout, -l               Layout of SOM (quadratic, hexagonal, default = quadratic).\n"
+	        "    --neuron-dimension, -d     Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
+	        "    --numrot, -n               Number of rotations (1 or a multiple of 4, default = 360).\n"
+	        "    --numthreads, -t           Number of CPU threads (default = auto).\n"
+	        "    --num-iter                 Number of iterations (default = 1).\n"
+			"    --progress, -p             Print level of progress (default = 10%).\n"
+	        "    --seed, -s                 Seed for random number generator (default = 1234).\n"
+	        "    --som-dimension            Dimension for quadratic SOM matrix (default = 10).\n"
+            "    --version, -v              Print version number.\n"
+            "    --verbose                  Print more output (yes, no, default = yes).\n" << endl;
 }
 
 void stringToUpper(char* s)

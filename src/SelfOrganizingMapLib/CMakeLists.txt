@@ -10,6 +10,7 @@ add_library(
     SelfOrganizingMapLib
     STATIC
     SelfOrganizingMap.cpp
+    SOM.cpp
     trainSelfOrganizingMap.cpp
 )
 

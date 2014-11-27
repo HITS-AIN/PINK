@@ -9,6 +9,7 @@
 #define IMAGEPROCESSING_H_
 
 #include <string>
+#include <vector>
 
 /**
  * @brief Interpolation type for images.
@@ -113,20 +114,26 @@ void zeroValuesSmallerThanStdDeviation(float *a, int length, float safety);
 //! For debugging: printing images on stdout.
 void printImage(float *image, int height, int width);
 
-void writeImageToBinaryFile(float *image, int height, int width, std::string const& filename);
+void writeImagesToBinaryFile(std::vector<float> const& images, int numberOfImages, int numberOfChannels,
+    int height, int width, std::string const& filename);
+
+void readImagesFromBinaryFile(std::vector<float> &images, int &numberOfImages, int &numberOfChannels,
+    int &height, int &width, std::string const& filename);
 
 void showImage(float *image, int height, int width);
 
-void create_viewable_SOM(float* image, float* som, int som_dim, int image_dim);
+void convertSOMToImage(float *image, const float *som, int som_dim, int image_dim);
 
-void writeSOM(float* som, int som_dim, int image_dim, std::string const& filename);
+void convertImageToSOM(float *image, const float *som, int som_dim, int image_dim);
 
-void showSOM(float* som, int som_dim, int image_dim);
+void writeSOM(const float *som, int numberOfChannels, int som_dim, int neuron_dim, std::string const& filename);
 
-void writeRotatedImages(float* images, int image_dim, int numberOfRotations, std::string const& filename);
+void readSOM(float *som, int &numberOfChannels, int &som_dim, int &neuron_dim, std::string const& filename);
 
-void showRotatedImages(float* images, int image_dim, int numberOfRotations);
+void writeRotatedImages(float *images, int image_dim, int numberOfRotations, std::string const& filename);
 
-void showRotatedImagesSingle(float* images, int image_dim, int numberOfRotations);
+void showRotatedImages(float *images, int image_dim, int numberOfRotations);
+
+void showRotatedImagesSingle(float *images, int image_dim, int numberOfRotations);
 
 #endif /* IMAGEPROCESSING_H_ */

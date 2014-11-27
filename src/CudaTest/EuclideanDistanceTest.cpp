@@ -51,7 +51,7 @@ TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix_algo2)
 	fillWithRandomNumbers(rotatedImages, num_rot * image_size, 1);
 
 	generateEuclideanDistanceMatrix(cpu_euclideanDistanceMatrix, cpu_bestRotationMatrix, som_dim, som,
-	    image_dim, num_rot, rotatedImages);
+	    image_dim, num_rot, rotatedImages, 1);
 
 	float *d_som = cuda_alloc_float(som_size * image_size);
 	float *d_rotatedImages = cuda_alloc_float(num_rot * image_size);

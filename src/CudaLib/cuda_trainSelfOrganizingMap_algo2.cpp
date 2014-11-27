@@ -87,7 +87,7 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
 				cout << "  Write intermediate SOM to " << inputData.resultFilename << " ... " << flush;
 
 				cuda_copyDeviceToHost_float(&som[0], d_som, inputData.som_total_size);
-				writeSOM(&som[0], inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
+				writeSOM(&som[0], inputData.numberOfChannels, inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
 				cout << "done." << endl;
 
 				nextProgressPrint += inputData.progressFactor;
@@ -125,7 +125,7 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
 	cout << "  Write final SOM to " << inputData.resultFilename << " ... " << flush;
 
 	cuda_copyDeviceToHost_float(&som[0], d_som, inputData.som_total_size);
-	writeSOM(&som[0], inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
+	writeSOM(&som[0], inputData.numberOfChannels, inputData.som_dim, inputData.neuron_dim, inputData.resultFilename);
 	cout << "done." << endl;
 
 	cout << "\n  Number of updates of each neuron:\n" << endl;

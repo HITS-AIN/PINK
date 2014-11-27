@@ -21,7 +21,9 @@ enum Layout {
 //! Type for SOM initialization.
 enum SOMInitialization {
 	ZERO,
-	RANDOM
+	RANDOM,
+	RANDOM_WITH_PREFERRED_DIRECTION,
+	FILEINIT
 };
 
 //! Type for execution path.
@@ -54,6 +56,7 @@ struct InputData
 	std::string imagesFilename;
 	std::string resultFilename;
 	std::string somFilename;
+    std::string initSomFilename;
 
 	bool verbose;
 	int som_dim;

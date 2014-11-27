@@ -19,13 +19,13 @@ class Image
 public:
 
 	//! Parameter constructor, pixel not initialized
-	Image(int height, int width)
-     : height_(height), width_(width), pixel_(height*width)
+	Image(int height, int width, int numberOfChannels = 1)
+     : height_(height), width_(width), numberOfChannels_(numberOfChannels), pixel_(numberOfChannels*height*width)
     {}
 
 	//! Parameter constructor, pixel initialized
-	Image(int height, int width, T t)
-     : height_(height), width_(width), pixel_(height*width,t)
+	Image(int height, int width, int numberOfChannels, T t)
+     : height_(height), width_(width), numberOfChannels_(numberOfChannels), pixel_(numberOfChannels*height*width, t)
     {}
 
 	//! Equal comparison
@@ -50,6 +50,8 @@ public:
 
 	int getHeight() const { return height_; }
 	int getWidth() const { return width_; }
+    int getNumberOfChannels() const { return numberOfChannels_; }
+
 	std::vector<T>& getPixel() { return pixel_; }
 	T* getPointerOfFirstPixel() { return &pixel_[0]; }
 
@@ -60,6 +62,8 @@ private:
 
 	int height_;
 	int width_;
+    int numberOfChannels_;
+
 	std::vector<T> pixel_;
 
 };

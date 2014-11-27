@@ -14,6 +14,7 @@
 #include <omp.h>
 #include <stdlib.h>
 #include <stdexcept>
+#include <vector>
 
 #if PINK_USE_PYTHON
     #include "Python.h"
@@ -309,17 +310,33 @@ void printImage(float *image, int height, int width)
     cout << endl;
 }
 
-void writeImageToBinaryFile(float *image, int height, int width, std::string const& filename)
+void writeImagesToBinaryFile(std::vector<float> const& images, int numberOfImages, int numberOfChannels,
+    int height, int width, std::string const& filename)
 {
     std::ofstream os(filename);
     if (!os) throw std::runtime_error("Error opening " + filename);
 
-    int one(1);
-    os.write((char*)&one, sizeof(int));
-    os.write((char*)&one, sizeof(int));
+    os.write((char*)&numberOfImages, sizeof(int));
+    os.write((char*)&numberOfChannels, sizeof(int));
     os.write((char*)&height, sizeof(int));
     os.write((char*)&width, sizeof(int));
-    os.write((char*)image, height * width * sizeof(float));
+    os.write((char*)&images[0], numberOfImages * numberOfChannels * height * width * sizeof(float));
+}
+
+void readImagesFromBinaryFile(std::vector<float> &images, int &numberOfImages, int &numberOfChannels,
+    int &height, int &width, std::string const& filename)
+{
+    std::ifstream is(filename);
+    if (!is) throw std::runtime_error("Error opening " + filename);
+
+    is.read((char*)&numberOfImages, sizeof(int));
+    is.read((char*)&numberOfChannels, sizeof(int));
+    is.read((char*)&height, sizeof(int));
+    is.read((char*)&width, sizeof(int));
+
+    int size = numberOfImages * numberOfChannels * height * width;
+    images.resize(size);
+    is.read((char*)&images[0], size * sizeof(float));
 }
 
 void showImage(float *image, int height, int width)
@@ -350,11 +367,11 @@ void showImage(float *image, int height, int width)
     #endif
 }
 
-void create_viewable_SOM(float* image, float* som, int som_dim, int image_dim)
+void convertSOMToImage(float* image, const float* som, int som_dim, int image_dim)
 {
 	int total_image_dim = som_dim * image_dim;
     float *pimage = image;
-    float *psom = som;
+    const float *psom = som;
 
     for (int i = 0; i < som_dim; ++i) {
         for (int j = 0; j < som_dim; ++j) {
@@ -367,22 +384,43 @@ void create_viewable_SOM(float* image, float* som, int som_dim, int image_dim)
     }
 }
 
-void writeSOM(float* som, int som_dim, int image_dim, std::string const& filename)
+void convertImageToSOM(float* image, const float* som, int som_dim, int image_dim)
 {
-	int total_image_dim = som_dim*image_dim;
-	float *image = (float *)malloc(total_image_dim * total_image_dim * sizeof(float));
-	create_viewable_SOM(image, som, som_dim, image_dim);
-    writeImageToBinaryFile(image, total_image_dim, total_image_dim, filename);
-    free(image);
+    int total_image_dim = som_dim * image_dim;
+    float *pimage = image;
+    const float *psom = som;
+
+    for (int i = 0; i < som_dim; ++i) {
+        for (int j = 0; j < som_dim; ++j) {
+            for (int k = 0; k < image_dim; ++k) {
+                for (int l = 0; l < image_dim; ++l) {
+                    pimage[i*image_dim*som_dim*image_dim + k*image_dim*som_dim + j*image_dim + l] = *psom++;
+                }
+            }
+        }
+    }
 }
 
-void showSOM(float* som, int som_dim, int image_dim)
+void writeSOM(const float* som, int numberOfChannels, int som_dim, int neuron_dim, std::string const& filename)
 {
-	int total_image_dim = som_dim*image_dim;
-	float *image = (float *)malloc(total_image_dim * total_image_dim * sizeof(float));
-	create_viewable_SOM(image, som, som_dim, image_dim);
-    showImage(image, total_image_dim, total_image_dim);
-    free(image);
+    std::ofstream os(filename);
+    if (!os) throw std::runtime_error("Error opening " + filename);
+
+    os.write((char*)&numberOfChannels, sizeof(int));
+    os.write((char*)&som_dim, sizeof(int));
+    os.write((char*)&neuron_dim, sizeof(int));
+    os.write((char*)som, numberOfChannels * som_dim * som_dim * neuron_dim * neuron_dim * sizeof(float));
+}
+
+void readSOM(float *som, int &numberOfChannels, int &som_dim, int &neuron_dim, std::string const& filename)
+{
+    std::ifstream is(filename);
+    if (!is) throw std::runtime_error("Error opening " + filename);
+
+    is.read((char*)&numberOfChannels, sizeof(int));
+    is.read((char*)&som_dim, sizeof(int));
+    is.read((char*)&neuron_dim, sizeof(int));
+    is.read((char*)som, numberOfChannels * som_dim * som_dim * neuron_dim * neuron_dim * sizeof(float));
 }
 
 void writeRotatedImages(float* images, int image_dim, int numberOfImages, std::string const& filename)
@@ -390,14 +428,13 @@ void writeRotatedImages(float* images, int image_dim, int numberOfImages, std::s
 	int heigth = numberOfImages * image_dim;
 	int width = image_dim;
 	int image_size = image_dim * image_dim;
-    float *image = (float *)malloc(heigth * width * sizeof(float));
+    vector<float> image(heigth * width);
 
     for (int i = 0; i < numberOfImages; ++i) {
         for (int j = 0; j < image_size; ++j) image[j + i*image_size] = images[j + i*image_size];
     }
 
-    writeImageToBinaryFile(image, heigth, width, filename);
-    free(image);
+    writeImagesToBinaryFile(image, 1, 1, heigth, width, filename);
 }
 
 void showRotatedImages(float* images, int image_dim, int numberOfRotations)

@@ -82,7 +82,7 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 	fillWithRandomNumbers(image, image_size, 0);
 
 	generateRotatedImages(cpu_rotatedImages, image, data.num_rot, data.image_dim, data.neuron_dim,
-        data.useFlip, data.interpolation);
+        data.useFlip, data.interpolation, 1);
 
 //	printImage(cpu_rotatedImages, data.neuron_dim, data.neuron_dim);
 //	printImage(cpu_rotatedImages + neuron_size, data.neuron_dim, data.neuron_dim);

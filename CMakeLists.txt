@@ -95,7 +95,8 @@ endif()
 install(FILES
     ${PROJECT_SOURCE_DIR}/scripts/jpg2binary.py
     ${PROJECT_SOURCE_DIR}/scripts/numpy2binary.py
-    ${PROJECT_SOURCE_DIR}/scripts/show.py
+    ${PROJECT_SOURCE_DIR}/scripts/showImages.py
+    ${PROJECT_SOURCE_DIR}/scripts/showSOM.py
     DESTINATION scripts
 )
 

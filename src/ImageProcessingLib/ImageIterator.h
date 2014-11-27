@@ -96,8 +96,8 @@ private:
 	void next()
 	{
 		if (count_ < numberOfImages_) {
-		    ptrCurrentImage_ = PtrImage(new ImageType(height_,width_));
-	        ptrStream_->read((char*)&ptrCurrentImage_->getPixel()[0], height_ * width_ * sizeof(float));
+		    ptrCurrentImage_ = PtrImage(new ImageType(height_, width_, numberOfChannels_));
+	        ptrStream_->read((char*)&ptrCurrentImage_->getPixel()[0], numberOfChannels_ * height_ * width_ * sizeof(float));
 	        ++count_;
 		} else {
 			ptrStream_.reset();
