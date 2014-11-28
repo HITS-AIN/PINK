@@ -38,7 +38,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	// Initialize SOM
 	SOM som(inputData.som_dim, inputData.neuron_dim, inputData.numberOfChannels, inputData.init, inputData.seed, inputData.initSomFilename);
 	if (inputData.verbose) cout << "  Size of SOM = " << som.getSizeInBytes() << " bytes\n" << endl;
-    som.write("initial_som.bin");
+    //som.write("initial_som.bin");
 
     // Counting updates of each neuron
     vector<int> updateCounter(inputData.som_size);
@@ -52,8 +52,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 
 	for (int iter = 0; iter != inputData.numIter; ++iter)
 	{
-	    ImageIterator<float> iterImage(inputData.imagesFilename);
-		for (int i = 0; i != iterImage.getNumberOfImages(); ++i)
+		for (ImageIterator<float> iterImage(inputData.imagesFilename), iterEnd; iterImage != iterEnd; ++iterImage)
 		{
             if (progress >= nextProgressPrint)
             {
@@ -66,9 +65,6 @@ void trainSelfOrganizingMap(InputData const& inputData)
 
                 som.write(inputData.resultFilename);
 
-//                writeImagesToBinaryFile(som.getData(), inputData.som_dim * inputData.som_dim, inputData.numberOfChannels,
-//                    inputData.neuron_dim, inputData.neuron_dim, "som.bin");
-
                 cout << "done." << endl;
 
                 nextProgressPrint += inputData.progressFactor;
@@ -76,15 +72,9 @@ void trainSelfOrganizingMap(InputData const& inputData)
             }
             progress += progressStep;
 
-            float *image = iterImage->getPointerOfFirstPixel();
-            ++iterImage;
-
-            generateRotatedImages(&rotatedImages[0], image, inputData.numberOfRotations,
+            generateRotatedImages(&rotatedImages[0], iterImage->getPointerOfFirstPixel(), inputData.numberOfRotations,
                 inputData.image_dim, inputData.neuron_dim, inputData.useFlip, inputData.interpolation,
                 inputData.numberOfChannels);
-
-//            writeImagesToBinaryFile(rotatedImages, inputData.numberOfRotationsAndFlip, inputData.numberOfChannels,
-//                inputData.neuron_dim, inputData.neuron_dim, "rot.bin");
 
             generateEuclideanDistanceMatrix(&euclideanDistanceMatrix[0], &bestRotationMatrix[0],
                 inputData.som_dim, som.getDataPointer(), inputData.neuron_dim, inputData.numberOfRotationsAndFlip,

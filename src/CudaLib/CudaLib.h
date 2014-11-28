@@ -43,7 +43,7 @@ void cuda_generateEuclideanDistanceMatrix_secondStep(float *d_euclideanDistanceM
 
 //! Host routine starting kernel for euclideanDistanceMatrix second algorithm.
 void cuda_generateEuclideanDistanceMatrix_algo2(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix, int som_dim, float* d_som,
-    int image_dim, int num_rot, float* d_rotatedImages);
+    int image_dim, int num_rot, float* d_rotatedImages, int numberOfChannels);
 
 //! Host routine starting kernel for euclideanDistanceMatrix second algorithm second part.
 void cuda_generateEuclideanDistanceMatrix_algo2_firstStep(float *d_som, float *d_rotatedImages,
@@ -55,11 +55,11 @@ void cuda_generateEuclideanDistanceMatrix_algo2_secondStep(float *d_euclideanDis
 
 //! Host routine starting kernel for rotated images.
 void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_rot, int image_dim, int neuron_dim,
-    bool flip, Interpolation interpolation, float *d_cosAlpha, float *d_sinAlpha);
+    bool flip, Interpolation interpolation, float *d_cosAlpha, float *d_sinAlpha, int numberOfChannels);
 
 //! Host routine starting kernel for updating neurons.
 void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix, int* d_bestMatch,
-    int som_dim, int neuron_dim, int num_rot);
+    int som_dim, int neuron_dim, int num_rot, int numberOfChannels);
 
 //! Prepare trigonometric values
 void trigonometricValues(float **d_cosAlpha, float **d_sinAlpha, int num_rot);

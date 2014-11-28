@@ -9,8 +9,8 @@
  */
 template <unsigned int block_size>
 __global__ void
-rotateAndCrop_kernel(float *rotatedImages, float *image, int neuron_size,
-    int neuron_dim, int image_dim, float *cosAlpha, float *sinAlpha)
+rotateAndCropNearestNeighbor_kernel(float *rotatedImages, float *image, int neuron_size,
+    int neuron_dim, int image_dim, float *cosAlpha, float *sinAlpha, int numberOfChannels)
 {
 	int x2 = blockIdx.x * blockDim.x + threadIdx.x;
 	int y2 = blockIdx.y * blockDim.y + threadIdx.y;
@@ -27,7 +27,7 @@ rotateAndCrop_kernel(float *rotatedImages, float *image, int neuron_size,
 	float x1 = (x2-center_margin)*cosAlpha_local + (y2-center_margin)*sinAlpha_local + center + 0.1;
 	float y1 = (y2-center_margin)*cosAlpha_local - (x2-center_margin)*sinAlpha_local + center + 0.1;
 
-	float *pCurRot = rotatedImages + blockIdx.z * neuron_size;
+	float *pCurRot = rotatedImages + blockIdx.z * numberOfChannels * neuron_size;
 
     if (x1 >= 0 and x1 < image_dim and y1 >= 0 and y1 < image_dim) {
     	atomicExch(pCurRot + x2*neuron_dim + y2, image[(int)x1*image_dim + (int)y1]);

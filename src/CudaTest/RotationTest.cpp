@@ -52,8 +52,10 @@ TEST(FlipTest, 0)
 
 struct FullRotationTestData
 {
-	FullRotationTestData(int image_dim, int neuron_dim, int num_rot, bool useFlip, Interpolation interpolation)
-	  : image_dim(image_dim), neuron_dim(neuron_dim), num_rot(num_rot), useFlip(useFlip), interpolation(interpolation)
+	FullRotationTestData(int image_dim, int neuron_dim, int num_rot, bool useFlip,
+	    Interpolation interpolation, int num_channels)
+	  : image_dim(image_dim), neuron_dim(neuron_dim), num_rot(num_rot),
+	    useFlip(useFlip), interpolation(interpolation), num_channels(num_channels)
 	{}
 
 	int image_dim;
@@ -61,6 +63,7 @@ struct FullRotationTestData
 	int num_rot;
 	bool useFlip;
 	Interpolation interpolation;
+    int num_channels;
 };
 
 class FullRotationTest : public ::testing::TestWithParam<FullRotationTestData>
@@ -73,45 +76,43 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 
 	int image_size = data.image_dim * data.image_dim;
 	int neuron_size = data.neuron_dim * data.neuron_dim;
+    int mc_image_size = data.num_channels * image_size;
+    int mc_neuron_size = data.num_channels * neuron_size;
 	int num_rot_using_flip = data.useFlip ? 2*data.num_rot : data.num_rot;
-	int image_size_using_flip = data.useFlip ? 2*image_size : image_size;
 
-	float *image = new float[image_size];
-	float *cpu_rotatedImages = new float[num_rot_using_flip * neuron_size];
+	float *image = new float[mc_image_size];
+	float *cpu_rotatedImages = new float[num_rot_using_flip * mc_neuron_size];
 
-	fillWithRandomNumbers(image, image_size, 0);
+	fillWithRandomNumbers(image, mc_image_size, 0);
 
 	generateRotatedImages(cpu_rotatedImages, image, data.num_rot, data.image_dim, data.neuron_dim,
-        data.useFlip, data.interpolation, 1);
+        data.useFlip, data.interpolation, data.num_channels);
 
-//	printImage(cpu_rotatedImages, data.neuron_dim, data.neuron_dim);
-//	printImage(cpu_rotatedImages + neuron_size, data.neuron_dim, data.neuron_dim);
-//	printImage(cpu_rotatedImages + 2*neuron_size, data.neuron_dim, data.neuron_dim);
-//	printImage(cpu_rotatedImages + 3*neuron_size, data.neuron_dim, data.neuron_dim);
+//	for (int i = 0; i < data.num_channels * num_rot_using_flip; ++i)
+//	    printImage(cpu_rotatedImages + i*neuron_size, data.neuron_dim, data.neuron_dim);
 	//writeRotatedImages(cpu_rotatedImages, data.neuron_dim, data.num_rot, "cpu_rot.bin");
 
-	float *d_image = cuda_alloc_float(image_size_using_flip);
-	float *d_rotatedImages = cuda_alloc_float(num_rot_using_flip * neuron_size);
+	float *d_image = cuda_alloc_float(mc_image_size);
+	float *d_rotatedImages = cuda_alloc_float(num_rot_using_flip * mc_neuron_size);
+	cuda_fill_zero(d_rotatedImages, num_rot_using_flip * mc_neuron_size);
 
-	cuda_copyHostToDevice_float(d_image, image, image_size);
+	cuda_copyHostToDevice_float(d_image, image, mc_image_size);
 
     // Prepare trigonometric values
 	float *d_cosAlpha = NULL, *d_sinAlpha = NULL;
 	trigonometricValues(&d_cosAlpha, &d_sinAlpha, data.num_rot/4);
 
 	cuda_generateRotatedImages(d_rotatedImages, d_image, data.num_rot, data.image_dim, data.neuron_dim,
-		data.useFlip, data.interpolation, d_cosAlpha, d_sinAlpha);
+		data.useFlip, data.interpolation, d_cosAlpha, d_sinAlpha, data.num_channels);
 
-	float *gpu_rotatedImages = new float[num_rot_using_flip * neuron_size];
-	cuda_copyDeviceToHost_float(gpu_rotatedImages, d_rotatedImages, num_rot_using_flip * neuron_size);
+	float *gpu_rotatedImages = new float[num_rot_using_flip * mc_neuron_size];
+	cuda_copyDeviceToHost_float(gpu_rotatedImages, d_rotatedImages, num_rot_using_flip * mc_neuron_size);
 
-//	printImage(gpu_rotatedImages, data.neuron_dim, data.neuron_dim);
-//	printImage(gpu_rotatedImages + neuron_size, data.neuron_dim, data.neuron_dim);
-//	printImage(gpu_rotatedImages + 2*neuron_size, data.neuron_dim, data.neuron_dim);
-//	printImage(gpu_rotatedImages + 3*neuron_size, data.neuron_dim, data.neuron_dim);
+//    for (int i = 0; i < data.num_channels * num_rot_using_flip; ++i)
+//	    printImage(gpu_rotatedImages + i*neuron_size, data.neuron_dim, data.neuron_dim);
 	//writeRotatedImages(gpu_rotatedImages, data.neuron_dim, data.num_rot, "gpu_rot.bin");
 
-	EXPECT_TRUE(EqualFloatArrays(cpu_rotatedImages, gpu_rotatedImages, num_rot_using_flip * neuron_size));
+	EXPECT_TRUE(EqualFloatArrays(cpu_rotatedImages, gpu_rotatedImages, num_rot_using_flip * mc_neuron_size));
 
 	cuda_free(d_cosAlpha);
 	cuda_free(d_sinAlpha);
@@ -124,14 +125,21 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
 
 INSTANTIATE_TEST_CASE_P(FullRotationTest_all, FullRotationTest,
     ::testing::Values(
-        FullRotationTestData(3,3,4,false,NEAREST_NEIGHBOR),
-        FullRotationTestData(2,2,4,false,NEAREST_NEIGHBOR),
-        FullRotationTestData(2,2,4,true,NEAREST_NEIGHBOR),
-        FullRotationTestData(8,2,4,false,NEAREST_NEIGHBOR),
-        FullRotationTestData(64,44,4,false,NEAREST_NEIGHBOR),
-        FullRotationTestData(64,44,4,true,NEAREST_NEIGHBOR),
-        FullRotationTestData(10,10,8,false,NEAREST_NEIGHBOR),
-        FullRotationTestData(4,2,360,false,NEAREST_NEIGHBOR),
-        FullRotationTestData(3,3,360,true,NEAREST_NEIGHBOR),
-        FullRotationTestData(4,2,360,true,NEAREST_NEIGHBOR)
+        FullRotationTestData( 3,  3,   4, false, NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 2,  2,   4, false, NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 2,  2,   4, true,  NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 8,  2,   4, false, NEAREST_NEIGHBOR, 1),
+        FullRotationTestData(64, 44,   4, false, NEAREST_NEIGHBOR, 1),
+        FullRotationTestData(64, 44,   4, true,  NEAREST_NEIGHBOR, 1),
+        FullRotationTestData(10, 10,   8, false, NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 4,  2, 360, false, NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 3,  3, 360, true,  NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 4,  2, 360, true,  NEAREST_NEIGHBOR, 1),
+//        FullRotationTestData( 2,  2,   8, false, BILINEAR,         1)
+//        FullRotationTestData( 4,  2,   4, false, BILINEAR,         1),
+        FullRotationTestData( 3,  3,   4, false, NEAREST_NEIGHBOR, 2),
+        FullRotationTestData( 3,  3,   8, false, NEAREST_NEIGHBOR, 2),
+        FullRotationTestData( 4,  2,   8, false, NEAREST_NEIGHBOR, 2),
+        FullRotationTestData( 4,  2,   8, true,  NEAREST_NEIGHBOR, 2),
+        FullRotationTestData( 4,  2, 360, true,  NEAREST_NEIGHBOR, 2)
 ));

@@ -16,7 +16,7 @@
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="run"/>
 <booleanAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN" value="true"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="main"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="--train ../data/Morphology_EFIGI_small2.bin som_mc_small2.bin&#10;-n 360&#10;--init random_with_preferred_direction&#10;--cuda-off&#10;--som-dimension=5&#10;--num-iter=100"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="--train ../data/Morphology_EFIGI_small2.bin result.bin&#10;-n 180&#10;--init random&#10;--cuda-off&#10;--som-dimension=5&#10;--num-iter=1"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="RadioGalaxyZoo/code-new/Build_Release_Gnu/bin/Pink"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="pink_trunk"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="true"/>

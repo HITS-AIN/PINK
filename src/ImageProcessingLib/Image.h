@@ -51,6 +51,7 @@ public:
 	int getHeight() const { return height_; }
 	int getWidth() const { return width_; }
     int getNumberOfChannels() const { return numberOfChannels_; }
+    int getSize() const { return pixel_.size(); }
 
 	std::vector<T>& getPixel() { return pixel_; }
 	T* getPointerOfFirstPixel() { return &pixel_[0]; }

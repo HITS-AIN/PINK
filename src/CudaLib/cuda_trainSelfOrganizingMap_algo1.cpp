@@ -84,12 +84,14 @@ void cuda_trainSelfOrganizingMap_algo1(InputData const& inputData)
 			cuda_copyHostToDevice_float(d_image, iterImage->getPointerOfFirstPixel(), inputData.image_size);
 
 			cuda_generateRotatedImages(d_rotatedImages, d_image, inputData.numberOfRotations,
-				inputData.image_dim, inputData.neuron_dim, inputData.useFlip, inputData.interpolation, d_cosAlpha, d_sinAlpha);
+				inputData.image_dim, inputData.neuron_dim, inputData.useFlip, inputData.interpolation,
+				d_cosAlpha, d_sinAlpha, inputData.numberOfChannels);
 
 			cuda_copyDeviceToHost_float(rotatedImages, d_rotatedImages, inputData.numberOfRotationsAndFlip * inputData.neuron_size);
 
 			cuda_generateEuclideanDistanceMatrix_algo2(d_euclideanDistanceMatrix, d_bestRotationMatrix,
-				inputData.som_dim, d_som, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, d_rotatedImages);
+				inputData.som_dim, d_som, inputData.neuron_dim, inputData.numberOfRotationsAndFlip,
+				d_rotatedImages, inputData.numberOfChannels);
 
 			cuda_copyDeviceToHost_float(euclideanDistanceMatrix, d_euclideanDistanceMatrix, inputData.som_size);
 			cuda_copyDeviceToHost_int(bestRotationMatrix, d_bestRotationMatrix, inputData.som_size);

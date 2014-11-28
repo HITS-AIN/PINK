@@ -36,8 +36,8 @@ findBestMatchingNeuron_kernel(float *euclideanDistanceMatrix, int *bestMatch, in
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
-void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix, int* d_bestMatch,
-    int som_dim, int neuron_dim, int num_rot)
+void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,
+    int* d_bestMatch, int som_dim, int neuron_dim, int num_rot, int numberOfChannels)
 {
     {
     	// Start kernel
@@ -53,7 +53,7 @@ void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotatio
     }
     {
 		// Setup execution parameters
-		int neuron_size = neuron_dim * neuron_dim;
+		int neuron_size = numberOfChannels * neuron_dim * neuron_dim;
 		int gridSize = ceil((float)neuron_size/BLOCK_SIZE);
 		dim3 dimBlock(BLOCK_SIZE);
 		dim3 dimGrid(gridSize, som_dim, som_dim);

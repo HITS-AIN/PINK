@@ -11,11 +11,14 @@
 #include "UtilitiesLib/DistributionFunctions.h"
 #include <ctype.h>
 #include <float.h>
+#include <iomanip>
 #include <iostream>
 #include <omp.h>
 #include <stdlib.h>
 #include <string.h>
 #include <cmath>
+
+using namespace std;
 
 void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int image_dim, int neuron_dim,
     bool useFlip, Interpolation interpolation, int numberOfChannels)
@@ -31,7 +34,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
 	int offset3 = 3 * offset1;
 
 	// Copy original image to first position of image array
-    #pragma omp parallel for
+    //#pragma omp parallel for
 	for (int c = 0; c < numberOfChannels; ++c) {
         float *currentImage = image + c*image_size;
         float *currentRotatedImages = rotatedImages + c*neuron_size;
@@ -42,7 +45,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
 	}
 
 	// Rotate images
-    #pragma omp parallel for
+    //#pragma omp parallel for
 	for (int i = 1; i < num_real_rot; ++i) {
 	    for (int c = 0; c < numberOfChannels; ++c) {
 	        float *currentImage = image + c*image_size;

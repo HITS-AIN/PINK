@@ -21,7 +21,9 @@ public:
 
 	void write(std::string const& filename) const;
 
-	int getSizeInBytes() const { return data_.size() * sizeof(float); }
+	int getSize() const { return data_.size(); }
+
+    int getSizeInBytes() const { return data_.size() * sizeof(float); }
 
 	std::vector<float> getData() { return data_; }
 

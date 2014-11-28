@@ -16,18 +16,19 @@
 
 struct FullUpdateNeuronsTestData
 {
-	FullUpdateNeuronsTestData(int som_dim, int neuron_dim, int num_rot)
-	  : som_dim(som_dim), neuron_dim(neuron_dim), num_rot(num_rot)
+	FullUpdateNeuronsTestData(int som_dim, int neuron_dim, int num_rot, int num_channels)
+	  : som_dim(som_dim), neuron_dim(neuron_dim), num_rot(num_rot), num_channels(num_channels)
 	{
 		som_size = som_dim * som_dim;
         neuron_size = neuron_dim * neuron_dim;
-		rot_size = num_rot * neuron_size;
-		som_total_size = som_size * neuron_size;
+		rot_size = num_channels * num_rot * neuron_size;
+		som_total_size = num_channels * som_size * neuron_size;
 	}
 
 	int som_dim;
 	int neuron_dim;
 	int num_rot;
+	int num_channels;
 
 	int som_size;
 	int neuron_size;
@@ -52,7 +53,7 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 	float *euclideanDistanceMatrix = new float[data.som_size];
 	fillWithValue(euclideanDistanceMatrix, data.som_size);
 
-	updateNeurons(data.som_dim, cpu_som, data.neuron_dim, rotatedImages, Point(0,0), bestRotationMatrix, 1);
+	updateNeurons(data.som_dim, cpu_som, data.neuron_dim, rotatedImages, Point(0,0), bestRotationMatrix, data.num_channels);
 
 	float *gpu_som = new float[data.som_total_size];
 	fillWithRandomNumbers(gpu_som, data.som_total_size, 1);
@@ -69,7 +70,7 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 	cuda_copyHostToDevice_float(d_euclideanDistanceMatrix, euclideanDistanceMatrix, data.som_size);
 
 	cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
-	    data.som_dim, data.neuron_dim, data.num_rot);
+	    data.som_dim, data.neuron_dim, data.num_rot, data.num_channels);
 
 	cuda_copyDeviceToHost_float(gpu_som, d_som, data.som_total_size);
 
@@ -90,5 +91,8 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 
 INSTANTIATE_TEST_CASE_P(FullUpdateNeuronsTest_all, FullUpdateNeuronsTest,
     ::testing::Values(
-        FullUpdateNeuronsTestData(2,2,2)
+        FullUpdateNeuronsTestData(2,2,1,1),
+        FullUpdateNeuronsTestData(2,2,1,2),
+        FullUpdateNeuronsTestData(2,2,2,1),
+        FullUpdateNeuronsTestData(2,2,2,2)
 ));

@@ -10,7 +10,7 @@
 template <unsigned int block_size>
 __global__ void
 rotateAndCropBilinear_kernel(float *rotatedImages, float *image, int neuron_size,
-    int neuron_dim, int image_dim, float *cosAlpha, float *sinAlpha)
+    int neuron_dim, int image_dim, float *cosAlpha, float *sinAlpha, int numberOfChannels)
 {
 	int x2 = blockIdx.x * blockDim.x + threadIdx.x;
 	int y2 = blockIdx.y * blockDim.y + threadIdx.y;
@@ -37,7 +37,7 @@ rotateAndCropBilinear_kernel(float *rotatedImages, float *image, int neuron_size
     float cx1 = 1.0f - rx1;
     float cy1 = 1.0f - ry1;
 
-	float *pCurRot = rotatedImages + blockIdx.z * neuron_size;
+	float *pCurRot = rotatedImages + blockIdx.z * numberOfChannels * neuron_size;
 
     float value = cx1 * cy1 * image[ix1  * image_dim + iy1 ]
                 + cx1 * ry1 * image[ix1  * image_dim + iy1b]

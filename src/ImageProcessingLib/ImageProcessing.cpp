@@ -199,15 +199,15 @@ void rotateAndCrop_bilinear(int height, int width, int height_new, int width_new
     for (int x2 = 0; x2 < width_new; ++x2) {
         for (int y2 = 0; y2 < height_new; ++y2) {
         	x1 = ((float)x2 + width_margin - x0) * cosAlpha + ((float)y2 + height_margin - y0) * sinAlpha + x0;
-            if (x1 < 0 or x1 >= width) {
-            	dest[x2*height_new + y2] = 0.0f;
-            	continue;
-            }
+//            if (x1 < 0 or x1 >= width) {
+//            	dest[x2*height_new + y2] = 0.0f;
+//            	continue;
+//            }
         	y1 = ((float)y2 + height_margin - y0) * cosAlpha - ((float)x2 + width_margin - x0) * sinAlpha + y0;
-            if (y1 < 0 or y1 >= height) {
-            	dest[x2*height_new + y2] = 0.0f;
-            	continue;
-            }
+//            if (y1 < 0 or y1 >= height) {
+//            	dest[x2*height_new + y2] = 0.0f;
+//            	continue;
+//            }
             ix1 = x1;
             iy1 = y1;
             ix1b = ix1 + 1;
