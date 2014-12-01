@@ -104,28 +104,15 @@ void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRo
 Point findBestMatchingNeuron(float *euclideanDistanceMatrix, int som_dim)
 {
 	int som_size = som_dim * som_dim;
-    float minDistance = FLT_MAX;
-    Point bestMatch;
-
-    for (int i = 0; i < som_dim; ++i) {
-        for (int j = 0; j < som_dim; ++j) {
-			if (euclideanDistanceMatrix[i*som_dim+j] < minDistance) {
-				minDistance = euclideanDistanceMatrix[i*som_dim+j];
-				bestMatch.x = i;
-				bestMatch.y = j;
-			}
-		}
+    float minDistance = euclideanDistanceMatrix[0];
+    Point bestMatch(0,0);
+    for (int ij = 1; ij < som_size; ++ij) {
+        if (euclideanDistanceMatrix[ij] < minDistance) {
+            minDistance = euclideanDistanceMatrix[ij];
+            bestMatch.x = ij / som_dim;
+            bestMatch.y = ij % som_dim;
+        }
     }
-
-//    float minDistance = euclideanDistanceMatrix[0];
-//    Point bestMatch(0,0);
-//    for (int ij = 0; ij < som_size; ++ij) {
-//        if (euclideanDistanceMatrix[ij] < minDistance) {
-//            minDistance = euclideanDistanceMatrix[ij];
-//            bestMatch.x = ij / som_dim;
-//            bestMatch.y = ij % som_dim;
-//        }
-//    }
 
     return bestMatch;
 }

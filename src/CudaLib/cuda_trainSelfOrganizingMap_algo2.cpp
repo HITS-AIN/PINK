@@ -28,7 +28,7 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
     }
 
     // Initialize SOM on host
-    SOM som(inputData.som_dim, inputData.neuron_dim, inputData.numberOfChannels, inputData.init, inputData.seed, inputData.initSomFilename);
+    SOM som(inputData.som_dim, inputData.neuron_dim, inputData.numberOfChannels, inputData.init, inputData.seed, inputData.somFilename);
     if (inputData.verbose) cout << "\n  Size of SOM = " << som.getSize() * sizeof(float) << " bytes" << endl;
     float *d_som = cuda_alloc_float(som.getSize());
     cuda_copyHostToDevice_float(d_som, som.getDataPointer(), som.getSize());

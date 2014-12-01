@@ -16,6 +16,9 @@
 //! Main CPU based routine for SOM training.
 void trainSelfOrganizingMap(InputData const& inputData);
 
+//! Main CPU based routine for SOM mapping.
+void mapping(InputData const& inputData);
+
 void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim,
     bool useFlip, Interpolation interpolation, int numberOfChannels);
 

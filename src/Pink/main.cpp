@@ -9,6 +9,7 @@
 #include "ImageProcessingLib/ImageIterator.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
+#include "UtilitiesLib/Error.h"
 #include "UtilitiesLib/InputData.h"
 #include <cmath>
 #include <chrono>
@@ -69,7 +70,12 @@ int main (int argc, char **argv)
 			}
 		} else
     #endif
+        if (inputData.executionPath == TRAIN)
 	    	trainSelfOrganizingMap(inputData);
+        else if (inputData.executionPath == MAP)
+            mapping(inputData);
+        else
+            fatalError("Unknown execution path.");
 
 	// Stop and print timer
 	const auto stopTime = steady_clock::now();

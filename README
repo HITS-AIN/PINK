@@ -61,6 +61,8 @@ For convertion and visualization of images some python scripts are available.
 
   showSOM.py:      Visualize binary SOM file format.
 
+  showHeatmap.py:  Visualize the mapping result.
+
 Binary file format description
 ------------------------------
 
@@ -80,3 +82,10 @@ Binary file format description
     (1)(integer) SOM_dimension
     (1)(integer) neuron_dimension
     (SOM_dimension, SOM_dimension, number_of_channels, neuron_dimension, neuron_dimension)(float) pixels
+
+  3) Mapping result file
+
+    (1)(integer) number_of_images
+    (1)(integer) SOM_dimension
+    (1)(integer) neuron_dimension
+    (number_of_images, SOM_dimension, SOM_dimension)(float) euclidian_distance

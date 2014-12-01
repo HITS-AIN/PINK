@@ -56,7 +56,6 @@ struct InputData
 	std::string imagesFilename;
 	std::string resultFilename;
 	std::string somFilename;
-    std::string initSomFilename;
 
 	bool verbose;
 	int som_dim;
@@ -82,6 +81,7 @@ struct InputData
 	int algo;
 	Interpolation interpolation;
 	ExecutionPath executionPath;
+	bool intermediate_storage;
 };
 
 void stringToUpper(char* s);

@@ -1,5 +1,5 @@
 /**
- * @file   trainSelfOrganizingMap.cpp
+ * @file   SelfOrganizingMapLib/trainSelfOrganizingMap.cpp
  * @date   Nov 3, 2014
  * @author Bernd Doser, HITS gGmbH
  */
@@ -23,6 +23,8 @@ using namespace chrono;
 
 void trainSelfOrganizingMap(InputData const& inputData)
 {
+    if (inputData.verbose) cout << "\n  Starting C version of training." << endl;
+
 	// Memory allocation
 	int rotatedImagesSize = inputData.numberOfChannels * inputData.numberOfRotations * inputData.neuron_size;
 	if (inputData.useFlip) rotatedImagesSize *= 2;
@@ -36,7 +38,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	vector<int> bestRotationMatrix(inputData.som_size);
 
 	// Initialize SOM
-	SOM som(inputData.som_dim, inputData.neuron_dim, inputData.numberOfChannels, inputData.init, inputData.seed, inputData.initSomFilename);
+	SOM som(inputData.som_dim, inputData.neuron_dim, inputData.numberOfChannels, inputData.init, inputData.seed, inputData.somFilename);
 	if (inputData.verbose) cout << "  Size of SOM = " << som.getSizeInBytes() << " bytes\n" << endl;
     //som.write("initial_som.bin");
 
@@ -61,11 +63,12 @@ void trainSelfOrganizingMap(InputData const& inputData)
 
                 cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " % ("
                      << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
-                cout << "  Write intermediate SOM to " << inputData.resultFilename << " ... " << flush;
 
-                som.write(inputData.resultFilename);
-
-                cout << "done." << endl;
+                if (inputData.intermediate_storage) {
+                    if (inputData.verbose) cout << "  Write intermediate SOM to " << inputData.resultFilename << " ... " << flush;
+                    som.write(inputData.resultFilename);
+                    if (inputData.verbose) cout << "done." << endl;
+                }
 
                 nextProgressPrint += inputData.progressFactor;
                 startTime = steady_clock::now();

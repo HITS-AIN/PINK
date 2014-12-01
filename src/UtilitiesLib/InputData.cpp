@@ -62,7 +62,8 @@ InputData::InputData(int argc, char **argv)
     numberOfRotationsAndFlip(0),
     algo(2),
     interpolation(BILINEAR),
-    executionPath(UNDEFINED)
+    executionPath(UNDEFINED),
+    intermediate_storage(false)
 {
 	static struct option long_options[] = {
 		{"image-dimension", 1, 0, 'd'},
@@ -83,6 +84,7 @@ InputData::InputData(int argc, char **argv)
 		{"interpolation",   1, 0, 5},
 		{"train",           1, 0, 6},
 		{"map",             1, 0, 7},
+        {"inter-store",     1, 0, 8},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
@@ -120,6 +122,7 @@ InputData::InputData(int argc, char **argv)
 				stringToUpper(optarg);
 				if (strcmp(optarg, "QUADRATIC") == 0) layout = QUADRATIC;
 				else if (strcmp(optarg, "HEXAGONAL") == 0) layout = HEXAGONAL;
+                else if (strcmp(optarg, "QUADHEX") == 0) layout = QUADHEX;
 				else {
 					printf ("optarg = %s\n", optarg);
 					printf ("Unkown option %o\n", c);
@@ -167,7 +170,7 @@ InputData::InputData(int argc, char **argv)
                 else if (strcmp(upper_optarg, "RANDOM_WITH_PREFERRED_DIRECTION") == 0) init = RANDOM_WITH_PREFERRED_DIRECTION;
 				else {
 				    init = FILEINIT;
-				    initSomFilename = optarg;
+				    somFilename = optarg;
 				}
 				break;
 			}
@@ -259,11 +262,6 @@ InputData::InputData(int argc, char **argv)
 	if (executionPath == UNDEFINED) {
 		print_usage();
 		fatalError("Unkown execution path.");
-	}
-
-	if (executionPath == MAP) {
-		print_usage();
-		fatalError("Execution path MAP is not implemented yet.");
 	}
 
 	if (layout == HEXAGONAL or layout == QUADHEX) {
@@ -372,15 +370,16 @@ void InputData::print_usage() const
             "    --dist-func, -f            Distribution function for SOM update (default = gaussian 1.1 0.2).\n"
 	        "    --flip-off                 Switch off usage of mirrored images (default = on).\n"
 			"    --help, -h                 Print this lines\n"
-	        "    --init, -x                 Type of SOM initialization (zero = default, random, random_with_preferred_direction, SOM-filename).\n"
+	        "    --init, -x                 Type of SOM initialization (zero = default, random, random_with_preferred_direction, SOM-file).\n"
 	        "    --interpolation            Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
 	        "    --layout, -l               Layout of SOM (quadratic, hexagonal, default = quadratic).\n"
 	        "    --neuron-dimension, -d     Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
 	        "    --numrot, -n               Number of rotations (1 or a multiple of 4, default = 360).\n"
 	        "    --numthreads, -t           Number of CPU threads (default = auto).\n"
 	        "    --num-iter                 Number of iterations (default = 1).\n"
-			"    --progress, -p             Print level of progress (default = 10%).\n"
+			"    --progress, -p             Print level of progress (default = 0.1).\n"
 	        "    --seed, -s                 Seed for random number generator (default = 1234).\n"
+            "    --inter-store              Store intermediate SOM results at every progress step.\n"
 	        "    --som-dimension            Dimension for quadratic SOM matrix (default = 10).\n"
             "    --version, -v              Print version number.\n"
             "    --verbose                  Print more output (yes, no, default = yes).\n" << endl;
