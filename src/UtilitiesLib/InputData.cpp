@@ -27,6 +27,14 @@ std::ostream& operator << (std::ostream& os, Layout layout)
 	return os;
 }
 
+std::ostream& operator << (std::ostream& os, Function function)
+{
+    if (function == GAUSSIAN) os << "gaussian";
+    else if (function == MEXICANHAT) os << "mexicanhat";
+    else os << "undefined";
+    return os;
+}
+
 std::ostream& operator << (std::ostream& os, SOMInitialization init)
 {
 	if (init == ZERO) os << "zero";
@@ -63,7 +71,10 @@ InputData::InputData(int argc, char **argv)
     algo(2),
     interpolation(BILINEAR),
     executionPath(UNDEFINED),
-    intermediate_storage(false)
+    intermediate_storage(false),
+    function(GAUSSIAN),
+    sigma(UPDATE_NEURONS_SIGMA),
+    damping(UPDATE_NEURONS_DAMPING)
 {
 	static struct option long_options[] = {
 		{"image-dimension", 1, 0, 'd'},
@@ -85,10 +96,11 @@ InputData::InputData(int argc, char **argv)
 		{"train",           1, 0, 6},
 		{"map",             1, 0, 7},
         {"inter-store",     1, 0, 8},
+        {"dist-func",       1, 0, 'f'},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
-	while ((c = getopt_long(argc, argv, "vd:l:s:n:t:x:p:a:h", long_options, &option_index)) != -1)
+	while ((c = getopt_long(argc, argv, "vd:l:s:n:t:x:p:a:hf:", long_options, &option_index)) != -1)
 	{
 		switch (c)
 		{
@@ -244,6 +256,29 @@ InputData::InputData(int argc, char **argv)
 				print_usage();
 				exit(0);
 			}
+            case 'f':
+            {
+                stringToUpper(optarg);
+                if (strcmp(optarg, "GAUSSIAN") == 0) {
+                    function = GAUSSIAN;
+                }
+                else if (strcmp(optarg, "MEXICANHAT") == 0) {
+                    function = MEXICANHAT;
+                }
+                else {
+                    printf ("optarg = %s\n", optarg);
+                    printf ("Unkown option %o\n", c);
+                    print_usage();
+                    exit(EXIT_FAILURE);
+                }
+                int index = optind;
+                if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --dist-func option.");
+                sigma = atof(argv[index++]);
+                if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --dist-func option.");
+                damping = atof(argv[index++]);
+                optind = index;
+                break;
+            }
 			case '?':
 			{
 				printf ("Unkown option %o\n", c);
@@ -262,11 +297,6 @@ InputData::InputData(int argc, char **argv)
 	if (executionPath == UNDEFINED) {
 		print_usage();
 		fatalError("Unkown execution path.");
-	}
-
-	if (layout == HEXAGONAL or layout == QUADHEX) {
-		print_usage();
-		fatalError("Hexagonal SOM layout is not implemented yet.");
 	}
 
 	PINK::ImageIterator<float> iterImage(imagesFilename);
@@ -347,7 +377,10 @@ void InputData::print_parameters() const
 		     << "  Use mirrored image = " << useFlip << endl
 		     << "  Number of CPU threads = " << numberOfThreads << endl
 		     << "  Use CUDA = " << useCuda << endl
-	         << "  CUDA algorithm = " << algo << endl;
+             << "  CUDA algorithm = " << algo << endl
+             << "  Distribution function for SOM update = " << function << endl
+	         << "  Sigma = " << sigma << endl
+             << "  Damping factor = " << damping << endl;
 	}
 }
 
@@ -362,27 +395,31 @@ void InputData::print_usage() const
 			"\n"
 	        "  Options:\n"
 			"\n"
-	        "    --algo, -a                 Specific GPU algorithm (default = 2).\n"
-			"                               0: FindBestNeuron on GPU, ImageRotation and UpdateSOM on CPU\n"
-			"                               1: ImageRotation and FindBestNeuron on GPU, UpdateSOM on CPU\n"
-			"                               2: ImageRotation and FindBestNeuron and UpdateSOM on GPU\n"
-            "    --cuda-off                 Switch off CUDA acceleration (default = on).\n"
-            "    --dist-func, -f            Distribution function for SOM update (default = gaussian 1.1 0.2).\n"
-	        "    --flip-off                 Switch off usage of mirrored images (default = on).\n"
-			"    --help, -h                 Print this lines\n"
-	        "    --init, -x                 Type of SOM initialization (zero = default, random, random_with_preferred_direction, SOM-file).\n"
-	        "    --interpolation            Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
-	        "    --layout, -l               Layout of SOM (quadratic, hexagonal, default = quadratic).\n"
-	        "    --neuron-dimension, -d     Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
-	        "    --numrot, -n               Number of rotations (1 or a multiple of 4, default = 360).\n"
-	        "    --numthreads, -t           Number of CPU threads (default = auto).\n"
-	        "    --num-iter                 Number of iterations (default = 1).\n"
-			"    --progress, -p             Print level of progress (default = 0.1).\n"
-	        "    --seed, -s                 Seed for random number generator (default = 1234).\n"
-            "    --inter-store              Store intermediate SOM results at every progress step.\n"
-	        "    --som-dimension            Dimension for quadratic SOM matrix (default = 10).\n"
-            "    --version, -v              Print version number.\n"
-            "    --verbose                  Print more output (yes, no, default = yes).\n" << endl;
+            "    --cuda-off                      Switch off CUDA acceleration.\n"
+            "    --dist-func, -f <string>        Distribution function for SOM update (see below).\n"
+	        "    --flip-off                      Switch off usage of mirrored images.\n"
+			"    --help, -h                      Print this lines.\n"
+	        "    --init, -x <string>             Type of SOM initialization (zero = default, random, random_with_preferred_direction, SOM-file).\n"
+	        "    --interpolation <string>        Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
+	        "    --layout, -l <string>           Layout of SOM (quadratic = default, quadhex, hexagonal).\n"
+	        "    --neuron-dimension, -d <int>    Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
+	        "    --numrot, -n <int>              Number of rotations (1 or a multiple of 4, default = 360).\n"
+	        "    --numthreads, -t <int>          Number of CPU threads (default = auto).\n"
+	        "    --num-iter <int>                Number of iterations (default = 1).\n"
+			"    --progress, -p <float>          Print level of progress (default = 0.1).\n"
+	        "    --seed, -s <int>                Seed for random number generator (default = 1234).\n"
+            "    --inter-store                   Store intermediate SOM results at every progress step.\n"
+	        "    --som-dimension <int>           Dimension for quadratic SOM matrix (default = 10).\n"
+            "    --version, -v                   Print version number.\n"
+            "    --verbose                       Print more output.\n"
+	        "\n"
+	        "  Distribution function string:\n"
+	        "\n"
+	        "    <string> <float> <float>\n"
+	        "\n"
+	        "    gaussian sigma damping-factor\n"
+	        "    mexicanHat sigma damping-factor\n"
+	        << endl;
 }
 
 void stringToUpper(char* s)

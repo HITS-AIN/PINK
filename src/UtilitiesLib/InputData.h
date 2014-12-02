@@ -8,7 +8,9 @@
 #define INPUTDATA_H_
 
 #include "ImageProcessingLib/ImageProcessing.h"
+#include "UtilitiesLib/DistributionFunctions.h"
 #include "Version.h"
+#include <memory>
 #include <string>
 
 //! Type for SOM layout.
@@ -18,6 +20,18 @@ enum Layout {
 	HEXAGONAL
 };
 
+//! Pretty printing of SOM layout type.
+std::ostream& operator << (std::ostream& os, Layout layout);
+
+//! Type for distribution function for SOM update.
+enum Function {
+    GAUSSIAN,
+    MEXICANHAT
+};
+
+//! Pretty printing of SOM layout type.
+std::ostream& operator << (std::ostream& os, Function function);
+
 //! Type for SOM initialization.
 enum SOMInitialization {
 	ZERO,
@@ -26,18 +40,15 @@ enum SOMInitialization {
 	FILEINIT
 };
 
+//! Pretty printing of SOM layout type.
+std::ostream& operator << (std::ostream& os, SOMInitialization init);
+
 //! Type for execution path.
 enum ExecutionPath {
 	UNDEFINED,
 	TRAIN,
 	MAP
 };
-
-//! Pretty printing of SOM layout type.
-std::ostream& operator << (std::ostream& os, Layout layout);
-
-//! Pretty printing of SOM layout type.
-std::ostream& operator << (std::ostream& os, SOMInitialization init);
 
 struct InputData
 {
@@ -82,6 +93,12 @@ struct InputData
 	Interpolation interpolation;
 	ExecutionPath executionPath;
 	bool intermediate_storage;
+	Function function;
+	float sigma;
+	float damping;
+
+	//std::shared_ptr<DistributionFunctionBase> ptrDistributionFunctor;
+    //std::shared_ptr<DistanceFunctor> ptrDistanceFunctor;
 };
 
 void stringToUpper(char* s);

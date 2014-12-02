@@ -20,7 +20,7 @@ using namespace std;
 using namespace PINK;
 using namespace chrono;
 
-void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
+void cuda_mapping(InputData const& inputData)
 {
     if (inputData.verbose) {
     	cout << "\n Starting CUDA version algorithm 2" << endl;
@@ -79,9 +79,11 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
 					 << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
 				cout << "  Write intermediate SOM to " << inputData.resultFilename << " ... " << flush;
 
-				cuda_copyDeviceToHost_float(som.getDataPointer(), d_som, som.getSize());
-				som.write(inputData.resultFilename);
-				cout << "done." << endl;
+				if (inputData.intermediate_storage) {
+				    if (inputData.verbose) cuda_copyDeviceToHost_float(som.getDataPointer(), d_som, som.getSize());
+				    som.write(inputData.resultFilename);
+				    if (inputData.verbose) cout << "done." << endl;
+				}
 
 				nextProgressPrint += inputData.progressFactor;
 				startTime = steady_clock::now();
@@ -99,7 +101,8 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
 			    d_rotatedImages, inputData.numberOfChannels);
 
 			cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
-				inputData.som_dim, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, inputData.numberOfChannels);
+				inputData.som_dim, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, inputData.numberOfChannels,
+				inputData.function, inputData.layout, inputData.sigma, inputData.damping);
 
 			cuda_copyDeviceToHost_int(&bestMatch[0], d_bestMatch, 2);
 			++updateCounter[bestMatch[0]*inputData.som_dim + bestMatch[1]];
@@ -123,13 +126,15 @@ void cuda_trainSelfOrganizingMap_algo2(InputData const& inputData)
     som.write(inputData.resultFilename);
 	cout << "done." << endl;
 
-	cout << "\n  Number of updates of each neuron:\n" << endl;
-	for (int i=0; i != inputData.som_dim; ++i) {
-		for (int j=0; j != inputData.som_dim; ++j) {
-			cout << setw(6) << updateCounter[i*inputData.som_dim + j] << " ";
-		}
-		cout << endl;
-	}
+    if (inputData.verbose) {
+        cout << "\n  Number of updates of each neuron:\n" << endl;
+        for (int i=0; i != inputData.som_dim; ++i) {
+            for (int j=0; j != inputData.som_dim; ++j) {
+                cout << setw(6) << updateCounter[i*inputData.som_dim + j] << " ";
+            }
+            cout << endl;
+        }
+    }
 
 	// Free memory
     cuda_free(d_som);

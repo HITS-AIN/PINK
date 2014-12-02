@@ -6,7 +6,6 @@
 
 #include "CudaLib.h"
 #include "updateNeurons_kernel.h"
-#include "cublas_v2.h"
 #include <float.h>
 #include <stdio.h>
 
@@ -37,7 +36,8 @@ findBestMatchingNeuron_kernel(float *euclideanDistanceMatrix, int *bestMatch, in
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
 void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,
-    int* d_bestMatch, int som_dim, int neuron_dim, int num_rot, int numberOfChannels)
+    int* d_bestMatch, int som_dim, int neuron_dim, int num_rot, int numberOfChannels, Function function, Layout layout,
+    float sigma, float damping)
 {
     {
     	// Start kernel
@@ -59,8 +59,18 @@ void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotatio
 		dim3 dimGrid(gridSize, som_dim, som_dim);
 
 		// Start kernel
-		updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
-			d_bestMatch, neuron_size);
+		if (function == GAUSSIAN and layout == QUADRATIC)
+		    updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+		        d_bestMatch, neuron_size, GaussianFunctor(sigma), QuadraticDistanceFunctor(), damping);
+		else if (function == GAUSSIAN and layout == HEXAGONAL)
+            updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                d_bestMatch, neuron_size, GaussianFunctor(sigma), HexagonalDistanceFunctor(), damping);
+        else if (function == MEXICANHAT and layout == QUADRATIC)
+            updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                d_bestMatch, neuron_size, MexicanHatFunctor(sigma), QuadraticDistanceFunctor(), damping);
+        else if (function == MEXICANHAT and layout == HEXAGONAL)
+            updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                d_bestMatch, neuron_size, MexicanHatFunctor(sigma), HexagonalDistanceFunctor(), damping);
 
 		cudaError_t error = cudaGetLastError();
 

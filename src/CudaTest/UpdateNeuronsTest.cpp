@@ -70,7 +70,8 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 	cuda_copyHostToDevice_float(d_euclideanDistanceMatrix, euclideanDistanceMatrix, data.som_size);
 
 	cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
-	    data.som_dim, data.neuron_dim, data.num_rot, data.num_channels);
+	    data.som_dim, data.neuron_dim, data.num_rot, data.num_channels, GAUSSIAN, QUADRATIC,
+	    UPDATE_NEURONS_SIGMA, UPDATE_NEURONS_DAMPING);
 
 	cuda_copyDeviceToHost_float(gpu_som, d_som, data.som_total_size);
 
