@@ -42,7 +42,8 @@ if __name__ == "__main__":
     files = args
     of = open(outputfile, 'wb')
 
-    total = 0
+    numberOfImages = 0
+    numberOfChannels = 1
     nbBrokenImages = 0
     max_height = 0
     min_height = sys.maxint
@@ -69,10 +70,11 @@ if __name__ == "__main__":
             if (data[i].shape[1] < min_width):
                 min_width = data[i].shape[1]
 
-            total += 1
+            numberOfImages += 1
 
-    print 'Number of images = ', total
+    print 'Number of images = ', numberOfImages
     print 'Number of images containing NaN elements = ', nbBrokenImages
+    print 'Number of channels = ', numberOfChannels
     print 'max_height = ', max_height
     print 'min_height = ', min_height
     print 'max_width  = ', max_width
@@ -81,7 +83,8 @@ if __name__ == "__main__":
     dim = min(min_height,min_width)
     print 'dim = ', dim
 
-    of.write(struct.pack('i', total))
+    of.write(struct.pack('i', numberOfImages))
+    of.write(struct.pack('i', numberOfChannels))
     of.write(struct.pack('i', dim))
     of.write(struct.pack('i', dim))
     
