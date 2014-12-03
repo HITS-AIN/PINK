@@ -45,9 +45,6 @@ public:
 	//! Write to file in binary mode
 	void writeBinary(std::string const& filename);
 
-	//! Show image on screen using python
-	void show();
-
 	int getHeight() const { return height_; }
 	int getWidth() const { return width_; }
     int getNumberOfChannels() const { return numberOfChannels_; }
@@ -72,10 +69,6 @@ private:
 //! Template specialization of @writeBinary for float
 template <>
 void Image<float>::writeBinary(std::string const& filename);
-
-//! Template specialization of @show for float
-template <>
-void Image<float>::show();
 
 } // namespace PINK
 
