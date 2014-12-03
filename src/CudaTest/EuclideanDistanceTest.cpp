@@ -33,8 +33,8 @@ TEST(EuclideanDistanceTest, Array)
 	delete [] a;
 }
 
-//! Compare squared euclidean distance matrix (algo 2) between CPU and GPU version.
-TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix_algo2)
+//! Compare squared euclidean distance matrix between CPU and GPU version.
+TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix)
 {
 	int som_dim = 2;
 	int image_dim = 3;
@@ -61,7 +61,7 @@ TEST(EuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix_algo2)
 	cuda_copyHostToDevice_float(d_som, som, som_size * image_size);
 	cuda_copyHostToDevice_float(d_rotatedImages, rotatedImages, num_rot * image_size);
 
-	cuda_generateEuclideanDistanceMatrix_algo2(d_euclideanDistanceMatrix, d_bestRotationMatrix, som_dim, d_som,
+	cuda_generateEuclideanDistanceMatrix(d_euclideanDistanceMatrix, d_bestRotationMatrix, som_dim, d_som,
 	    image_dim, num_rot, d_rotatedImages, 1);
 
 	float *gpu_euclideanDistanceMatrix = new float[som_size];

@@ -22,10 +22,8 @@ cuda_add_library(
     SHARED
     cuda_calculateEuclideanDistanceWithoutSquareRoot.cu
     cuda_functions.cu
-    cuda_generateEuclideanDistanceMatrix_algo2.cu
-    cuda_generateEuclideanDistanceMatrix_algo2_firstStep.cu
-    cuda_generateEuclideanDistanceMatrix_algo2_secondStep.cu
     cuda_generateEuclideanDistanceMatrix.cu
+    cuda_generateEuclideanDistanceMatrix_firstStep.cu
     cuda_generateEuclideanDistanceMatrix_secondStep.cu
     cuda_generateRotatedImages.cu
     cuda_mapping.cpp

@@ -23,10 +23,8 @@ using namespace chrono;
 
 void cuda_mapping(InputData const& inputData)
 {
-    if (inputData.verbose) {
-    	cout << "  Starting CUDA version of mapping.\n" << endl;
-    	cuda_print_properties();
-    }
+    cout << "  Starting CUDA version of mapping.\n" << endl;
+    if (inputData.verbose) cuda_print_properties();
 
     // Open result file
     std::ofstream resultFile(inputData.resultFilename);
@@ -93,7 +91,7 @@ void cuda_mapping(InputData const& inputData)
 				inputData.image_dim, inputData.neuron_dim, inputData.useFlip, inputData.interpolation,
 				d_cosAlpha, d_sinAlpha, inputData.numberOfChannels);
 
-			cuda_generateEuclideanDistanceMatrix_algo2(d_euclideanDistanceMatrix, d_bestRotationMatrix,
+			cuda_generateEuclideanDistanceMatrix(d_euclideanDistanceMatrix, d_bestRotationMatrix,
 				inputData.som_dim, d_som, inputData.neuron_dim, inputData.numberOfRotationsAndFlip,
 			    d_rotatedImages, inputData.numberOfChannels);
 

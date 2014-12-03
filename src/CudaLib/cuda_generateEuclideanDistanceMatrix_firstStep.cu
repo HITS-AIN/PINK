@@ -1,11 +1,10 @@
 /**
- * @file   CudaLib/cuda_generateEuclideanDistanceMatrix_algo2_firstStep.cu
+ * @file   CudaLib/cuda_generateEuclideanDistanceMatrix_firstStep.cu
  * @date   Oct 30, 2014
  * @author Bernd Doser, HITS gGmbH
  */
 
 #include "CudaLib.h"
-#include "cublas_v2.h"
 #include <stdio.h>
 
 #define BLOCK_SIZE 128
@@ -66,7 +65,7 @@ euclidean_distance_kernel(float *som, float *rotatedImages, float *firstStep, in
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
-void cuda_generateEuclideanDistanceMatrix_algo2_firstStep(float *d_som, float *d_rotatedImages,
+void cuda_generateEuclideanDistanceMatrix_firstStep(float *d_som, float *d_rotatedImages,
     float* d_firstStep, int som_size, int num_rot, int image_size)
 {
     // Setup execution parameters
@@ -80,7 +79,7 @@ void cuda_generateEuclideanDistanceMatrix_algo2_firstStep(float *d_som, float *d
 
     if (error != cudaSuccess)
     {
-        fprintf(stderr, "Failed to launch CUDA kernel cuda_generateEuclideanDistanceMatrix_algo2_firstStep (error code %s)!\n", cudaGetErrorString(error));
+        fprintf(stderr, "Failed to launch CUDA kernel cuda_generateEuclideanDistanceMatrix_firstStep (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 }

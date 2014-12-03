@@ -32,22 +32,14 @@ void cuda_mapping(InputData const& inputData);
 
 //! Host routine starting kernel for euclideanDistanceMatrix.
 void cuda_generateEuclideanDistanceMatrix(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix, int som_dim, float* d_som,
-    int image_dim, int num_rot, float* d_image);
-
-//! Host routine starting kernel for euclideanDistanceMatrix second part.
-void cuda_generateEuclideanDistanceMatrix_secondStep(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix, float* d_tmp,
-    int image_size, int num_rot, int red_size);
-
-//! Host routine starting kernel for euclideanDistanceMatrix second algorithm.
-void cuda_generateEuclideanDistanceMatrix_algo2(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix, int som_dim, float* d_som,
     int image_dim, int num_rot, float* d_rotatedImages, int numberOfChannels);
 
-//! Host routine starting kernel for euclideanDistanceMatrix second algorithm second part.
-void cuda_generateEuclideanDistanceMatrix_algo2_firstStep(float *d_som, float *d_rotatedImages,
+//! Host routine starting kernel for euclideanDistanceMatrix second part.
+void cuda_generateEuclideanDistanceMatrix_firstStep(float *d_som, float *d_rotatedImages,
     float* d_firstStep, int som_size, int num_rot, int image_size);
 
-//! Host routine starting kernel for euclideanDistanceMatrix second algorithm second part.
-void cuda_generateEuclideanDistanceMatrix_algo2_secondStep(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix,
+//! Host routine starting kernel for euclideanDistanceMatrix second part.
+void cuda_generateEuclideanDistanceMatrix_secondStep(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix,
     float* d_firstStep, int som_size, int num_rot);
 
 //! Host routine starting kernel for rotated images.

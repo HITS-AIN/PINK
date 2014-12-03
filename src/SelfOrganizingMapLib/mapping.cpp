@@ -18,7 +18,7 @@ using namespace chrono;
 
 void mapping(InputData const& inputData)
 {
-    if (inputData.verbose) cout << "  Starting C version of mapping.\n" << endl;
+    cout << "  Starting C version of mapping.\n" << endl;
 
     // Open result file
     std::ofstream resultFile(inputData.resultFilename);

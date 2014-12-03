@@ -22,10 +22,8 @@ using namespace chrono;
 
 void cuda_trainSelfOrganizingMap(InputData const& inputData)
 {
-    if (inputData.verbose) {
-    	cout << "  Starting CUDA version of training.\n" << endl;
-    	cuda_print_properties();
-    }
+    cout << "  Starting CUDA version of training.\n" << endl;
+    if (inputData.verbose) cuda_print_properties();
 
     // Initialize SOM on host
     SOM som(inputData.som_dim, inputData.neuron_dim, inputData.numberOfChannels, inputData.init, inputData.seed, inputData.somFilename);
@@ -96,7 +94,7 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 				inputData.image_dim, inputData.neuron_dim, inputData.useFlip, inputData.interpolation,
 				d_cosAlpha, d_sinAlpha, inputData.numberOfChannels);
 
-			cuda_generateEuclideanDistanceMatrix_algo2(d_euclideanDistanceMatrix, d_bestRotationMatrix,
+			cuda_generateEuclideanDistanceMatrix(d_euclideanDistanceMatrix, d_bestRotationMatrix,
 				inputData.som_dim, d_som, inputData.neuron_dim, inputData.numberOfRotationsAndFlip,
 			    d_rotatedImages, inputData.numberOfChannels);
 
