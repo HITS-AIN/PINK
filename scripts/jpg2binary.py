@@ -8,21 +8,29 @@ from scipy import misc
 import numpy as np
 
 def print_usage():
-    print '<command> -o <outputfile> [inputfiles]'
+    print ''
+    print 'Usage:'
+    print ''
+    print '  jpg2binary.py [Options] <inputfile>'
+    print ''
+    print 'Options:'
+    print ''
+    print '  --help, -h                Print this lines.'
+    print '  --ofile, -o <string>      Filename for the converted images (default = result.bin).'
+    print ''
     
 if __name__ == "__main__":
 
-    norm = False
     outputfile = 'result.bin'
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"ho:n",["ofile="])
+        opts, args = getopt.getopt(sys.argv[1:],"ho:",["help", "ofile="])
     except getopt.GetoptError:
         print_usage()
         sys.exit(1)
 
     for opt, arg in opts:
-        if opt == '-h':
+        if opt in ("-h", "--help"):
             print_usage()
             sys.exit()
         elif opt in ("-o", "--ofile"):

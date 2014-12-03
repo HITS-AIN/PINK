@@ -8,22 +8,31 @@ from scipy import misc
 import numpy as np
 
 def print_usage():
-    print '<command> -o <outputfile> [inputfiles]'
+    print ''
+    print 'Usage:'
+    print ''
+    print '  jpg2binaryOnlyOneChannel.py [Options] <inputfile>'
+    print ''
+    print 'Options:'
+    print ''
+    print '  --channel, -c <int>       Number of channel to visualize (default = 0).'
+    print '  --help, -h                Print this lines.'
+    print '  --ofile, -o <string>      Filename for the converted images (default = result.bin).'
+    print ''
     
 if __name__ == "__main__":
 
-    norm = False
     outputfile = 'result.bin'
     channel = 0
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"ho:c:",["ofile=", "channel="])
+        opts, args = getopt.getopt(sys.argv[1:],"ho:c:",["help", "ofile=", "channel="])
     except getopt.GetoptError:
         print_usage()
         sys.exit(1)
 
     for opt, arg in opts:
-        if opt == '-h':
+        if opt in ("-h", "--help"):
             print_usage()
             sys.exit()
         elif opt in ("-o", "--ofile"):

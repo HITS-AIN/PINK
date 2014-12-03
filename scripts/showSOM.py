@@ -7,12 +7,16 @@ import struct
 import sys
 
 def print_usage():
-    print 'showSOM.py [Options] <inputfile>'
+    print ''
+    print 'Usage:'
+    print ''
+    print '  showSOM.py [Options] <inputfile>'
     print ''
     print 'Options:'
     print ''
-    print '  --channel, -c   Number of channel to visualize (default = 0).'
-    print '  --help, -h      Print this lines.'
+    print '  --channel, -c <int>      Number of channel to visualize (default = 0).'
+    print '  --help, -h               Print this lines.'
+    print ''
 
 if __name__ == "__main__":
 

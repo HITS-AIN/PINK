@@ -7,12 +7,16 @@ import struct
 import sys
 
 def print_usage():
-    print 'showHeatmap.py [Options] <inputfile>'
+    print ''
+    print 'Usage:'
+    print ''
+    print '  showHeatmap.py [Options] <inputfile>'
     print ''
     print 'Options:'
     print ''
-    print '  --help, -h      Print this lines.'
-    print '  --image, -i     Number of image to visualize (default = 0).'
+    print '  --help, -h              Print this lines.'
+    print '  --image, -i <int>       Number of image to visualize (default = 0).'
+    print ''
 
 if __name__ == "__main__":
 

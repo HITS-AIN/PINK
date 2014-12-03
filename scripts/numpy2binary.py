@@ -7,7 +7,18 @@ import sys
 from matplotlib import pyplot
 
 def print_usage():
-    print '<command> -o <outputfile> [inputfiles]'
+    print ''
+    print 'Usage:'
+    print ''
+    print '  numpy2binary.py [Options] <inputfile>'
+    print ''
+    print 'Options:'
+    print ''
+    print '  --broken, -b <string>     Behavior for images containing NaN (Skip = default, SetToZero).'
+    print '  --help, -h                Print this lines.'
+    print '  --norm, -n                Normalize image data.'
+    print '  --ofile, -o <string>      Filename for the converted images (default = result.bin).'
+    print ''
     
 if __name__ == "__main__":
 
@@ -16,13 +27,13 @@ if __name__ == "__main__":
     BrokenImageBehavior = 'Skip'
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"ho:nb:",["ofile=","norm","broken="])
+        opts, args = getopt.getopt(sys.argv[1:],"ho:nb:",["help", "ofile=", "norm", "broken="])
     except getopt.GetoptError:
         print_usage()
         sys.exit(1)
 
     for opt, arg in opts:
-        if opt == '-h':
+        if opt in ("-h", "--help"):
             print_usage()
             sys.exit()
         elif opt in ("-o", "--ofile"):
