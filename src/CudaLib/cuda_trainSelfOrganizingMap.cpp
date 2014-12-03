@@ -23,7 +23,7 @@ using namespace chrono;
 void cuda_trainSelfOrganizingMap(InputData const& inputData)
 {
     if (inputData.verbose) {
-    	cout << "\n  Starting CUDA version of training." << endl;
+    	cout << "  Starting CUDA version of training.\n" << endl;
     	cuda_print_properties();
     }
 

@@ -12,7 +12,7 @@ void cuda_print_properties()
 {
     int devCount;
     cudaGetDeviceCount(&devCount);
-    printf("\n  CUDA Device Query...\n");
+    printf("  CUDA Device Query...\n");
     printf("  There are %d CUDA devices.\n", devCount);
 
     for (int i = 0; i < devCount; ++i)

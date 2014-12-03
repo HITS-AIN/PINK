@@ -120,7 +120,12 @@ void writeImagesToBinaryFile(std::vector<float> const& images, int numberOfImage
 void readImagesFromBinaryFile(std::vector<float> &images, int &numberOfImages, int &numberOfChannels,
     int &height, int &width, std::string const& filename);
 
-void showImage(float *image, int height, int width);
+/**
+ * @brief Visualization of images using PyhtonLibs.
+ *
+ * Can only used if Python libs are available.
+ */
+void showImage(std::vector<float> const& image, int height, int width);
 
 void convertSOMToImage(float *image, const float *som, int som_dim, int image_dim);
 
@@ -131,9 +136,5 @@ void writeSOM(const float *som, int numberOfChannels, int som_dim, int neuron_di
 void readSOM(float *som, int &numberOfChannels, int &som_dim, int &neuron_dim, std::string const& filename);
 
 void writeRotatedImages(float *images, int image_dim, int numberOfRotations, std::string const& filename);
-
-void showRotatedImages(float *images, int image_dim, int numberOfRotations);
-
-void showRotatedImagesSingle(float *images, int image_dim, int numberOfRotations);
 
 #endif /* IMAGEPROCESSING_H_ */

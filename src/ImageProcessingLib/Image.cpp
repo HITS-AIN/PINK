@@ -19,7 +19,7 @@ void Image<float>::writeBinary(std::string const& filename)
 template <>
 void Image<float>::show()
 {
-	showImage(&pixel_[0], height_, width_);
+	showImage(pixel_, height_, width_);
 }
 
 } // namespace PINK

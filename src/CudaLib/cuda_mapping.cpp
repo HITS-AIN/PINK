@@ -24,7 +24,7 @@ using namespace chrono;
 void cuda_mapping(InputData const& inputData)
 {
     if (inputData.verbose) {
-    	cout << "\n  Starting CUDA version of mapping." << endl;
+    	cout << "  Starting CUDA version of mapping.\n" << endl;
     	cuda_print_properties();
     }
 

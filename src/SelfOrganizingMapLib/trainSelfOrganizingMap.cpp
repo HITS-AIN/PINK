@@ -23,7 +23,7 @@ using namespace chrono;
 
 void trainSelfOrganizingMap(InputData const& inputData)
 {
-    if (inputData.verbose) cout << "\n  Starting C version of training." << endl;
+    if (inputData.verbose) cout << "  Starting C version of training.\n" << endl;
 
 	// Memory allocation
 	int rotatedImagesSize = inputData.numberOfChannels * inputData.numberOfRotations * inputData.neuron_size;

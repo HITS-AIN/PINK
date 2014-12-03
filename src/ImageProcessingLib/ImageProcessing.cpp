@@ -339,11 +339,11 @@ void readImagesFromBinaryFile(std::vector<float> &images, int &numberOfImages, i
     is.read((char*)&images[0], size * sizeof(float));
 }
 
-void showImage(float *image, int height, int width)
+void showImage(std::vector<float> const& image, int height, int width)
 {
     #if PINK_USE_PYTHON
 		std::string filename("ImageTmp.bin");
-		writeImageToBinaryFile(image, height, width, filename);
+		writeImagesToBinaryFile(image, 1, 1, height, width, filename);
 
 		Py_Initialize();
 		PyRun_SimpleString("import numpy");
@@ -439,27 +439,4 @@ void writeRotatedImages(float* images, int image_dim, int numberOfImages, std::s
     }
 
     writeImagesToBinaryFile(image, 1, 1, heigth, width, filename);
-}
-
-void showRotatedImages(float* images, int image_dim, int numberOfRotations)
-{
-	int heigth = 2 * numberOfRotations * image_dim;
-	int width = image_dim;
-	int image_size = image_dim * image_dim;
-    float *image = (float *)malloc(heigth * width * sizeof(float));
-
-    for (int i = 0; i < 2 * numberOfRotations; ++i) {
-        for (int j = 0; j < image_size; ++j) image[j + i*image_size] = images[j + i*image_size];
-    }
-
-    showImage(image, heigth, width);
-    free(image);
-}
-
-void showRotatedImagesSingle(float* images, int image_dim, int numberOfRotations)
-{
-	int image_size = image_dim * image_dim;
-    for (int i = 0; i < 2 * numberOfRotations; ++i) {
-        showImage(images + i*image_size, image_dim, image_dim);
-    }
 }

@@ -58,11 +58,13 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 FIND_PACKAGE(PythonLibs)
 if(PYTHONLIBS_FOUND)
     set(PINK_USE_PYTHON true)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_PYTHON")
 endif()
 
 find_package(CUDA)
 if(CUDA_FOUND)
     set(PINK_USE_CUDA true)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
     add_subdirectory(src/CudaLib)
 endif()
 

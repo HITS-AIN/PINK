@@ -4,7 +4,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories(
     ..
-    ${GTEST_INCLUDE_DIR}
 )
 
 if(PINK_USE_PYTHON)
@@ -21,7 +20,6 @@ add_library(
 target_link_libraries(
     ImageProcessingLib
     UtilitiesLib
-    ${GTEST_BOTH_LIBRARIES}
 )
 
 if(PINK_USE_PYTHON)

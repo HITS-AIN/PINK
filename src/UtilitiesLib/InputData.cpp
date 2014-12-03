@@ -47,7 +47,7 @@ std::ostream& operator << (std::ostream& os, SOMInitialization init)
 
 InputData::InputData(int argc, char **argv)
  :
-	verbose(true),
+	verbose(false),
 	som_dim(10),
 	neuron_dim(-1),
 	layout(QUADRATIC),
@@ -58,7 +58,7 @@ InputData::InputData(int argc, char **argv)
 	numIter(1),
 	progressFactor(0.1),
 	useFlip(true),
-	useCuda(true),
+    useCuda(true),
     numberOfImages(0),
     numberOfChannels(0),
     image_dim(0),
@@ -198,16 +198,8 @@ InputData::InputData(int argc, char **argv)
 			}
 			case 4:
 			{
-				stringToUpper(optarg);
-				if (strcmp(optarg, "YES") == 0) verbose = true;
-				else if (strcmp(optarg, "NO") == 0) verbose = false;
-				else {
-					printf ("optarg = %s\n", optarg);
-					printf ("Unkown option %o\n", c);
-					print_usage();
-					exit(EXIT_FAILURE);
-				}
-				break;
+				verbose = true;
+                break;
 			}
 			case 5:
 			{
@@ -327,7 +319,9 @@ InputData::InputData(int argc, char **argv)
 	image_size_using_flip = useFlip ? 2*image_size : image_size;
 
 	if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
+#if PINK_USE_CUDA
     if (useCuda) numberOfThreads = 1;
+#endif
 	omp_set_num_threads(numberOfThreads);
 
     print_header();
@@ -358,30 +352,31 @@ void InputData::print_header() const
 
 void InputData::print_parameters() const
 {
-	if (verbose) {
-		cout << "  Image file = " << imagesFilename << endl
-			 << "  Result file = " << resultFilename << endl;
-		if (executionPath == MAP) cout << "  SOM file = " << somFilename << endl;
-		cout << "  Number of images = " << numberOfImages << endl
-		     << "  Number of channels = " << numberOfChannels << endl
-		     << "  Image dimension = " << image_dim << "x" << image_dim << endl
-		     << "  SOM dimension = " << som_dim << "x" << som_dim << endl
-		     << "  Number of iterations = " << numIter << endl
-		     << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << endl
-		     << "  Progress = " << progressFactor << endl
-		     << "  Layout = " << layout << endl
-		     << "  Initialization type = " << init << endl
-		     << "  Interpolation type = " << interpolation << endl
-		     << "  Seed = " << seed << endl
-		     << "  Number of rotations = " << numberOfRotations << endl
-		     << "  Use mirrored image = " << useFlip << endl
-		     << "  Number of CPU threads = " << numberOfThreads << endl
-		     << "  Use CUDA = " << useCuda << endl
-             << "  CUDA algorithm = " << algo << endl
-             << "  Distribution function for SOM update = " << function << endl
-	         << "  Sigma = " << sigma << endl
-             << "  Damping factor = " << damping << endl;
-	}
+    cout << "  Image file = " << imagesFilename << endl
+         << "  Result file = " << resultFilename << endl;
+
+    if (executionPath == MAP)
+        cout << "  SOM file = " << somFilename << endl;
+
+    cout << "  Number of images = " << numberOfImages << endl
+         << "  Number of channels = " << numberOfChannels << endl
+         << "  Image dimension = " << image_dim << "x" << image_dim << endl
+         << "  SOM dimension = " << som_dim << "x" << som_dim << endl
+         << "  Number of iterations = " << numIter << endl
+         << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << endl
+         << "  Progress = " << progressFactor << endl
+         << "  Layout = " << layout << endl
+         << "  Initialization type = " << init << endl
+         << "  Interpolation type = " << interpolation << endl
+         << "  Seed = " << seed << endl
+         << "  Number of rotations = " << numberOfRotations << endl
+         << "  Use mirrored image = " << useFlip << endl
+         << "  Number of CPU threads = " << numberOfThreads << endl
+         << "  Use CUDA = " << useCuda << endl
+         << "  Distribution function for SOM update = " << function << endl
+         << "  Sigma = " << sigma << endl
+         << "  Damping factor = " << damping << endl
+         << endl;
 }
 
 void InputData::print_usage() const
