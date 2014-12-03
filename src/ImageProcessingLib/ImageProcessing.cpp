@@ -16,10 +16,6 @@
 #include <stdexcept>
 #include <vector>
 
-#if PINK_USE_PYTHON
-    #include "Python.h"
-#endif
-
 using namespace std;
 
 std::ostream& operator << (std::ostream& os, Interpolation interpolation)
@@ -337,34 +333,6 @@ void readImagesFromBinaryFile(std::vector<float> &images, int &numberOfImages, i
     int size = numberOfImages * numberOfChannels * height * width;
     images.resize(size);
     is.read((char*)&images[0], size * sizeof(float));
-}
-
-void showImage(std::vector<float> const& image, int height, int width)
-{
-    #if PINK_USE_PYTHON
-		std::string filename("ImageTmp.bin");
-		writeImagesToBinaryFile(image, 1, 1, height, width, filename);
-
-		Py_Initialize();
-		PyRun_SimpleString("import numpy");
-		PyRun_SimpleString("import matplotlib.pylab as plt");
-		PyRun_SimpleString("import struct");
-
-		std::string line = "inFile = open(\"" + filename + "\", 'rb')";
-		PyRun_SimpleString(line.c_str());
-		PyRun_SimpleString("size = struct.unpack('iii', inFile.read(12))");
-		PyRun_SimpleString("array = numpy.array(struct.unpack('f'*size[1]*size[2], inFile.read(size[1]*size[2]*4)))");
-		PyRun_SimpleString("data = numpy.ndarray([size[1],size[2]], 'float', array)");
-		PyRun_SimpleString("inFile.close()");
-		PyRun_SimpleString("fig = plt.figure()");
-		PyRun_SimpleString("ax = fig.add_subplot(1,1,1)");
-		PyRun_SimpleString("ax.set_aspect('equal')");
-		PyRun_SimpleString("plt.imshow(data, interpolation='nearest', cmap=plt.cm.ocean)");
-		PyRun_SimpleString("plt.colorbar()");
-		PyRun_SimpleString("plt.show()");
-    #else
-		std::cout << "=== WARNING === Pink must be compiled with python support to show images." << std::endl;
-    #endif
 }
 
 void convertSOMToImage(float* image, const float* som, int som_dim, int image_dim)

@@ -120,13 +120,6 @@ void writeImagesToBinaryFile(std::vector<float> const& images, int numberOfImage
 void readImagesFromBinaryFile(std::vector<float> &images, int &numberOfImages, int &numberOfChannels,
     int &height, int &width, std::string const& filename);
 
-/**
- * @brief Visualization of images using PyhtonLibs.
- *
- * Can only used if Python libs are available.
- */
-void showImage(std::vector<float> const& image, int height, int width);
-
 void convertSOMToImage(float *image, const float *som, int som_dim, int image_dim);
 
 void convertImageToSOM(float *image, const float *som, int som_dim, int image_dim);

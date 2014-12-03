@@ -16,10 +16,4 @@ void Image<float>::writeBinary(std::string const& filename)
 	writeImagesToBinaryFile(pixel_, 1, 1, height_, width_, filename);
 }
 
-template <>
-void Image<float>::show()
-{
-	showImage(pixel_, height_, width_);
-}
-
 } // namespace PINK
