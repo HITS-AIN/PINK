@@ -25,7 +25,7 @@ void mapping(InputData const& inputData)
     if (!resultFile) fatalError("Error opening " + inputData.resultFilename);
     resultFile.write((char*)&inputData.numberOfImages, sizeof(int));
     resultFile.write((char*)&inputData.som_dim, sizeof(int));
-    resultFile.write((char*)&inputData.neuron_dim, sizeof(int));
+    resultFile.write((char*)&inputData.som_dim, sizeof(int));
 
     // Initialize SOM on host
     SOM som(inputData.som_dim, inputData.neuron_dim, inputData.numberOfChannels,

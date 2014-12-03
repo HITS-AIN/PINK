@@ -408,6 +408,8 @@ void writeSOM(const float* som, int numberOfChannels, int som_dim, int neuron_di
 
     os.write((char*)&numberOfChannels, sizeof(int));
     os.write((char*)&som_dim, sizeof(int));
+    os.write((char*)&som_dim, sizeof(int));
+    os.write((char*)&neuron_dim, sizeof(int));
     os.write((char*)&neuron_dim, sizeof(int));
     os.write((char*)som, numberOfChannels * som_dim * som_dim * neuron_dim * neuron_dim * sizeof(float));
 }
@@ -419,6 +421,8 @@ void readSOM(float *som, int &numberOfChannels, int &som_dim, int &neuron_dim, s
 
     is.read((char*)&numberOfChannels, sizeof(int));
     is.read((char*)&som_dim, sizeof(int));
+    is.read((char*)&som_dim, sizeof(int));
+    is.read((char*)&neuron_dim, sizeof(int));
     is.read((char*)&neuron_dim, sizeof(int));
     is.read((char*)som, numberOfChannels * som_dim * som_dim * neuron_dim * neuron_dim * sizeof(float));
 }

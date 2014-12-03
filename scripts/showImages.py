@@ -6,51 +6,66 @@ import matplotlib.pylab as plt
 import struct
 import sys
 
+def print_usage():
+    print 'showImages.py [Options] <inputfile>'
+    print ''
+    print 'Options:'
+    print ''
+    print '  --channel, -c   Number of channel to visualize (default = 0).'
+    print '  --help, -h      Print this lines.'
+    print '  --image, -i     Number of image to visualize (default = 0).'
+
 if __name__ == "__main__":
 
-    inputfile = ''
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"hi:n:c:",["ifile=", "image=", "channel="])
+        opts, args = getopt.getopt(sys.argv[1:],"hi:n:c:",["help", "image=", "channel="])
     except getopt.GetoptError:
-        print 'test.py -i <inputfile>'
+        print_usage()
         sys.exit(2)
 
     imageNumber = 0
     channelNumber = 0
 
     for opt, arg in opts:
-        if opt == '-h':
-            print 'test.py -i <inputfile>'
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            inputfile = arg
-        elif opt in ("-n", "--image"):
-            imageNumber = int(arg)
-        elif opt in ("-c", "--channel"):
+        if opt in ("-c", "--channel"):
             channelNumber = int(arg)
+        elif opt in ("-h", "--help"):
+            print_usage()
+            sys.exit()
+        elif opt in ("-i", "--image"):
+            imageNumber = int(arg)
+
+    if len(args) != 1:
+        print_usage()
+        print 'ERROR: Input file is missing.'
+        sys.exit(1)
+
+    inputfile = args[0]
 
     print 'Input file is ', inputfile
     print 'Image number is ', imageNumber
     print 'Channel number is ', channelNumber
 
     inFile = open(inputfile, 'rb')
-    size = struct.unpack('iiii', inFile.read(16))
+    numberOfImages, numberOfChannels, width, heigth = struct.unpack('i' * 4, inFile.read(4 * 4))
 
-    print 'size = ', size
-    
-    if imageNumber > size[0]:
+    print 'Number of images = ', numberOfImages
+    print 'Number of channels = ', numberOfChannels
+    print 'Width = ', width
+    print 'Heigth = ', heigth
+
+    if imageNumber >= numberOfImages:
         print 'Image number too large.'
         sys.exit(1)
 
-    if channelNumber > size[1]:
+    if channelNumber >= numberOfChannels:
         print 'Channel number too large.'
         sys.exit(1)
 
-    inFile.seek((imageNumber*size[1] + channelNumber) * size[2]*size[3]*4, 1)
-    array = numpy.array(struct.unpack('f'*size[2]*size[3], inFile.read(size[2]*size[3]*4)))
-    data = numpy.ndarray([size[2],size[3]], 'float', array)
-
-    inFile.close()
+    size = width * heigth
+    inFile.seek((imageNumber*numberOfChannels + channelNumber) * size*4, 1)
+    array = numpy.array(struct.unpack('f' * size, inFile.read(size*4)))
+    data = numpy.ndarray([width,heigth], 'float', array)
 
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)

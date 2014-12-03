@@ -6,59 +6,62 @@ import matplotlib.pylab as plt
 import struct
 import sys
 
+def print_usage():
+    print 'showHeatmap.py [Options] <inputfile>'
+    print ''
+    print 'Options:'
+    print ''
+    print '  --help, -h      Print this lines.'
+    print '  --image, -i     Number of image to visualize (default = 0).'
+
 if __name__ == "__main__":
 
-    inputfile = ''
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"hi:n:",["ifile=", "image=", "channel="])
+        opts, args = getopt.getopt(sys.argv[1:],"hi:",["help", "image="])
     except getopt.GetoptError:
-        print 'showHeatmap.py -i <inputfile>'
-        sys.exit(2)
+        print_usage()
+        sys.exit(1)
 
     imageNumber = 0
+    channelNumber = 0
 
     for opt, arg in opts:
-        if opt == '-h':
-            print 'test.py -i <inputfile>'
+        if opt in ("-h", "--help"):
+            print_usage()
             sys.exit()
-        elif opt in ("-i", "--ifile"):
-            inputfile = arg
-        elif opt in ("-n", "--image"):
+        elif opt in ("-i", "--image"):
             imageNumber = int(arg)
+
+    if len(args) != 1:
+        print_usage()
+        print 'ERROR: Input file is missing.'
+        sys.exit(1)
+
+    inputfile = args[0]
 
     print 'Input file is ', inputfile
     print 'Image number is ', imageNumber
 
     inFile = open(inputfile, 'rb')
-    size = struct.unpack('iii', inFile.read(12))
-    numberOfImages = size[0]
-    somDimension = size[1]
-    neuronDim = size[2]
-    somSize = somDimension * somDimension
+    numberOfImages, SOM_width, SOM_heigth = struct.unpack('i' * 3, inFile.read(4*3))
 
     print 'Number of images = ', numberOfImages 
-    print 'SOM dimension = ', somDimension
-    print 'Neuron dimension is ', neuronDim
+    print 'SOM_width = ', SOM_width
+    print 'SOM_heigth = ', SOM_heigth
 
     if imageNumber >= numberOfImages:
         print 'Image number too large.'
         sys.exit(1)
 
-    inFile.seek(imageNumber * somSize * 4, 1)
-    array = numpy.array(struct.unpack('f' * somSize, inFile.read(somSize * 4)))
-    inFile.close()
-
-    imageDim = somDimension * neuronDim
-    image = numpy.ndarray(shape=(imageDim,imageDim), dtype=float, order='F')
-    
-    for i in range(somDimension):
-        for j in range(somDimension):
-            image[i*neuronDim:(i+1)*neuronDim, j*neuronDim:(j+1)*neuronDim] = array[i*somDimension+j]
+    size = SOM_width * SOM_heigth
+    inFile.seek(imageNumber * size * 4, 1)
+    array = numpy.array(struct.unpack('f' * size, inFile.read(size * 4)))
+    data = numpy.ndarray([SOM_width, SOM_heigth], 'float', array)
 
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
     ax.set_aspect('equal')
-    plt.imshow(image, interpolation='nearest', cmap=plt.cm.jet)
+    plt.imshow(data, interpolation='nearest', cmap=plt.cm.jet)
     plt.colorbar()
     plt.show()
 
