@@ -4,7 +4,6 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "UtilitiesLib/DistributionFunctions.h"
 #include "UtilitiesLib/InputData.h"
 
 // Function pointers are also possible for the distribution- and distance function, but have a significant overhead.

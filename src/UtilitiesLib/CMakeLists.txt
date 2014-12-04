@@ -10,7 +10,6 @@ add_library(
     UtilitiesLib
     STATIC
     CheckArrays.cpp
-    DistributionFunctions.cpp
     InputData.cpp
     Point.cpp
 )

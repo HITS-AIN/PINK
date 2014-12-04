@@ -397,14 +397,14 @@ void readSOM(float *som, int &numberOfChannels, int &som_dim, int &neuron_dim, s
 
 void writeRotatedImages(float* images, int image_dim, int numberOfImages, std::string const& filename)
 {
-	int heigth = numberOfImages * image_dim;
+	int height = numberOfImages * image_dim;
 	int width = image_dim;
 	int image_size = image_dim * image_dim;
-    vector<float> image(heigth * width);
+    vector<float> image(height * width);
 
     for (int i = 0; i < numberOfImages; ++i) {
         for (int j = 0; j < image_size; ++j) image[j + i*image_size] = images[j + i*image_size];
     }
 
-    writeImagesToBinaryFile(image, 1, 1, heigth, width, filename);
+    writeImagesToBinaryFile(image, 1, 1, height, width, filename);
 }

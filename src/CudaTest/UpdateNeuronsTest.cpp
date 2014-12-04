@@ -8,6 +8,7 @@
 #include "UtilitiesLib/EqualFloatArrays.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
+#include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Filler.h"
 #include "gtest/gtest.h"
 #include <cmath>
@@ -53,7 +54,11 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 	float *euclideanDistanceMatrix = new float[data.som_size];
 	fillWithValue(euclideanDistanceMatrix, data.som_size);
 
-	updateNeurons(data.som_dim, cpu_som, data.neuron_dim, rotatedImages, Point(0,0), bestRotationMatrix, data.num_channels);
+    std::shared_ptr<DistributionFunctorBase> ptrDistributionFunctor(new GaussianFunctor(DEFAULT_SIGMA));
+    std::shared_ptr<DistanceFunctorBase> ptrDistanceFunctor(new QuadraticDistanceFunctor());
+
+	updateNeurons(data.som_dim, cpu_som, data.neuron_dim, rotatedImages, Point(0,0), bestRotationMatrix,
+	   data.num_channels, ptrDistributionFunctor, ptrDistanceFunctor, DEFAULT_DAMPING);
 
 	float *gpu_som = new float[data.som_total_size];
 	fillWithRandomNumbers(gpu_som, data.som_total_size, 1);
@@ -71,7 +76,7 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 
 	cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
 	    data.som_dim, data.neuron_dim, data.num_rot, data.num_channels, GAUSSIAN, QUADRATIC,
-	    UPDATE_NEURONS_SIGMA, UPDATE_NEURONS_DAMPING);
+	    DEFAULT_SIGMA, DEFAULT_DAMPING);
 
 	cuda_copyDeviceToHost_float(gpu_som, d_som, data.som_total_size);
 

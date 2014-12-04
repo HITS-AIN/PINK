@@ -51,12 +51,12 @@ if __name__ == "__main__":
     print 'Channel number is ', channelNumber
 
     inFile = open(inputfile, 'rb')
-    numberOfImages, numberOfChannels, width, heigth = struct.unpack('i' * 4, inFile.read(4 * 4))
+    numberOfImages, numberOfChannels, width, height = struct.unpack('i' * 4, inFile.read(4 * 4))
 
     print 'Number of images = ', numberOfImages
     print 'Number of channels = ', numberOfChannels
     print 'Width = ', width
-    print 'Heigth = ', heigth
+    print 'Height = ', height
 
     if imageNumber >= numberOfImages:
         print 'Image number too large.'
@@ -66,10 +66,10 @@ if __name__ == "__main__":
         print 'Channel number too large.'
         sys.exit(1)
 
-    size = width * heigth
+    size = width * height
     inFile.seek((imageNumber*numberOfChannels + channelNumber) * size*4, 1)
     array = numpy.array(struct.unpack('f' * size, inFile.read(size*4)))
-    data = numpy.ndarray([width,heigth], 'float', array)
+    data = numpy.ndarray([width,height], 'float', array)
 
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)

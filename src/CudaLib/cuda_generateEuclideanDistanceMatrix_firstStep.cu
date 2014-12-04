@@ -7,16 +7,13 @@
 #include "CudaLib.h"
 #include <stdio.h>
 
-#define BLOCK_SIZE 128
-
 /**
  * CUDA Kernel Device code
  *
  * Computes the euclidean distance of two arrays.
  */
 template <unsigned int block_size>
-__global__ void
-euclidean_distance_kernel(float *som, float *rotatedImages, float *firstStep, int image_size)
+__global__ void euclidean_distance_kernel(float *som, float *rotatedImages, float *firstStep, int image_size)
 {
 	int tid = threadIdx.x;
     int i = threadIdx.x;
@@ -66,14 +63,15 @@ euclidean_distance_kernel(float *som, float *rotatedImages, float *firstStep, in
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
 void cuda_generateEuclideanDistanceMatrix_firstStep(float *d_som, float *d_rotatedImages,
-    float* d_firstStep, int som_size, int num_rot, int image_size)
+    float* d_firstStep, int som_size, int num_rot, int image_size, unsigned int block_size)
 {
     // Setup execution parameters
-    dim3 dimBlock(BLOCK_SIZE);
+    dim3 dimBlock(block_size);
     dim3 dimGrid(num_rot, som_size);
 
     // Start kernel
-    euclidean_distance_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_firstStep, image_size);
+    if (block_size == 128)
+        euclidean_distance_kernel<128><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_firstStep, image_size);
 
     cudaError_t error = cudaGetLastError();
 

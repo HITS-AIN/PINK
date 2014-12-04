@@ -8,7 +8,7 @@
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMap.h"
-#include "UtilitiesLib/DistributionFunctions.h"
+#include <cmath>
 #include <ctype.h>
 #include <float.h>
 #include <iomanip>
@@ -16,7 +16,6 @@
 #include <omp.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cmath>
 
 using namespace std;
 
@@ -34,7 +33,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
 	int offset3 = 3 * offset1;
 
 	// Copy original image to first position of image array
-    //#pragma omp parallel for
+    #pragma omp parallel for
 	for (int c = 0; c < numberOfChannels; ++c) {
         float *currentImage = image + c*image_size;
         float *currentRotatedImages = rotatedImages + c*neuron_size;
@@ -45,7 +44,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
 	}
 
 	// Rotate images
-    //#pragma omp parallel for
+    #pragma omp parallel for
 	for (int i = 1; i < num_real_rot; ++i) {
 	    for (int c = 0; c < numberOfChannels; ++c) {
 	        float *currentImage = image + c*image_size;
@@ -118,18 +117,19 @@ Point findBestMatchingNeuron(float *euclideanDistanceMatrix, int som_dim)
 }
 
 void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch,
-    int *bestRotationMatrix, int numberOfChannels)
+    int *bestRotationMatrix, int numberOfChannels, std::shared_ptr<DistributionFunctorBase> const& ptrDistributionFunctor,
+    std::shared_ptr<DistanceFunctorBase> const& ptrDistanceFunctor, float damping)
 {
-	float factor;
-	int image_size = image_dim * image_dim;
-	float *current_neuron = som;
+    float factor;
+    int image_size = image_dim * image_dim;
+    float *current_neuron = som;
 
     for (int i = 0; i < som_dim; ++i) {
         for (int j = 0; j < som_dim; ++j) {
-        	factor = gaussian(distance_square(bestMatch,Point(i,j)), UPDATE_NEURONS_SIGMA) * UPDATE_NEURONS_DAMPING;
-        	updateSingleNeuron(current_neuron, image + bestRotationMatrix[i*som_dim+j] * numberOfChannels * image_size, numberOfChannels * image_size, factor);
-        	current_neuron += numberOfChannels * image_size;
-    	}
+            factor = (*ptrDistributionFunctor)((*ptrDistanceFunctor)(bestMatch.x, bestMatch.y,i,j)) * damping;
+            updateSingleNeuron(current_neuron, image + bestRotationMatrix[i*som_dim+j] * numberOfChannels * image_size, numberOfChannels * image_size, factor);
+            current_neuron += numberOfChannels * image_size;
+        }
     }
 }
 

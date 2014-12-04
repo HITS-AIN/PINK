@@ -8,9 +8,7 @@
 #define INPUTDATA_H_
 
 #include "ImageProcessingLib/ImageProcessing.h"
-#include "UtilitiesLib/DistributionFunctions.h"
 #include "Version.h"
-#include <memory>
 #include <string>
 
 //! Type for SOM layout.
@@ -49,6 +47,9 @@ enum ExecutionPath {
 	TRAIN,
 	MAP
 };
+
+#define DEFAULT_SIGMA     1.1
+#define DEFAULT_DAMPING   0.2
 
 struct InputData
 {
@@ -96,9 +97,6 @@ struct InputData
 	Function function;
 	float sigma;
 	float damping;
-
-	//std::shared_ptr<DistributionFunctionBase> ptrDistributionFunctor;
-    //std::shared_ptr<DistanceFunctor> ptrDistanceFunctor;
 };
 
 void stringToUpper(char* s);

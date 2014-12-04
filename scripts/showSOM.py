@@ -47,26 +47,26 @@ if __name__ == "__main__":
     print 'Channel number is ', channelNumber
 
     inFile = open(inputfile, 'rb')
-    numberOfChannels, SOM_width, SOM_heigth, neuron_width, neuron_heigth = struct.unpack('i' * 5, inFile.read(4*5))
+    numberOfChannels, SOM_width, SOM_height, neuron_width, neuron_height = struct.unpack('i' * 5, inFile.read(4*5))
 
     print 'Number of channels = ', numberOfChannels
     print 'SOM_width = ', SOM_width
-    print 'SOM_heigth = ', SOM_heigth
+    print 'SOM_height = ', SOM_height
     print 'neuron_width = ', neuron_width
-    print 'neuron_heigth = ', neuron_heigth
+    print 'neuron_height = ', neuron_height
 
     if channelNumber >= numberOfChannels:
         print 'Channel number too large.'
         sys.exit(1)
 
-    dataSize = numberOfChannels * SOM_width * SOM_heigth * neuron_width * neuron_heigth
+    dataSize = numberOfChannels * SOM_width * SOM_height * neuron_width * neuron_height
     array = numpy.array(struct.unpack('f' * dataSize, inFile.read(dataSize * 4)))
     
     image_width = SOM_width * neuron_width;
-    image_heigth = SOM_heigth * neuron_heigth;
-    data = numpy.ndarray([SOM_width, SOM_heigth, numberOfChannels, neuron_width, neuron_heigth], 'float', array)
+    image_height = SOM_height * neuron_height;
+    data = numpy.ndarray([SOM_width, SOM_height, numberOfChannels, neuron_width, neuron_height], 'float', array)
     data = numpy.swapaxes(data, 1, 3)
-    data = numpy.reshape(data, (image_width, numberOfChannels, image_heigth))
+    data = numpy.reshape(data, (image_width, numberOfChannels, image_height))
 
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)

@@ -9,9 +9,10 @@
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMap.h"
 #include "SOM.h"
-#include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/CheckArrays.h"
+#include "UtilitiesLib/Error.h"
 #include "UtilitiesLib/Filler.h"
+#include "UtilitiesLib/InputData.h"
 #include <chrono>
 #include <iostream>
 #include <iomanip>
@@ -44,6 +45,24 @@ void trainSelfOrganizingMap(InputData const& inputData)
 
     // Counting updates of each neuron
     vector<int> updateCounter(inputData.som_size);
+
+    // Set distribution function
+    std::shared_ptr<DistributionFunctorBase> ptrDistributionFunctor;
+    if (inputData.function == GAUSSIAN)
+        ptrDistributionFunctor = std::shared_ptr<DistributionFunctorBase>(new GaussianFunctor(inputData.sigma));
+    else if (inputData.function == MEXICANHAT)
+        ptrDistributionFunctor = std::shared_ptr<DistributionFunctorBase>(new MexicanHatFunctor(inputData.sigma));
+    else
+        fatalError("Unknown distribution function.");
+
+    // Set distance function
+    std::shared_ptr<DistanceFunctorBase> ptrDistanceFunctor;
+    if (inputData.layout == QUADRATIC)
+        ptrDistanceFunctor = std::shared_ptr<DistanceFunctorBase>(new QuadraticDistanceFunctor());
+    else if (inputData.layout == HEXAGONAL)
+        ptrDistanceFunctor = std::shared_ptr<DistanceFunctorBase>(new HexagonalDistanceFunctor());
+    else
+        fatalError("Unknown layout.");
 
 	float progress = 0.0;
 	float progressStep = 1.0 / inputData.numIter / inputData.numberOfImages;
@@ -87,7 +106,8 @@ void trainSelfOrganizingMap(InputData const& inputData)
             ++updateCounter[bestMatch.x*inputData.som_dim + bestMatch.y];
 
             updateNeurons(inputData.som_dim, som.getDataPointer(), inputData.neuron_dim, &rotatedImages[0],
-                bestMatch, &bestRotationMatrix[0], inputData.numberOfChannels);
+                bestMatch, &bestRotationMatrix[0], inputData.numberOfChannels,
+                ptrDistributionFunctor, ptrDistanceFunctor, inputData.damping);
 		}
 	}
 
@@ -97,10 +117,10 @@ void trainSelfOrganizingMap(InputData const& inputData)
 
 	cout << "  Progress: 100 % ("
 		 << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
-	cout << "  Write final SOM to " << inputData.resultFilename << " ... " << flush;
 
+	if (inputData.verbose) cout << "  Write final SOM to " << inputData.resultFilename << " ... " << flush;
 	som.write(inputData.resultFilename);
-	cout << "done." << endl;
+	if (inputData.verbose) cout << "done." << endl;
 
 	if (inputData.verbose) {
         cout << "\n  Number of updates of each neuron:\n" << endl;

@@ -9,9 +9,12 @@
 #define SELFORGANIZINGMAP_H_
 
 #include "ImageProcessingLib/ImageProcessing.h"
+#include "UtilitiesLib/DistanceFunctor.h"
+#include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Point.h"
 #include <iostream>
+#include <memory>
 
 //! Main CPU based routine for SOM training.
 void trainSelfOrganizingMap(InputData const& inputData);
@@ -28,11 +31,12 @@ void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRo
 //! Returns the position of the best matching neuron.
 Point findBestMatchingNeuron(float *similarityMatrix, int som_dim);
 
-//! Updating self organizing map.
-void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch,
-    int *bestRotationMatrix, int numberOfChannels);
-
 //! Updating one single neuron.
 void updateSingleNeuron(float* neuron, float* image, int image_size, float factor);
+
+//! Updating self organizing map.
+void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch,
+    int *bestRotationMatrix, int numberOfChannels, std::shared_ptr<DistributionFunctorBase> const& ptrDistributionFunctor,
+    std::shared_ptr<DistanceFunctorBase> const& ptrDistanceFunctor, float damping);
 
 #endif /* SELFORGANIZINGMAP_H_ */

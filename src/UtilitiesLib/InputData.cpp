@@ -73,8 +73,8 @@ InputData::InputData(int argc, char **argv)
     executionPath(UNDEFINED),
     intermediate_storage(false),
     function(GAUSSIAN),
-    sigma(UPDATE_NEURONS_SIGMA),
-    damping(UPDATE_NEURONS_DAMPING)
+    sigma(DEFAULT_SIGMA),
+    damping(DEFAULT_DAMPING)
 {
 	static struct option long_options[] = {
 		{"image-dimension", 1, 0, 'd'},

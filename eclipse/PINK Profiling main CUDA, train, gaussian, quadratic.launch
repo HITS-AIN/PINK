@@ -4,6 +4,12 @@
 <booleanAttribute key="lc.enable.memcheck" value="false"/>
 <booleanAttribute key="lc.extrapolate" value="true"/>
 <booleanAttribute key="lc.kernelevents" value="false"/>
+<booleanAttribute key="nvvp.apiTraceProfiling" value="true"/>
+<booleanAttribute key="nvvp.concurrentProfiling" value="true"/>
+<booleanAttribute key="nvvp.environmentProfiling" value="false"/>
+<booleanAttribute key="nvvp.startProfiling" value="true"/>
+<intAttribute key="nvvp.timeout" value="0"/>
+<booleanAttribute key="nvvp.uvmProfiling" value="false"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.AUTO_SOLIB" value="true"/>
 <listAttribute key="org.eclipse.cdt.dsf.gdb.AUTO_SOLIB_LIST"/>
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_NAME" value="${cuda_bin}/cuda-gdb"/>
@@ -16,11 +22,11 @@
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="run"/>
 <booleanAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN" value="true"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="main"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="--train ../data/all_shapes_shuffled/images.bin result.bin&#10;-n 180&#10;--init random&#10;--dist-func gaussian 1.1 0.2&#10;--layout hexagonal"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="RadioGalaxyZoo/code-new/Build_Release_Gnu/bin/Pink"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="--train ../data/all_shapes_shuffled/images.bin result.bin&#10;-n 180&#10;--init random&#10;--dist-func gaussian 2.0 2.0"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="RadioGalaxyZoo/code-new/Build_Profiling_Gnu/bin/Pink"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="pink_trunk"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="true"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="cdt.managedbuild.toolchain.gnu.base.1422479075"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="cdt.managedbuild.toolchain.gnu.base.1422479075.1505469055"/>
 <stringAttribute key="org.eclipse.cdt.launch.WORKING_DIRECTORY" value="${workspace_loc:pink_trunk}/RadioGalaxyZoo/code-new/test"/>
 <booleanAttribute key="org.eclipse.cdt.launch.use_terminal" value="true"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
