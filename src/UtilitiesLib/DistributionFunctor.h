@@ -1,7 +1,7 @@
 /**
  * @file   UtilitiesLib/DistributionFunctors.h
  * @brief  Virtual functors for distribution functions used by updating SOM.
- * @date   Nov 14, 2014
+ * @date   Dec 4, 2014
  * @author Bernd Doser, HITS gGmbH
  */
 
@@ -9,6 +9,7 @@
 #define DISTRIBUTIONFUNCTOR_H_
 
 #include <cmath>
+#include <stdexcept>
 
 /**
  * @brief Abstract base for distribution functor.
@@ -46,11 +47,15 @@ private:
  */
 struct MexicanHatFunctor : public DistributionFunctorBase
 {
-    MexicanHatFunctor(float sigma) : sigma(sigma), sigma2(sigma*sigma) {}
+    MexicanHatFunctor(float sigma) : sigma(sigma), sigma2(sigma*sigma)
+    {
+        if (sigma <= 0) throw std::runtime_error("MexicanHatFunctor: sigma <= 0 not defined.");
+    }
 
     float operator () (float distance) const
     {
         float distance2 = distance * distance;
+             //2.0 / (sqrt(3.0 * GetParam().sigma * sqrt(M_PI))) * (1.0 - 1.0 / sigma2) * exp(-1.0 / (2.0 * sigma2))
         return 2.0 / (sqrt(3.0 * sigma) * pow(M_PI, 0.25)) * (1.0 - distance2/sigma2) * exp(-distance2 / (2.0 * sigma2));
     }
 

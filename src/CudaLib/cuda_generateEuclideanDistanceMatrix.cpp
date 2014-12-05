@@ -19,8 +19,8 @@ void cuda_generateEuclideanDistanceMatrix(float *d_euclideanDistanceMatrix, int 
     float *d_firstStep = cuda_alloc_float(som_size * num_rot);
 
     // First step ...
-    cuda_generateEuclideanDistanceMatrix_firstStep(d_som, d_rotatedImages,
-        d_firstStep, som_size, num_rot, numberOfChannels * image_size, 128);
+    cuda_generateEuclideanDistanceMatrix_firstStep<128>(d_som, d_rotatedImages,
+        d_firstStep, som_size, num_rot, numberOfChannels * image_size);
 
 //    float firstStep;
 //    cuda_copyDeviceToHost_float(&firstStep, d_firstStep, 1);

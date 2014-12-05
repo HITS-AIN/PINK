@@ -10,7 +10,8 @@ include_directories(
 add_executable(
     UtilitiesTest
     main.cpp
-    PointTest.cpp
+    DistanceFunctorTest.cpp
+    DistributionFunctorTest.cpp
 )
     
 target_link_libraries(

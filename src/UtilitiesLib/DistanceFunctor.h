@@ -1,7 +1,7 @@
 /**
  * @file   UtilitiesLib/DistanceFunctors.h
- * @brief  Virtual functors for distribution functions used by updating SOM.
- * @date   Nov 14, 2014
+ * @brief  Virtual functors for distance functions used by updating SOM.
+ * @date   Dec 4, 2014
  * @author Bernd Doser, HITS gGmbH
  */
 
