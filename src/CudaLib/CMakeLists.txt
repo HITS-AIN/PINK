@@ -24,6 +24,8 @@ cuda_add_library(
     cuda_functions.cu
     cuda_generateEuclideanDistanceMatrix.cpp
     cuda_generateEuclideanDistanceMatrix_firstStep.cu
+    cuda_generateEuclideanDistanceMatrix_firstStep_opt.cu
+    cuda_generateEuclideanDistanceMatrix_firstStep_opt3.cu
     cuda_generateEuclideanDistanceMatrix_secondStep.cu
     cuda_generateRotatedImages.cu
     cuda_mapping.cpp
