@@ -6,14 +6,20 @@
 
 #include <stdio.h>
 
+/**
+ * CUDA Kernel Device code
+ *
+ * Static loop unrolling for the thread within one warp.
+ */
+template <unsigned int block_size>
 __device__ void warpReduce(volatile float *data, int tid)
 {
-    data[tid] += data[tid + 32];
-    data[tid] += data[tid + 16];
-    data[tid] += data[tid +  8];
-    data[tid] += data[tid +  4];
-    data[tid] += data[tid +  2];
-    data[tid] += data[tid +  1];
+    if (block_size >= 64) data[tid] += data[tid + 32];
+    if (block_size >= 32) data[tid] += data[tid + 16];
+    if (block_size >= 16) data[tid] += data[tid +  8];
+    if (block_size >=  8) data[tid] += data[tid +  4];
+    if (block_size >=  4) data[tid] += data[tid +  2];
+    if (block_size >=  2) data[tid] += data[tid +  1];
 }
 
 /**
@@ -46,8 +52,8 @@ __global__ void euclidean_distance_kernel(float *som, float *rotatedImages, floa
     if (block_size >= 256) { if (tid < 128) { firstStep_local[tid] += firstStep_local[tid + 128]; } __syncthreads(); }
     if (block_size >= 128) { if (tid <  64) { firstStep_local[tid] += firstStep_local[tid +  64]; } __syncthreads(); }
 
-    //Static loop unrolling for the thread within one warp.
-    if (tid < 32) warpReduce(firstStep_local, tid);
+    // Static loop unrolling for the thread within one warp.
+    if (tid < 32) warpReduce<block_size>(firstStep_local, tid);
 
     // Copy accumulated local value to global array firstStep
     if (tid == 0) firstStep[blockIdx.x + blockIdx.y * gridDim.x] = firstStep_local[0];
