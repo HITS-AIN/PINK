@@ -91,6 +91,9 @@ TEST_P(FullEuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix)
 	cuda_copyDeviceToHost_float(gpu_euclideanDistanceMatrix, d_euclideanDistanceMatrix, data.som_size);
 	cuda_copyDeviceToHost_int(gpu_bestRotationMatrix, d_bestRotationMatrix, data.som_size);
 
+//	for (int i = 0; i < data.som_size; ++i)
+//	    std::cout << cpu_euclideanDistanceMatrix[i] << " " << gpu_euclideanDistanceMatrix[i] << std::endl;
+
 	EXPECT_TRUE(EqualFloatArrays(cpu_euclideanDistanceMatrix, gpu_euclideanDistanceMatrix, data.som_size, 1.0e-3));
 	EXPECT_TRUE(EqualFloatArrays(cpu_bestRotationMatrix, gpu_bestRotationMatrix, data.som_size, 1.0e-3));
 

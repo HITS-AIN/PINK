@@ -6,56 +6,51 @@
 
 #include <stdio.h>
 
+__device__ void warpReduce(volatile float *data, int tid)
+{
+    data[tid] += data[tid + 32];
+    data[tid] += data[tid + 16];
+    data[tid] += data[tid +  8];
+    data[tid] += data[tid +  4];
+    data[tid] += data[tid +  2];
+    data[tid] += data[tid +  1];
+}
+
 /**
  * CUDA Kernel Device code
  *
  * Computes the euclidean distance of two arrays.
  */
 template <unsigned int block_size>
-__global__ void euclidean_distance_kernel(float *som, float *rotatedImages, float *firstStep, int image_size)
+__global__ void euclidean_distance_kernel(float *som, float *rotatedImages, float *firstStep, int neuron_size)
 {
     int tid = threadIdx.x;
-    int i = threadIdx.x;
     float diff;
+    float sum = 0.0f;
+    float *psom = som + blockIdx.y * neuron_size;
+    float *prot = rotatedImages + blockIdx.x * neuron_size;
 
     __shared__ float firstStep_local[block_size];
-    firstStep_local[tid] = 0.0f;
 
-    __syncthreads();
-
-    while(i < image_size)
+    for (int i = tid; i < neuron_size; i += block_size)
     {
-        diff = som[i + blockIdx.y * image_size] - rotatedImages[i + blockIdx.x * image_size];
-        firstStep_local[tid] += diff * diff;
-        i += block_size;
-        __syncthreads();
+        diff = psom[i] - prot[i];
+        sum += diff * diff;
     }
+
+    firstStep_local[tid] = sum;
+    __syncthreads();
 
     // Parallel reduction
     if (block_size >= 512) { if (tid < 256) { firstStep_local[tid] += firstStep_local[tid + 256]; } __syncthreads(); }
     if (block_size >= 256) { if (tid < 128) { firstStep_local[tid] += firstStep_local[tid + 128]; } __syncthreads(); }
     if (block_size >= 128) { if (tid <  64) { firstStep_local[tid] += firstStep_local[tid +  64]; } __syncthreads(); }
 
-    if (block_size >=  64) { if (tid <  32) { firstStep_local[tid] += firstStep_local[tid +  32]; } __syncthreads(); }
-    if (block_size >=  32) { if (tid <  16) { firstStep_local[tid] += firstStep_local[tid +  16]; } __syncthreads(); }
-    if (block_size >=  16) { if (tid <   8) { firstStep_local[tid] += firstStep_local[tid +   8]; } __syncthreads(); }
-    if (block_size >=   8) { if (tid <   4) { firstStep_local[tid] += firstStep_local[tid +   4]; } __syncthreads(); }
-    if (block_size >=   4) { if (tid <   2) { firstStep_local[tid] += firstStep_local[tid +   2]; } __syncthreads(); }
-    if (block_size >=   2) { if (tid <   1) { firstStep_local[tid] += firstStep_local[tid +   1]; } __syncthreads(); }
-
-//    // ATTENTION!!! Static loop unrolling only work with block_size = 128.
-//    if (tid < 32)
-//    {
-//        if (block_size >= 64) { firstStep_local[tid] += firstStep_local[tid + 32]; }
-//        if (block_size >= 32) { firstStep_local[tid] += firstStep_local[tid + 16]; }
-//        if (block_size >= 16) { firstStep_local[tid] += firstStep_local[tid +  8]; }
-//        if (block_size >=  8) { firstStep_local[tid] += firstStep_local[tid +  4]; }
-//        if (block_size >=  4) { firstStep_local[tid] += firstStep_local[tid +  2]; }
-//        if (block_size >=  2) { firstStep_local[tid] += firstStep_local[tid +  1]; }
-//    }
+    //Static loop unrolling for the thread within one warp.
+    if (tid < 32) warpReduce(firstStep_local, tid);
 
     // Copy accumulated local value to global array firstStep
-    if (tid == 0) atomicExch(firstStep + blockIdx.x + blockIdx.y * gridDim.x, firstStep_local[tid]);
+    if (tid == 0) firstStep[blockIdx.x + blockIdx.y * gridDim.x] = firstStep_local[0];
 }
 
 /**
@@ -63,14 +58,14 @@ __global__ void euclidean_distance_kernel(float *som, float *rotatedImages, floa
  */
 template <unsigned int block_size>
 void cuda_generateEuclideanDistanceMatrix_firstStep(float *d_som, float *d_rotatedImages,
-    float* d_firstStep, int som_size, int num_rot, int image_size)
+    float* d_firstStep, int som_size, int num_rot, int neuron_size)
 {
     // Setup execution parameters
     dim3 dimBlock(block_size);
     dim3 dimGrid(num_rot, som_size);
 
     // Start kernel
-    euclidean_distance_kernel<block_size><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_firstStep, image_size);
+    euclidean_distance_kernel<block_size><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_firstStep, neuron_size);
 
     cudaError_t error = cudaGetLastError();
 

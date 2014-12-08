@@ -6,7 +6,10 @@
 
 #include "CudaLib.h"
 #include "cuda_generateEuclideanDistanceMatrix_firstStep.cu.h"
-#include <stdio.h>
+
+template
+void cuda_generateEuclideanDistanceMatrix_firstStep<1024>(float *d_som, float *d_rotatedImages,
+   float* d_firstStep, int som_size, int num_rot, int image_size);
 
 template
 void cuda_generateEuclideanDistanceMatrix_firstStep<512>(float *d_som, float *d_rotatedImages,

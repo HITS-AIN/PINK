@@ -28,12 +28,12 @@ public:
 
 	//! Default constructor
 	ImageIterator()
-	 : numberOfImages_(0), count_(0), height_(0), width_(0), ptrStream_(nullptr)
+	 : numberOfImages_(0), numberOfChannels_(0), count_(0), height_(0), width_(0), ptrStream_(nullptr)
 	{}
 
 	//! Parameter constructor
 	ImageIterator(std::string const& filename)
-	 : numberOfImages_(0), count_(0), height_(0), width_(0), ptrStream_(new std::ifstream(filename))
+	 : numberOfImages_(0), numberOfChannels_(0), count_(0), height_(0), width_(0), ptrStream_(new std::ifstream(filename))
 	{
 	    if (!(*ptrStream_)) throw std::runtime_error("ImageIterator: Error opening " + filename);
 

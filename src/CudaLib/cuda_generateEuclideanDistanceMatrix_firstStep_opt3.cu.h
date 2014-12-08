@@ -1,5 +1,5 @@
 /**
- * @file   CudaLib/cuda_generateEuclideanDistanceMatrix_firstStep_opt.cu.h
+ * @file   CudaLib/cuda_generateEuclideanDistanceMatrix_firstStep_opt3.cu.h
  * @date   Oct 30, 2014
  * @author Bernd Doser, HITS gGmbH
  */
@@ -15,7 +15,7 @@
 template <unsigned int block_size>
 __global__ void euclidean_distance_opt3_kernel(float *som, float *rotatedImages, float *diff, int neuron_size)
 {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    //int i = blockIdx.x * blockDim.x + threadIdx.x;
     for (int j=0; j < neuron_size; ++j)
         diff[j] = som[j] - rotatedImages[j];
 }
@@ -41,9 +41,13 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_opt3(float *d_som, float *d_
 
     if (error != cudaSuccess)
     {
-        fprintf(stderr, "Failed to launch CUDA kernel cuda_generateEuclideanDistanceMatrix_firstStep (error code %s)!\n", cudaGetErrorString(error));
+        fprintf(stderr, "Failed to launch CUDA kernel cuda_generateEuclideanDistanceMatrix_firstStep_opt3 (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
+
+//    cublasHandle_t handle;
+//    cublasCreate(&handle);
+//    cublasSdot(handle, dimGrid.x, d_isum, 1, &c);
 
     cuda_free(d_diff);
 }

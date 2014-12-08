@@ -46,6 +46,11 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_opt(float *d_som, float *d_r
 
 //! Host routine starting kernel for euclideanDistanceMatrix second part.
 template <unsigned int block_size>
+void cuda_generateEuclideanDistanceMatrix_firstStep_opt2(float *d_som, float *d_rotatedImages,
+    float* d_firstStep, int som_size, int num_rot, int image_size);
+
+//! Host routine starting kernel for euclideanDistanceMatrix second part.
+template <unsigned int block_size>
 void cuda_generateEuclideanDistanceMatrix_firstStep_opt3(float *d_som, float *d_rotatedImages,
     float* d_firstStep, int som_size, int num_rot, int image_size);
 
