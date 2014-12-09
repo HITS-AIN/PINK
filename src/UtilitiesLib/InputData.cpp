@@ -74,7 +74,8 @@ InputData::InputData(int argc, char **argv)
     intermediate_storage(false),
     function(GAUSSIAN),
     sigma(DEFAULT_SIGMA),
-    damping(DEFAULT_DAMPING)
+    damping(DEFAULT_DAMPING),
+    block_size_1(128)
 {
 	static struct option long_options[] = {
 		{"image-dimension", 1, 0, 'd'},
@@ -97,6 +98,7 @@ InputData::InputData(int argc, char **argv)
 		{"map",             1, 0, 7},
         {"inter-store",     1, 0, 8},
         {"dist-func",       1, 0, 'f'},
+        {"b1",              1, 0, 9},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
@@ -238,6 +240,11 @@ InputData::InputData(int argc, char **argv)
 				optind = index - 1;
 				break;
 		    }
+            case 9:
+            {
+                block_size_1 = atoi(optarg);
+                break;
+            }
 			case 'v':
 			{
 				cout << "Pink version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR << endl;
@@ -377,6 +384,10 @@ void InputData::print_parameters() const
          << "  Sigma = " << sigma << endl
          << "  Damping factor = " << damping << endl
          << endl;
+
+    if (verbose)
+        cout << "  Block size 1 = " << block_size_1 << endl
+             << endl;
 }
 
 void InputData::print_usage() const

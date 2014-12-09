@@ -58,26 +58,3 @@ __global__ void euclidean_distance_kernel(float *som, float *rotatedImages, floa
     // Copy accumulated local value to global array firstStep
     if (tid == 0) firstStep[blockIdx.x + blockIdx.y * gridDim.x] = firstStep_local[0];
 }
-
-/**
- * Host function that prepares data array and passes it to the CUDA kernel.
- */
-template <unsigned int block_size>
-void cuda_generateEuclideanDistanceMatrix_firstStep(float *d_som, float *d_rotatedImages,
-    float* d_firstStep, int som_size, int num_rot, int neuron_size)
-{
-    // Setup execution parameters
-    dim3 dimBlock(block_size);
-    dim3 dimGrid(num_rot, som_size);
-
-    // Start kernel
-    euclidean_distance_kernel<block_size><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_firstStep, neuron_size);
-
-    cudaError_t error = cudaGetLastError();
-
-    if (error != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to launch CUDA kernel cuda_generateEuclideanDistanceMatrix_firstStep (error code %s)!\n", cudaGetErrorString(error));
-        exit(EXIT_FAILURE);
-    }
-}

@@ -97,6 +97,7 @@ struct InputData
 	Function function;
 	float sigma;
 	float damping;
+	int block_size_1;
 };
 
 void stringToUpper(char* s);

@@ -41,7 +41,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	// Initialize SOM
 	SOM som(inputData.som_dim, inputData.neuron_dim, inputData.numberOfChannels, inputData.init, inputData.seed, inputData.somFilename);
 	if (inputData.verbose) cout << "  Size of SOM = " << som.getSizeInBytes() << " bytes\n" << endl;
-    //som.write("initial_som.bin");
+    som.write("initial_som.bin");
 
     // Counting updates of each neuron
     vector<int> updateCounter(inputData.som_size);
