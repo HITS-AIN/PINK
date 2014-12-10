@@ -102,4 +102,7 @@ void cuda_copyDeviceToHost_int(int *dest, int *source, int size);
 //! Return number of GPUs.
 int cuda_getNumberOfGPUs();
 
+//! Set GPU device number.
+void cuda_setDevice(int number);
+
 #endif /* CUDALIB_H_ */

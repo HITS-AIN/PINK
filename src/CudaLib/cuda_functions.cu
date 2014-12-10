@@ -128,3 +128,14 @@ int cuda_getNumberOfGPUs()
 
     return GPU_N;
 }
+
+void cuda_setDevice(int number)
+{
+    cudaError_t error = cudaSetDevice(number);
+
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "cudaSetDevice failed (error code %s)!\n", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
+}

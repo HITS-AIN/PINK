@@ -38,7 +38,7 @@ second_step_kernel(float *euclideanDistanceMatrix, int *bestRotationMatrix, floa
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
 void cuda_generateEuclideanDistanceMatrix_secondStep(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix,
-    float* d_firstStep, int som_size, int num_rot)
+    float *d_firstStep, int som_size, int num_rot)
 {
     // Setup execution parameters
     dim3 dimBlock(BLOCK_SIZE);

@@ -25,6 +25,8 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
     cout << "  Starting CUDA version of training.\n" << endl;
     if (inputData.verbose) cuda_print_properties();
 
+    cuda_setDevice(0);
+
     // Initialize SOM on host
     SOM som(inputData.som_dim, inputData.neuron_dim, inputData.numberOfChannels, inputData.init, inputData.seed, inputData.somFilename);
     if (inputData.verbose) cout << "\n  Size of SOM = " << som.getSize() * sizeof(float) << " bytes" << endl;
