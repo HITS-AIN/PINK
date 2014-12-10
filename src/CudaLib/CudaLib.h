@@ -39,6 +39,10 @@ void cuda_generateEuclideanDistanceMatrix_firstStep(float *d_som, float *d_rotat
     float* d_firstStep, int som_size, int num_rot, int image_size, int block_size);
 
 //! Host routine starting kernel for euclideanDistanceMatrix second part.
+void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float *d_rotatedImages,
+    float* d_firstStep, int som_size, int num_rot, int image_size, int block_size);
+
+//! Host routine starting kernel for euclideanDistanceMatrix second part.
 template <unsigned int block_size>
 void cuda_generateEuclideanDistanceMatrix_firstStep_opt(float *d_som, float *d_rotatedImages,
     float* d_firstStep, int som_size, int num_rot, int image_size);
@@ -94,5 +98,8 @@ void cuda_copyDeviceToHost_float(float *dest, float *source, int size);
 
 //! Copy memory from device to host.
 void cuda_copyDeviceToHost_int(int *dest, int *source, int size);
+
+//! Return number of GPUs.
+int cuda_getNumberOfGPUs();
 
 #endif /* CUDALIB_H_ */

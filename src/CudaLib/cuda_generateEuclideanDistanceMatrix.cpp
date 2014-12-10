@@ -22,8 +22,13 @@ void cuda_generateEuclideanDistanceMatrix(float *d_euclideanDistanceMatrix, int 
     cuda_fill_zero(d_firstStep, som_size * num_rot);
 
     // First step ...
-    cuda_generateEuclideanDistanceMatrix_firstStep(d_som, d_rotatedImages,
-        d_firstStep, som_size, num_rot, numberOfChannels * image_size, block_size_1);
+    if (cuda_getNumberOfGPUs() > 1) {
+        cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(d_som, d_rotatedImages,
+            d_firstStep, som_size, num_rot, numberOfChannels * image_size, block_size_1);
+    } else {
+        cuda_generateEuclideanDistanceMatrix_firstStep(d_som, d_rotatedImages,
+            d_firstStep, som_size, num_rot, numberOfChannels * image_size, block_size_1);
+    }
 
 //    std::vector<float> firstStep(som_size * num_rot);
 //    cuda_copyDeviceToHost_float(&firstStep[0], d_firstStep, som_size * num_rot);

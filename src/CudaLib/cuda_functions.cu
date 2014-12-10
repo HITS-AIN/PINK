@@ -114,3 +114,17 @@ void cuda_copyDeviceToHost_int(int *dest, int *source, int size)
 		exit(EXIT_FAILURE);
 	}
 }
+
+int cuda_getNumberOfGPUs()
+{
+    int GPU_N;
+    cudaError_t error = cudaGetDeviceCount(&GPU_N);
+
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "cuda_numberOfGPUs failed (error code %s)!\n", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
+
+    return GPU_N;
+}
