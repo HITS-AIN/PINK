@@ -19,7 +19,7 @@ void cuda_generateEuclideanDistanceMatrix(float *d_euclideanDistanceMatrix, int 
 	unsigned int som_size = som_dim * som_dim;
 
     float *d_firstStep = cuda_alloc_float(som_size * num_rot);
-    cuda_fill_zero(d_firstStep, som_size * num_rot);
+    //cuda_fill_zero(d_firstStep, som_size * num_rot);
 
     // First step ...
     if (cuda_getNumberOfGPUs() > 1) {

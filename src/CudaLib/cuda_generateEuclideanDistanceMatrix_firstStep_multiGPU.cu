@@ -39,13 +39,13 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
     cudaStreamCreate(&plan[0].stream);
 
     // Set size and offset
-    if (num_rot % GPU_N)
+    if (som_size % GPU_N)
     {
-        fprintf(stderr, "cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU: num_rot not dividable by GPU_N.\n");
+        fprintf(stderr, "cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU: som_size not dividable by GPU_N.\n");
         exit(EXIT_FAILURE);
     }
 
-    plan[0].size = num_rot / GPU_N;
+    plan[0].size = som_size / GPU_N;
     plan[0].offset = 0;
 
     // Allocate device memory
@@ -61,17 +61,17 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
         cudaStreamCreate(&plan[i].stream);
 
         // Set size and offset
-        plan[i].size = num_rot / GPU_N;
+        plan[i].size = plan[i-1].size;
         plan[i].offset = plan[i-1].offset + plan[i-1].size;
 
         // Allocate device memory
-        plan[i].d_som = cuda_alloc_float(som_size * neuron_size);
-        plan[i].d_rotatedImages = cuda_alloc_float(plan[i].size * neuron_size);
-        plan[i].d_firstStep = cuda_alloc_float(plan[i].size * som_size);
+        plan[i].d_som = cuda_alloc_float(plan[i].size * neuron_size);
+        plan[i].d_rotatedImages = cuda_alloc_float(num_rot * neuron_size);
+        plan[i].d_firstStep = cuda_alloc_float(plan[i].size * num_rot);
 
         // Copy data
-        cudaMemcpyPeerAsync(plan[i].d_som, i, plan[0].d_som, 0, som_size * neuron_size * sizeof(float), plan[i].stream);
-        cudaMemcpyPeerAsync(plan[i].d_rotatedImages, i, plan[0].d_rotatedImages + plan[i].offset, 0, plan[i].size * neuron_size * sizeof(float), plan[i].stream);
+        cudaMemcpyPeerAsync(plan[i].d_som, i, plan[0].d_som + plan[i].offset * neuron_size, 0, plan[i].size * neuron_size * sizeof(float), plan[i].stream);
+        cudaMemcpyPeerAsync(plan[i].d_rotatedImages, i, plan[0].d_rotatedImages, 0, num_rot * neuron_size * sizeof(float), plan[i].stream);
     }
 
     // Start kernel
@@ -82,7 +82,7 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
 
         // Setup execution parameters
         dim3 dimBlock(block_size);
-        dim3 dimGrid(plan[i].size, som_size);
+        dim3 dimGrid(num_rot, plan[i].size);
 
         switch (block_size)
         {
@@ -117,7 +117,7 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
 
         // Copy data
         if (i != 0)
-            cudaMemcpyPeerAsync(plan[0].d_firstStep + plan[i].offset * som_size, 0, plan[i].d_firstStep, i, plan[i].size * som_size * sizeof(float), plan[i].stream);
+            cudaMemcpyPeerAsync(plan[0].d_firstStep + plan[i].offset * num_rot, 0, plan[i].d_firstStep, i, plan[i].size * num_rot * sizeof(float), plan[i].stream);
 
         error = cudaGetLastError();
         if (error != cudaSuccess)
