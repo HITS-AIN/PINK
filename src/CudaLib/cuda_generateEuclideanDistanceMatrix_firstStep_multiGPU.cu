@@ -117,7 +117,7 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
 
         // Copy data
         if (i != 0)
-            cudaMemcpyPeerAsync(plan[0].d_firstStep + plan[i].offset, 0, plan[i].d_firstStep, i, plan[i].size * som_size * sizeof(float), plan[i].stream);
+            cudaMemcpyPeerAsync(plan[0].d_firstStep + plan[i].offset * som_size, 0, plan[i].d_firstStep, i, plan[i].size * som_size * sizeof(float), plan[i].stream);
 
         error = cudaGetLastError();
         if (error != cudaSuccess)
@@ -140,4 +140,7 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
             cuda_free(plan[i].d_firstStep);
         }
     }
+
+    cudaSetDevice(0);
+    cudaDeviceSynchronize();
 }
