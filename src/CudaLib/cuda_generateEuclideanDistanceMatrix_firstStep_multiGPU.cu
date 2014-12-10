@@ -29,8 +29,7 @@ struct TGPUplan
 void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float *d_rotatedImages,
     float* d_firstStep, int som_size, int num_rot, int neuron_size, int block_size)
 {
-    int GPU_N;
-    cudaGetDeviceCount(&GPU_N);
+    int GPU_N = cuda_getNumberOfGPUs();
     if (GPU_N > GPU_N_MAX) GPU_N = GPU_N_MAX;
 
     TGPUplan plan[GPU_N_MAX];
@@ -71,8 +70,8 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
         plan[i].d_firstStep = cuda_alloc_float(plan[i].size * som_size);
 
         // Copy data
-        cudaMemcpyPeerAsync(plan[i].d_som, i, plan[0].d_som, 0, som_size * neuron_size, plan[i].stream);
-        cudaMemcpyPeerAsync(plan[i].d_rotatedImages, i, plan[0].d_rotatedImages + plan[i].offset, 0, plan[i].size * neuron_size, plan[i].stream);
+        cudaMemcpyPeerAsync(plan[i].d_som, i, plan[0].d_som, 0, som_size * neuron_size * sizeof(float), plan[i].stream);
+        cudaMemcpyPeerAsync(plan[i].d_rotatedImages, i, plan[0].d_rotatedImages + plan[i].offset, 0, plan[i].size * neuron_size * sizeof(float), plan[i].stream);
     }
 
     // Start kernel
@@ -117,7 +116,8 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
         }
 
         // Copy data
-        cudaMemcpyPeerAsync(plan[0].d_firstStep, 0, plan[i].d_firstStep, i, plan[i].size, plan[i].stream);
+        if (i != 0)
+            cudaMemcpyPeerAsync(plan[0].d_firstStep + plan[i].offset, 0, plan[i].d_firstStep, i, plan[i].size * som_size * sizeof(float), plan[i].stream);
 
         error = cudaGetLastError();
         if (error != cudaSuccess)
@@ -135,9 +135,9 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
         cudaStreamDestroy(plan[i].stream);
 
         if (i != 0) {
-            cudaFree(plan[i].d_som);
-            cudaFree(plan[i].d_rotatedImages);
-            cudaFree(plan[i].d_firstStep);
+            cuda_free(plan[i].d_som);
+            cuda_free(plan[i].d_rotatedImages);
+            cuda_free(plan[i].d_firstStep);
         }
     }
 }
