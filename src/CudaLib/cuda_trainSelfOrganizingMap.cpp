@@ -70,7 +70,7 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 	{
 		for (ImageIterator<float> iterImage(inputData.imagesFilename),iterEnd; iterImage != iterEnd; ++iterImage)
 		{
-			if (progress >= nextProgressPrint)
+			if (progress > nextProgressPrint)
 			{
 				const auto stopTime = steady_clock::now();
 				const auto duration = stopTime - startTime;
@@ -102,7 +102,7 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 
 			cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
 				inputData.som_dim, inputData.neuron_dim, inputData.numberOfRotationsAndFlip, inputData.numberOfChannels,
-				inputData.function, inputData.layout, inputData.sigma, inputData.damping);
+				inputData.function, inputData.layout, inputData.sigma, inputData.damping, inputData.maxUpdateDistance);
 
 			cuda_copyDeviceToHost_int(&bestMatch[0], d_bestMatch, 2);
 			++updateCounter[bestMatch[0]*inputData.som_dim + bestMatch[1]];

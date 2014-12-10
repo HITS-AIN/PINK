@@ -37,6 +37,6 @@ void updateSingleNeuron(float* neuron, float* image, int image_size, float facto
 //! Updating self organizing map.
 void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch,
     int *bestRotationMatrix, int numberOfChannels, std::shared_ptr<DistributionFunctorBase> const& ptrDistributionFunctor,
-    std::shared_ptr<DistanceFunctorBase> const& ptrDistanceFunctor, float damping);
+    std::shared_ptr<DistanceFunctorBase> const& ptrDistanceFunctor, float damping, float maxUpdateDistance);
 
 #endif /* SELFORGANIZINGMAP_H_ */

@@ -75,7 +75,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 	{
 		for (ImageIterator<float> iterImage(inputData.imagesFilename), iterEnd; iterImage != iterEnd; ++iterImage)
 		{
-            if (progress >= nextProgressPrint)
+            if (progress > nextProgressPrint)
             {
                 const auto stopTime = steady_clock::now();
                 const auto duration = stopTime - startTime;
@@ -107,7 +107,7 @@ void trainSelfOrganizingMap(InputData const& inputData)
 
             updateNeurons(inputData.som_dim, som.getDataPointer(), inputData.neuron_dim, &rotatedImages[0],
                 bestMatch, &bestRotationMatrix[0], inputData.numberOfChannels,
-                ptrDistributionFunctor, ptrDistanceFunctor, inputData.damping);
+                ptrDistributionFunctor, ptrDistanceFunctor, inputData.damping, inputData.maxUpdateDistance);
 		}
 	}
 

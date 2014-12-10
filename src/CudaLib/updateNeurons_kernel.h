@@ -81,7 +81,7 @@ struct HexagonalDistanceFunctor
 template <unsigned int block_size, class FunctionFunctor, class DistanceFunctor>
 __global__ void
 updateNeurons_kernel(float *som, float *rotatedImages, int *bestRotationMatrix, int *bestMatch,
-    int neuron_size, FunctionFunctor functionFunctor, DistanceFunctor distanceFunctor, float damping)
+    int neuron_size, FunctionFunctor functionFunctor, DistanceFunctor distanceFunctor, float damping, float maxUpdateDistance)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i >= neuron_size) return;
@@ -89,6 +89,8 @@ updateNeurons_kernel(float *som, float *rotatedImages, int *bestRotationMatrix, 
     int ij = blockIdx.z*gridDim.y + blockIdx.y;
 
     float distance = distanceFunctor(bestMatch[0], bestMatch[1], blockIdx.z, blockIdx.y);
+    if (distance >= maxUpdateDistance) return;
+
     float factor = functionFunctor(distance) * damping;
 
 	som[ij*neuron_size + i] -= (som[ij*neuron_size + i] - rotatedImages[bestRotationMatrix[ij]*neuron_size + i]) * factor;

@@ -118,17 +118,20 @@ Point findBestMatchingNeuron(float *euclideanDistanceMatrix, int som_dim)
 
 void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch,
     int *bestRotationMatrix, int numberOfChannels, std::shared_ptr<DistributionFunctorBase> const& ptrDistributionFunctor,
-    std::shared_ptr<DistanceFunctorBase> const& ptrDistanceFunctor, float damping)
+    std::shared_ptr<DistanceFunctorBase> const& ptrDistanceFunctor, float damping, float maxUpdateDistance)
 {
-    float factor;
+    float distance, factor;
     int image_size = image_dim * image_dim;
     float *current_neuron = som;
 
     for (int i = 0; i < som_dim; ++i) {
         for (int j = 0; j < som_dim; ++j) {
-            factor = (*ptrDistributionFunctor)((*ptrDistanceFunctor)(bestMatch.x, bestMatch.y,i,j)) * damping;
-            updateSingleNeuron(current_neuron, image + bestRotationMatrix[i*som_dim+j] * numberOfChannels * image_size, numberOfChannels * image_size, factor);
-            current_neuron += numberOfChannels * image_size;
+            distance = (*ptrDistanceFunctor)(bestMatch.x, bestMatch.y,i,j);
+            if (maxUpdateDistance <= 0.0 or distance < maxUpdateDistance) {
+                factor = (*ptrDistributionFunctor)(distance) * damping;
+                updateSingleNeuron(current_neuron, image + bestRotationMatrix[i*som_dim+j] * numberOfChannels * image_size, numberOfChannels * image_size, factor);
+                current_neuron += numberOfChannels * image_size;
+            }
         }
     }
 }

@@ -75,30 +75,32 @@ InputData::InputData(int argc, char **argv)
     function(GAUSSIAN),
     sigma(DEFAULT_SIGMA),
     damping(DEFAULT_DAMPING),
-    block_size_1(128)
+    block_size_1(256),
+    maxUpdateDistance(-1.0)
 {
 	static struct option long_options[] = {
-		{"image-dimension", 1, 0, 'd'},
-		{"som-dimension",   1, 0, 0},
-		{"layout",          1, 0, 'l'},
-		{"seed",            1, 0, 's'},
-		{"numrot",          1, 0, 'n'},
-		{"numthreads",      1, 0, 't'},
-		{"init",            1, 0, 'x'},
-		{"num-iter",        1, 0, 1},
-		{"progress",        1, 0, 'p'},
-		{"flip-off",        0, 0, 2},
-		{"cuda-off",        0, 0, 3},
-		{"verbose",         0, 0, 4},
-		{"version",         0, 0, 'v'},
-		{"algo",            1, 0, 'a'},
-		{"help",            0, 0, 'h'},
-		{"interpolation",   1, 0, 5},
-		{"train",           1, 0, 6},
-		{"map",             1, 0, 7},
-        {"inter-store",     1, 0, 8},
-        {"dist-func",       1, 0, 'f'},
-        {"b1",              1, 0, 9},
+		{"image-dimension",     1, 0, 'd'},
+		{"som-dimension",       1, 0, 0},
+		{"layout",              1, 0, 'l'},
+		{"seed",                1, 0, 's'},
+		{"numrot",              1, 0, 'n'},
+		{"numthreads",          1, 0, 't'},
+		{"init",                1, 0, 'x'},
+		{"num-iter",            1, 0, 1},
+		{"progress",            1, 0, 'p'},
+		{"flip-off",            0, 0, 2},
+		{"cuda-off",            0, 0, 3},
+		{"verbose",             0, 0, 4},
+		{"version",             0, 0, 'v'},
+		{"algo",                1, 0, 'a'},
+		{"help",                0, 0, 'h'},
+		{"interpolation",       1, 0, 5},
+		{"train",               1, 0, 6},
+		{"map",                 1, 0, 7},
+        {"inter-store",         1, 0, 8},
+        {"dist-func",           1, 0, 'f'},
+        {"b1",                  1, 0, 9},
+        {"max-update-distance", 1, 0, 10},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
@@ -245,6 +247,15 @@ InputData::InputData(int argc, char **argv)
                 block_size_1 = atoi(optarg);
                 break;
             }
+            case 10:
+            {
+                maxUpdateDistance = atof(optarg);
+                if (maxUpdateDistance <= 0.0) {
+                    print_usage();
+                    fatalError("max-update-distance must be positive.");
+                }
+                break;
+            }
 			case 'v':
 			{
 				cout << "Pink version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR << endl;
@@ -383,6 +394,7 @@ void InputData::print_parameters() const
          << "  Distribution function for SOM update = " << function << endl
          << "  Sigma = " << sigma << endl
          << "  Damping factor = " << damping << endl
+         << "  Maximum distance for SOM update = " << maxUpdateDistance << endl
          << endl;
 
     if (verbose)
@@ -407,6 +419,7 @@ void InputData::print_usage() const
 			"    --help, -h                      Print this lines.\n"
 	        "    --init, -x <string>             Type of SOM initialization (zero = default, random, random_with_preferred_direction, SOM-file).\n"
 	        "    --interpolation <string>        Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
+            "    --inter-store                   Store intermediate SOM results at every progress step.\n"
 	        "    --layout, -l <string>           Layout of SOM (quadratic = default, quadhex, hexagonal).\n"
 	        "    --neuron-dimension, -d <int>    Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
 	        "    --numrot, -n <int>              Number of rotations (1 or a multiple of 4, default = 360).\n"
@@ -414,12 +427,12 @@ void InputData::print_usage() const
 	        "    --num-iter <int>                Number of iterations (default = 1).\n"
 			"    --progress, -p <float>          Print level of progress (default = 0.1).\n"
 	        "    --seed, -s <int>                Seed for random number generator (default = 1234).\n"
-            "    --inter-store                   Store intermediate SOM results at every progress step.\n"
 	        "    --som-dimension <int>           Dimension for quadratic SOM matrix (default = 10).\n"
+            "    --max-update-distance <float>   Maximum distance for SOM update (default = off).\n"
             "    --version, -v                   Print version number.\n"
             "    --verbose                       Print more output.\n"
 	        "\n"
-	        "  Distribution function string:\n"
+	        "  Distribution function:\n"
 	        "\n"
 	        "    <string> <float> <float>\n"
 	        "\n"

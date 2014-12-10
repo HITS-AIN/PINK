@@ -98,6 +98,7 @@ struct InputData
 	float sigma;
 	float damping;
 	int block_size_1;
+	int maxUpdateDistance;
 };
 
 void stringToUpper(char* s);
