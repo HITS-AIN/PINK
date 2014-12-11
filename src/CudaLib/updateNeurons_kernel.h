@@ -89,9 +89,10 @@ updateNeurons_kernel(float *som, float *rotatedImages, int *bestRotationMatrix, 
     int ij = blockIdx.z*gridDim.y + blockIdx.y;
 
     float distance = distanceFunctor(bestMatch[0], bestMatch[1], blockIdx.z, blockIdx.y);
-    if (distance >= maxUpdateDistance) return;
 
-    float factor = functionFunctor(distance) * damping;
-
-	som[ij*neuron_size + i] -= (som[ij*neuron_size + i] - rotatedImages[bestRotationMatrix[ij]*neuron_size + i]) * factor;
+    if (maxUpdateDistance <= 0.0 or distance < maxUpdateDistance)
+    {
+        float factor = functionFunctor(distance) * damping;
+        som[ij*neuron_size + i] -= (som[ij*neuron_size + i] - rotatedImages[bestRotationMatrix[ij]*neuron_size + i]) * factor;
+    }
 }
