@@ -66,9 +66,9 @@ private:
     void getHexagonalIndices(int p, int dim, int &x, int &y) const
     {
         int radius = (dim - 1)/2;
-        for (int pos = 0, x = -radius; x <= radius; ++x) {
-            for (int y = -radius - std::min(0,x); y <= radius - std::max(0,x); ++y, ++pos) {
-                //cout << x << " " << y << " " << pos << endl;
+        int pos = 0;
+        for (x = -radius; x <= radius; ++x) {
+            for (y = -radius - std::min(0,x); y <= radius - std::max(0,x); ++y, ++pos) {
                 if (pos == p) return;
             }
         }

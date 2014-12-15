@@ -58,8 +58,9 @@ private:
 __device__ void getHexagonalIndices(int p, int dim, int &x, int &y)
 {
     int radius = (dim - 1)/2;
-    for (int pos = 0, x = -radius; x <= radius; ++x) {
-        for (int y = -radius - min(0,x); y <= radius - max(0,x); ++y, ++pos) {
+    int pos = 0;
+    for (x = -radius; x <= radius; ++x) {
+        for (y = -radius - min(0,x); y <= radius - max(0,x); ++y, ++pos) {
             if (pos == p) return;
         }
     }
