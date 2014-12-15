@@ -58,7 +58,7 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
         cudaStreamCreate(&plan[i].stream);
 
         // Set size and offset
-        plan[i].size = plan[i-1].size;
+        plan[i].size = som_size / GPU_N;
         if (rest > i) ++plan[i].size;
         plan[i].offset = plan[i-1].offset + plan[i-1].size;
 

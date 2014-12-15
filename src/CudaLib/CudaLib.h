@@ -32,7 +32,8 @@ void cuda_mapping(InputData const& inputData);
 
 //! Host routine starting kernel for euclideanDistanceMatrix.
 void cuda_generateEuclideanDistanceMatrix(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix,
-    int som_size, float* d_som, int image_size, int num_rot, float* d_rotatedImages, int block_size_1);
+    int som_size, float* d_som, int image_size, int num_rot, float* d_rotatedImages, int block_size_1,
+    bool useMultipleGPUs);
 
 //! Host routine starting kernel for euclideanDistanceMatrix second part.
 void cuda_generateEuclideanDistanceMatrix_firstStep(float *d_som, float *d_rotatedImages,

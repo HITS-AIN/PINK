@@ -100,6 +100,7 @@ struct InputData
 	float damping;
 	int block_size_1;
 	int maxUpdateDistance;
+    int useMultipleGPUs;
 };
 
 void stringToUpper(char* s);

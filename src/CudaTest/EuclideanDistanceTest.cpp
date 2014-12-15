@@ -83,7 +83,7 @@ TEST_P(FullEuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix)
 	cuda_copyHostToDevice_float(d_rotatedImages, rotatedImages, data.rot_size);
 
 	cuda_generateEuclideanDistanceMatrix(d_euclideanDistanceMatrix, d_bestRotationMatrix, data.som_size,
-	    d_som, data.num_channels * data.neuron_size, data.num_rot, d_rotatedImages, 128);
+	    d_som, data.num_channels * data.neuron_size, data.num_rot, d_rotatedImages, 128, false);
 
 	float *gpu_euclideanDistanceMatrix = new float[data.som_size];
 	int *gpu_bestRotationMatrix = new int[data.som_size];

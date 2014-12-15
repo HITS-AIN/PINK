@@ -95,7 +95,7 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 
 			cuda_generateEuclideanDistanceMatrix(d_euclideanDistanceMatrix, d_bestRotationMatrix,
 				inputData.som_size, d_som, inputData.numberOfChannels * inputData.neuron_size,
-				inputData.numberOfRotationsAndFlip, d_rotatedImages, inputData.block_size_1);
+				inputData.numberOfRotationsAndFlip, d_rotatedImages, inputData.block_size_1, inputData.useMultipleGPUs);
 
 			cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
 			    inputData.som_dim, inputData.som_size, inputData.numberOfChannels * inputData.neuron_size, inputData.numberOfRotationsAndFlip,

@@ -74,7 +74,8 @@ InputData::InputData()
     sigma(DEFAULT_SIGMA),
     damping(DEFAULT_DAMPING),
     block_size_1(256),
-    maxUpdateDistance(-1.0)
+    maxUpdateDistance(-1.0),
+    useMultipleGPUs(true)
 {}
 
 InputData::InputData(int argc, char **argv)
@@ -102,6 +103,7 @@ InputData::InputData(int argc, char **argv)
         {"dist-func",           1, 0, 'f'},
         {"b1",                  1, 0, 9},
         {"max-update-distance", 1, 0, 10},
+        {"multi-GPU-off",       1, 0, 11},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
@@ -252,6 +254,11 @@ InputData::InputData(int argc, char **argv)
                 }
                 break;
             }
+            case 11:
+            {
+                useMultipleGPUs = true;
+                break;
+            }
 			case 'v':
 			{
 				cout << "Pink version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR << endl;
@@ -392,6 +399,7 @@ void InputData::print_parameters() const
          << "  Use mirrored image = " << useFlip << endl
          << "  Number of CPU threads = " << numberOfThreads << endl
          << "  Use CUDA = " << useCuda << endl
+         << "  Use multiple GPus = " << useMultipleGPUs << endl
          << "  Distribution function for SOM update = " << function << endl
          << "  Sigma = " << sigma << endl
          << "  Damping factor = " << damping << endl
@@ -426,6 +434,7 @@ void InputData::print_usage() const
 	        "    --numrot, -n <int>              Number of rotations (1 or a multiple of 4, default = 360).\n"
 	        "    --numthreads, -t <int>          Number of CPU threads (default = auto).\n"
 	        "    --num-iter <int>                Number of iterations (default = 1).\n"
+            "    --multi-GPU-off                 Switch off usage of multiple GPUs.\n"
 			"    --progress, -p <float>          Print level of progress (default = 0.1).\n"
 	        "    --seed, -s <int>                Seed for random number generator (default = 1234).\n"
 	        "    --som-dimension <int>           Dimension for quadratic SOM matrix (default = 10).\n"

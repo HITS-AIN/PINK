@@ -92,7 +92,7 @@ void cuda_mapping(InputData const& inputData)
 
 			cuda_generateEuclideanDistanceMatrix(d_euclideanDistanceMatrix, d_bestRotationMatrix,
 				inputData.som_size, d_som, inputData.numberOfChannels * inputData.neuron_size,
-				inputData.numberOfRotationsAndFlip, d_rotatedImages, inputData.block_size_1);
+				inputData.numberOfRotationsAndFlip, d_rotatedImages, inputData.block_size_1, inputData.useMultipleGPUs);
 
 		    cuda_copyDeviceToHost_float(&euclideanDistanceMatrix[0], d_euclideanDistanceMatrix, inputData.som_size);
             resultFile.write((char*)&euclideanDistanceMatrix[0], inputData.som_size * sizeof(float));
