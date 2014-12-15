@@ -53,7 +53,10 @@ enum ExecutionPath {
 
 struct InputData
 {
-	//! Read input data from arguments.
+    //! Default constructor.
+    InputData();
+
+	//! Constructor reading input data from arguments.
 	InputData(int argc, char **argv);
 
 	//! Print program header.
@@ -85,12 +88,10 @@ struct InputData
 	int numberOfChannels;
 	int image_dim;
 	int image_size;
-	int image_size_using_flip;
     int som_size;
     int neuron_size;
     int som_total_size;
 	int numberOfRotationsAndFlip;
-	int algo;
 	Interpolation interpolation;
 	ExecutionPath executionPath;
 	bool intermediate_storage;

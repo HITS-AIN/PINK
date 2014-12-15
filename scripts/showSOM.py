@@ -16,18 +16,20 @@ def print_usage():
     print ''
     print '  --channel, -c <int>      Number of channel to visualize (default = 0).'
     print '  --help, -h               Print this lines.'
+    print '  --hex                    Hexagonal layout.'
     print ''
 
 if __name__ == "__main__":
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"hc:",["help", "channel="])
+        opts, args = getopt.getopt(sys.argv[1:],"hc:",["channel=", "help", "hex"])
     except getopt.GetoptError:
         print_usage()
         sys.exit(1)
 
     imageNumber = 0
     channelNumber = 0
+    hex = 0
 
     for opt, arg in opts:
         if opt in ("-c", "--channel"):
@@ -35,6 +37,9 @@ if __name__ == "__main__":
         elif opt in ("-h", "--help"):
             print_usage()
             sys.exit()
+            channelNumber = int(arg)
+        elif opt in ("--hex"):
+            hex = 1
 
     if len(args) != 1:
         print_usage()
@@ -59,9 +64,16 @@ if __name__ == "__main__":
         print 'Channel number too large.'
         sys.exit(1)
 
-    dataSize = numberOfChannels * SOM_width * SOM_height * neuron_width * neuron_height
+    SOM_size = SOM_width * SOM_height
+    if hex:
+        radius = (SOM_width - 1)/2;
+        SOM_size -= radius * (radius + 1);
+
+    print 'SOM_size = ', SOM_size
+
+    dataSize = numberOfChannels * SOM_size * neuron_width * neuron_height
     array = numpy.array(struct.unpack('f' * dataSize, inFile.read(dataSize * 4)))
-    
+
     image_width = SOM_width * neuron_width;
     image_height = SOM_height * neuron_height;
     data = numpy.ndarray([SOM_width, SOM_height, numberOfChannels, neuron_width, neuron_height], 'float', array)

@@ -12,22 +12,18 @@
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
 void cuda_generateEuclideanDistanceMatrix(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix,
-    int som_dim, float* d_som, int image_dim, int num_rot, float* d_rotatedImages, int numberOfChannels,
-    int block_size_1)
+    int som_size, float* d_som, int image_size, int num_rot, float* d_rotatedImages, int block_size_1)
 {
-	unsigned int image_size = image_dim * image_dim;
-	unsigned int som_size = som_dim * som_dim;
-
     float *d_firstStep = cuda_alloc_float(som_size * num_rot);
     //cuda_fill_zero(d_firstStep, som_size * num_rot);
 
     // First step ...
     if (cuda_getNumberOfGPUs() > 1) {
         cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(d_som, d_rotatedImages,
-            d_firstStep, som_size, num_rot, numberOfChannels * image_size, block_size_1);
+            d_firstStep, som_size, num_rot, image_size, block_size_1);
     } else {
         cuda_generateEuclideanDistanceMatrix_firstStep(d_som, d_rotatedImages,
-            d_firstStep, som_size, num_rot, numberOfChannels * image_size, block_size_1);
+            d_firstStep, som_size, num_rot, image_size, block_size_1);
     }
 
 //    std::vector<float> firstStep(som_size * num_rot);

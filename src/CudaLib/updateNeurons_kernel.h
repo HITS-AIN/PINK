@@ -15,7 +15,7 @@ __device__ bool isPositive(int n)
 
 struct DistributionFunctorBase
 {
-    __device__ virtual float operator ()(float distance) const = 0;
+    __device__ virtual float operator () (float distance) const = 0;
     virtual ~DistributionFunctorBase() {};
 };
 
@@ -25,7 +25,7 @@ struct GaussianFunctor : public DistributionFunctorBase
 
     ~GaussianFunctor() {};
 
-    __device__ float operator ()(float distance) const
+    __device__ float operator () (float distance) const
     {
         return 1.0 / (sigma * sqrt(2.0 * M_PI)) * exp(-0.5 * pow((distance/sigma),2));
     }
@@ -42,7 +42,7 @@ struct MexicanHatFunctor : public DistributionFunctorBase
 
     ~MexicanHatFunctor() {};
 
-    __device__ float operator ()(float distance) const
+    __device__ float operator () (float distance) const
     {
         float distance2 = distance * distance;
         return 2.0 / (sqrt(3.0 * sigma) * pow(M_PI, 0.25)) * (1.0 - distance2/sigma2) * exp(-distance2 / (2.0 * sigma2));
@@ -55,18 +55,36 @@ private:
 
 };
 
+__device__ void getHexagonalIndices(int p, int dim, int &x, int &y)
+{
+    int radius = (dim - 1)/2;
+    for (int pos = 0, x = -radius; x <= radius; ++x) {
+        for (int y = -radius - min(0,x); y <= radius - max(0,x); ++y, ++pos) {
+            if (pos == p) return;
+        }
+    }
+}
+
 struct QuadraticDistanceFunctor
 {
-    __device__ float operator ()(int x1, int y1, int x2, int y2) const
+    __device__ float operator () (int p1, int p2, int dim) const
     {
+        int x1 = p1 / dim;
+        int y1 = p1 % dim;
+        int x2 = p2 / dim;
+        int y2 = p2 % dim;
         return sqrt(powf(x1 - x2, 2) + powf(y1 - y2, 2));
     }
 };
 
 struct HexagonalDistanceFunctor
 {
-    __device__ float operator ()(int x1, int y1, int x2, int y2) const
+    __device__ float operator () (int p1, int p2, int dim) const
     {
+        int x1, y1, x2, y2;
+        getHexagonalIndices(p1, dim, x1, y1);
+        getHexagonalIndices(p2, dim, x2, y2);
+
         int dx = x1 - x2;
         int dy = y1 - y2;
 
@@ -81,18 +99,18 @@ struct HexagonalDistanceFunctor
 template <unsigned int block_size, class FunctionFunctor, class DistanceFunctor>
 __global__ void
 updateNeurons_kernel(float *som, float *rotatedImages, int *bestRotationMatrix, int *bestMatch,
-    int neuron_size, FunctionFunctor functionFunctor, DistanceFunctor distanceFunctor, float damping, float maxUpdateDistance)
+    int som_dim, int neuron_size, FunctionFunctor functionFunctor, DistanceFunctor distanceFunctor,
+    float damping, float maxUpdateDistance)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i >= neuron_size) return;
 
-    int ij = blockIdx.z*gridDim.y + blockIdx.y;
-
-    float distance = distanceFunctor(bestMatch[0], bestMatch[1], blockIdx.z, blockIdx.y);
+    float distance = distanceFunctor(*bestMatch, blockIdx.y, som_dim);
+    int pos = blockIdx.y * neuron_size + i;
 
     if (maxUpdateDistance <= 0.0 or distance < maxUpdateDistance)
     {
         float factor = functionFunctor(distance) * damping;
-        som[ij*neuron_size + i] -= (som[ij*neuron_size + i] - rotatedImages[bestRotationMatrix[ij]*neuron_size + i]) * factor;
+        som[pos] -= (som[pos] - rotatedImages[bestRotationMatrix[blockIdx.y] * neuron_size + i]) * factor;
     }
 }

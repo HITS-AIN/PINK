@@ -34,8 +34,7 @@ void cuda_mapping(InputData const& inputData)
     resultFile.write((char*)&inputData.som_dim, sizeof(int));
 
     // Initialize SOM on host
-    SOM som(inputData.som_dim, inputData.neuron_dim, inputData.numberOfChannels,
-        FILEINIT, inputData.seed, inputData.somFilename);
+    SOM som(inputData);
 
     // Initialize SOM on device
     float *d_som = cuda_alloc_float(som.getSize());
@@ -92,8 +91,8 @@ void cuda_mapping(InputData const& inputData)
 				d_cosAlpha, d_sinAlpha, inputData.numberOfChannels);
 
 			cuda_generateEuclideanDistanceMatrix(d_euclideanDistanceMatrix, d_bestRotationMatrix,
-				inputData.som_dim, d_som, inputData.neuron_dim, inputData.numberOfRotationsAndFlip,
-			    d_rotatedImages, inputData.numberOfChannels, inputData.block_size_1);
+				inputData.som_size, d_som, inputData.numberOfChannels * inputData.neuron_size,
+				inputData.numberOfRotationsAndFlip, d_rotatedImages, inputData.block_size_1);
 
 		    cuda_copyDeviceToHost_float(&euclideanDistanceMatrix[0], d_euclideanDistanceMatrix, inputData.som_size);
             resultFile.write((char*)&euclideanDistanceMatrix[0], inputData.som_size * sizeof(float));

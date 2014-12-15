@@ -12,7 +12,7 @@ add_library(
     mapping.cpp
     SelfOrganizingMap.cpp
     SOM.cpp
-    trainSelfOrganizingMap.cpp
+    training.cpp
 )
 
 target_link_libraries(

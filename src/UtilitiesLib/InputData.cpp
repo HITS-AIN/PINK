@@ -45,30 +45,28 @@ std::ostream& operator << (std::ostream& os, SOMInitialization init)
 	return os;
 }
 
-InputData::InputData(int argc, char **argv)
+InputData::InputData()
  :
-	verbose(false),
-	som_dim(10),
-	neuron_dim(-1),
-	layout(QUADRATIC),
-	seed(1234),
-	numberOfRotations(360),
-	numberOfThreads(-1),
-	init(ZERO),
-	numIter(1),
-	progressFactor(0.1),
-	useFlip(true),
+    verbose(false),
+    som_dim(10),
+    neuron_dim(-1),
+    layout(QUADRATIC),
+    seed(1234),
+    numberOfRotations(360),
+    numberOfThreads(-1),
+    init(ZERO),
+    numIter(1),
+    progressFactor(0.1),
+    useFlip(true),
     useCuda(true),
     numberOfImages(0),
     numberOfChannels(0),
     image_dim(0),
     image_size(0),
-    image_size_using_flip(0),
     som_size(0),
     neuron_size(0),
     som_total_size(0),
     numberOfRotationsAndFlip(0),
-    algo(2),
     interpolation(BILINEAR),
     executionPath(UNDEFINED),
     intermediate_storage(false),
@@ -77,6 +75,10 @@ InputData::InputData(int argc, char **argv)
     damping(DEFAULT_DAMPING),
     block_size_1(256),
     maxUpdateDistance(-1.0)
+{}
+
+InputData::InputData(int argc, char **argv)
+ : InputData()
 {
 	static struct option long_options[] = {
 		{"image-dimension",     1, 0, 'd'},
@@ -92,7 +94,6 @@ InputData::InputData(int argc, char **argv)
 		{"cuda-off",            0, 0, 3},
 		{"verbose",             0, 0, 4},
 		{"version",             0, 0, 'v'},
-		{"algo",                1, 0, 'a'},
 		{"help",                0, 0, 'h'},
 		{"interpolation",       1, 0, 5},
 		{"train",               1, 0, 6},
@@ -111,11 +112,6 @@ InputData::InputData(int argc, char **argv)
 			case 'd':
 			{
 				neuron_dim = atoi(optarg);
-				break;
-			}
-			case 'a':
-			{
-				algo = atoi(optarg);
 				break;
 			}
 			case 0:
@@ -320,7 +316,13 @@ InputData::InputData(int argc, char **argv)
 	numberOfChannels = iterImage.getNumberOfChannels();
 	image_dim = iterImage->getWidth();
 	image_size = image_dim * image_dim;
-    som_size = som_dim * som_dim;
+
+	if (layout == HEXAGONAL) {
+	    if ((som_dim-1) % 2) fatalError("For hexagonal layout only odd dimension supported.");
+	    int radius = (som_dim - 1)/2;
+	    som_size = som_dim * som_dim - radius * (radius + 1);
+	}
+	else som_size = som_dim * som_dim;
 
     if (neuron_dim == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
     if (neuron_dim > image_dim) {
@@ -332,9 +334,7 @@ InputData::InputData(int argc, char **argv)
 
     neuron_size = neuron_dim * neuron_dim;
 	som_total_size = som_size * neuron_size;
-
     numberOfRotationsAndFlip = useFlip ? 2*numberOfRotations : numberOfRotations;
-	image_size_using_flip = useFlip ? 2*image_size : image_size;
 
 	if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
 #if PINK_USE_CUDA
@@ -380,6 +380,7 @@ void InputData::print_parameters() const
          << "  Number of channels = " << numberOfChannels << endl
          << "  Image dimension = " << image_dim << "x" << image_dim << endl
          << "  SOM dimension = " << som_dim << "x" << som_dim << endl
+         << "  SOM size = " << som_size << endl
          << "  Number of iterations = " << numIter << endl
          << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << endl
          << "  Progress = " << progressFactor << endl

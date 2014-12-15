@@ -8,40 +8,67 @@
 #ifndef SOM_H_
 #define SOM_H_
 
+#include "UtilitiesLib/DistanceFunctor.h"
+#include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/InputData.h"
+#include <memory>
 #include <string>
 #include <vector>
 
+/**
+ * @brief Main class for self organizing matrix.
+ */
 class SOM
 {
 public:
 
-	SOM(int mapDimension, int neuronDimension, int numberOfChannels, SOMInitialization initType,
-	    int seed, std::string const& filename);
+	SOM(InputData const& inputData);
 
 	void write(std::string const& filename) const;
 
-	int getSize() const { return data_.size(); }
+	int getSize() const { return som_.size(); }
 
-    int getSizeInBytes() const { return data_.size() * sizeof(float); }
+    int getSizeInBytes() const { return som_.size() * sizeof(float); }
 
-	std::vector<float> getData() { return data_; }
+	std::vector<float> getData() { return som_; }
 
-	const std::vector<float> getData() const { return data_; }
+	const std::vector<float> getData() const { return som_; }
 
-    float* getDataPointer() { return &data_[0]; }
+    float* getDataPointer() { return &som_[0]; }
 
-    float const* getDataPointer() const { return &data_[0]; }
+    float const* getDataPointer() const { return &som_[0]; }
+
+    //! Main CPU based routine for SOM training.
+    void training();
+
+    //! Main CPU based routine for SOM mapping.
+    void mapping();
+
+    //! Updating self organizing map.
+    void updateNeurons(float *rotatedImages, int bestMatch, int *bestRotationMatrix);
+
+    //! Save position of current SOM update.
+    void updateCounter(int bestMatch) { ++updateCounterMatrix_[bestMatch]; }
+
+    //! Print matrix of SOM updates.
+    void printUpdateCounter() const;
 
 private:
 
-    int mapDimension_;
-    int mapSize_;
-    int neuronDimension_;
-    int neuronSize_;
-    int numberOfChannels_;
+    //! Updating one single neuron.
+    void updateSingleNeuron(float *neuron, float *image, float factor);
 
-	std::vector<float> data_;
+    InputData const& inputData_;
+
+    //! The real self organizing matrix.
+	std::vector<float> som_;
+
+    std::shared_ptr<DistributionFunctorBase> ptrDistributionFunctor_;
+
+    std::shared_ptr<DistanceFunctorBase> ptrDistanceFunctor_;
+
+    // Counting updates of each neuron
+    std::vector<int> updateCounterMatrix_;
 
 };
 

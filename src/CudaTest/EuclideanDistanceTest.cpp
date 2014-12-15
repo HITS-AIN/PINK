@@ -71,8 +71,8 @@ TEST_P(FullEuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix)
 	fillWithRandomNumbers(som, data.som_total_size, 0);
 	fillWithRandomNumbers(rotatedImages, data.rot_size, 1);
 
-	generateEuclideanDistanceMatrix(cpu_euclideanDistanceMatrix, cpu_bestRotationMatrix, data.som_dim, som,
-	    data.neuron_dim, data.num_rot, rotatedImages, data.num_channels);
+	generateEuclideanDistanceMatrix(cpu_euclideanDistanceMatrix, cpu_bestRotationMatrix, data.som_size, som,
+	    data.num_channels * data.neuron_size, data.num_rot, rotatedImages);
 
 	float *d_som = cuda_alloc_float(data.som_total_size);
 	float *d_rotatedImages = cuda_alloc_float(data.rot_size);
@@ -82,8 +82,8 @@ TEST_P(FullEuclideanDistanceTest, cuda_generateEuclideanDistanceMatrix)
 	cuda_copyHostToDevice_float(d_som, som, data.som_total_size);
 	cuda_copyHostToDevice_float(d_rotatedImages, rotatedImages, data.rot_size);
 
-	cuda_generateEuclideanDistanceMatrix(d_euclideanDistanceMatrix, d_bestRotationMatrix, data.som_dim, d_som,
-	    data.neuron_dim, data.num_rot, d_rotatedImages, data.num_channels, 128);
+	cuda_generateEuclideanDistanceMatrix(d_euclideanDistanceMatrix, d_bestRotationMatrix, data.som_size,
+	    d_som, data.num_channels * data.neuron_size, data.num_rot, d_rotatedImages, 128);
 
 	float *gpu_euclideanDistanceMatrix = new float[data.som_size];
 	int *gpu_bestRotationMatrix = new int[data.som_size];

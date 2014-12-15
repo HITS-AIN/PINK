@@ -8,6 +8,7 @@
 #include "UtilitiesLib/EqualFloatArrays.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
+#include "SelfOrganizingMapLib/SOM.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Filler.h"
 #include "gtest/gtest.h"
@@ -47,42 +48,53 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 
 	float *rotatedImages = new float[data.rot_size];
 	fillWithRandomNumbers(rotatedImages, data.rot_size, 0);
-	float *cpu_som = new float[data.som_total_size];
-	fillWithRandomNumbers(cpu_som, data.som_total_size, 1);
 	int *bestRotationMatrix = new int[data.som_size];
 	fillWithValue(bestRotationMatrix, data.som_size);
 	float *euclideanDistanceMatrix = new float[data.som_size];
 	fillWithValue(euclideanDistanceMatrix, data.som_size);
 
-	float maxUpdateDistance = -1.0;
+    InputData inputData;
+    inputData.som_dim = data.som_dim;
+    inputData.neuron_dim = data.neuron_dim;
+    inputData.numberOfRotations = data.num_rot;
+    inputData.numberOfImages = 1;
+    inputData.numberOfChannels = data.num_channels;
+    inputData.image_dim = data.neuron_dim;
+    inputData.image_size = data.neuron_size;
+    inputData.som_size = data.som_size;
+    inputData.neuron_size = data.neuron_size;
+    inputData.som_total_size = data.som_total_size;
+    inputData.numberOfRotationsAndFlip = data.num_rot;
 
-    std::shared_ptr<DistributionFunctorBase> ptrDistributionFunctor(new GaussianFunctor(DEFAULT_SIGMA));
-    std::shared_ptr<DistanceFunctorBase> ptrDistanceFunctor(new QuadraticDistanceFunctor());
+    SOM cpu_som(inputData);
+    std::vector<float> gpu_som = cpu_som.getData();
 
-	updateNeurons(data.som_dim, cpu_som, data.neuron_dim, rotatedImages, Point(0,0), bestRotationMatrix,
-	   data.num_channels, ptrDistributionFunctor, ptrDistanceFunctor, DEFAULT_DAMPING, maxUpdateDistance);
-
-	float *gpu_som = new float[data.som_total_size];
-	fillWithRandomNumbers(gpu_som, data.som_total_size, 1);
+    // Calculate CPU result
+    cpu_som.updateNeurons(rotatedImages, 0, bestRotationMatrix);
 
 	float *d_rotatedImages = cuda_alloc_float(data.rot_size);
 	float *d_som = cuda_alloc_float(data.som_total_size);
 	int *d_bestRotationMatrix = cuda_alloc_int(data.som_size);
 	float *d_euclideanDistanceMatrix = cuda_alloc_float(data.som_size);
-    int *d_bestMatch = cuda_alloc_int(2);
+    int *d_bestMatch = cuda_alloc_int(1);
 
 	cuda_copyHostToDevice_float(d_rotatedImages, rotatedImages, data.rot_size);
-	cuda_copyHostToDevice_float(d_som, gpu_som, data.som_total_size);
+	cuda_copyHostToDevice_float(d_som, &gpu_som[0], data.som_total_size);
 	cuda_copyHostToDevice_int(d_bestRotationMatrix, bestRotationMatrix, data.som_size);
 	cuda_copyHostToDevice_float(d_euclideanDistanceMatrix, euclideanDistanceMatrix, data.som_size);
 
+    // Calculate GPU result
 	cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
-	    data.som_dim, data.neuron_dim, data.num_rot, data.num_channels, GAUSSIAN, QUADRATIC,
-	    DEFAULT_SIGMA, DEFAULT_DAMPING, maxUpdateDistance);
+	    data.som_dim, data.som_size, data.num_channels * data.neuron_size, data.num_rot, GAUSSIAN, QUADRATIC,
+	    DEFAULT_SIGMA, DEFAULT_DAMPING, inputData.maxUpdateDistance);
 
-	cuda_copyDeviceToHost_float(gpu_som, d_som, data.som_total_size);
+	cuda_copyDeviceToHost_float(&gpu_som[0], d_som, data.som_total_size);
 
-	EXPECT_TRUE(EqualFloatArrays(cpu_som, gpu_som, data.som_total_size));
+	int bestMatch;
+    cuda_copyDeviceToHost_int(&bestMatch, d_bestMatch, 1);
+    EXPECT_EQ(bestMatch,0);
+
+	EXPECT_TRUE(EqualFloatArrays(cpu_som.getDataPointer(), &gpu_som[0], data.som_total_size));
 
 	cuda_free(d_euclideanDistanceMatrix);
 	cuda_free(d_bestRotationMatrix);
@@ -92,8 +104,6 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 
 	delete [] euclideanDistanceMatrix;
 	delete [] bestRotationMatrix;
-	delete [] gpu_som;
-	delete [] cpu_som;
 	delete [] rotatedImages;
 }
 

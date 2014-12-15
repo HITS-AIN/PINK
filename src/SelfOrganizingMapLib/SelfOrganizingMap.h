@@ -16,27 +16,13 @@
 #include <iostream>
 #include <memory>
 
-//! Main CPU based routine for SOM training.
-void trainSelfOrganizingMap(InputData const& inputData);
-
-//! Main CPU based routine for SOM mapping.
-void mapping(InputData const& inputData);
-
 void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim,
     bool useFlip, Interpolation interpolation, int numberOfChannels);
 
-void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix, int som_dim, float* som,
-	int image_dim, int numberOfRotations, float* image, int numberOfChannels);
+void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix, int som_size, float* som,
+	int image_size, int numberOfRotations, float* image);
 
-//! Returns the position of the best matching neuron.
-Point findBestMatchingNeuron(float *similarityMatrix, int som_dim);
-
-//! Updating one single neuron.
-void updateSingleNeuron(float* neuron, float* image, int image_size, float factor);
-
-//! Updating self organizing map.
-void updateNeurons(int som_dim, float* som, int image_dim, float* image, Point const& bestMatch,
-    int *bestRotationMatrix, int numberOfChannels, std::shared_ptr<DistributionFunctorBase> const& ptrDistributionFunctor,
-    std::shared_ptr<DistanceFunctorBase> const& ptrDistanceFunctor, float damping, float maxUpdateDistance);
+//! Returns the position of the best matching neuron (lowest euclidean distance).
+int findBestMatchingNeuron(float *euclideanDistanceMatrix, int som_size);
 
 #endif /* SELFORGANIZINGMAP_H_ */

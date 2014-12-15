@@ -31,8 +31,8 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData);
 void cuda_mapping(InputData const& inputData);
 
 //! Host routine starting kernel for euclideanDistanceMatrix.
-void cuda_generateEuclideanDistanceMatrix(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix, int som_dim, float* d_som,
-    int image_dim, int num_rot, float* d_rotatedImages, int numberOfChannels, int block_size_1);
+void cuda_generateEuclideanDistanceMatrix(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix,
+    int som_size, float* d_som, int image_size, int num_rot, float* d_rotatedImages, int block_size_1);
 
 //! Host routine starting kernel for euclideanDistanceMatrix second part.
 void cuda_generateEuclideanDistanceMatrix_firstStep(float *d_som, float *d_rotatedImages,
@@ -67,7 +67,7 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
 
 //! Host routine starting kernel for updating neurons.
 void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,
-    int* d_bestMatch, int som_dim, int neuron_dim, int num_rot, int numberOfChannels, Function function, Layout layout,
+    int* d_bestMatch, int som_dim, int som_size, int neuron_size, int num_rot, Function function, Layout layout,
     float sigma, float damping, float maxUpdateDistance);
 
 //! Prepare trigonometric values

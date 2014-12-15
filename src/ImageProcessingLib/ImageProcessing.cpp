@@ -335,66 +335,6 @@ void readImagesFromBinaryFile(std::vector<float> &images, int &numberOfImages, i
     is.read((char*)&images[0], size * sizeof(float));
 }
 
-void convertSOMToImage(float* image, const float* som, int som_dim, int image_dim)
-{
-	int total_image_dim = som_dim * image_dim;
-    float *pimage = image;
-    const float *psom = som;
-
-    for (int i = 0; i < som_dim; ++i) {
-        for (int j = 0; j < som_dim; ++j) {
-            for (int k = 0; k < image_dim; ++k) {
-                for (int l = 0; l < image_dim; ++l) {
-        	        pimage[i*image_dim*som_dim*image_dim + k*image_dim*som_dim + j*image_dim + l] = *psom++;
-            	}
-            }
-    	}
-    }
-}
-
-void convertImageToSOM(float* image, const float* som, int som_dim, int image_dim)
-{
-    int total_image_dim = som_dim * image_dim;
-    float *pimage = image;
-    const float *psom = som;
-
-    for (int i = 0; i < som_dim; ++i) {
-        for (int j = 0; j < som_dim; ++j) {
-            for (int k = 0; k < image_dim; ++k) {
-                for (int l = 0; l < image_dim; ++l) {
-                    pimage[i*image_dim*som_dim*image_dim + k*image_dim*som_dim + j*image_dim + l] = *psom++;
-                }
-            }
-        }
-    }
-}
-
-void writeSOM(const float* som, int numberOfChannels, int som_dim, int neuron_dim, std::string const& filename)
-{
-    std::ofstream os(filename);
-    if (!os) throw std::runtime_error("Error opening " + filename);
-
-    os.write((char*)&numberOfChannels, sizeof(int));
-    os.write((char*)&som_dim, sizeof(int));
-    os.write((char*)&som_dim, sizeof(int));
-    os.write((char*)&neuron_dim, sizeof(int));
-    os.write((char*)&neuron_dim, sizeof(int));
-    os.write((char*)som, numberOfChannels * som_dim * som_dim * neuron_dim * neuron_dim * sizeof(float));
-}
-
-void readSOM(float *som, int &numberOfChannels, int &som_dim, int &neuron_dim, std::string const& filename)
-{
-    std::ifstream is(filename);
-    if (!is) throw std::runtime_error("Error opening " + filename);
-
-    is.read((char*)&numberOfChannels, sizeof(int));
-    is.read((char*)&som_dim, sizeof(int));
-    is.read((char*)&som_dim, sizeof(int));
-    is.read((char*)&neuron_dim, sizeof(int));
-    is.read((char*)&neuron_dim, sizeof(int));
-    is.read((char*)som, numberOfChannels * som_dim * som_dim * neuron_dim * neuron_dim * sizeof(float));
-}
-
 void writeRotatedImages(float* images, int image_dim, int numberOfImages, std::string const& filename)
 {
 	int height = numberOfImages * image_dim;

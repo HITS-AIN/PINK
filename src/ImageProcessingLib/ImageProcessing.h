@@ -120,14 +120,6 @@ void writeImagesToBinaryFile(std::vector<float> const& images, int numberOfImage
 void readImagesFromBinaryFile(std::vector<float> &images, int &numberOfImages, int &numberOfChannels,
     int &height, int &width, std::string const& filename);
 
-void convertSOMToImage(float *image, const float *som, int som_dim, int image_dim);
-
-void convertImageToSOM(float *image, const float *som, int som_dim, int image_dim);
-
-void writeSOM(const float *som, int numberOfChannels, int som_dim, int neuron_dim, std::string const& filename);
-
-void readSOM(float *som, int &numberOfChannels, int &som_dim, int &neuron_dim, std::string const& filename);
-
 void writeRotatedImages(float *images, int image_dim, int numberOfRotations, std::string const& filename);
 
 #endif /* IMAGEPROCESSING_H_ */

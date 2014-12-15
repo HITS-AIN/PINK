@@ -8,7 +8,7 @@
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageIterator.h"
 #include "ImageProcessingLib/ImageProcessing.h"
-#include "SelfOrganizingMapLib/SelfOrganizingMap.h"
+#include "SelfOrganizingMapLib/SOM.h"
 #include "UtilitiesLib/Error.h"
 #include "UtilitiesLib/InputData.h"
 #include <cmath>
@@ -41,6 +41,7 @@ int main (int argc, char **argv)
 	const auto startTime = steady_clock::now();
 
 	InputData inputData(argc, argv);
+	SOM som(inputData);
 
     #if PINK_USE_CUDA
 	    if (inputData.useCuda) {
@@ -56,9 +57,9 @@ int main (int argc, char **argv)
 		} else
     #endif
         if (inputData.executionPath == TRAIN)
-	    	trainSelfOrganizingMap(inputData);
+	    	som.training();
         else if (inputData.executionPath == MAP)
-            mapping(inputData);
+            som.mapping();
         else
             fatalError("Unknown execution path.");
 
