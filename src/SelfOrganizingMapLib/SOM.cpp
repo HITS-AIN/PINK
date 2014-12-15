@@ -67,6 +67,8 @@ SOM::SOM(InputData const& inputData)
         ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(new HexagonalDistanceFunctor());
     else
         fatalError("Unknown layout.");
+
+    //write("initial_som.bin");
 }
 
 void SOM::write(std::string const& filename) const

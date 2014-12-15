@@ -44,9 +44,12 @@ int main (int argc, char **argv)
 	SOM som(inputData);
 
     #if PINK_USE_CUDA
-	    if (inputData.useCuda) {
-	        if (cuda_getNumberOfGPUs() == 1) cout << "  Use single GPU code." << endl;
-	        else cout << "  Use multiple GPU code with " << cuda_getNumberOfGPUs() << " GPUs." << endl;
+	    if (inputData.useCuda)
+	    {
+	        if (inputData.useMultipleGPUs and cuda_getNumberOfGPUs() > 1)
+	            cout << "  Use multiple GPU code with " << cuda_getNumberOfGPUs() << " GPUs." << endl;
+	        else
+	            cout << "  Use single GPU code." << endl;
 
 	        if (inputData.executionPath == TRAIN)
                 cuda_trainSelfOrganizingMap(inputData);

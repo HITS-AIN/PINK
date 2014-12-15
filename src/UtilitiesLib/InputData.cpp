@@ -103,7 +103,7 @@ InputData::InputData(int argc, char **argv)
         {"dist-func",           1, 0, 'f'},
         {"b1",                  1, 0, 9},
         {"max-update-distance", 1, 0, 10},
-        {"multi-GPU-off",       1, 0, 11},
+        {"multi-GPU-off",       0, 0, 11},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
@@ -256,7 +256,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 11:
             {
-                useMultipleGPUs = true;
+                useMultipleGPUs = false;
                 break;
             }
 			case 'v':
@@ -307,7 +307,9 @@ InputData::InputData(int argc, char **argv)
 		}
 	}
 
-	if (executionPath == UNDEFINED) {
+	if (executionPath == MAP) {
+	    init = FILEINIT;
+	} else if (executionPath == UNDEFINED) {
 		print_usage();
 		fatalError("Unkown execution path.");
 	}
@@ -399,7 +401,7 @@ void InputData::print_parameters() const
          << "  Use mirrored image = " << useFlip << endl
          << "  Number of CPU threads = " << numberOfThreads << endl
          << "  Use CUDA = " << useCuda << endl
-         << "  Use multiple GPus = " << useMultipleGPUs << endl
+         << "  Use multiple GPUs = " << useMultipleGPUs << endl
          << "  Distribution function for SOM update = " << function << endl
          << "  Sigma = " << sigma << endl
          << "  Damping factor = " << damping << endl

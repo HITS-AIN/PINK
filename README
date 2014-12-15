@@ -50,7 +50,7 @@ Usage
 Python scripts
 --------------
 
-For convertion and visualization of images some python scripts are available.
+For conversion and visualization of images some python scripts are available.
 
   numpy2binary.py: Conversion of the python numpy file format into binary input file format for images.
 
