@@ -81,7 +81,7 @@ InputData::InputData(int argc, char **argv)
  : InputData()
 {
 	static struct option long_options[] = {
-		{"image-dimension",     1, 0, 'd'},
+		{"neuron-dimension",     1, 0, 'd'},
 		{"som-dimension",       1, 0, 0},
 		{"layout",              1, 0, 'l'},
 		{"seed",                1, 0, 's'},

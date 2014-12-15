@@ -38,15 +38,12 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
     cudaSetDevice(0);
     cudaStreamCreate(&plan[0].stream);
 
-    // Set size and offset
-    if (som_size % GPU_N)
-    {
-        fprintf(stderr, "cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU: som_size not dividable by GPU_N.\n");
-        exit(EXIT_FAILURE);
-    }
-
     plan[0].size = som_size / GPU_N;
     plan[0].offset = 0;
+
+    // Distribute the remaining neurons
+    int rest = som_size % GPU_N;
+    if (rest) ++plan[0].size;
 
     // Allocate device memory
     plan[0].d_som = d_som;
@@ -62,6 +59,7 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
 
         // Set size and offset
         plan[i].size = plan[i-1].size;
+        if (rest > i) ++plan[i].size;
         plan[i].offset = plan[i-1].offset + plan[i-1].size;
 
         // Allocate device memory
