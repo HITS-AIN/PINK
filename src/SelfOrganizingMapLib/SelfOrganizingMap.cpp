@@ -44,7 +44,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
 	}
 
 	// Rotate images
-    #pragma omp parallel for
+    #pragma omp parallel for collapse(2)
 	for (int i = 1; i < num_real_rot; ++i) {
 	    for (int c = 0; c < numberOfChannels; ++c) {
 	        float *currentImage = image + c*image_size;
@@ -61,7 +61,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
 	{
 		float *flippedRotatedImages = rotatedImages + numberOfChannels * num_rot * neuron_size;
 
-		#pragma omp parallel for
+		#pragma omp parallel for collapse(2)
 		for (int i = 0; i < num_rot; ++i) {
 	        for (int c = 0; c < numberOfChannels; ++c) {
 			    flip(neuron_dim, neuron_dim, rotatedImages + (i*numberOfChannels + c)*neuron_size,
@@ -75,21 +75,17 @@ void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRo
     int som_size, float* som, int image_size, int num_rot, float* rotatedImages)
 {
 	float tmp;
-	float* pdist = euclideanDistanceMatrix;
-	int* prot = bestRotationMatrix;
-    float *psom = NULL;
 
     for (int i = 0; i < som_size; ++i) euclideanDistanceMatrix[i] = FLT_MAX;
 
-    for (int i = 0; i < som_size; ++i, ++pdist, ++prot) {
-        psom = som + i*image_size;
-        #pragma omp parallel for private(tmp)
+    #pragma omp parallel for private(tmp), collapse(2)
+    for (int i = 0; i < som_size; ++i) {
         for (int j = 0; j < num_rot; ++j) {
-    	    tmp = calculateEuclideanDistanceWithoutSquareRoot(psom, rotatedImages + j*image_size, image_size);
+    	    tmp = calculateEuclideanDistanceWithoutSquareRoot(som + i*image_size, rotatedImages + j*image_size, image_size);
             #pragma omp critical
-    	    if (tmp < *pdist) {
-    	    	*pdist = tmp;
-                *prot = j;
+    	    if (tmp < euclideanDistanceMatrix[i]) {
+    	        euclideanDistanceMatrix[i] = tmp;
+    	        bestRotationMatrix[i] = j;
     	    }
         }
     }
@@ -107,41 +103,3 @@ int findBestMatchingNeuron(float *euclideanDistanceMatrix, int som_size)
     }
     return bestMatch;
 }
-
-//Point findBestMatchingNeuronHexagonal(float *euclideanDistanceMatrix, int som_dim)
-//{
-//    float minDistance = FLT_MAX;
-//    Point bestMatch(0,0);
-//    int radius = (som_dim - 1)/2;
-//    for (int pos = 0, i = -radius; i <= radius; ++i) {
-//        for (int j = -radius - min(0,i); j <= radius - max(0,i); ++j, ++pos) {
-//            //cout << i << " " << j << " " << pos << endl;
-//            if (euclideanDistanceMatrix[pos] < minDistance) {
-//                minDistance = euclideanDistanceMatrix[pos];
-//                bestMatch.x = i;
-//                bestMatch.y = j;
-//            }
-//        }
-//    }
-//    cout << "best match = " << bestMatch.x << " " << bestMatch.y << endl;
-//
-//    return bestMatch;
-//}
-
-// Preparation for multi-dimensional SOM
-// Not working yet!
-//std::vector<int> findBestMatchingNeuron(std::vector<float>& euclideanDistanceMatrix, std::vector<int> const& som_dimensions)
-//{
-//    std::vector<int> bestMatch(som_dimensions.size());
-//    float minDistance = FLT_MAX;
-//    for (int n = 0; n < som_dimensions.size(); ++n) {
-//        for (int i = 0; i < som_dimensions[n]; ++i) {
-//            if (euclideanDistanceMatrix[ij] < minDistance) {
-//                minDistance = euclideanDistanceMatrix[ij];
-//                bestMatch.x = ij / som_dim;
-//                bestMatch.y = ij % som_dim;
-//            }
-//    }
-//
-//    return bestMatch;
-//}
