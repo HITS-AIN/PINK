@@ -69,9 +69,6 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 		{
 			if (progress > nextProgressPrint)
 			{
-				const auto stopTime = steady_clock::now();
-				const auto duration = stopTime - startTime;
-
 				cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " % ("
 					 << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
 

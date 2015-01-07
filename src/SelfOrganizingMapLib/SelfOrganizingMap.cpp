@@ -44,7 +44,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
 	}
 
 	// Rotate images
-    #pragma omp parallel for collapse(2)
+    #pragma omp parallel for
 	for (int i = 1; i < num_real_rot; ++i) {
 	    for (int c = 0; c < numberOfChannels; ++c) {
 	        float *currentImage = image + c*image_size;
@@ -61,7 +61,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
 	{
 		float *flippedRotatedImages = rotatedImages + numberOfChannels * num_rot * neuron_size;
 
-		#pragma omp parallel for collapse(2)
+		#pragma omp parallel for
 		for (int i = 0; i < num_rot; ++i) {
 	        for (int c = 0; c < numberOfChannels; ++c) {
 			    flip(neuron_dim, neuron_dim, rotatedImages + (i*numberOfChannels + c)*neuron_size,
@@ -75,17 +75,21 @@ void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRo
     int som_size, float* som, int image_size, int num_rot, float* rotatedImages)
 {
 	float tmp;
+	float* pdist = euclideanDistanceMatrix;
+	int* prot = bestRotationMatrix;
+    float *psom = NULL;
 
     for (int i = 0; i < som_size; ++i) euclideanDistanceMatrix[i] = FLT_MAX;
 
-    #pragma omp parallel for private(tmp), collapse(2)
-    for (int i = 0; i < som_size; ++i) {
+    for (int i = 0; i < som_size; ++i, ++pdist, ++prot) {
+        psom = som + i*image_size;
+        #pragma omp parallel for private(tmp)
         for (int j = 0; j < num_rot; ++j) {
-    	    tmp = calculateEuclideanDistanceWithoutSquareRoot(som + i*image_size, rotatedImages + j*image_size, image_size);
+    	    tmp = calculateEuclideanDistanceWithoutSquareRoot(psom, rotatedImages + j*image_size, image_size);
             #pragma omp critical
-    	    if (tmp < euclideanDistanceMatrix[i]) {
-    	        euclideanDistanceMatrix[i] = tmp;
-    	        bestRotationMatrix[i] = j;
+    	    if (tmp < *pdist) {
+    	    	*pdist = tmp;
+                *prot = j;
     	    }
         }
     }

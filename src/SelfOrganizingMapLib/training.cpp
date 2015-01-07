@@ -13,6 +13,7 @@
 #include "UtilitiesLib/Error.h"
 #include "UtilitiesLib/Filler.h"
 #include "UtilitiesLib/InputData.h"
+#include "UtilitiesLib/TimeAccumulator.h"
 #include <chrono>
 #include <iostream>
 #include <iomanip>
@@ -46,6 +47,7 @@ void SOM::training()
 
 	// Start timer
 	auto startTime = steady_clock::now();
+	std::chrono::high_resolution_clock::duration timer[10] = {std::chrono::high_resolution_clock::duration::zero()};
 
 	for (int iter = 0; iter != inputData_.numIter; ++iter)
 	{
@@ -53,11 +55,13 @@ void SOM::training()
 		{
             if (progress > nextProgressPrint)
             {
-                const auto stopTime = steady_clock::now();
-                const auto duration = stopTime - startTime;
-
                 cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " % ("
                      << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
+                if (inputData_.verbose) {
+                    cout << "  Time for image rotations = " << duration_cast<milliseconds>(timer[0]).count() << " ms" << endl;
+                    cout << "  Time for euclidean distance = " << duration_cast<milliseconds>(timer[1]).count() << " ms" << endl;
+                    cout << "  Time for SOM update = " << duration_cast<milliseconds>(timer[2]).count() << " ms" << endl;
+                }
 
                 if (inputData_.intermediate_storage) {
                     if (inputData_.verbose) cout << "  Write intermediate SOM to " << inputData_.resultFilename << " ... " << flush;
@@ -67,25 +71,40 @@ void SOM::training()
 
                 nextProgressPrint += inputData_.progressFactor;
                 startTime = steady_clock::now();
+                for (int i(0); i < 10; ++i) timer[i] = std::chrono::high_resolution_clock::duration::zero();
             }
             progress += progressStep;
 
-            generateRotatedImages(&rotatedImages[0], iterImage->getPointerOfFirstPixel(), inputData_.numberOfRotations,
-                inputData_.image_dim, inputData_.neuron_dim, inputData_.useFlip, inputData_.interpolation,
-                inputData_.numberOfChannels);
+            {
+                TimeAccumulator localTimeAccumulator(timer[0]);
+                generateRotatedImages(&rotatedImages[0], iterImage->getPointerOfFirstPixel(), inputData_.numberOfRotations,
+                    inputData_.image_dim, inputData_.neuron_dim, inputData_.useFlip, inputData_.interpolation,
+                    inputData_.numberOfChannels);
+            }
 
-            generateEuclideanDistanceMatrix(&euclideanDistanceMatrix[0], &bestRotationMatrix[0],
-                inputData_.som_size, &som_[0], inputData_.numberOfChannels * inputData_.neuron_size,
-                inputData_.numberOfRotationsAndFlip, &rotatedImages[0]);
+            {
+                TimeAccumulator localTimeAccumulator(timer[1]);
+                generateEuclideanDistanceMatrix(&euclideanDistanceMatrix[0], &bestRotationMatrix[0],
+                    inputData_.som_size, &som_[0], inputData_.numberOfChannels * inputData_.neuron_size,
+                    inputData_.numberOfRotationsAndFlip, &rotatedImages[0]);
+            }
 
-            int bestMatch = findBestMatchingNeuron(&euclideanDistanceMatrix[0], inputData_.som_size);
-            updateCounter(bestMatch);
-            updateNeurons(&rotatedImages[0], bestMatch, &bestRotationMatrix[0]);
+            {
+                TimeAccumulator localTimeAccumulator(timer[2]);
+                int bestMatch = findBestMatchingNeuron(&euclideanDistanceMatrix[0], inputData_.som_size);
+                updateCounter(bestMatch);
+                updateNeurons(&rotatedImages[0], bestMatch, &bestRotationMatrix[0]);
+            }
 		}
 	}
 
 	cout << "  Progress: 100 % ("
 		 << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
+    if (inputData_.verbose) {
+        cout << "  Time for image rotations = " << duration_cast<milliseconds>(timer[0]).count() << " ms" << endl;
+        cout << "  Time for euclidean distance = " << duration_cast<milliseconds>(timer[1]).count() << " ms" << endl;
+        cout << "  Time for SOM update = " << duration_cast<milliseconds>(timer[2]).count() << " ms" << endl;
+    }
 
 	if (inputData_.verbose) cout << "  Write final SOM to " << inputData_.resultFilename << " ... " << flush;
 	write(inputData_.resultFilename);
