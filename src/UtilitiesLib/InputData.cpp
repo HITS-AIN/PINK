@@ -82,7 +82,7 @@ InputData::InputData(int argc, char **argv)
  : InputData()
 {
 	static struct option long_options[] = {
-		{"neuron-dimension",     1, 0, 'd'},
+		{"neuron-dimension",    1, 0, 'd'},
 		{"som-dimension",       1, 0, 0},
 		{"layout",              1, 0, 'l'},
 		{"seed",                1, 0, 's'},
@@ -99,7 +99,7 @@ InputData::InputData(int argc, char **argv)
 		{"interpolation",       1, 0, 5},
 		{"train",               1, 0, 6},
 		{"map",                 1, 0, 7},
-        {"inter-store",         1, 0, 8},
+        {"inter-store",         0, 0, 8},
         {"dist-func",           1, 0, 'f'},
         {"b1",                  1, 0, 9},
         {"max-update-distance", 1, 0, 10},
@@ -240,6 +240,11 @@ InputData::InputData(int argc, char **argv)
 				optind = index - 1;
 				break;
 		    }
+            case 8:
+            {
+                intermediate_storage = true;
+                break;
+            }
             case 9:
             {
                 block_size_1 = atoi(optarg);
@@ -339,7 +344,6 @@ InputData::InputData(int argc, char **argv)
 		cout << "ERROR: Neuron dimension must be smaller or equal to image dimension.";
 		exit(EXIT_FAILURE);
     }
-    if ((image_dim - neuron_dim)%2) --neuron_dim;
 
     neuron_size = neuron_dim * neuron_dim;
 	som_total_size = som_size * neuron_size;
