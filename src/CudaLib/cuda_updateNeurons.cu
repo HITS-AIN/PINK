@@ -33,8 +33,8 @@ findBestMatchingNeuron_kernel(float *euclideanDistanceMatrix, int *bestMatch, in
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
 void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,
-    int* d_bestMatch, int som_dim, int som_size, int neuron_size, int num_rot, Function function, Layout layout,
-    float sigma, float damping, float maxUpdateDistance)
+    int* d_bestMatch, int som_width, int som_height, int som_depth, int som_size, int neuron_size, int num_rot,
+    Function function, Layout layout, float sigma, float damping, float maxUpdateDistance, bool usePBC, int dimensionality)
 {
     {
     	// Start kernel
@@ -55,22 +55,79 @@ void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotatio
 		dim3 dimGrid(gridSize, som_size);
 
 		// Start kernel
-		if (function == GAUSSIAN and layout == QUADRATIC)
-		    updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
-		        d_bestMatch, som_dim, neuron_size, GaussianFunctor(sigma), QuadraticDistanceFunctor(),
-		        damping, maxUpdateDistance);
-		else if (function == GAUSSIAN and layout == HEXAGONAL)
-            updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
-                d_bestMatch, som_dim, neuron_size, GaussianFunctor(sigma), HexagonalDistanceFunctor(),
-                damping, maxUpdateDistance);
-        else if (function == MEXICANHAT and layout == QUADRATIC)
-            updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
-                d_bestMatch, som_dim, neuron_size, MexicanHatFunctor(sigma), QuadraticDistanceFunctor(),
-                damping, maxUpdateDistance);
-        else if (function == MEXICANHAT and layout == HEXAGONAL)
-            updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
-                d_bestMatch, som_dim, neuron_size, MexicanHatFunctor(sigma), HexagonalDistanceFunctor(),
-                damping, maxUpdateDistance);
+        if (function == GAUSSIAN) {
+            if (layout == QUADRATIC) {
+                if (usePBC) {
+                    if (dimensionality == 1) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<1, true>(som_width),
+                            damping, maxUpdateDistance);
+                    } else if (dimensionality == 2) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<2, true>(som_width, som_height),
+                            damping, maxUpdateDistance);
+                    } else if (dimensionality == 3) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<3, true>(som_width, som_height, som_depth),
+                            damping, maxUpdateDistance);
+                    }
+                } else {
+                    if (dimensionality == 1) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<1>(som_width),
+                            damping, maxUpdateDistance);
+                    } else if (dimensionality == 2) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<2>(som_width, som_height),
+                            damping, maxUpdateDistance);
+                    } else if (dimensionality == 3) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<3>(som_width, som_height, som_depth),
+                            damping, maxUpdateDistance);
+                    }
+                }
+            } else if (layout == HEXAGONAL) {
+                updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                    d_bestMatch, neuron_size, GaussianFunctor(sigma), HexagonalDistanceFunctor(som_width),
+                    damping, maxUpdateDistance);
+            }
+        } else if (function == MEXICANHAT) {
+            if (layout == QUADRATIC) {
+                if (usePBC) {
+                    if (dimensionality == 1) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<1, true>(som_width),
+                            damping, maxUpdateDistance);
+                    } else if (dimensionality == 2) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<2, true>(som_width, som_height),
+                            damping, maxUpdateDistance);
+                    } else if (dimensionality == 3) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<3, true>(som_width, som_height, som_depth),
+                            damping, maxUpdateDistance);
+                    }
+                } else {
+                    if (dimensionality == 1) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<1>(som_width),
+                            damping, maxUpdateDistance);
+                    } else if (dimensionality == 2) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<2>(som_width, som_height),
+                            damping, maxUpdateDistance);
+                    } else if (dimensionality == 3) {
+                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                            d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<3>(som_width, som_height, som_depth),
+                            damping, maxUpdateDistance);
+                    }
+                }
+            } else if (layout == HEXAGONAL) {
+                updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                    d_bestMatch, neuron_size, MexicanHatFunctor(sigma), HexagonalDistanceFunctor(som_width),
+                    damping, maxUpdateDistance);
+            }
+        }
 
 		cudaError_t error = cudaGetLastError();
 

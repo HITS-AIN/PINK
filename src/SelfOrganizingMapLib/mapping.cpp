@@ -24,8 +24,9 @@ void SOM::mapping()
     std::ofstream resultFile(inputData_.resultFilename);
     if (!resultFile) fatalError("Error opening " + inputData_.resultFilename);
     resultFile.write((char*)&inputData_.numberOfImages, sizeof(int));
-    resultFile.write((char*)&inputData_.som_dim, sizeof(int));
-    resultFile.write((char*)&inputData_.som_dim, sizeof(int));
+    resultFile.write((char*)&inputData_.som_width, sizeof(int));
+    resultFile.write((char*)&inputData_.som_height, sizeof(int));
+    resultFile.write((char*)&inputData_.som_depth, sizeof(int));
 
     // Memory allocation
     int rotatedImagesSize = inputData_.numberOfChannels * inputData_.numberOfRotations * inputData_.neuron_size;

@@ -30,8 +30,9 @@ void cuda_mapping(InputData const& inputData)
     std::ofstream resultFile(inputData.resultFilename);
     if (!resultFile) fatalError("Error opening " + inputData.resultFilename);
     resultFile.write((char*)&inputData.numberOfImages, sizeof(int));
-    resultFile.write((char*)&inputData.som_dim, sizeof(int));
-    resultFile.write((char*)&inputData.som_dim, sizeof(int));
+    resultFile.write((char*)&inputData.som_width, sizeof(int));
+    resultFile.write((char*)&inputData.som_height, sizeof(int));
+    resultFile.write((char*)&inputData.som_depth, sizeof(int));
 
     // Initialize SOM on host
     SOM som(inputData);

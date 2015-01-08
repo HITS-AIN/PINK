@@ -68,8 +68,8 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
 
 //! Host routine starting kernel for updating neurons.
 void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,
-    int* d_bestMatch, int som_dim, int som_size, int neuron_size, int num_rot, Function function, Layout layout,
-    float sigma, float damping, float maxUpdateDistance);
+    int* d_bestMatch, int som_width, int som_height, int som_depth, int som_size, int neuron_size, int num_rot,
+    Function function, Layout layout, float sigma, float damping, float maxUpdateDistance, bool usePBC, int dimensionality);
 
 //! Prepare trigonometric values
 void trigonometricValues(float **d_cosAlpha, float **d_sinAlpha, int num_rot);

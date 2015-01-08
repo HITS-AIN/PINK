@@ -44,6 +44,8 @@ void SOM::training()
 	float progress = 0.0;
 	float progressStep = 1.0 / inputData_.numIter / inputData_.numberOfImages;
 	float nextProgressPrint = inputData_.progressFactor;
+    int progressPrecision = rint(log10(1.0 / inputData_.progressFactor)) - 2;
+    if (progressPrecision < 0) progressPrecision = 0;
 
 	// Start timer
 	auto startTime = steady_clock::now();
@@ -55,7 +57,7 @@ void SOM::training()
 		{
             if (progress > nextProgressPrint)
             {
-                cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " % ("
+                cout << "  Progress: " << fixed << setprecision(progressPrecision) << progress*100 << " % ("
                      << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
                 if (inputData_.verbose) {
                     cout << "  Time for image rotations = " << duration_cast<milliseconds>(timer[0]).count() << " ms" << endl;

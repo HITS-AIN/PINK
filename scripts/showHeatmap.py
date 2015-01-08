@@ -47,20 +47,25 @@ if __name__ == "__main__":
     print 'Image number is ', imageNumber
 
     inFile = open(inputfile, 'rb')
-    numberOfImages, SOM_width, SOM_height = struct.unpack('i' * 3, inFile.read(4*3))
+    numberOfImages, SOM_width, SOM_height, SOM_depth = struct.unpack('i' * 4, inFile.read(4*4))
 
     print 'Number of images = ', numberOfImages 
     print 'SOM_width = ', SOM_width
     print 'SOM_height = ', SOM_height
+    print 'SOM_depth = ', SOM_depth
 
     if imageNumber >= numberOfImages:
         print 'Image number too large.'
         sys.exit(1)
 
-    size = SOM_width * SOM_height
+    size = SOM_width * SOM_height * SOM_depth
+    image_width = SOM_width
+    image_height = SOM_depth * SOM_height
     inFile.seek(imageNumber * size * 4, 1)
     array = numpy.array(struct.unpack('f' * size, inFile.read(size * 4)))
-    data = numpy.ndarray([SOM_width, SOM_height], 'float', array)
+    data = numpy.ndarray([SOM_width, SOM_height, SOM_depth], 'float', array)
+    data = numpy.swapaxes(data, 0, 2)
+    data = numpy.reshape(data, (image_height, image_width))
 
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)

@@ -48,7 +48,9 @@ std::ostream& operator << (std::ostream& os, SOMInitialization init)
 InputData::InputData()
  :
     verbose(false),
-    som_dim(10),
+    som_width(10),
+    som_height(10),
+    som_depth(1),
     neuron_dim(-1),
     layout(QUADRATIC),
     seed(1234),
@@ -75,7 +77,9 @@ InputData::InputData()
     damping(DEFAULT_DAMPING),
     block_size_1(256),
     maxUpdateDistance(-1.0),
-    useMultipleGPUs(true)
+    useMultipleGPUs(true),
+    usePBC(false),
+    dimensionality(1)
 {}
 
 InputData::InputData(int argc, char **argv)
@@ -83,27 +87,30 @@ InputData::InputData(int argc, char **argv)
 {
 	static struct option long_options[] = {
 		{"neuron-dimension",    1, 0, 'd'},
-		{"som-dimension",       1, 0, 0},
 		{"layout",              1, 0, 'l'},
 		{"seed",                1, 0, 's'},
 		{"numrot",              1, 0, 'n'},
 		{"numthreads",          1, 0, 't'},
 		{"init",                1, 0, 'x'},
-		{"num-iter",            1, 0, 1},
 		{"progress",            1, 0, 'p'},
+		{"version",             0, 0, 'v'},
+		{"help",                0, 0, 'h'},
+        {"dist-func",           1, 0, 'f'},
+        {"som-width",           1, 0, 0},
+		{"num-iter",            1, 0, 1},
 		{"flip-off",            0, 0, 2},
 		{"cuda-off",            0, 0, 3},
 		{"verbose",             0, 0, 4},
-		{"version",             0, 0, 'v'},
-		{"help",                0, 0, 'h'},
 		{"interpolation",       1, 0, 5},
 		{"train",               1, 0, 6},
 		{"map",                 1, 0, 7},
         {"inter-store",         0, 0, 8},
-        {"dist-func",           1, 0, 'f'},
         {"b1",                  1, 0, 9},
         {"max-update-distance", 1, 0, 10},
         {"multi-GPU-off",       0, 0, 11},
+        {"som-height",          1, 0, 12},
+        {"som-depth",           1, 0, 13},
+        {"pbc",                 0, 0, 14},
 		{NULL, 0, NULL, 0}
 	};
 	int c, option_index = 0;
@@ -116,11 +123,21 @@ InputData::InputData(int argc, char **argv)
 				neuron_dim = atoi(optarg);
 				break;
 			}
-			case 0:
+            case 0:
+            {
+                som_width = atoi(optarg);
+                break;
+            }
+			case 12:
 			{
-				som_dim = atoi(optarg);
+				som_height = atoi(optarg);
 				break;
 			}
+            case 13:
+            {
+                som_depth = atoi(optarg);
+                break;
+            }
 			case 1:
 			{
 				numIter = atoi(optarg);
@@ -264,6 +281,11 @@ InputData::InputData(int argc, char **argv)
                 useMultipleGPUs = false;
                 break;
             }
+            case 14:
+            {
+                usePBC = true;
+                break;
+            }
 			case 'v':
 			{
 				cout << "Pink version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR << endl;
@@ -332,11 +354,20 @@ InputData::InputData(int argc, char **argv)
 	image_size = image_dim * image_dim;
 
 	if (layout == HEXAGONAL) {
-	    if ((som_dim-1) % 2) fatalError("For hexagonal layout only odd dimension supported.");
-	    int radius = (som_dim - 1)/2;
-	    som_size = som_dim * som_dim - radius * (radius + 1);
+	    if (usePBC) fatalError("Periodic boundary conditions are not supported for hexagonal layout.");
+	    if ((som_width - 1) % 2) fatalError("For hexagonal layout only odd dimension supported.");
+        if (som_width != som_height) fatalError("For hexagonal layout som-width must be equal to som-height.");
+        if (som_depth != 1) fatalError("For hexagonal layout som-depth must be equal to 1.");
+	    int radius = (som_width - 1)/2;
+	    som_size = som_width * som_height - radius * (radius + 1);
 	}
-	else som_size = som_dim * som_dim;
+	else som_size = som_width * som_height * som_depth;
+
+	if (som_width < 2) fatalError("som-width must be > 1.");
+    if (som_height < 1) fatalError("som-height must be > 0.");
+    if (som_depth < 1) fatalError("som-depth must be > 0.");
+    if (som_height > 1) ++dimensionality;
+    if (som_depth > 1) ++dimensionality;
 
     if (neuron_dim == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
     if (neuron_dim > image_dim) {
@@ -392,7 +423,7 @@ void InputData::print_parameters() const
     cout << "  Number of images = " << numberOfImages << endl
          << "  Number of channels = " << numberOfChannels << endl
          << "  Image dimension = " << image_dim << "x" << image_dim << endl
-         << "  SOM dimension = " << som_dim << "x" << som_dim << endl
+         << "  SOM dimension (width x height x depth) = " << som_width << "x" << som_height << "x" << som_depth << endl
          << "  SOM size = " << som_size << endl
          << "  Number of iterations = " << numIter << endl
          << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << endl
@@ -410,6 +441,7 @@ void InputData::print_parameters() const
          << "  Sigma = " << sigma << endl
          << "  Damping factor = " << damping << endl
          << "  Maximum distance for SOM update = " << maxUpdateDistance << endl
+         << "  Use periodic boundary conditions = " << usePBC << endl
          << endl;
 
     if (verbose)
@@ -436,14 +468,17 @@ void InputData::print_usage() const
 	        "    --interpolation <string>        Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
             "    --inter-store                   Store intermediate SOM results at every progress step.\n"
 	        "    --layout, -l <string>           Layout of SOM (quadratic = default, quadhex, hexagonal).\n"
-	        "    --neuron-dimension, -d <int>    Dimension for quadratic SOM neurons (default = image-size * sqrt(2)/2).\n"
+	        "    --neuron-dimension, -d <int>    Dimension for quadratic SOM neurons (default = image-dimension * sqrt(2)/2).\n"
 	        "    --numrot, -n <int>              Number of rotations (1 or a multiple of 4, default = 360).\n"
 	        "    --numthreads, -t <int>          Number of CPU threads (default = auto).\n"
 	        "    --num-iter <int>                Number of iterations (default = 1).\n"
             "    --multi-GPU-off                 Switch off usage of multiple GPUs.\n"
+	        "    --pbc                           Use periodic boundary conditions for SOM.\n"
 			"    --progress, -p <float>          Print level of progress (default = 0.1).\n"
 	        "    --seed, -s <int>                Seed for random number generator (default = 1234).\n"
-	        "    --som-dimension <int>           Dimension for quadratic SOM matrix (default = 10).\n"
+	        "    --som-width <int>               Width dimension of SOM (default = 10).\n"
+            "    --som-height <int>              Height dimension of SOM (default = 10).\n"
+            "    --som-depth <int>               Depth dimension of SOM (default = 1).\n"
             "    --max-update-distance <float>   Maximum distance for SOM update (default = off).\n"
             "    --version, -v                   Print version number.\n"
             "    --verbose                       Print more output.\n"

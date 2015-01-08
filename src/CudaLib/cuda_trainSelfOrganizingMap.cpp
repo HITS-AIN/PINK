@@ -59,6 +59,8 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 	float progress = 0.0;
 	float progressStep = 1.0 / inputData.numIter / inputData.numberOfImages;
 	float nextProgressPrint = inputData.progressFactor;
+    int progressPrecision = rint(log10(1.0 / inputData.progressFactor)) - 2;
+    if (progressPrecision < 0) progressPrecision = 0;
 
 	// Start timer
 	auto startTime = steady_clock::now();
@@ -69,7 +71,7 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 		{
 			if (progress > nextProgressPrint)
 			{
-				cout << "  Progress: " << fixed << setprecision(0) << progress*100 << " % ("
+				cout << "  Progress: " << fixed << setprecision(progressPrecision) << progress*100 << " % ("
 					 << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
 
 				if (inputData.intermediate_storage) {
@@ -95,8 +97,10 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 				inputData.numberOfRotationsAndFlip, d_rotatedImages, inputData.block_size_1, inputData.useMultipleGPUs);
 
 			cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
-			    inputData.som_dim, inputData.som_size, inputData.numberOfChannels * inputData.neuron_size, inputData.numberOfRotationsAndFlip,
-				inputData.function, inputData.layout, inputData.sigma, inputData.damping, inputData.maxUpdateDistance);
+			    inputData.som_width, inputData.som_height, inputData.som_depth, inputData.som_size,
+			    inputData.numberOfChannels * inputData.neuron_size, inputData.numberOfRotationsAndFlip,
+				inputData.function, inputData.layout, inputData.sigma, inputData.damping, inputData.maxUpdateDistance,
+				inputData.usePBC, inputData.dimensionality);
 
 			cuda_copyDeviceToHost_int(&bestMatch, d_bestMatch, 1);
 			som.updateCounter(bestMatch);

@@ -40,9 +40,11 @@ SOM::SOM(InputData const& inputData)
         is.read((char*)&tmp, sizeof(int));
         if (tmp != inputData.numberOfChannels) throw std::runtime_error("readSOM: wrong numberOfChannels.");
         is.read((char*)&tmp, sizeof(int));
-        if (tmp != inputData.som_dim) throw std::runtime_error("readSOM: wrong som_dim.");
+        if (tmp != inputData.som_width) throw std::runtime_error("readSOM: wrong width.");
         is.read((char*)&tmp, sizeof(int));
-        if (tmp != inputData.som_dim) throw std::runtime_error("readSOM: wrong som_dim.");
+        if (tmp != inputData.som_height) throw std::runtime_error("readSOM: wrong height.");
+        is.read((char*)&tmp, sizeof(int));
+        if (tmp != inputData.som_depth) throw std::runtime_error("readSOM: wrong depth.");
         is.read((char*)&tmp, sizeof(int));
         if (tmp != inputData.neuron_dim) throw std::runtime_error("readSOM: wrong neuron_dim.");
         is.read((char*)&tmp, sizeof(int));
@@ -61,12 +63,35 @@ SOM::SOM(InputData const& inputData)
         fatalError("Unknown distribution function.");
 
     // Set distance function
-    if (inputData_.layout == QUADRATIC)
-        ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(new QuadraticDistanceFunctor());
-    else if (inputData_.layout == HEXAGONAL)
-        ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(new HexagonalDistanceFunctor());
-    else
+    if (inputData_.layout == QUADRATIC) {
+        if (inputData_.usePBC) {
+            if (inputData_.dimensionality == 1) {
+                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
+                    new CartesianDistanceFunctor<1, true>(inputData.som_width));
+            } else if (inputData_.dimensionality == 2) {
+                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
+                    new CartesianDistanceFunctor<2, true>(inputData.som_width, inputData.som_height));
+            } else if (inputData_.dimensionality == 3) {
+                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
+                    new CartesianDistanceFunctor<3, true>(inputData.som_width, inputData.som_height, inputData.som_depth));
+            }
+        } else {
+            if (inputData_.dimensionality == 1) {
+                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
+                    new CartesianDistanceFunctor<1>(inputData.som_width));
+            } else if (inputData_.dimensionality == 2) {
+                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
+                    new CartesianDistanceFunctor<2>(inputData.som_width, inputData.som_height));
+            } else if (inputData_.dimensionality == 3) {
+                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
+                    new CartesianDistanceFunctor<3>(inputData.som_width, inputData.som_height, inputData.som_depth));
+            }
+        }
+    } else if (inputData_.layout == HEXAGONAL) {
+        ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(new HexagonalDistanceFunctor(inputData.som_width));
+    } else {
         fatalError("Unknown layout.");
+    }
 
     //write("initial_som.bin");
 }
@@ -77,8 +102,9 @@ void SOM::write(std::string const& filename) const
     if (!os) throw std::runtime_error("Error opening " + filename);
 
     os.write((char*)&inputData_.numberOfChannels, sizeof(int));
-    os.write((char*)&inputData_.som_dim, sizeof(int));
-    os.write((char*)&inputData_.som_dim, sizeof(int));
+    os.write((char*)&inputData_.som_width, sizeof(int));
+    os.write((char*)&inputData_.som_height, sizeof(int));
+    os.write((char*)&inputData_.som_depth, sizeof(int));
     os.write((char*)&inputData_.neuron_dim, sizeof(int));
     os.write((char*)&inputData_.neuron_dim, sizeof(int));
     os.write((char*)&som_[0], inputData_.numberOfChannels * inputData_.som_size
@@ -91,7 +117,7 @@ void SOM::updateNeurons(float *rotatedImages, int bestMatch, int *bestRotationMa
     float *current_neuron = &som_[0];
 
     for (int i = 0; i < inputData_.som_size; ++i) {
-        distance = (*ptrDistanceFunctor_)(bestMatch, i, inputData_.som_dim);
+        distance = (*ptrDistanceFunctor_)(bestMatch, i);
         if (inputData_.maxUpdateDistance <= 0.0 or distance < inputData_.maxUpdateDistance) {
             factor = (*ptrDistributionFunctor_)(distance) * inputData_.damping;
             updateSingleNeuron(current_neuron, rotatedImages + bestRotationMatrix[i]
@@ -106,7 +132,7 @@ void SOM::printUpdateCounter() const
     if (inputData_.verbose) {
         cout << "\n  Number of updates of each neuron:\n" << endl;
         if (inputData_.layout == HEXAGONAL) {
-            int radius = (inputData_.som_dim - 1)/2;
+            int radius = (inputData_.som_width - 1)/2;
             for (int pos = 0, x = -radius; x <= radius; ++x) {
                 for (int y = -radius - std::min(0,x); y <= radius - std::max(0,x); ++y, ++pos) {
                     cout << setw(6) << updateCounterMatrix_[pos] << " ";
@@ -114,9 +140,12 @@ void SOM::printUpdateCounter() const
                 cout << endl;
             }
         } else {
-            for (int pos = 0, i = 0; i != inputData_.som_dim; ++i) {
-                for (int j = 0; j != inputData_.som_dim; ++j, ++pos) {
-                    cout << setw(6) << updateCounterMatrix_[pos] << " ";
+            for (int pos = 0, d = 0; d != inputData_.som_depth; ++d) {
+                for (int h = 0; h != inputData_.som_height; ++h) {
+                    for (int w = 0; w != inputData_.som_width; ++w, ++pos) {
+                        cout << setw(6) << updateCounterMatrix_[pos] << " ";
+                    }
+                    cout << endl;
                 }
                 cout << endl;
             }

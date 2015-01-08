@@ -54,7 +54,9 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 	fillWithValue(euclideanDistanceMatrix, data.som_size);
 
     InputData inputData;
-    inputData.som_dim = data.som_dim;
+    inputData.som_width = data.som_dim;
+    inputData.som_height = data.som_dim;
+    inputData.dimensionality = 2;
     inputData.neuron_dim = data.neuron_dim;
     inputData.numberOfRotations = data.num_rot;
     inputData.numberOfImages = 1;
@@ -85,8 +87,9 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 
     // Calculate GPU result
 	cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
-	    data.som_dim, data.som_size, data.num_channels * data.neuron_size, data.num_rot, GAUSSIAN, QUADRATIC,
-	    DEFAULT_SIGMA, DEFAULT_DAMPING, inputData.maxUpdateDistance);
+	    data.som_dim, data.som_dim, 1, data.som_size, data.num_channels * data.neuron_size,
+	    data.num_rot, GAUSSIAN, QUADRATIC, DEFAULT_SIGMA, DEFAULT_DAMPING, inputData.maxUpdateDistance,
+	    inputData.usePBC, inputData.dimensionality);
 
 	cuda_copyDeviceToHost_float(&gpu_som[0], d_som, data.som_total_size);
 

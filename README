@@ -81,13 +81,15 @@ Binary file format description
     (1)(integer) number_of_channels
     (1)(integer) SOM_width
     (1)(integer) SOM_height
+    (1)(integer) SOM_depth
     (1)(integer) neuron_width
     (1)(integer) neuron_height
-    (SOM_width, SOM_height, number_of_channels, neuron_width, neuron_height)(float) pixels
+    (SOM_width, SOM_height, SOM_depth, number_of_channels, neuron_width, neuron_height)(float) pixels
 
   3) Mapping result file
 
     (1)(integer) number_of_images
     (1)(integer) SOM_width
     (1)(integer) SOM_height
-    (number_of_images, SOM_width, SOM_height)(float) euclidian_distance
+    (1)(integer) SOM_depth
+    (number_of_images, SOM_width, SOM_height, SOM_depth)(float) euclidian_distance

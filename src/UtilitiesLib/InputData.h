@@ -73,8 +73,10 @@ struct InputData
 	std::string somFilename;
 
 	bool verbose;
-	int som_dim;
-	int neuron_dim;
+	int som_width;
+    int som_height;
+    int som_depth;
+    int neuron_dim;
 	Layout layout;
 	int seed;
 	int numberOfRotations;
@@ -101,6 +103,8 @@ struct InputData
 	int block_size_1;
 	int maxUpdateDistance;
     int useMultipleGPUs;
+    int usePBC;
+    int dimensionality;
 };
 
 void stringToUpper(char* s);

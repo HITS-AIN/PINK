@@ -11,44 +11,204 @@
 #include "Error.h"
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 /**
  * @brief Abstract base for distance functor.
- *
- * Calculate the distance between two points p1 and p2.
- * Position is given as index of a continuous array.
  */
 struct DistanceFunctorBase
 {
-    virtual float operator () (int p1, int p2, int dim) const = 0;
+    virtual float operator () (int p1, int p2) const = 0;
     virtual ~DistanceFunctorBase() {}
 };
 
+//! Primary template should never be instantiated.
+template <int dim, bool periodic = false>
+struct CartesianDistanceFunctor;
+
 /**
- * @brief Functor for distance in quadratic layout.
+ * @brief Calculate the distance in a non-periodic one-dimensional cartesian grid.
  */
-struct QuadraticDistanceFunctor : public DistanceFunctorBase
+template <>
+struct CartesianDistanceFunctor<1, false> : public DistanceFunctorBase
 {
-    float operator () (int p1, int p2, int dim) const
+    CartesianDistanceFunctor(int width)
+     : width_(width)
+    {}
+
+    float operator () (int p1, int p2) const
     {
-        int x1 = p1 / dim;
-        int y1 = p1 % dim;
-        int x2 = p2 / dim;
-        int y2 = p2 % dim;
-        return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+        return abs(p1 - p2);
     }
+
+private:
+
+    int width_;
+
 };
 
 /**
- * @brief Functor for distance in hexagonal layout.
+ * @brief Calculate the distance in a periodic one-dimensional cartesian grid.
+ */
+template <>
+struct CartesianDistanceFunctor<1, true> : public DistanceFunctorBase
+{
+    CartesianDistanceFunctor(int width)
+     : width_(width)
+    {}
+
+    float operator () (int p1, int p2) const
+    {
+        int dx = abs(p1 - p2);
+        //return std::min(abs(delta), std::min(abs(delta + width_), abs(delta - width_)));
+        return dx > width_ * 0.5 ? width_ - dx : dx;
+    }
+
+private:
+
+    int width_;
+
+};
+
+/**
+ * @brief Calculate the distance in a non-periodic two-dimensional cartesian grid.
+ */
+template <>
+struct CartesianDistanceFunctor<2, false> : public DistanceFunctorBase
+{
+    CartesianDistanceFunctor(int width, int height)
+     : width_(width), height_(height)
+    {}
+
+    float operator () (int p1, int p2) const
+    {
+        int y1 = p1 / height_;
+        int x1 = p1 % height_;
+        int y2 = p2 / height_;
+        int x2 = p2 % height_;
+        return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+    }
+
+private:
+
+    int width_;
+    int height_;
+
+};
+
+/**
+ * @brief Calculate the distance in a periodic two-dimensional cartesian grid.
+ */
+template <>
+struct CartesianDistanceFunctor<2, true> : public DistanceFunctorBase
+{
+    CartesianDistanceFunctor(int width, int height)
+     : width_(width), height_(height)
+    {}
+
+    float operator () (int p1, int p2) const
+    {
+        int y1 = p1 / height_;
+        int x1 = p1 % height_;
+        int y2 = p2 / height_;
+        int x2 = p2 % height_;
+        int dx = abs(x1 - x2);
+        int dy = abs(y1 - y2);
+        if (dx > width_ * 0.5) dx = width_ - dx;
+        if (dy > height_ * 0.5) dy = height_ - dy;
+        return sqrt(pow(dx, 2) + pow(dy, 2));
+    }
+
+private:
+
+    int width_;
+    int height_;
+
+};
+
+/**
+ * @brief Calculate the distance in a non-periodic three-dimensional cartesian grid.
+ *
+ * Calculate the distance between two points p1(x,y,z) and p2(x,y,z).
+ * Position is given as index of a continuous array (z * height * width + y * height + x).
+ */
+template <>
+struct CartesianDistanceFunctor<3, false> : public DistanceFunctorBase
+{
+    CartesianDistanceFunctor(int width, int height, int depth)
+     : width_(width), height_(height), depth_(depth)
+    {}
+
+    float operator () (int p1, int p2) const
+    {
+        int offset = height_ * width_;
+        int z1 = p1 / offset;
+        int y1 = (p1 - z1 * offset) / height_;
+        int x1 = p1 % height_;
+        int z2 = p2 / offset;
+        int y2 = (p2 - z2 * offset) / height_;
+        int x2 = p2 % height_;
+        return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2) + pow(z1 - z2, 2));
+    }
+
+private:
+
+    int width_;
+    int height_;
+    int depth_;
+
+};
+
+/**
+ * @brief Calculate the distance in a periodic three-dimensional cartesian grid.
+ */
+template <>
+struct CartesianDistanceFunctor<3, true> : public DistanceFunctorBase
+{
+    CartesianDistanceFunctor(int width, int height, int depth)
+     : width_(width), height_(height), depth_(depth)
+    {}
+
+    float operator () (int p1, int p2) const
+    {
+        int offset = height_ * width_;
+        int z1 = p1 / offset;
+        int y1 = (p1 - z1 * offset) / height_;
+        int x1 = p1 % height_;
+        int z2 = p2 / offset;
+        int y2 = (p2 - z2 * offset) / height_;
+        int x2 = p2 % height_;
+        int dx = abs(x1 - x2);
+        int dy = abs(y1 - y2);
+        int dz = abs(z1 - z2);
+        if (dx > width_ * 0.5) dx = width_ - dx;
+        if (dy > height_ * 0.5) dy = height_ - dy;
+        if (dz > height_ * 0.5) dz = height_ - dz;
+        return sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2));
+    }
+
+private:
+
+    int width_;
+    int height_;
+    int depth_;
+
+};
+
+/**
+ * @brief Calculate the distance in hexagonal grid.
  */
 struct HexagonalDistanceFunctor : public DistanceFunctorBase
 {
-    float operator () (int p1, int p2, int dim) const
+    HexagonalDistanceFunctor(int dim)
+        : dim_(dim)
+       {}
+
+    float operator () (int p1, int p2) const
     {
         int x1, y1, x2, y2;
-        getHexagonalIndices(p1, dim, x1, y1);
-        getHexagonalIndices(p2, dim, x2, y2);
+        getHexagonalIndices(p1, x1, y1);
+        getHexagonalIndices(p2, x2, y2);
 
         int dx = x1 - x2;
         int dy = y1 - y2;
@@ -63,9 +223,9 @@ private:
 
     bool isPositive(int n) const { return n >= 0; }
 
-    void getHexagonalIndices(int p, int dim, int &x, int &y) const
+    void getHexagonalIndices(int p, int &x, int &y) const
     {
-        int radius = (dim - 1)/2;
+        int radius = (dim_ - 1)/2;
         int pos = 0;
         for (x = -radius; x <= radius; ++x) {
             for (y = -radius - std::min(0,x); y <= radius - std::max(0,x); ++y, ++pos) {
@@ -74,6 +234,8 @@ private:
         }
         fatalError("Error in hexagonal indices.");
     }
+
+    int dim_;
 
 };
 
