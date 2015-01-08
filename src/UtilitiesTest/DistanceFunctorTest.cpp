@@ -22,6 +22,10 @@ TEST(DistanceFunctorTest, Cartesian)
     EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(0,0), 0);
 	EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(0,1), 1);
 	EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(0,2), 2);
+    EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(0,3), 1);
+    EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(1,0), 1);
+    EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(2,0), 2);
+    EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(3,0), 1);
     EXPECT_FLOAT_EQ(CartesianDistanceFunctor<2>(3,3)(1,3), sqrt(2));
 	EXPECT_FLOAT_EQ(CartesianDistanceFunctor<2>(3,3)(1,6), sqrt(5));
 

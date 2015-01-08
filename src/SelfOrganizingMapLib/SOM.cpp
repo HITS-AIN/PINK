@@ -122,8 +122,8 @@ void SOM::updateNeurons(float *rotatedImages, int bestMatch, int *bestRotationMa
             factor = (*ptrDistributionFunctor_)(distance) * inputData_.damping;
             updateSingleNeuron(current_neuron, rotatedImages + bestRotationMatrix[i]
                 * inputData_.numberOfChannels * inputData_.neuron_size, factor);
-            current_neuron += inputData_.numberOfChannels * inputData_.neuron_size;
         }
+        current_neuron += inputData_.numberOfChannels * inputData_.neuron_size;
     }
 }
 
