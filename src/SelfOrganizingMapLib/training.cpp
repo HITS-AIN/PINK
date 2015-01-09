@@ -53,14 +53,17 @@ void SOM::training()
 	std::chrono::high_resolution_clock::duration timer[maxTimer] = {std::chrono::high_resolution_clock::duration::zero()};
 
 	int interStoreCount = 0;
+	int updateCount = 0;
 
 	for (int iter = 0; iter != inputData_.numIter; ++iter)
 	{
-		for (ImageIterator<float> iterImage(inputData_.imagesFilename), iterEnd; iterImage != iterEnd; ++iterImage)
+		for (ImageIterator<float> iterImage(inputData_.imagesFilename), iterEnd; iterImage != iterEnd; ++iterImage, ++updateCount)
 		{
-            if (progress > nextProgressPrint)
+            if ((inputData_.progressFactor < 1.0 and progress > nextProgressPrint) or
+                (inputData_.progressFactor >= 1.0 and updateCount != 0 and !(updateCount % static_cast<int>(inputData_.progressFactor))))
             {
-                cout << "  Progress: " << fixed << setprecision(progressPrecision) << progress*100 << " % ("
+                cout << "  Progress: " << setw(12) << updateCount << " updates, "
+                     << fixed << setprecision(progressPrecision) << setw(3) << progress*100 << " % ("
                      << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
                 if (inputData_.verbose) {
                     cout << "  Time for image rotations = " << duration_cast<milliseconds>(timer[0]).count() << " ms" << endl;
@@ -108,7 +111,7 @@ void SOM::training()
 		}
 	}
 
-	cout << "  Progress: 100 % ("
+	cout << "  Progress: " << setw(12) << updateCount << " updates, 100 % ("
 		 << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
     if (inputData_.verbose) {
         cout << "  Time for image rotations = " << duration_cast<milliseconds>(timer[0]).count() << " ms" << endl;

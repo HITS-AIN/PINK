@@ -63,18 +63,21 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
     if (progressPrecision < 0) progressPrecision = 0;
 
     int interStoreCount = 0;
+    int updateCount = 0;
 
 	// Start timer
 	auto startTime = steady_clock::now();
 
 	for (int iter = 0; iter != inputData.numIter; ++iter)
 	{
-		for (ImageIterator<float> iterImage(inputData.imagesFilename),iterEnd; iterImage != iterEnd; ++iterImage)
+		for (ImageIterator<float> iterImage(inputData.imagesFilename),iterEnd; iterImage != iterEnd; ++iterImage, ++updateCount)
 		{
-			if (progress > nextProgressPrint)
+            if ((inputData.progressFactor < 1.0 and progress > nextProgressPrint) or
+                (inputData.progressFactor >= 1.0 and updateCount != 0 and !(updateCount % static_cast<int>(inputData.progressFactor))))
 			{
-				cout << "  Progress: " << fixed << setprecision(progressPrecision) << progress*100 << " % ("
-					 << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
+                cout << "  Progress: " << setw(12) << updateCount << " updates, "
+                     << fixed << setprecision(progressPrecision) << setw(3) << progress*100 << " % ("
+                     << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
 
                 if (inputData.intermediate_storage != OFF) {
                     string interStoreFilename = inputData.resultFilename;
@@ -123,10 +126,10 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
     cuda_free(d_rotatedImages);
     cuda_free(d_bestMatch);
 
-    cout << "  Progress: 100 % ("
-	     << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
-	cout << "  Write final SOM to " << inputData.resultFilename << " ... " << flush;
+    cout << "  Progress: " << setw(12) << updateCount << " updates, 100 % ("
+         << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
 
+	cout << "  Write final SOM to " << inputData.resultFilename << " ... " << flush;
     cuda_copyDeviceToHost_float(som.getDataPointer(), d_som, som.getSize());
     som.write(inputData.resultFilename);
 	cout << "done." << endl;

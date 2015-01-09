@@ -494,6 +494,7 @@ void InputData::print_usage() const
             "    --multi-GPU-off                 Switch off usage of multiple GPUs.\n"
 	        "    --pbc                           Use periodic boundary conditions for SOM.\n"
 			"    --progress, -p <float>          Print level of progress (default = 0.1).\n"
+            "                                    If < 1 relative progress, else number of images.\n"
 	        "    --seed, -s <int>                Seed for random number generator (default = 1234).\n"
 	        "    --som-width <int>               Width dimension of SOM (default = 10).\n"
             "    --som-height <int>              Height dimension of SOM (default = 10).\n"
