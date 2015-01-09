@@ -49,7 +49,8 @@ void SOM::training()
 
 	// Start timer
 	auto startTime = steady_clock::now();
-	std::chrono::high_resolution_clock::duration timer[10] = {std::chrono::high_resolution_clock::duration::zero()};
+	const int maxTimer = 3;
+	std::chrono::high_resolution_clock::duration timer[maxTimer] = {std::chrono::high_resolution_clock::duration::zero()};
 
 	for (int iter = 0; iter != inputData_.numIter; ++iter)
 	{
@@ -73,7 +74,7 @@ void SOM::training()
 
                 nextProgressPrint += inputData_.progressFactor;
                 startTime = steady_clock::now();
-                for (int i(0); i < 10; ++i) timer[i] = std::chrono::high_resolution_clock::duration::zero();
+                for (int i(0); i < maxTimer; ++i) timer[i] = std::chrono::high_resolution_clock::duration::zero();
             }
             progress += progressStep;
 

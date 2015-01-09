@@ -71,5 +71,15 @@ TEST(DistanceFunctorTest, Hexagonal)
 	EXPECT_EQ(HexagonalDistanceFunctor(3)(0,2), 1);
 	EXPECT_EQ(HexagonalDistanceFunctor(3)(1,2), 2);
     EXPECT_EQ(HexagonalDistanceFunctor(3)(0,3), 1);
+    EXPECT_EQ(HexagonalDistanceFunctor(3)(2,3), 1);
+    EXPECT_EQ(HexagonalDistanceFunctor(3)(3,2), 1);
+
     EXPECT_EQ(HexagonalDistanceFunctor(5)(2,3), 3);
+
+    EXPECT_EQ(HexagonalDistanceFunctor(25)(1,14), 1);
+    EXPECT_EQ(HexagonalDistanceFunctor(25)(1,15), 1);
+
+    EXPECT_EQ(HexagonalDistanceFunctor(25)(1,29), 2);
+    EXPECT_EQ(HexagonalDistanceFunctor(25)(1,30), 2);
+    EXPECT_EQ(HexagonalDistanceFunctor(25)(1,31), 3);
 }

@@ -7,7 +7,6 @@
 #include "UtilitiesLib/DistributionFunctor.h"
 #include "gtest/gtest.h"
 #include <cmath>
-#include <iostream>
 #include <string>
 
 struct DistributionFunctorTestData
@@ -19,6 +18,12 @@ struct DistributionFunctorTestData
 
 class FullDistributionFunctorTest : public ::testing::TestWithParam<DistributionFunctorTestData>
 {};
+
+TEST(DistributionFunctorTest, GaussianSpecial)
+{
+    EXPECT_NEAR(GaussianFunctor(1.2)(9.0), 2.028607587901271e-13, 1e-6);
+    EXPECT_NEAR(GaussianFunctor(1.2)(10.0), 2.7673267835957437e-16, 1e-6);
+}
 
 TEST_P(FullDistributionFunctorTest, Gaussian)
 {
@@ -53,6 +58,7 @@ TEST_P(FullDistributionFunctorTest, MexicanHat)
 INSTANTIATE_TEST_CASE_P(FullDistributionFunctorTest_all, FullDistributionFunctorTest,
     ::testing::Values(
         DistributionFunctorTestData(1.0),
+        DistributionFunctorTestData(1.2),
         DistributionFunctorTestData(2.0),
         DistributionFunctorTestData(-2.1)
 ));
