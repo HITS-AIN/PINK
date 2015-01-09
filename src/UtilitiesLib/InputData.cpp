@@ -45,6 +45,15 @@ std::ostream& operator << (std::ostream& os, SOMInitialization init)
 	return os;
 }
 
+std::ostream& operator << (std::ostream& os, IntermediateStorageType type)
+{
+    if (type == OFF) os << "off";
+    else if (type == OVERWRITE) os << "overwrite";
+    else if (type == KEEP) os << "keep";
+    else os << "undefined";
+    return os;
+}
+
 InputData::InputData()
  :
     verbose(false),
@@ -71,7 +80,7 @@ InputData::InputData()
     numberOfRotationsAndFlip(0),
     interpolation(BILINEAR),
     executionPath(UNDEFINED),
-    intermediate_storage(false),
+    intermediate_storage(OFF),
     function(GAUSSIAN),
     sigma(DEFAULT_SIGMA),
     damping(DEFAULT_DAMPING),
@@ -104,7 +113,7 @@ InputData::InputData(int argc, char **argv)
 		{"interpolation",       1, 0, 5},
 		{"train",               1, 0, 6},
 		{"map",                 1, 0, 7},
-        {"inter-store",         0, 0, 8},
+        {"inter-store",         1, 0, 8},
         {"b1",                  1, 0, 9},
         {"max-update-distance", 1, 0, 10},
         {"multi-GPU-off",       0, 0, 11},
@@ -259,7 +268,16 @@ InputData::InputData(int argc, char **argv)
 		    }
             case 8:
             {
-                intermediate_storage = true;
+                stringToUpper(optarg);
+                if (strcmp(optarg, "OFF") == 0) intermediate_storage = OFF;
+                else if (strcmp(optarg, "OVERWRITE") == 0) intermediate_storage = OVERWRITE;
+                else if (strcmp(optarg, "KEEP") == 0) intermediate_storage = KEEP;
+                else {
+                    printf ("optarg = %s\n", optarg);
+                    printf ("Unkown option %o\n", c);
+                    print_usage();
+                    exit(EXIT_FAILURE);
+                }
                 break;
             }
             case 9:
@@ -428,6 +446,7 @@ void InputData::print_parameters() const
          << "  Number of iterations = " << numIter << endl
          << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << endl
          << "  Progress = " << progressFactor << endl
+         << "  Intermediate storage of SOM = " << intermediate_storage << endl
          << "  Layout = " << layout << endl
          << "  Initialization type = " << init << endl
          << "  Interpolation type = " << interpolation << endl
@@ -466,7 +485,7 @@ void InputData::print_usage() const
 			"    --help, -h                      Print this lines.\n"
 	        "    --init, -x <string>             Type of SOM initialization (zero = default, random, random_with_preferred_direction, SOM-file).\n"
 	        "    --interpolation <string>        Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
-            "    --inter-store                   Store intermediate SOM results at every progress step.\n"
+            "    --inter-store <string>          Store intermediate SOM results at every progress step (off = default, overwrite, keep).\n"
 	        "    --layout, -l <string>           Layout of SOM (quadratic = default, quadhex, hexagonal).\n"
 	        "    --neuron-dimension, -d <int>    Dimension for quadratic SOM neurons (default = image-dimension * sqrt(2)/2).\n"
 	        "    --numrot, -n <int>              Number of rotations (1 or a multiple of 4, default = 360).\n"

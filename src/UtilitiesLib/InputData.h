@@ -48,6 +48,16 @@ enum ExecutionPath {
 	MAP
 };
 
+//! Type for storage of intermediate SOMs.
+enum IntermediateStorageType {
+    OFF,
+    OVERWRITE,
+    KEEP
+};
+
+//! Pretty printing of IntermediateStorageType.
+std::ostream& operator << (std::ostream& os, IntermediateStorageType type);
+
 #define DEFAULT_SIGMA     1.1
 #define DEFAULT_DAMPING   0.2
 
@@ -96,7 +106,7 @@ struct InputData
 	int numberOfRotationsAndFlip;
 	Interpolation interpolation;
 	ExecutionPath executionPath;
-	bool intermediate_storage;
+	IntermediateStorageType intermediate_storage;
 	Function function;
 	float sigma;
 	float damping;

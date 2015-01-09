@@ -52,6 +52,8 @@ void SOM::training()
 	const int maxTimer = 3;
 	std::chrono::high_resolution_clock::duration timer[maxTimer] = {std::chrono::high_resolution_clock::duration::zero()};
 
+	int interStoreCount = 0;
+
 	for (int iter = 0; iter != inputData_.numIter; ++iter)
 	{
 		for (ImageIterator<float> iterImage(inputData_.imagesFilename), iterEnd; iterImage != iterEnd; ++iterImage)
@@ -66,9 +68,14 @@ void SOM::training()
                     cout << "  Time for SOM update = " << duration_cast<milliseconds>(timer[2]).count() << " ms" << endl;
                 }
 
-                if (inputData_.intermediate_storage) {
-                    if (inputData_.verbose) cout << "  Write intermediate SOM to " << inputData_.resultFilename << " ... " << flush;
-                    write(inputData_.resultFilename);
+                if (inputData_.intermediate_storage != OFF) {
+                    string interStoreFilename = inputData_.resultFilename;
+                    if (inputData_.intermediate_storage == KEEP) {
+                        interStoreFilename.insert(interStoreFilename.find_last_of("."), "_" + to_string(interStoreCount));
+                        ++interStoreCount;
+                    }
+                    if (inputData_.verbose) cout << "  Write intermediate SOM to " << interStoreFilename << " ... " << flush;
+                    write(interStoreFilename);
                     if (inputData_.verbose) cout << "done." << endl;
                 }
 

@@ -62,6 +62,8 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
     int progressPrecision = rint(log10(1.0 / inputData.progressFactor)) - 2;
     if (progressPrecision < 0) progressPrecision = 0;
 
+    int interStoreCount = 0;
+
 	// Start timer
 	auto startTime = steady_clock::now();
 
@@ -74,12 +76,17 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
 				cout << "  Progress: " << fixed << setprecision(progressPrecision) << progress*100 << " % ("
 					 << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
 
-				if (inputData.intermediate_storage) {
-				    if (inputData.verbose) cout << "  Write intermediate SOM to " << inputData.resultFilename << " ... " << flush;
+                if (inputData.intermediate_storage != OFF) {
+                    string interStoreFilename = inputData.resultFilename;
+                    if (inputData.intermediate_storage == KEEP) {
+                        interStoreFilename.insert(interStoreFilename.find_last_of("."), "_" + to_string(interStoreCount));
+                        ++interStoreCount;
+                    }
+                    if (inputData.verbose) cout << "  Write intermediate SOM to " << interStoreFilename << " ... " << flush;
                     cuda_copyDeviceToHost_float(som.getDataPointer(), d_som, som.getSize());
-				    som.write(inputData.resultFilename);
-				    if (inputData.verbose) cout << "done." << endl;
-				}
+                    som.write(interStoreFilename);
+                    if (inputData.verbose) cout << "done." << endl;
+                }
 
 				nextProgressPrint += inputData.progressFactor;
 				startTime = steady_clock::now();
