@@ -10,13 +10,13 @@
 
 float* cuda_alloc_float(int size)
 {
-	float *d;
+    float *d;
 
-	cudaError_t error = cudaMalloc((void **) &d, size * sizeof(float));
+    cudaError_t error = cudaMalloc((void **) &d, size * sizeof(float));
 
     if (error != cudaSuccess)
     {
-		fprintf(stderr, "cudaMalloc failed (error code %s)!\n", cudaGetErrorString(error));
+        fprintf(stderr, "cudaMalloc failed (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
@@ -25,13 +25,13 @@ float* cuda_alloc_float(int size)
 
 int* cuda_alloc_int(int size)
 {
-	int *d;
+    int *d;
 
-	cudaError_t error = cudaMalloc((void **) &d, size * sizeof(int));
+    cudaError_t error = cudaMalloc((void **) &d, size * sizeof(int));
 
     if (error != cudaSuccess)
     {
-		fprintf(stderr, "cudaMalloc failed (error code %s)!\n", cudaGetErrorString(error));
+        fprintf(stderr, "cudaMalloc failed (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
@@ -40,79 +40,79 @@ int* cuda_alloc_int(int size)
 
 void cuda_fill_zero(float* d, int size)
 {
-	cudaError_t error = cudaMemset(d, 0, size * sizeof(float));
+    cudaError_t error = cudaMemset(d, 0, size * sizeof(float));
 
     if (error != cudaSuccess)
     {
-		fprintf(stderr, "cudaMemset failed (error code %s)!\n", cudaGetErrorString(error));
+        fprintf(stderr, "cudaMemset failed (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 }
 
 void cuda_free(float* d)
 {
-	cudaError_t error = cudaFree(d);
+    cudaError_t error = cudaFree(d);
 
-	if (error != cudaSuccess)
-	{
-		fprintf(stderr, "cudaFree failed (error code %s)!\n", cudaGetErrorString(error));
-		exit(EXIT_FAILURE);
-	}
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "cudaFree failed (error code %s)!\n", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
 }
 
 void cuda_free(int* d)
 {
-	cudaError_t error = cudaFree(d);
+    cudaError_t error = cudaFree(d);
 
-	if (error != cudaSuccess)
-	{
-		fprintf(stderr, "cudaFree failed (error code %s)!\n", cudaGetErrorString(error));
-		exit(EXIT_FAILURE);
-	}
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "cudaFree failed (error code %s)!\n", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
 }
 
 void cuda_copyHostToDevice_float(float *dest, float *source, int size)
 {
-	cudaError_t error = cudaMemcpy(dest, source, size * sizeof(float), cudaMemcpyHostToDevice);
+    cudaError_t error = cudaMemcpy(dest, source, size * sizeof(float), cudaMemcpyHostToDevice);
 
     if (error != cudaSuccess)
     {
-		fprintf(stderr, "cudaMemcpy HostToDevice float failed (error code %s)!\n", cudaGetErrorString(error));
+        fprintf(stderr, "cudaMemcpy HostToDevice float failed (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 }
 
 void cuda_copyHostToDevice_int(int *dest, int *source, int size)
 {
-	cudaError_t error = cudaMemcpy(dest, source, size * sizeof(int), cudaMemcpyHostToDevice);
+    cudaError_t error = cudaMemcpy(dest, source, size * sizeof(int), cudaMemcpyHostToDevice);
 
     if (error != cudaSuccess)
     {
-		fprintf(stderr, "cudaMemcpy HostToDevice int failed (error code %s)!\n", cudaGetErrorString(error));
+        fprintf(stderr, "cudaMemcpy HostToDevice int failed (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 }
 
 void cuda_copyDeviceToHost_float(float *dest, float *source, int size)
 {
-	cudaError_t error = cudaMemcpy(dest, source, size * sizeof(float), cudaMemcpyDeviceToHost);
+    cudaError_t error = cudaMemcpy(dest, source, size * sizeof(float), cudaMemcpyDeviceToHost);
 
-	if (error != cudaSuccess)
-	{
-		fprintf(stderr, "cudaMemcpy DeviceToHost float failed (error code %s)!\n", cudaGetErrorString(error));
-		exit(EXIT_FAILURE);
-	}
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "cudaMemcpy DeviceToHost float failed (error code %s)!\n", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
 }
 
 void cuda_copyDeviceToHost_int(int *dest, int *source, int size)
 {
-	cudaError_t error = cudaMemcpy(dest, source, size * sizeof(int), cudaMemcpyDeviceToHost);
+    cudaError_t error = cudaMemcpy(dest, source, size * sizeof(int), cudaMemcpyDeviceToHost);
 
-	if (error != cudaSuccess)
-	{
-		fprintf(stderr, "cudaMemcpy DeviceToHost int failed (error code %s)!\n", cudaGetErrorString(error));
-		exit(EXIT_FAILURE);
-	}
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "cudaMemcpy DeviceToHost int failed (error code %s)!\n", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
 }
 
 int cuda_getNumberOfGPUs()

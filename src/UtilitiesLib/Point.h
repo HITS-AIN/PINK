@@ -11,10 +11,10 @@
 
 struct Point
 {
-	Point(int x = 0, int y = 0) : x(x), y(y) {}
+    Point(int x = 0, int y = 0) : x(x), y(y) {}
 
-	int x;
-	int y;
+    int x;
+    int y;
 };
 
 //! Pretty printing of Point.

@@ -18,7 +18,7 @@
 __global__ void
 kernel(float *a, float *b, float *c, int length)
 {
-	int tid = threadIdx.x;
+    int tid = threadIdx.x;
     int i = blockDim.x * blockIdx.x + threadIdx.x;
 
     __shared__ float a_local[BLOCK_SIZE];
@@ -35,10 +35,10 @@ kernel(float *a, float *b, float *c, int length)
 
     // parallel reduction
     for (int s=1; s < blockDim.x; s *= 2) {
-    	if (tid % (2*s) == 0) {
-    	    c_local[tid] += c_local[tid + s];
-    	}
-    	__syncthreads();
+        if (tid % (2*s) == 0) {
+            c_local[tid] += c_local[tid + s];
+        }
+        __syncthreads();
     }
 
     if (tid == 0) c[blockIdx.x] = c_local[0];
@@ -49,7 +49,7 @@ kernel(float *a, float *b, float *c, int length)
  */
 float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length)
 {
-	float c = 0.0;
+    float c = 0.0;
     unsigned int sizeInBytes = length * sizeof(float);
 
     // Allocate device memory

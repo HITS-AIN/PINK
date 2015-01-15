@@ -22,17 +22,17 @@ class SOM
 {
 public:
 
-	SOM(InputData const& inputData);
+    SOM(InputData const& inputData);
 
-	void write(std::string const& filename) const;
+    void write(std::string const& filename) const;
 
-	int getSize() const { return som_.size(); }
+    int getSize() const { return som_.size(); }
 
     int getSizeInBytes() const { return som_.size() * sizeof(float); }
 
-	std::vector<float> getData() { return som_; }
+    std::vector<float> getData() { return som_; }
 
-	const std::vector<float> getData() const { return som_; }
+    const std::vector<float> getData() const { return som_; }
 
     float* getDataPointer() { return &som_[0]; }
 
@@ -61,7 +61,7 @@ private:
     InputData const& inputData_;
 
     //! The real self organizing matrix.
-	std::vector<float> som_;
+    std::vector<float> som_;
 
     std::shared_ptr<DistributionFunctorBase> ptrDistributionFunctor_;
 

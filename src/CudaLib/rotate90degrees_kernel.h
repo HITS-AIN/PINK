@@ -11,10 +11,10 @@ template <unsigned int block_size>
 __global__ void
 rotate90degrees_kernel(float *dest, float *source, int dim)
 {
-	int x = blockIdx.x * blockDim.x + threadIdx.x;
-	int y = blockIdx.y * blockDim.y + threadIdx.y;
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
 
-	if (x >= dim or y >= dim) return;
+    if (x >= dim or y >= dim) return;
 
     atomicExch(dest + (dim-y-1)*dim + x, source[x*dim + y]);
 }

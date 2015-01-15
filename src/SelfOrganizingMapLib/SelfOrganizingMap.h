@@ -20,7 +20,7 @@ void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotat
     bool useFlip, Interpolation interpolation, int numberOfChannels);
 
 void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix, int som_size, float* som,
-	int image_size, int numberOfRotations, float* image);
+    int image_size, int numberOfRotations, float* image);
 
 //! Returns the position of the best matching neuron (lowest euclidean distance).
 int findBestMatchingNeuron(float *euclideanDistanceMatrix, int som_size);

@@ -41,34 +41,34 @@ void cuda_mapping(InputData const& inputData)
     float *d_som = cuda_alloc_float(som.getSize());
     cuda_copyHostToDevice_float(d_som, som.getDataPointer(), som.getSize());
 
-	// Memory allocation
+    // Memory allocation
     int rotatedImagesSize = inputData.numberOfChannels * inputData.numberOfRotationsAndFlip * inputData.neuron_size;
-	if (inputData.verbose) cout << "  Size of rotated images = " << rotatedImagesSize * sizeof(float)<< " bytes" << endl;
-	float *d_rotatedImages = cuda_alloc_float(rotatedImagesSize);
+    if (inputData.verbose) cout << "  Size of rotated images = " << rotatedImagesSize * sizeof(float)<< " bytes" << endl;
+    float *d_rotatedImages = cuda_alloc_float(rotatedImagesSize);
 
-	if (inputData.verbose) cout << "  Size of euclidean distance matrix = " << inputData.som_size * sizeof(float) << " bytes" << endl;
-	float *d_euclideanDistanceMatrix = cuda_alloc_float(inputData.som_size);
+    if (inputData.verbose) cout << "  Size of euclidean distance matrix = " << inputData.som_size * sizeof(float) << " bytes" << endl;
+    float *d_euclideanDistanceMatrix = cuda_alloc_float(inputData.som_size);
     vector<float> euclideanDistanceMatrix(inputData.som_size);
 
-	if (inputData.verbose) cout << "  Size of best rotation matrix = " << inputData.som_size * sizeof(int) << " bytes\n" << endl;
-	int *d_bestRotationMatrix = cuda_alloc_int(inputData.som_size);
+    if (inputData.verbose) cout << "  Size of best rotation matrix = " << inputData.som_size * sizeof(int) << " bytes\n" << endl;
+    int *d_bestRotationMatrix = cuda_alloc_int(inputData.som_size);
 
-	if (inputData.verbose) cout << "  Size of image = " << inputData.numberOfChannels * inputData.image_size * sizeof(float) << " bytes\n" << endl;
-	float *d_image = cuda_alloc_float(inputData.numberOfChannels * inputData.image_size);
+    if (inputData.verbose) cout << "  Size of image = " << inputData.numberOfChannels * inputData.image_size * sizeof(float) << " bytes\n" << endl;
+    float *d_image = cuda_alloc_float(inputData.numberOfChannels * inputData.image_size);
 
     // Prepare trigonometric values
-	float *d_cosAlpha = NULL, *d_sinAlpha = NULL;
-	trigonometricValues(&d_cosAlpha, &d_sinAlpha, inputData.numberOfRotations/4);
+    float *d_cosAlpha = NULL, *d_sinAlpha = NULL;
+    trigonometricValues(&d_cosAlpha, &d_sinAlpha, inputData.numberOfRotations/4);
 
-	// Progress status
-	float progress = 0.0;
-	float progressStep = 1.0 / inputData.numberOfImages;
-	float nextProgressPrint = inputData.progressFactor;
+    // Progress status
+    float progress = 0.0;
+    float progressStep = 1.0 / inputData.numberOfImages;
+    float nextProgressPrint = inputData.progressFactor;
     int progressPrecision = rint(log10(1.0 / inputData.progressFactor)) - 2;
     if (progressPrecision < 0) progressPrecision = 0;
 
-	// Start timer
-	auto startTime = steady_clock::now();
+    // Start timer
+    auto startTime = steady_clock::now();
     int updateCount = 0;
 
     for (ImageIterator<float> iterImage(inputData.imagesFilename),iterEnd; iterImage != iterEnd; ++iterImage, ++updateCount)
@@ -102,9 +102,9 @@ void cuda_mapping(InputData const& inputData)
     cout << "  Progress: " << setw(12) << updateCount << " updates, 100 % ("
          << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
 
-	// Free memory
-	if (d_cosAlpha) cuda_free(d_cosAlpha);
-	if (d_sinAlpha) cuda_free(d_sinAlpha);
+    // Free memory
+    if (d_cosAlpha) cuda_free(d_cosAlpha);
+    if (d_sinAlpha) cuda_free(d_sinAlpha);
     cuda_free(d_image);
     cuda_free(d_bestRotationMatrix);
     cuda_free(d_euclideanDistanceMatrix);

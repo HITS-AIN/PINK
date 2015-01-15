@@ -14,8 +14,8 @@
  */
 inline void fatalError(std::string const& msg)
 {
-	std::cout << "FATAL ERROR: " << msg << std::endl;
-	exit(1);
+    std::cout << "FATAL ERROR: " << msg << std::endl;
+    exit(1);
 }
 
 #endif /* ERROR_H_ */

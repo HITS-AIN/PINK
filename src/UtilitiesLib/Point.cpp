@@ -9,5 +9,5 @@
 
 std::ostream& operator << (std::ostream& os, Point p)
 {
-	return os << "(" << p.x << "," << p.y << ")";
+    return os << "(" << p.x << "," << p.y << ")";
 }

@@ -13,7 +13,7 @@ namespace PINK {
 template <>
 void Image<float>::writeBinary(std::string const& filename)
 {
-	writeImagesToBinaryFile(pixel_, 1, 1, height_, width_, filename);
+    writeImagesToBinaryFile(pixel_, 1, 1, height_, width_, filename);
 }
 
 } // namespace PINK

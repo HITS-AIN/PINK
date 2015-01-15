@@ -37,7 +37,7 @@ void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotatio
     Function function, Layout layout, float sigma, float damping, float maxUpdateDistance, bool usePBC, int dimensionality)
 {
     {
-    	// Start kernel
+        // Start kernel
         findBestMatchingNeuron_kernel<<<1,1>>>(d_euclideanDistanceMatrix, d_bestMatch, som_size);
 
         cudaError_t error = cudaGetLastError();
@@ -49,12 +49,12 @@ void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotatio
         }
     }
     {
-		// Setup execution parameters
-		int gridSize = ceil((float)neuron_size/BLOCK_SIZE);
-		dim3 dimBlock(BLOCK_SIZE);
-		dim3 dimGrid(gridSize, som_size);
+        // Setup execution parameters
+        int gridSize = ceil((float)neuron_size/BLOCK_SIZE);
+        dim3 dimBlock(BLOCK_SIZE);
+        dim3 dimGrid(gridSize, som_size);
 
-		// Start kernel
+        // Start kernel
         if (function == GAUSSIAN) {
             if (layout == QUADRATIC) {
                 if (usePBC) {
@@ -129,12 +129,12 @@ void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotatio
             }
         }
 
-		cudaError_t error = cudaGetLastError();
+        cudaError_t error = cudaGetLastError();
 
-		if (error != cudaSuccess)
-		{
-			fprintf(stderr, "Failed to launch CUDA kernel updateNeurons_kernel (error code %s)!\n", cudaGetErrorString(error));
-			exit(EXIT_FAILURE);
-		}
+        if (error != cudaSuccess)
+        {
+            fprintf(stderr, "Failed to launch CUDA kernel updateNeurons_kernel (error code %s)!\n", cudaGetErrorString(error));
+            exit(EXIT_FAILURE);
+        }
     }
 }

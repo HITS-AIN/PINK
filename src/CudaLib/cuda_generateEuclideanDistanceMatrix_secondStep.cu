@@ -24,12 +24,12 @@ second_step_kernel(float *euclideanDistanceMatrix, int *bestRotationMatrix, floa
     float *pFirstStep = firstStep + i*num_rot;
     float *pDist = euclideanDistanceMatrix + i;
     *pDist = pFirstStep[0];
-	bestRotationMatrix[i] = 0;
+    bestRotationMatrix[i] = 0;
 
     for (int n=1; n < num_rot; ++n) {
         if (pFirstStep[n] < *pDist) {
-        	*pDist = pFirstStep[n];
-        	bestRotationMatrix[i] = n;
+            *pDist = pFirstStep[n];
+            bestRotationMatrix[i] = n;
         }
     }
 }

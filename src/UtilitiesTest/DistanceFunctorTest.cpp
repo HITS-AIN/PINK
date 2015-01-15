@@ -20,14 +20,14 @@ TEST(DistanceFunctorTest, Cartesian)
 
     // 2-dim
     EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(0,0), 0);
-	EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(0,1), 1);
-	EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(0,2), 2);
+    EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(0,1), 1);
+    EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(0,2), 2);
     EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(0,3), 1);
     EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(1,0), 1);
     EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(2,0), 2);
     EXPECT_EQ(CartesianDistanceFunctor<2>(3,3)(3,0), 1);
     EXPECT_FLOAT_EQ(CartesianDistanceFunctor<2>(3,3)(1,3), sqrt(2));
-	EXPECT_FLOAT_EQ(CartesianDistanceFunctor<2>(3,3)(1,6), sqrt(5));
+    EXPECT_FLOAT_EQ(CartesianDistanceFunctor<2>(3,3)(1,6), sqrt(5));
 
     // 3-dim
     EXPECT_EQ(CartesianDistanceFunctor<3>(3,3,3)(0,0), 0);
@@ -67,9 +67,9 @@ TEST(DistanceFunctorTest, Cartesian)
 
 TEST(DistanceFunctorTest, Hexagonal)
 {
-	EXPECT_EQ(HexagonalDistanceFunctor(3)(0,1), 1);
-	EXPECT_EQ(HexagonalDistanceFunctor(3)(0,2), 1);
-	EXPECT_EQ(HexagonalDistanceFunctor(3)(1,2), 2);
+    EXPECT_EQ(HexagonalDistanceFunctor(3)(0,1), 1);
+    EXPECT_EQ(HexagonalDistanceFunctor(3)(0,2), 1);
+    EXPECT_EQ(HexagonalDistanceFunctor(3)(1,2), 2);
     EXPECT_EQ(HexagonalDistanceFunctor(3)(0,3), 1);
     EXPECT_EQ(HexagonalDistanceFunctor(3)(2,3), 1);
     EXPECT_EQ(HexagonalDistanceFunctor(3)(3,2), 1);

@@ -33,48 +33,48 @@ using namespace chrono;
 
 int main (int argc, char **argv)
 {
-	#if DEBUG_MODE
-		feenableexcept(FE_INVALID | FE_OVERFLOW);
-	#endif
+    #if DEBUG_MODE
+        feenableexcept(FE_INVALID | FE_OVERFLOW);
+    #endif
 
-	// Start timer
-	const auto startTime = steady_clock::now();
+    // Start timer
+    const auto startTime = steady_clock::now();
 
-	InputData inputData(argc, argv);
-	SOM som(inputData);
+    InputData inputData(argc, argv);
+    SOM som(inputData);
 
     #if PINK_USE_CUDA
-	    if (inputData.useCuda)
-	    {
-	        if (inputData.useMultipleGPUs and cuda_getNumberOfGPUs() > 1)
-	            cout << "  Use multiple GPU code with " << cuda_getNumberOfGPUs() << " GPUs." << endl;
-	        else
-	            cout << "  Use single GPU code." << endl;
+        if (inputData.useCuda)
+        {
+            if (inputData.useMultipleGPUs and cuda_getNumberOfGPUs() > 1)
+                cout << "  Use multiple GPU code with " << cuda_getNumberOfGPUs() << " GPUs." << endl;
+            else
+                cout << "  Use single GPU code." << endl;
 
-	        if (inputData.executionPath == TRAIN)
+            if (inputData.executionPath == TRAIN)
                 cuda_trainSelfOrganizingMap(inputData);
-	        else if (inputData.executionPath == MAP)
-	            cuda_mapping(inputData);
-	        else
-	            fatalError("Unknown execution path.");
-		} else
+            else if (inputData.executionPath == MAP)
+                cuda_mapping(inputData);
+            else
+                fatalError("Unknown execution path.");
+        } else
     #endif
         if (inputData.executionPath == TRAIN)
-	    	som.training();
+            som.training();
         else if (inputData.executionPath == MAP)
             som.mapping();
         else
             fatalError("Unknown execution path.");
 
-	// Stop and print timer
-	const auto stopTime = steady_clock::now();
-	const auto duration = stopTime - startTime;
-	cout << "\n  Total time (hh:mm:ss): "
-		 << setfill('0') << setw(2) << duration_cast<hours>(duration).count() << ":"
-		 << setfill('0') << setw(2) << duration_cast<minutes>(duration % hours(1)).count() << ":"
-		 << setfill('0') << setw(2) << duration_cast<seconds>(duration % minutes(1)).count()
-	     << "     (= " << duration_cast<seconds>(duration).count() << "s)" << endl;
+    // Stop and print timer
+    const auto stopTime = steady_clock::now();
+    const auto duration = stopTime - startTime;
+    cout << "\n  Total time (hh:mm:ss): "
+         << setfill('0') << setw(2) << duration_cast<hours>(duration).count() << ":"
+         << setfill('0') << setw(2) << duration_cast<minutes>(duration % hours(1)).count() << ":"
+         << setfill('0') << setw(2) << duration_cast<seconds>(duration % minutes(1)).count()
+         << "     (= " << duration_cast<seconds>(duration).count() << "s)" << endl;
 
     cout << "\n  Successfully finished. Have a nice day.\n" << endl;
-	return 0;
+    return 0;
 }

@@ -13,9 +13,9 @@
 
 //! Type for SOM layout.
 enum Layout {
-	QUADRATIC,
-	QUADHEX,
-	HEXAGONAL
+    QUADRATIC,
+    QUADHEX,
+    HEXAGONAL
 };
 
 //! Pretty printing of SOM layout type.
@@ -32,10 +32,10 @@ std::ostream& operator << (std::ostream& os, Function function);
 
 //! Type for SOM initialization.
 enum SOMInitialization {
-	ZERO,
-	RANDOM,
-	RANDOM_WITH_PREFERRED_DIRECTION,
-	FILEINIT
+    ZERO,
+    RANDOM,
+    RANDOM_WITH_PREFERRED_DIRECTION,
+    FILEINIT
 };
 
 //! Pretty printing of SOM layout type.
@@ -43,9 +43,9 @@ std::ostream& operator << (std::ostream& os, SOMInitialization init);
 
 //! Type for execution path.
 enum ExecutionPath {
-	UNDEFINED,
-	TRAIN,
-	MAP
+    UNDEFINED,
+    TRAIN,
+    MAP
 };
 
 //! Type for storage of intermediate SOMs.
@@ -66,52 +66,52 @@ struct InputData
     //! Default constructor.
     InputData();
 
-	//! Constructor reading input data from arguments.
-	InputData(int argc, char **argv);
+    //! Constructor reading input data from arguments.
+    InputData(int argc, char **argv);
 
-	//! Print program header.
-	void print_header() const;
+    //! Print program header.
+    void print_header() const;
 
-	//! Print input data.
-	void print_parameters() const;
+    //! Print input data.
+    void print_parameters() const;
 
-	//! Print usage output for input arguments.
-	void print_usage() const;
+    //! Print usage output for input arguments.
+    void print_usage() const;
 
-	std::string imagesFilename;
-	std::string resultFilename;
-	std::string somFilename;
+    std::string imagesFilename;
+    std::string resultFilename;
+    std::string somFilename;
 
-	bool verbose;
-	int som_width;
+    bool verbose;
+    int som_width;
     int som_height;
     int som_depth;
     int neuron_dim;
-	Layout layout;
-	int seed;
-	int numberOfRotations;
-	int numberOfThreads;
-	SOMInitialization init;
-	int numIter;
-	float progressFactor;
-	bool useFlip;
-	bool useCuda;
-	int numberOfImages;
-	int numberOfChannels;
-	int image_dim;
-	int image_size;
+    Layout layout;
+    int seed;
+    int numberOfRotations;
+    int numberOfThreads;
+    SOMInitialization init;
+    int numIter;
+    float progressFactor;
+    bool useFlip;
+    bool useCuda;
+    int numberOfImages;
+    int numberOfChannels;
+    int image_dim;
+    int image_size;
     int som_size;
     int neuron_size;
     int som_total_size;
-	int numberOfRotationsAndFlip;
-	Interpolation interpolation;
-	ExecutionPath executionPath;
-	IntermediateStorageType intermediate_storage;
-	Function function;
-	float sigma;
-	float damping;
-	int block_size_1;
-	int maxUpdateDistance;
+    int numberOfRotationsAndFlip;
+    Interpolation interpolation;
+    ExecutionPath executionPath;
+    IntermediateStorageType intermediate_storage;
+    Function function;
+    float sigma;
+    float damping;
+    int block_size_1;
+    int maxUpdateDistance;
     int useMultipleGPUs;
     int usePBC;
     int dimensionality;

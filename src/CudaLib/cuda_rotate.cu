@@ -30,8 +30,8 @@ rotate_kernel(const float *source, float *dest, int height, int width, float alp
 
     for (x1 = i; x1 < width; x1 += is) {
         for (y1 = j; y1 < height; y1 += js) {
-        	x2 = (x1 - x0) * cosAlpha - (y1 - y0) * sinAlpha + x0;
-        	y2 = (x1 - x0) * sinAlpha + (y1 - y0) * cosAlpha + y0;
+            x2 = (x1 - x0) * cosAlpha - (y1 - y0) * sinAlpha + x0;
+            y2 = (x1 - x0) * sinAlpha + (y1 - y0) * cosAlpha + y0;
             if (x2 > -1 && x2 < width && y2 > -1 && y2 < height) dest[x2*height + y2] = source[x1*height + y1];
         }
     }

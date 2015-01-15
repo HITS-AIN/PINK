@@ -28,9 +28,9 @@ TEST(DistributionFunctorTest, GaussianSpecial)
 TEST_P(FullDistributionFunctorTest, Gaussian)
 {
     // max value
-	EXPECT_NEAR(GaussianFunctor(GetParam().sigma)(0.0), 1.0 / (GetParam().sigma * sqrt(2.0*M_PI)), 1e-6);
+    EXPECT_NEAR(GaussianFunctor(GetParam().sigma)(0.0), 1.0 / (GetParam().sigma * sqrt(2.0*M_PI)), 1e-6);
 
-	// inflection points
+    // inflection points
     EXPECT_NEAR(GaussianFunctor(GetParam().sigma)(GetParam().sigma), 1.0 / (GetParam().sigma * sqrt(2.0*M_PI*exp(1))), 1e-6);
     EXPECT_NEAR(GaussianFunctor(GetParam().sigma)(-GetParam().sigma), 1.0 / (GetParam().sigma * sqrt(2.0*M_PI*exp(1))), 1e-6);
 }

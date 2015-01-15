@@ -18,24 +18,24 @@
 
 struct FullUpdateNeuronsTestData
 {
-	FullUpdateNeuronsTestData(int som_dim, int neuron_dim, int num_rot, int num_channels)
-	  : som_dim(som_dim), neuron_dim(neuron_dim), num_rot(num_rot), num_channels(num_channels)
-	{
-		som_size = som_dim * som_dim;
+    FullUpdateNeuronsTestData(int som_dim, int neuron_dim, int num_rot, int num_channels)
+      : som_dim(som_dim), neuron_dim(neuron_dim), num_rot(num_rot), num_channels(num_channels)
+    {
+        som_size = som_dim * som_dim;
         neuron_size = neuron_dim * neuron_dim;
-		rot_size = num_channels * num_rot * neuron_size;
-		som_total_size = num_channels * som_size * neuron_size;
-	}
+        rot_size = num_channels * num_rot * neuron_size;
+        som_total_size = num_channels * som_size * neuron_size;
+    }
 
-	int som_dim;
-	int neuron_dim;
-	int num_rot;
-	int num_channels;
+    int som_dim;
+    int neuron_dim;
+    int num_rot;
+    int num_channels;
 
-	int som_size;
-	int neuron_size;
-	int rot_size;
-	int som_total_size;
+    int som_size;
+    int neuron_size;
+    int rot_size;
+    int som_total_size;
 };
 
 class FullUpdateNeuronsTest : public ::testing::TestWithParam<FullUpdateNeuronsTestData>
@@ -44,14 +44,14 @@ class FullUpdateNeuronsTest : public ::testing::TestWithParam<FullUpdateNeuronsT
 //! Compare rotated images between CPU and GPU version.
 TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
 {
-	FullUpdateNeuronsTestData data = GetParam();
+    FullUpdateNeuronsTestData data = GetParam();
 
-	float *rotatedImages = new float[data.rot_size];
-	fillWithRandomNumbers(rotatedImages, data.rot_size, 0);
-	int *bestRotationMatrix = new int[data.som_size];
-	fillWithValue(bestRotationMatrix, data.som_size);
-	float *euclideanDistanceMatrix = new float[data.som_size];
-	fillWithValue(euclideanDistanceMatrix, data.som_size);
+    float *rotatedImages = new float[data.rot_size];
+    fillWithRandomNumbers(rotatedImages, data.rot_size, 0);
+    int *bestRotationMatrix = new int[data.som_size];
+    fillWithValue(bestRotationMatrix, data.som_size);
+    float *euclideanDistanceMatrix = new float[data.som_size];
+    fillWithValue(euclideanDistanceMatrix, data.som_size);
 
     InputData inputData;
     inputData.som_width = data.som_dim;
@@ -74,40 +74,40 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
     // Calculate CPU result
     cpu_som.updateNeurons(rotatedImages, 0, bestRotationMatrix);
 
-	float *d_rotatedImages = cuda_alloc_float(data.rot_size);
-	float *d_som = cuda_alloc_float(data.som_total_size);
-	int *d_bestRotationMatrix = cuda_alloc_int(data.som_size);
-	float *d_euclideanDistanceMatrix = cuda_alloc_float(data.som_size);
+    float *d_rotatedImages = cuda_alloc_float(data.rot_size);
+    float *d_som = cuda_alloc_float(data.som_total_size);
+    int *d_bestRotationMatrix = cuda_alloc_int(data.som_size);
+    float *d_euclideanDistanceMatrix = cuda_alloc_float(data.som_size);
     int *d_bestMatch = cuda_alloc_int(1);
 
-	cuda_copyHostToDevice_float(d_rotatedImages, rotatedImages, data.rot_size);
-	cuda_copyHostToDevice_float(d_som, &gpu_som[0], data.som_total_size);
-	cuda_copyHostToDevice_int(d_bestRotationMatrix, bestRotationMatrix, data.som_size);
-	cuda_copyHostToDevice_float(d_euclideanDistanceMatrix, euclideanDistanceMatrix, data.som_size);
+    cuda_copyHostToDevice_float(d_rotatedImages, rotatedImages, data.rot_size);
+    cuda_copyHostToDevice_float(d_som, &gpu_som[0], data.som_total_size);
+    cuda_copyHostToDevice_int(d_bestRotationMatrix, bestRotationMatrix, data.som_size);
+    cuda_copyHostToDevice_float(d_euclideanDistanceMatrix, euclideanDistanceMatrix, data.som_size);
 
     // Calculate GPU result
-	cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
-	    data.som_dim, data.som_dim, 1, data.som_size, data.num_channels * data.neuron_size,
-	    data.num_rot, GAUSSIAN, QUADRATIC, DEFAULT_SIGMA, DEFAULT_DAMPING, inputData.maxUpdateDistance,
-	    inputData.usePBC, inputData.dimensionality);
+    cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
+        data.som_dim, data.som_dim, 1, data.som_size, data.num_channels * data.neuron_size,
+        data.num_rot, GAUSSIAN, QUADRATIC, DEFAULT_SIGMA, DEFAULT_DAMPING, inputData.maxUpdateDistance,
+        inputData.usePBC, inputData.dimensionality);
 
-	cuda_copyDeviceToHost_float(&gpu_som[0], d_som, data.som_total_size);
+    cuda_copyDeviceToHost_float(&gpu_som[0], d_som, data.som_total_size);
 
-	int bestMatch;
+    int bestMatch;
     cuda_copyDeviceToHost_int(&bestMatch, d_bestMatch, 1);
     EXPECT_EQ(bestMatch,0);
 
-	EXPECT_TRUE(EqualFloatArrays(cpu_som.getDataPointer(), &gpu_som[0], data.som_total_size));
+    EXPECT_TRUE(EqualFloatArrays(cpu_som.getDataPointer(), &gpu_som[0], data.som_total_size));
 
-	cuda_free(d_euclideanDistanceMatrix);
-	cuda_free(d_bestRotationMatrix);
-	cuda_free(d_som);
-	cuda_free(d_rotatedImages);
-	cuda_free(d_bestMatch);
+    cuda_free(d_euclideanDistanceMatrix);
+    cuda_free(d_bestRotationMatrix);
+    cuda_free(d_som);
+    cuda_free(d_rotatedImages);
+    cuda_free(d_bestMatch);
 
-	delete [] euclideanDistanceMatrix;
-	delete [] bestRotationMatrix;
-	delete [] rotatedImages;
+    delete [] euclideanDistanceMatrix;
+    delete [] bestRotationMatrix;
+    delete [] rotatedImages;
 }
 
 INSTANTIATE_TEST_CASE_P(FullUpdateNeuronsTest_all, FullUpdateNeuronsTest,

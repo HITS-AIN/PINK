@@ -15,12 +15,12 @@
 template <class T>
 void fillWithRandomNumbers(T *a, int length, int seed = 1234)
 {
-	typedef std::mt19937 MyRNG;
-	MyRNG rng(seed);
-	std::normal_distribution<T> normal_dist(0.0, 0.1);
+    typedef std::mt19937 MyRNG;
+    MyRNG rng(seed);
+    std::normal_distribution<T> normal_dist(0.0, 0.1);
 
     for (int i = 0; i < length; ++i) {
-    	a[i] = normal_dist(rng);
+        a[i] = normal_dist(rng);
     }
 }
 
@@ -31,7 +31,7 @@ template <class T>
 void fillWithValue(T *a, int length, T value = 0)
 {
     for (int i = 0; i < length; ++i) {
-    	a[i] = value;
+        a[i] = value;
     }
 }
 
