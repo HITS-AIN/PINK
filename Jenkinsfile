@@ -49,7 +49,7 @@ pipeline {
           alwaysLinkToLastBuild: false,
           keepAll: true,
           reportName: 'Doxygen',
-          reportDir: 'build/doxygen',
+          reportDir: 'doxygen',
           reportFiles: 'index.xhtml'
         ])
       }
