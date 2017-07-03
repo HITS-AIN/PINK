@@ -49,8 +49,8 @@ pipeline {
           alwaysLinkToLastBuild: false,
           keepAll: true,
           reportName: 'Doxygen',
-          reportDir: 'doxygen',
-          reportFiles: 'index.xhtml'
+          reportDir: 'doxygen/html',
+          reportFiles: 'index.html'
         ])
       }
     }
