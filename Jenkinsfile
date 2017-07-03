@@ -32,7 +32,7 @@ pipeline {
             step([
               $class: 'XUnitBuilder',
               thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-              tools: [[$class: 'GoogleTestType', pattern: 'build/Testing/Temporary/*.xml']]
+              tools: [[$class: 'GoogleTestType', pattern: 'build/Testing/*.xml']]
             ])
           }
         }
