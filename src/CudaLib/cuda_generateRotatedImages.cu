@@ -46,6 +46,8 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
         }
     }
 
+    if (num_rot == 1) return;
+
     // Rotate images between 0 and 90 degrees
     {
         // Setup execution parameters
