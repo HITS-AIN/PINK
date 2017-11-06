@@ -24,13 +24,14 @@ def print_usage():
     print ('  --neuron, -n <int>      Neuron size.')
     print ('  --save, -s <String>     Location to save JPGs to.')
     print ('  --name, -n <String>     Name of saved file. Channel number will automatically be added to the end of the name.')
+    print ('  --layout, -l <String>   Layout of the map. (quadratic = default, hexagonal)')
     print ('  --display, -d <int>     1 to display SOM as well as save it. Default 0.')
     print ('')
 
 if __name__ == "__main__":
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"h:i:b:n:s:n:d:",["help", "image=", "border=", "neuron=", "save=", "name=", "display="])
+        opts, args = getopt.getopt(sys.argv[1:],"h:i:b:n:s:n:d:l:",["help", "image=", "border=", "neuron=", "save=", "name=", "display=", "layout="])
     except getopt.GetoptError:
         print_usage()
         sys.exit(1)
@@ -43,6 +44,7 @@ if __name__ == "__main__":
     save = ""
     name = "heatmap"
     display = 0
+    layout = "quadratic"
 
     #Set parameters
     for opt, arg in opts:
@@ -61,6 +63,8 @@ if __name__ == "__main__":
             name = arg
         elif opt in ("-d", "--display"):
             display = int(arg)
+        elif opt in ("-l", "--layout"):
+            layout = arg
 
     if len(args) != 1:
         print_usage()
@@ -77,6 +81,7 @@ if __name__ == "__main__":
         print ('Display is on')
     else:
         print ('Display is off')
+    print('Layout is ', layout)
 
     #Importing here allows control of the backend depending on if display is on or off.
     if(display==0):
@@ -94,26 +99,23 @@ if __name__ == "__main__":
     if imageNumber >= numberOfImages:
         print ('Image number too large.')
         sys.exit(1)
+    
 
-    #Size if the map is hexagonal
-    hexSize=int(1.0 + 6.0 * (( (SOM_width-1)/2.0 + 1.0) * (SOM_width-1)/ 4.0))
-    #Size if the map is quadratic
-    size = SOM_width * SOM_height * SOM_depth
-    image_width = SOM_width
-    image_height = SOM_depth * SOM_height
-    inFile.seek(imageNumber * size * 4, 1)
-    array = numpy.array(struct.unpack('f' * size, inFile.read(size * 4)))
-    data = numpy.ndarray([SOM_width, SOM_height, SOM_depth], 'float', array)
-
-    #Checks if the map is hexagonal. If hexagonal, all neurons between hexSize and size will be identical
-    if numpy.min(data.flatten()[hexSize:]) - numpy.max(data.flatten()[hexSize:]) == 0:
+    if layout == 'hexagonal':
         print ("hex heatmap")
+        hexSize=int(1.0 + 6.0 * (( (SOM_width-1)/2.0 + 1.0) * (SOM_width-1)/ 4.0))
+        image_width = SOM_width
+        image_height = SOM_depth * SOM_height
+        inFile.seek(imageNumber * hexSize * 4, 1)
+        array = numpy.array(struct.unpack('f' * hexSize, inFile.read(hexSize * 4)))
+        data = numpy.ndarray([hexSize],'float',array)
+    
         #Sets size to hexSize, including borders
         size = [int(ceil(SOM_width * ((neuronSize*2+1) + border) + neuronSize/2.0 + 1)),
                 int(SOM_height * (neuronSize + neuronSize/2.0 + 1 + border) )]
         image = numpy.empty(size)
         image[:] = numpy.NAN
-        data = data.reshape(SOM_width*SOM_height, -1)
+        #data = data.reshape(SOM_width*SOM_height, -1)
 
         #Creates each neuron and fills it with the same color
         def fillHexagon(x, y, value):
@@ -145,6 +147,13 @@ if __name__ == "__main__":
         #Transposes the data
         data = image.T
     else:
+        size = SOM_width * SOM_height * SOM_depth
+        print(size)
+        image_width = SOM_width
+        image_height = SOM_depth * SOM_height
+        inFile.seek(imageNumber * size * 4, 1)
+        array = numpy.array(struct.unpack('f' * size, inFile.read(size * 4)))
+        data = numpy.ndarray([SOM_width, SOM_height, SOM_depth], 'float', array)
         #If the map is quadratic, swapping the axes and then transposing the data creates the heat map
         print ("box heatmap")
         data = numpy.swapaxes(data, 0, 2)
