@@ -3,7 +3,7 @@
 pipeline {
   agent {
     dockerfile {
-      filename 'Dockerfile-gcc-4.9'
+      filename 'Dockerfile'
     }
   }
   stages {

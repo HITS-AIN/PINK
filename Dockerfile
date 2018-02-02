@@ -1,4 +1,4 @@
-FROM bernddoser/docker-devel-cpp:cuda-8.0-devel-cmake-3.9.1-gtest-1.8.0-doxygen-1.8.13
+FROM bernddoser/docker-devel-cpp:cuda-9.1-devel-cmake-3.10-gtest-1.8.0-doxygen-1.8.14
 
 MAINTAINER Bernd Doser <bernd.doser@h-its.org>
 
