@@ -4,7 +4,6 @@ pipeline {
   agent {
     dockerfile {
       filename 'Dockerfile-gcc-4.9'
-      label 'docker-nodes'
     }
   }
   stages {
