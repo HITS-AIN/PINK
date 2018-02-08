@@ -3,7 +3,7 @@
 pipeline {
   agent {
     docker {
-      image 'braintwister/cuda-9.1-devel-cmake-3.10-gtest-1.8.0-doxygen-1.8.14'
+      image 'braintwister/cuda-9.1-devel-cmake-3.10-gtest-1.8.0-doxygen-1.8.13'
       args '--runtime=nvidia'
     }
   }
