@@ -2,8 +2,9 @@
 
 pipeline {
   agent {
-    dockerfile {
-      filename 'Dockerfile'
+    docker {
+      image 'braintwister/cuda-9.1-devel-cmake-3.10-gtest-1.8.0-doxygen-1.8.14'
+      args '--runtime=nvidia'
     }
   }
   stages {
