@@ -25,6 +25,7 @@ def print_usage():
     print ('  --color, -c <String>         Background color. [Defaults to \\#ffaadd - HIGHLY RECOMMENDED!!!]')
     print ('  --name, -n <String>          Name of saved file. Channel number will automatically be added to the end of the name.')
     print ('  --display, -d <int>          1 to display SOM as well as save it. Default 0.')
+    print ('  --scolor, -o <int>           0 to use jet color scheme for all SOMs, 1 to use single color scheme with a different color per SOM. Default 1.')
     print ('')
 
 class MAPVisualizer():
@@ -132,6 +133,7 @@ class MAPVisualizer():
 
     #Creates the SOM and saves it to the specified location. Displays map if --display, -d is set to 1.
     def showMap(self, channel, shareIntensity = True, borderWidth = 2, facecolor = '#ffaadd'):
+        print(shareIntensity)
         if facecolor != "#ffaadd":
             print ("WARNING! using non recommended background color! The results will look ugly.")
         figure = pyplot.figure( figsize=(16, 16))
@@ -148,20 +150,23 @@ class MAPVisualizer():
             image = self.calculateMap(self.__neurons[:,start:end], border=borderWidth, shareIntensity=shareIntensity, shape="box")
 
         ax = pyplot.subplot()
-        if channel==0:
-            cmap = matplotlib.cm.get_cmap("Blues")
-        elif channel==1:
-            cmap = matplotlib.cm.get_cmap("Reds")
-        elif channel==2:
-            cmap = matplotlib.cm.get_cmap("Greens")
-        elif channel==3:
-            cmap = matplotlib.cm.get_cmap("Purples")
-        elif channel==4:
-            cmap = matplotlib.cm.get_cmap("Greys")
-        elif channel==5:
-            cmap = matplotlib.cm.get_cmap("Oranges")
+        if color==0:
+            cmap = matplotlib.cm.get_cmap("jet")
         else:
-            cmap = matplotlib.cm.get_cmap()
+            if channel==0:
+                cmap = matplotlib.cm.get_cmap("Blues")
+            elif channel==1:
+                cmap = matplotlib.cm.get_cmap("Reds")
+            elif channel==2:
+                cmap = matplotlib.cm.get_cmap("Greens")
+            elif channel==3:
+                cmap = matplotlib.cm.get_cmap("Purples")
+            elif channel==4:
+                cmap = matplotlib.cm.get_cmap("Greys")
+            elif channel==5:
+                cmap = matplotlib.cm.get_cmap("Oranges")
+            else:
+                cmap = matplotlib.cm.get_cmap()
         cmap.set_bad(facecolor,1.)
         ax.imshow(image.T, aspect='auto', interpolation="nearest", cmap=cmap)
         ax.set_xticks([])
@@ -188,13 +193,14 @@ if __name__ == "__main__":
     facecolor="#ffaadd"
     shareIntensity=True
     display=0
+    somColor=1
 
     #Use inputted parameters
     for opt, arg in opts:
         if opt in ("-s", "--save"):
             save = arg
         elif opt in ("-i", "--shareIntensity"):
-            shareIntensity = arg
+            shareIntensity = arg in ["True", "true", "yes", "on", "yeah", "si", "wi", "ja"]
         elif opt in ("-c", "--color"):
             facecolor = arg
         elif opt in ("-b", "--border"):
@@ -203,6 +209,8 @@ if __name__ == "__main__":
             name = arg
         elif opt in ("-d", "--display"):
             display = int(arg)
+        elif opt in ("-o", "--scolor"):
+            somColor = int(arg)
         elif opt in ("-h", "--help"):
             print_usage()
             sys.exit()
