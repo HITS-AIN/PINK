@@ -50,7 +50,7 @@ Usage
 Python scripts
 --------------
 
-For conversion and visualization of images some python scripts are available.
+For conversion and visualization of images some python scripts are available. Some may be incompatible with python2.7.
 
   numpy2binary.py: Conversion of the python numpy file format into binary input file format for images.
 
@@ -60,6 +60,9 @@ For conversion and visualization of images some python scripts are available.
   showImages.py:   Visualize binary images file format.
 
   showSOM.py:      Visualize binary SOM file format.
+
+  showSOMMulti.py: Visualize multiple binary SOM files with the same naming convention.
+                   Intended to be used when making videos.
 
   showHeatmap.py:  Visualize the mapping result.
 
