@@ -1,0 +1,6 @@
+/build
+/.cproject
+/.project
+/.settings
+/bashrc
+/src/UtilitiesLib/Version.h
