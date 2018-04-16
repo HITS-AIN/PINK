@@ -1,18 +1,14 @@
-PINK
-====
+# Parallel orientation Invariant Non-parametric Kohonen-map (PINK)
 
-  Parallel orientation Invariant Non-parametric Kohonen-map (PINK)
+## Requirements
 
-Requirements
-------------
-
-  - cmake (Version >= 2.6.6, http://www.cmake.org)
+  - CMake (Version >= 2.6.2, http://www.cmake.org)
   - CUDA (recommended)
   - gtest (optional)
   - doxygen (optional)
 
-Installation
-------------
+
+## Installation
 
   1) Make build directory and change into it:
   
@@ -42,13 +38,13 @@ Installation
 
      source <INSTALL_PATH>/bashrc
 
-Usage
------
+
+## Usage
 
   Please execute 'Pink -h' for current usage and options.
 
-Python scripts
---------------
+
+## Python scripts
 
 For conversion and visualization of images some python scripts are available. Some may be incompatible with python2.7.
 
@@ -63,8 +59,8 @@ For conversion and visualization of images some python scripts are available. So
 
   showHeatmap.py:  Visualize the mapping result.
 
-Binary file format description
-------------------------------
+
+## Binary file format description
 
   Arrays are in FORTRAN notation: First index is the slowest, last index is the fastest.
 
