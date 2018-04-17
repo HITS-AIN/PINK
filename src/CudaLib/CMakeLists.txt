@@ -6,7 +6,9 @@ set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # Set flags for CUDA compiler
-list(APPEND CUDA_NVCC_FLAGS "-arch=compute_35 -code=compute_35,sm_35")
+#list(APPEND CUDA_NVCC_FLAGS "-arch=compute_35 -code=compute_35,sm_35")
+list(APPEND CUDA_NVCC_FLAGS "-arch=compute_61 -code=compute_61,sm_61")
+#list(APPEND CUDA_NVCC_FLAGS "-gencode=arch=compute_61 -code=sm_61")
 list(APPEND CUDA_NVCC_FLAGS_RELEASE "-O3")
 list(APPEND CUDA_NVCC_FLAGS_DEBUG "-O0 -g -G -DDEBUG_MODE")
 list(APPEND CUDA_NVCC_FLAGS_RELWITHDEBINFO "-O3 -g -G -DDEBUG_MODE")
@@ -35,6 +37,7 @@ cuda_add_library(
     cuda_rotate.cu
     cuda_print_properties.cu
     cuda_updateNeurons.cu
+    euclidean_distance.cu
     trigonometricValues.cpp
 )
 

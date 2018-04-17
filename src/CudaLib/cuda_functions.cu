@@ -6,7 +6,7 @@
  */
 
 #include "CudaLib.h"
-#include <stdio.h>
+#include <cstdio>
 
 float* cuda_alloc_float(int size)
 {
