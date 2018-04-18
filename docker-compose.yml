@@ -1,0 +1,17 @@
+version: "2.3"
+services:
+
+  eclipse:
+    image: braintwister/ubuntu-16.04-cuda-9.1-cmake-3.11-gtest-1.8.0-nsight
+    runtime: nvidia
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro 
+      - /etc/localtime:/etc/localtime:ro
+      - .:/${PROJECT}
+    environment:
+      - DISPLAY
+      - USER_ID=${USER_ID}
+      - GROUP_ID=${GROUP_ID}
+      - USER_NAME=${USER_NAME}
+      - GROUP_NAME=${GROUP_NAME}
+    privileged: true
