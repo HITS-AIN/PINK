@@ -68,7 +68,22 @@ TEST(ImageProcessingTest, EuclideanSimilarity)
     std::vector<float> a{2.0, -3.9, 0.1};
     std::vector<float> b{1.9, -4.0, 0.2};
 
-    EXPECT_NEAR(0.1732 ,(calculateEuclideanDistance(&a[0], &b[0], a.size())), 1e-4);
+    EXPECT_NEAR(0.1732, (calculateEuclideanDistance(&a[0], &b[0], a.size())), 1e-4);
+}
+
+TEST(ImageProcessingTest, EuclideanDistanceByDot)
+{
+    std::vector<float> a{2.0, -3.9, 0.1};
+    std::vector<float> b{1.9, -4.0, 0.2};
+    std::vector<float> c;
+
+    transform(begin(a), end(a), begin(b), back_inserter(c), minus<float>());
+
+    float dot = std::accumulate(begin(c), end(c), 0.0, [](float dot, float c){
+        return dot + std::pow(c, 2);
+    });
+
+    EXPECT_NEAR(0.1732, std::sqrt(dot), 1e-4);
 }
 
 TEST(ImageProcessingTest, Flip)
