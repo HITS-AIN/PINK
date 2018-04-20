@@ -7,7 +7,8 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:ro 
       - /etc/localtime:/etc/localtime:ro
-      - .:/${PROJECT}
+      - home:/home/${USER_NAME}
+      - .:/home/${USER_NAME}/git/${PROJECT}
     environment:
       - DISPLAY
       - USER_ID=${USER_ID}
@@ -15,3 +16,6 @@ services:
       - USER_NAME=${USER_NAME}
       - GROUP_NAME=${GROUP_NAME}
     privileged: true
+
+volumes:
+  home:
