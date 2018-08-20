@@ -1,9 +1,6 @@
 # No propagation of host compiler flags to CUDA compiler via -Xcompiler 
 set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 
-# Add C++11 support for host compiler
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
 # Set flags for CUDA compiler
 list(APPEND CUDA_NVCC_FLAGS "
 -arch=sm_61
