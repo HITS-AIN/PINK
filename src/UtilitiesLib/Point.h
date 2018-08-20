@@ -4,8 +4,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef POINT_H_
-#define POINT_H_
+#pragma once
 
 #include <iostream>
 
@@ -19,5 +18,3 @@ struct Point
 
 //! Pretty printing of Point.
 std::ostream& operator << (std::ostream& os, Point point);
-
-#endif /* POINT_H_ */

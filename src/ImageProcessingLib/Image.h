@@ -4,8 +4,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef IMAGE_H_
-#define IMAGE_H_
+#pragma once
 
 #include <stdexcept>
 #include <vector>
@@ -71,5 +70,3 @@ template <>
 void Image<float>::writeBinary(std::string const& filename);
 
 } // namespace PINK
-
-#endif /* IMAGE_H_ */

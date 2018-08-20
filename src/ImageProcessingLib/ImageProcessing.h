@@ -5,8 +5,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef IMAGEPROCESSING_H_
-#define IMAGEPROCESSING_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -121,5 +120,3 @@ void readImagesFromBinaryFile(std::vector<float> &images, int &numberOfImages, i
     int &height, int &width, std::string const& filename);
 
 void writeRotatedImages(float *images, int image_dim, int numberOfRotations, std::string const& filename);
-
-#endif /* IMAGEPROCESSING_H_ */

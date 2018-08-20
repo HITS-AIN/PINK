@@ -4,8 +4,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef IMAGEITERATOR_H_
-#define IMAGEITERATOR_H_
+#pragma once
 
 #include "Image.h"
 #include <fstream>
@@ -117,5 +116,3 @@ private:
 };
 
 } // namespace PINK
-
-#endif /* IMAGEITERATOR_H_ */

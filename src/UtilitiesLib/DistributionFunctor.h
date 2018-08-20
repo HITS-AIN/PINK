@@ -5,8 +5,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef DISTRIBUTIONFUNCTOR_H_
-#define DISTRIBUTIONFUNCTOR_H_
+#pragma once
 
 #include <cmath>
 #include <stdexcept>
@@ -67,5 +66,3 @@ private:
     float sigma2;
 
 };
-
-#endif /* DISTRIBUTIONFUNCTOR_H_ */

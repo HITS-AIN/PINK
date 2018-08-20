@@ -5,8 +5,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef SOM_H_
-#define SOM_H_
+#pragma once
 
 #include "UtilitiesLib/DistanceFunctor.h"
 #include "UtilitiesLib/DistributionFunctor.h"
@@ -71,5 +70,3 @@ private:
     std::vector<int> updateCounterMatrix_;
 
 };
-
-#endif /* SOM_H_ */

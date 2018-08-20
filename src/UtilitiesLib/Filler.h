@@ -4,8 +4,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef FILLER_H_
-#define FILLER_H_
+#pragma once
 
 #include <random>
 
@@ -34,5 +33,3 @@ void fillWithValue(T *a, int length, T value = 0)
         a[i] = value;
     }
 }
-
-#endif /* FILLER_H_ */

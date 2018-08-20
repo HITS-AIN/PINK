@@ -5,8 +5,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef CUDALIB_H_
-#define CUDALIB_H_
+#pragma once
 
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Point.h"
@@ -106,5 +105,3 @@ int cuda_getNumberOfGPUs();
 
 //! Set GPU device number.
 void cuda_setDevice(int number);
-
-#endif /* CUDALIB_H_ */

@@ -4,8 +4,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef TIMEACCUMULATOR_H_
-#define TIMEACCUMULATOR_H_
+#pragma once
 
 #include <chrono>
 
@@ -29,5 +28,3 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> startTime_;
 
 };
-
-#endif /* TIMEACCUMULATOR_H_ */

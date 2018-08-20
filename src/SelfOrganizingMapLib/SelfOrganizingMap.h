@@ -5,8 +5,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef SELFORGANIZINGMAP_H_
-#define SELFORGANIZINGMAP_H_
+#pragma once
 
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "UtilitiesLib/DistanceFunctor.h"
@@ -24,5 +23,3 @@ void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRo
 
 //! Returns the position of the best matching neuron (lowest euclidean distance).
 int findBestMatchingNeuron(float *euclideanDistanceMatrix, int som_size);
-
-#endif /* SELFORGANIZINGMAP_H_ */

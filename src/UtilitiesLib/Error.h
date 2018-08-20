@@ -4,8 +4,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef ERROR_H_
-#define ERROR_H_
+#pragma once
 
 #include <iostream>
 
@@ -17,5 +16,3 @@ inline void fatalError(std::string const& msg)
     std::cout << "FATAL ERROR: " << msg << std::endl;
     exit(1);
 }
-
-#endif /* ERROR_H_ */

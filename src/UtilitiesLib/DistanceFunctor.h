@@ -5,8 +5,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef DISTANCEFUNCTOR_H_
-#define DISTANCEFUNCTOR_H_
+#pragma once
 
 #include "Error.h"
 #include <algorithm>
@@ -238,5 +237,3 @@ private:
     int dim_;
 
 };
-
-#endif /* DISTANCEFUNCTOR_H_ */

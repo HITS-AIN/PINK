@@ -4,13 +4,10 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef CHECKARRAYS_H_
-#define CHECKARRAYS_H_
+#pragma once
 
 #include <string>
 
 void checkArrayForNan(float* a, int length, std::string const& msg);
 
 void checkArrayForNanAndNegative(float* a, int length, std::string const& msg);
-
-#endif /* CHECKARRAYS_H_ */

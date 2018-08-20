@@ -4,8 +4,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#ifndef INPUTDATA_H_
-#define INPUTDATA_H_
+#pragma once
 
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "Version.h"
@@ -118,5 +117,3 @@ struct InputData
 };
 
 void stringToUpper(char* s);
-
-#endif /* INPUTDATA_H_ */
