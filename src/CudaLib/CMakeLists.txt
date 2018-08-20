@@ -5,8 +5,15 @@ set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # Set flags for CUDA compiler
-#list(APPEND CUDA_NVCC_FLAGS "-arch=compute_35 -code=compute_35,sm_35")
-list(APPEND CUDA_NVCC_FLAGS "-arch=compute_61 -code=compute_61,sm_61")
+list(APPEND CUDA_NVCC_FLAGS "
+-arch=sm_61
+ -gencode=arch=compute_50,code=sm_50
+ -gencode=arch=compute_52,code=sm_52
+ -gencode=arch=compute_60,code=sm_60
+ -gencode=arch=compute_61,code=sm_61
+ -gencode=arch=compute_70,code=sm_70
+ -gencode=arch=compute_70,code=compute_70
+")
 list(APPEND CUDA_NVCC_FLAGS_RELEASE "-O3")
 list(APPEND CUDA_NVCC_FLAGS_DEBUG "-O0 -g -G -DDEBUG_MODE")
 list(APPEND CUDA_NVCC_FLAGS_RELWITHDEBINFO "-O3 -g -G -DDEBUG_MODE")
