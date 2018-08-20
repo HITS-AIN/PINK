@@ -16,7 +16,7 @@
  * Computes the euclidean norm of array a and b.
  */
 __global__ void
-kernel(float *a, float *b, float *c, int length)
+euclidean_norm_kernel(float *a, float *b, float *c, int length)
 {
     int tid = threadIdx.x;
     int i = blockDim.x * blockIdx.x + threadIdx.x;
@@ -105,13 +105,13 @@ float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int l
 
     // Start kernel
     //printf("Starting CUDA Kernel with (%i,%i,%i) blocks and (%i,%i,%i) threads ...\n", dimGrid.x, dimGrid.y, dimGrid.z, dimBlock.x, dimBlock.y, dimBlock.z);
-    kernel<<<dimGrid, dimBlock>>>(d_a, d_b, d_isum, length);
+    euclidean_norm_kernel<<<dimGrid, dimBlock>>>(d_a, d_b, d_isum, length);
 
     error = cudaGetLastError();
 
     if (error != cudaSuccess)
     {
-        fprintf(stderr, "Failed to launch vectorAdd kernel (error code %s)!\n", cudaGetErrorString(error));
+        fprintf(stderr, "Failed to launch euclidean_norm_kernel (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 

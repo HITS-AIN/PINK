@@ -89,7 +89,7 @@ void cuda_rotate(int height, int width, float *source, float *dest, float alpha)
 
     if (error != cudaSuccess)
     {
-        fprintf(stderr, "Failed to launch vectorAdd kernel (error code %s)!\n", cudaGetErrorString(error));
+        fprintf(stderr, "Failed to launch rotate kernel (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 
