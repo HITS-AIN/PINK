@@ -1,4 +1,4 @@
-[![Build Status](https://jenkins.h-its.org/buildStatus/icon?job=AIN/GitHub HITS-AIN/PINK/master)](https://jenkins.h-its.org/job/AIN/job/GitHub%20HITS-AIN/job/PINK/job/master/)
+[![Build Status](https://jenkins.h-its.org/buildStatus/icon?job=AIN/GitHub%20HITS-AIN/PINK/master)](https://jenkins.h-its.org/job/AIN/job/GitHub%20HITS-AIN/job/PINK/job/master/)
 
 # Parallel orientation Invariant Non-parametric Kohonen-map (PINK)
 
