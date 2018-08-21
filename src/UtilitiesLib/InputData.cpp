@@ -306,7 +306,8 @@ InputData::InputData(int argc, char **argv)
             }
             case 'v':
             {
-                cout << "Pink version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR << endl;
+                cout << "Pink version " << PROJECT_VERSION << endl;
+                cout << "Git revision " << GIT_REVISION << endl;
                 exit(0);
             }
             case 'h':
@@ -410,24 +411,29 @@ InputData::InputData(int argc, char **argv)
 
 void InputData::print_header() const
 {
-    string rawHeader = "Parallel orientation Invariant Non-parametric Kohonen-map (PINK)";
-
-    stringstream ssVersion;
-    ssVersion << "Version " << PINK_VERSION_MAJOR << "." << PINK_VERSION_MINOR;
-
-    int diff = rawHeader.size() - ssVersion.str().size();
-    int leftBlanks = diff / 2;
-    int rightBlanks = diff / 2;
-    rightBlanks += diff % 2 ? 1 : 0;
-
-    cout << "\n"
-            "  ************************************************************************\n"
-            "  *   Parallel orientation Invariant Non-parametric Kohonen-map (PINK)   *\n"
-            "  *                                                                      *\n"
-            "  *   " << string(leftBlanks,' ') << ssVersion.str() << string(rightBlanks,' ') << "   *\n"
-            "  *                                                                      *\n"
-            "  *   Kai Polsterer, Bernd Doser, HITS gGmbH                             *\n"
-            "  ************************************************************************\n" << endl;
+    std::cout << "\n"
+                 "  *************************************************************************\n"
+                 "  *                                                                       *\n"
+                 "  *                    PPPPP    II   NN    NN   KK  KK                    *\n"
+                 "  *                    PP  PP   II   NNN   NN   KK KK                     *\n"
+                 "  *                    PPPPP    II   NN NN NN   KKKK                      *\n"
+                 "  *                    PP       II   NN   NNN   KK KK                     *\n"
+                 "  *                    PP       II   NN    NN   KK  KK                    *\n"
+                 "  *                                                                       *\n"
+                 "  *     Parallel orientation Invariant Non-parametric Kohonen-map         *\n"
+                 "  *                                                                       *\n"
+                 "  *                         Version " << PROJECT_VERSION << "                                   *\n"
+                 "  *                         Git revision: " << GIT_REVISION << "                         *\n"
+                 "  *                                                                       *\n"
+                 "  *     Bernd Doser <bernd.doser@h-its.org>                               *\n"
+                 "  *     Kai Polsterer <kai.polsterer@h-its.org>                           *\n"
+                 "  *                                                                       *\n"
+                 "  *     Distributed under the GNU GPLv3 License.                          *\n"
+                 "  *     See accompanying file LICENSE or                                  *\n"
+                 "  *     copy at http://www.gnu.org/licenses/gpl-3.0.html.                 *\n"
+                 "  *                                                                       *\n"
+                 "  *************************************************************************\n"
+              << std::endl;
 }
 
 void InputData::print_parameters() const
