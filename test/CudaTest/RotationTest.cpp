@@ -16,7 +16,7 @@
 #include <vector>
 
 //! Check CUDA image rotation with CPU function.
-TEST(RotationTest, 45degree)
+TEST(RotationTest, DISABLED_45degree)
 {
     PINK::Image<float> image(64, 64, 1.0);
     float angle = 45.0*M_PI/180.0;
@@ -25,9 +25,9 @@ TEST(RotationTest, 45degree)
     //rotate(image.getHeight(), image.getWidth(), &image.getPixel()[0], &image2.getPixel()[0], angle);
 
     PINK::Image<float> image3(64, 64, 0.0);
-    //cuda_rotate(image.getHeight(), image.getWidth(), &image.getPixel()[0], &image3.getPixel()[0], angle);
+    cuda_rotate(image.getHeight(), image.getWidth(), &image.getPixel()[0], &image3.getPixel()[0], angle);
 
-    EXPECT_EQ(image2,image3);
+    EXPECT_EQ(image2, image3);
 }
 
 //! Check CUDA image flipping.

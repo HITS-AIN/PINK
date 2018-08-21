@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(Pink VERSION 1.0 LANGUAGES C CXX)
 
-message("${PROJECT_NAME} version ${PROJECT_VERSION}")
-message("CMake build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "${PROJECT_NAME} version ${PROJECT_VERSION}")
 
 # Guard against in-source builds
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
@@ -13,6 +12,8 @@ endif()
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "release")
 endif()
+
+message(STATUS "CMake build type: ${CMAKE_BUILD_TYPE}")
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
 if(    NOT cmake_build_type_tolower STREQUAL "debug"
