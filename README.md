@@ -1,10 +1,12 @@
 [![Build Status](https://jenkins.h-its.org/buildStatus/icon?job=AIN/GitHub%20HITS-AIN/PINK/master)](https://jenkins.h-its.org/job/AIN/job/GitHub%20HITS-AIN/job/PINK/job/master/)
 
-# Parallel orientation Invariant Non-parametric Kohonen-map (PINK)
+# Parallelized rotation and flipping INvariant Kohonen maps (PINK)
+
+![SOM of radio-synthesis data taken from the Radio Galaxy Zoo](doxygen/galaxies_som.png)
 
 ## Requirements
 
-  - CMake (Version >= 2.6.2, http://www.cmake.org)
+  - CMake (Version >= 3.0, http://www.cmake.org)
   - CUDA (recommended)
   - gtest (optional)
   - doxygen (optional)
@@ -44,18 +46,18 @@
 
 ## Python scripts
 
-For conversion and visualization of images some python scripts are available. Some may be incompatible with python2.7.
+For conversion and visualization of images and SOM some python scripts are available.
 
-  numpy2binary.py: Conversion of the python numpy file format into binary input file format for images.
+  - numpy2binary.py: Conversion of the python numpy file format into binary input file format for images.
 
-  jpg2binary.py:   Conversion of jpg images into binary input file format for images.
-                   Three channels are used for red, green, and blue (RGB) color channels.
+  - jpg2binary.py:   Conversion of jpg images into binary input file format for images.
+                     Three channels are used for red, green, and blue (RGB) color channels.
                  
-  showImages.py:   Visualize binary images file format.
+  - showImages.py:   Visualize binary images file format.
 
-  showSOM.py:      Visualize binary SOM file format.
+  - showSOM.py:      Visualize binary SOM file format.
 
-  showHeatmap.py:  Visualize the mapping result.
+  - showHeatmap.py:  Visualize the mapping result.
 
 
 ## Publication
