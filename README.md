@@ -28,17 +28,13 @@
 
      make test
 
-  5) Generate API documentation (only if doxygen is available)
+  5) Generate API documentation (if doxygen is available)
 
      make doc
 
   6) Install
 
      make install
-
-  7) Set environmental variables
-
-     source <INSTALL_PATH>/bashrc
 
 
 ## Usage
@@ -62,32 +58,13 @@ For conversion and visualization of images some python scripts are available. So
   showHeatmap.py:  Visualize the mapping result.
 
 
-## Binary file format description
+## Publication
 
-  Arrays are in FORTRAN notation: First index is the slowest, last index is the fastest.
+Kai Lars Polsterer, Fabian Gieseke, Christian Igel, Bernd Doser, and Nikos Gianniotis. Parallelized rotation and flipping INvariant Kohonen maps (PINK) on GPUs.
+24th European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning (ESANN), pp. 405-410, 2016.
+[pdf](https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2016-116.pdf)
 
-  1) Input file for images
 
-    (1)(integer) number_of_images
-    (1)(integer) number_of_channels
-    (1)(integer) width
-    (1)(integer) height
-    (number_of_images, number_of_channels, width, height)(float) pixels
+## License
 
-  2) SOM file
-
-    (1)(integer) number_of_channels
-    (1)(integer) SOM_width
-    (1)(integer) SOM_height
-    (1)(integer) SOM_depth
-    (1)(integer) neuron_width
-    (1)(integer) neuron_height
-    (SOM_width, SOM_height, SOM_depth, number_of_channels, neuron_width, neuron_height)(float) pixels
-
-  3) Mapping result file
-
-    (1)(integer) number_of_images
-    (1)(integer) SOM_width
-    (1)(integer) SOM_height
-    (1)(integer) SOM_depth
-    (number_of_images, SOM_width, SOM_height, SOM_depth)(float) euclidian_distance
+Distributed under the GNU GPLv3 License. See accompanying file LICENSE or copy at http://www.gnu.org/licenses/gpl-3.0.html.
