@@ -19,6 +19,4 @@ TEST(mixed_precision, float)
     cuda_copyHostToDevice_float(d_image, &image[0], image.size());
 
     euclidean_distance(d_image, d_image, image.size());
-
-
 }

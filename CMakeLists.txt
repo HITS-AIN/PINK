@@ -68,24 +68,15 @@ find_package(CUDA)
 if(CUDA_FOUND)
     set(PINK_USE_CUDA true)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
-    add_subdirectory(src/CudaLib)
 endif()
+
+add_subdirectory(src)
 
 find_package(GTest)
 if(GTEST_FOUND)
     ENABLE_TESTING()
-    add_subdirectory(src/ImageProcessingTest)
-    add_subdirectory(src/UtilitiesTest)
+    add_subdirectory(test)
 endif()
-
-if(GTEST_FOUND AND CUDA_FOUND)
-    add_subdirectory(src/CudaTest)    
-endif()
-
-add_subdirectory(src/ImageProcessingLib)
-add_subdirectory(src/Pink)
-add_subdirectory(src/SelfOrganizingMapLib)
-add_subdirectory(src/UtilitiesLib)
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)

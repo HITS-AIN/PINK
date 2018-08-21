@@ -1,5 +1,5 @@
 include_directories(
-    ..
+    ${PROJECT_SOURCE_DIR}/src
     ${GTEST_INCLUDE_DIR}
 )
 
