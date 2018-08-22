@@ -29,6 +29,22 @@ set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG_MODE")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g -DDEBUG_MODE")
 set(CMAKE_CXX_FLAGS_PROFILING "-O3 -g -pg -DDEBUG_MODE")
 
+# Download conan
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+   file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.11/conan.cmake"
+                 "${CMAKE_BINARY_DIR}/conan.cmake")
+endif()
+
+# Conan setup
+include(${CMAKE_BINARY_DIR}/conan.cmake)
+conan_cmake_run(CONANFILE conanfile.py
+                BASIC_SETUP CMAKE_TARGETS
+                BUILD missing)
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 # Get Git revision
 if(EXISTS ${PROJECT_SOURCE_DIR}/.git)
     find_package(Git)
