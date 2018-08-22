@@ -1,49 +1,120 @@
 #!groovy
 
 pipeline {
+
   agent {
-    docker {
-      image 'braintwister/ubuntu-16.04-cuda-9.1-cmake-3.11-gtest-1.8.0-doxygen-1.8.13'
-      args '--runtime=nvidia'
-    }
+    label 'docker-host-gpu'
   }
+
+  options {
+    timeout(time: 1, unit: 'HOURS')
+  }  
+
   stages {
     stage('Build') {
-      steps {
-        sh '''
-          mkdir -p build
-          cd build
-          cmake ..
-          make -j
-        '''
+      parallel {
+        stage('gcc-7') {
+          agent {
+            docker {
+              reuseNode true
+              image 'braintwister/ubuntu-16.04-cuda-9.1-cmake-3.12-gcc-7-conan-1.6'
+              args '--runtime=nvidia'
+            }
+          }
+          steps {
+            sh './build.sh gcc-7'
+          }
+          post {
+            always {
+              step([
+                $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
+                defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
+                parserConfigurations: [[parserName: 'GNU Make + GNU C Compiler (gcc)', pattern: 'build-gcc-7/make.out']],
+                unHealthy: ''
+              ])
+            }
+          }
+        }
+        stage('clang-6') {
+          agent {
+            docker {
+              reuseNode true
+              image 'braintwister/ubuntu-16.04-cuda-9.1-cmake-3.12-clang-6-conan-1.6'
+              args '--runtime=nvidia'
+            }
+          }
+          steps {
+            sh './build.sh clang-6'
+          }
+          post {
+            always {
+              step([
+                $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
+                defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
+                parserConfigurations: [[parserName: 'Clang (LLVM based)', pattern: 'build-clang-6/make.out']],
+                unHealthy: ''
+              ])
+            }
+          }
+        }
       }
     }
     stage('Test') {
-      steps {
-        script {
-          try {
-            sh '''
-              cd build
-              make test
-            '''
-          } catch (err) {
-            echo "Failed: ${err}"
-          } finally {
-            step([
-              $class: 'XUnitBuilder',
-              thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-              tools: [[$class: 'GoogleTestType', pattern: 'build/Testing/*.xml']]
-            ])
+      parallel {
+        stage('gcc-7') {
+          agent {
+            docker {
+              reuseNode true
+              image 'braintwister/ubuntu-16.04-cuda-9.1-cmake-3.12-gcc-7-conan-1.6'
+              args '--runtime=nvidia'
+            }
+          }
+          steps {
+            sh 'cd build-gcc-7 && make test'
+          }
+          post {
+            always {
+              step([
+                $class: 'XUnitBuilder',
+                thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
+                tools: [[$class: 'GoogleTestType', pattern: 'build-gcc-7/Testing/*.xml']]
+              ])
+            }
+          }
+        }
+        stage('clang-6') {
+          agent {
+            docker {
+              reuseNode true
+              image 'braintwister/ubuntu-16.04-cuda-9.1-cmake-3.12-clang-6-conan-1.6'
+              args '--runtime=nvidia'
+            }
+          }
+          steps {
+            sh 'cd build-clang-6 && make test'
+          }
+          post {
+            always {
+              step([
+                $class: 'XUnitBuilder',
+                thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
+                tools: [[$class: 'GoogleTestType', pattern: 'build-clang-6/Testing/*.xml']]
+              ])
+            }
           }
         }
       }
     }
     stage('Doxygen') {
+      agent {
+        docker {
+          reuseNode true
+          image 'braintwister/ubuntu-16.04-cuda-9.1-cmake-3.12-gcc-7-conan-1.6'
+          args '--runtime=nvidia'
+        }
+      }
       steps {
-        sh '''
-          cd build
-          make doc
-        '''
+        sh 'cd build-gcc-7 && make doc'
         publishHTML( target: [
           allowMissing: false,
           alwaysLinkToLastBuild: false,
