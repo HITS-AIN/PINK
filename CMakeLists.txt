@@ -116,3 +116,17 @@ install(FILES
     ${PROJECT_SOURCE_DIR}/scripts/showSOM.py
     DESTINATION scripts
 )
+
+if(UNIX)
+    set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
+    set(CPACK_SOURCE_GENERATOR "TGZ;TBZ2")
+    set(CPACK_GENERATOR "TGZ;TBZ2;DEB;RPM")
+    set(CPACK_PACKAGE_MAINTAINER "Bernd Doser")
+    set(CPACK_PACKAGE_VENDOR "HITS gGmbH - Astroinformatics")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Parallelized rotation and flipping INvariant Kohonen maps")
+    set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+    set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+    set(CPACK_PACKAGE_CONTACT "Bernd Doser <bernd.doser@h-its.org>")
+    include(CPack)
+endif()

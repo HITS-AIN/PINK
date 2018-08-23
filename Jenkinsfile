@@ -168,6 +168,23 @@ pipeline {
         ])
       }
     }
+    stage('Deploy') {
+      agent {
+        docker {
+          reuseNode true
+          image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.6'
+          args '--runtime=nvidia'
+        }
+      }
+      steps {
+        sh 'cd build-gcc-7 && make package'
+      }
+      post {
+        success {
+          archiveArtifacts artifacts: "build*/Pink*", fingerprint: true
+        }
+      }
+    }
   }
   post {
     success {
