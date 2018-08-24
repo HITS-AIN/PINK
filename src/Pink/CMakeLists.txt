@@ -1,7 +1,3 @@
-if(PINK_USE_CUDA)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
-endif(PINK_USE_CUDA)
-
 include_directories(
     ..
 )
