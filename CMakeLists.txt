@@ -46,6 +46,7 @@ endif()
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 conan_cmake_run(CONANFILE conanfile.py
                 BASIC_SETUP CMAKE_TARGETS
+                SETTINGS cppstd=11
                 BUILD missing)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
