@@ -1,4 +1,4 @@
-/build
+/build*
 /src/UtilitiesLib/Version.h
 /.cproject
 /.env
