@@ -56,9 +56,9 @@ SOM::SOM(InputData const& inputData)
 
     // Set distribution function
     if (inputData_.function == GAUSSIAN)
-        ptrDistributionFunctor_ = std::shared_ptr<DistributionFunctorBase>(new GaussianFunctor(inputData_.sigma));
+        ptrDistributionFunctor_ = std::make_shared<GaussianFunctor>(inputData_.sigma);
     else if (inputData_.function == MEXICANHAT)
-        ptrDistributionFunctor_ = std::shared_ptr<DistributionFunctorBase>(new MexicanHatFunctor(inputData_.sigma));
+        ptrDistributionFunctor_ = std::make_shared<MexicanHatFunctor>(inputData_.sigma);
     else
         fatalError("Unknown distribution function.");
 
@@ -66,34 +66,26 @@ SOM::SOM(InputData const& inputData)
     if (inputData_.layout == QUADRATIC) {
         if (inputData_.usePBC) {
             if (inputData_.dimensionality == 1) {
-                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
-                    new CartesianDistanceFunctor<1, true>(inputData.som_width));
+                ptrDistanceFunctor_ = std::make_shared<CartesianDistanceFunctor<1, true>>(inputData.som_width);
             } else if (inputData_.dimensionality == 2) {
-                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
-                    new CartesianDistanceFunctor<2, true>(inputData.som_width, inputData.som_height));
+                ptrDistanceFunctor_ = std::make_shared<CartesianDistanceFunctor<2, true>>(inputData.som_width, inputData.som_height);
             } else if (inputData_.dimensionality == 3) {
-                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
-                    new CartesianDistanceFunctor<3, true>(inputData.som_width, inputData.som_height, inputData.som_depth));
+                ptrDistanceFunctor_ = std::make_shared<CartesianDistanceFunctor<3, true>>(inputData.som_width, inputData.som_height, inputData.som_depth);
             }
         } else {
             if (inputData_.dimensionality == 1) {
-                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
-                    new CartesianDistanceFunctor<1>(inputData.som_width));
+                ptrDistanceFunctor_ = std::make_shared<CartesianDistanceFunctor<1>>(inputData.som_width);
             } else if (inputData_.dimensionality == 2) {
-                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
-                    new CartesianDistanceFunctor<2>(inputData.som_width, inputData.som_height));
+                ptrDistanceFunctor_ = std::make_shared<CartesianDistanceFunctor<2>>(inputData.som_width, inputData.som_height);
             } else if (inputData_.dimensionality == 3) {
-                ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(
-                    new CartesianDistanceFunctor<3>(inputData.som_width, inputData.som_height, inputData.som_depth));
+                ptrDistanceFunctor_ = std::make_shared<CartesianDistanceFunctor<3>>(inputData.som_width, inputData.som_height, inputData.som_depth);
             }
         }
     } else if (inputData_.layout == HEXAGONAL) {
-        ptrDistanceFunctor_ = std::shared_ptr<DistanceFunctorBase>(new HexagonalDistanceFunctor(inputData.som_width));
+        ptrDistanceFunctor_ = std::make_shared<HexagonalDistanceFunctor>(inputData.som_width);
     } else {
         fatalError("Unknown layout.");
     }
-
-    //write("initial_som.bin");
 }
 
 void SOM::write(std::string const& filename) const
