@@ -182,7 +182,11 @@ pipeline {
         }
       }
       steps {
-        sh 'cd build-gcc-7 && make package'
+        sh '''
+            export CONAN_USER_HOME=$PWD/conan-gcc-7
+            cd build-gcc-7
+            make package
+        '''
       }
       post {
         success {
