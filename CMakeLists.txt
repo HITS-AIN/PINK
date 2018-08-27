@@ -91,10 +91,12 @@ endif()
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
+    configure_file(${PROJECT_SOURCE_DIR}/doxygen/Doxyfile
+                   ${PROJECT_BINARY_DIR}/doxygen/Doxyfile)
     add_custom_target(
         doc
-        ${DOXYGEN_EXECUTABLE} ${PROJECT_SOURCE_DIR}/doxygen/Doxyfile
-            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/doxygen
+        ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doxygen/Doxyfile
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doxygen
             COMMENT "Generating API documentation with Doxygen" VERBATIM
     )    
 endif()

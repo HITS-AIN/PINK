@@ -152,18 +152,23 @@ pipeline {
       agent {
         docker {
           reuseNode true
-          image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.6'
+          image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.6-doxygen-1.8.13'
           args '--runtime=nvidia'
         }
       }
       steps {
-        sh 'cd build-gcc-7 && make doc'
+        sh '''
+            mkdir -p build-doc
+            cd build-doc
+            cmake ..
+            make doc
+        '''
         publishHTML( target: [
           allowMissing: false,
           alwaysLinkToLastBuild: false,
           keepAll: true,
           reportName: 'Doxygen',
-          reportDir: 'doxygen/html',
+          reportDir: 'build-doc/doxygen/html',
           reportFiles: 'index.html'
         ])
       }
