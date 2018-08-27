@@ -175,9 +175,9 @@ pipeline {
     }
     stage('Deploy') {
       agent {
-        docker {
+        dockerfile {
           reuseNode true
-          image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.6'
+          filename 'devel/Dockerfile-deploy'
           args '--runtime=nvidia'
         }
       }
