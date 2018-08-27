@@ -26,22 +26,25 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-# Download conan
-if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-   file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.12/conan.cmake"
-                 "${CMAKE_BINARY_DIR}/conan.cmake")
+# Download conan-cmake
+find_program(CONAN conan)
+if(CONAN)
+	if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+	   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+	   file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.12/conan.cmake"
+	                 "${CMAKE_BINARY_DIR}/conan.cmake")
+	endif()
+	
+	# Conan setup
+	include(${CMAKE_BINARY_DIR}/conan.cmake)
+	conan_cmake_run(CONANFILE conanfile.py
+	                BASIC_SETUP CMAKE_TARGETS
+	                SETTINGS compiler.libcxx=libstdc++11
+	                BUILD missing)
+	
+	include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+	conan_basic_setup()
 endif()
-
-# Conan setup
-include(${CMAKE_BINARY_DIR}/conan.cmake)
-conan_cmake_run(CONANFILE conanfile.py
-                BASIC_SETUP CMAKE_TARGETS
-                SETTINGS compiler.libcxx=libstdc++11
-                BUILD missing)
-
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
 
 # Get Git revision
 if(EXISTS ${PROJECT_SOURCE_DIR}/.git)
