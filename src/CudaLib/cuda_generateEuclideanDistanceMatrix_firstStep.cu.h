@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 
+namespace pink {
+
 /**
  * CUDA Kernel Device code
  *
@@ -58,3 +60,5 @@ __global__ void euclidean_distance_kernel(float *som, float *rotatedImages, floa
     // Copy accumulated local value to global array firstStep
     if (tid == 0) firstStep[blockIdx.x + blockIdx.y * gridDim.x] = firstStep_local[0];
 }
+
+} // namespace pink

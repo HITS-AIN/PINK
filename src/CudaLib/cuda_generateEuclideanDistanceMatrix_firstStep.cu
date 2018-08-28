@@ -7,6 +7,8 @@
 #include "CudaLib.h"
 #include "cuda_generateEuclideanDistanceMatrix_firstStep.cu.h"
 
+namespace pink {
+
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
@@ -42,3 +44,5 @@ void cuda_generateEuclideanDistanceMatrix_firstStep(float *d_som, float *d_rotat
         exit(EXIT_FAILURE);
     }
 }
+
+} // namespace pink

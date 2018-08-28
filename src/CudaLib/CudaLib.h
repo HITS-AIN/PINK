@@ -10,6 +10,8 @@
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Point.h"
 
+namespace pink {
+
 //! Print CUDA device properties.
 void cuda_print_properties();
 
@@ -105,3 +107,5 @@ int cuda_getNumberOfGPUs();
 
 //! Set GPU device number.
 void cuda_setDevice(int number);
+
+} // namespace pink

@@ -7,6 +7,8 @@
 #include "CudaLib.h"
 #include <stdio.h>
 
+namespace pink {
+
 #define BLOCK_SIZE 64
 
 /**
@@ -57,3 +59,5 @@ void cuda_generateEuclideanDistanceMatrix_secondStep(float *d_euclideanDistanceM
 
     cudaDeviceSynchronize();
 }
+
+} // namespace pink

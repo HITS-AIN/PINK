@@ -6,6 +6,8 @@
 
 #include "UtilitiesLib/InputData.h"
 
+namespace pink {
+
 // Function pointers are also possible for the distribution- and distance function, but have a significant overhead.
 
 __device__ bool isPositive(int n)
@@ -282,3 +284,5 @@ updateNeurons_kernel(float *som, float *rotatedImages, int *bestRotationMatrix, 
         som[pos] -= (som[pos] - rotatedImages[bestRotationMatrix[blockIdx.y] * neuron_size + i]) * factor;
     }
 }
+
+} // namespace pink

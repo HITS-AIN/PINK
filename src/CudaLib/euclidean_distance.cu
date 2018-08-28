@@ -6,6 +6,8 @@
 
 #include "sm_61_intrinsics.h"
 
+namespace pink {
+
 __global__
 void cuda_euclidean_distance(float *a1, float *a2, size_t size)
 {
@@ -27,3 +29,5 @@ void euclidean_distance(float *a1, float *a2, size_t size)
 
     cuda_euclidean_distance<<<1, 1>>>(a1, a2, size);
 }
+
+} // namespace pink

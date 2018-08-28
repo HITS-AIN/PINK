@@ -12,6 +12,8 @@
 #include "rotate90degreesList_kernel.h"
 #include <stdio.h>
 
+namespace pink {
+
 #define BLOCK_SIZE 32
 
 /**
@@ -136,3 +138,5 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
         }
     }
 }
+
+} // namespace pink

@@ -17,8 +17,9 @@
 #include <stdio.h>
 
 using namespace std;
-using namespace PINK;
 using namespace chrono;
+
+namespace pink {
 
 void cuda_trainSelfOrganizingMap(InputData const& inputData)
 {
@@ -139,3 +140,5 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
     // Free memory
     cuda_free(d_som);
 }
+
+} // namespace pink

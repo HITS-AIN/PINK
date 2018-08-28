@@ -7,6 +7,8 @@
 #include "CudaLib.h"
 #include <stdio.h>
 
+namespace pink {
+
 /**
  * CUDA Kernel Device code
  *
@@ -121,3 +123,5 @@ void cuda_rotate(int height, int width, float *source, float *dest, float alpha)
         exit(EXIT_FAILURE);
     }
 }
+
+} // namespace pink

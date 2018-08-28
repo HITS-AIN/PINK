@@ -4,6 +4,9 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+namespace pink {
+
+}
 /**
  * CUDA Kernel Device code for cropping an image.
  */
@@ -19,3 +22,5 @@ crop_kernel(float *dest, float *source, int new_dim, int old_dim)
     int margin = (old_dim - new_dim) * 0.5;
     dest[x*new_dim + y] = source[(x+margin)*old_dim + y+margin];
 }
+
+} // namespace pink

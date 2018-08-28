@@ -4,6 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+namespace pink {
+
 texture<float, 2, cudaReadModeElementType> image_texture;
 
 /**
@@ -41,3 +43,5 @@ rotateAndCropTexture_kernel(float *rotatedImages, float *image, int neuron_size,
         atomicAdd(pCurRot + x2*neuron_dim + y2, 0.0f);
     }
 }
+
+} // namespace pink

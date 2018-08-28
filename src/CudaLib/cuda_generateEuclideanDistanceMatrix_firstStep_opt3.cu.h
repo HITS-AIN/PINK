@@ -7,6 +7,8 @@
 #include "cublas_v2.h"
 #include <stdio.h>
 
+namespace pink {
+
 /**
  * CUDA Kernel Device code
  *
@@ -51,3 +53,5 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_opt3(float *d_som, float *d_
 
     cuda_free(d_diff);
 }
+
+} // namespace pink

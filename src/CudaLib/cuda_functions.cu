@@ -8,6 +8,8 @@
 #include "CudaLib.h"
 #include <cstdio>
 
+namespace pink {
+
 float* cuda_alloc_float(int size)
 {
     float *d;
@@ -139,3 +141,5 @@ void cuda_setDevice(int number)
         exit(EXIT_FAILURE);
     }
 }
+
+} // namespace pink

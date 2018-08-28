@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <vector>
 
+namespace pink {
+
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
@@ -38,3 +40,5 @@ void cuda_generateEuclideanDistanceMatrix(float *d_euclideanDistanceMatrix, int 
 
     cuda_free(d_firstStep);
 }
+
+} // namespace pink

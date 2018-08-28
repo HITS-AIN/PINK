@@ -4,6 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+namespace pink {
+
 /**
  * CUDA Kernel Device code for combined flipping and cropping an image.
  */
@@ -20,3 +22,5 @@ flipAndCrop_kernel(float *dest, float *source, int new_dim, int old_dim)
 
     dest[(new_dim-x-1)*new_dim + y] = source[(x+margin)*old_dim + y+margin];
 }
+
+} // namespace pink

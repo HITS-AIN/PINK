@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 
+namespace pink {
+
 /**
  * CUDA Kernel Device code
  *
@@ -47,3 +49,5 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_opt(float *d_som, float *d_r
         exit(EXIT_FAILURE);
     }
 }
+
+} // namespace pink

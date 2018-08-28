@@ -4,6 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+namespace pink {
+
 /**
  * CUDA Kernel Device code for special clockwise rotation of 90 degrees of a quadratic image.
  */
@@ -18,3 +20,5 @@ rotate90degrees_kernel(float *dest, float *source, int dim)
 
     atomicExch(dest + (dim-y-1)*dim + x, source[x*dim + y]);
 }
+
+} // namespace pink

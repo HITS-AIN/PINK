@@ -10,6 +10,8 @@
 
 #define BLOCK_SIZE 32
 
+namespace pink {
+
 /**
  * CUDA Kernel Device code
  *
@@ -148,3 +150,5 @@ float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int l
 
     return c;
 }
+
+} // namespace pink

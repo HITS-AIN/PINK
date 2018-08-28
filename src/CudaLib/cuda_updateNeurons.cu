@@ -4,12 +4,15 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "CudaLib.h"
-#include "updateNeurons_kernel.h"
 #include <float.h>
 #include <stdio.h>
 
+#include "CudaLib.h"
+#include "updateNeurons_kernel.h"
+
 #define BLOCK_SIZE 32
+
+namespace pink {
 
 /**
  * CUDA Kernel Device code
@@ -138,3 +141,5 @@ void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotatio
         }
     }
 }
+
+} // namespace pink

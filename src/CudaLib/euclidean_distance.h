@@ -6,4 +6,8 @@
 
 #include <cstddef>
 
+namespace pink {
+
 void euclidean_distance(float *a1, float *a2, size_t size);
+
+} // namespace pink

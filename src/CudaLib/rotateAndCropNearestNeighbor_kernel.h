@@ -4,6 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+namespace pink {
+
 /**
  * CUDA Kernel Device code for combined rotation and cropping of a list of quadratic images.
  */
@@ -35,3 +37,5 @@ rotateAndCropNearestNeighbor_kernel(float *rotatedImages, float *image, int neur
         atomicExch(pCurRot + x2*neuron_dim + y2, 0.0f);
     }
 }
+
+} // namespace pink

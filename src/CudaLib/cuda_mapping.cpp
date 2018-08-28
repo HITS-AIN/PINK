@@ -18,8 +18,9 @@
 #include <stdio.h>
 
 using namespace std;
-using namespace PINK;
 using namespace chrono;
+
+namespace pink {
 
 void cuda_mapping(InputData const& inputData)
 {
@@ -111,3 +112,5 @@ void cuda_mapping(InputData const& inputData)
     cuda_free(d_rotatedImages);
     cuda_free(d_som);
 }
+
+} // namespace pink

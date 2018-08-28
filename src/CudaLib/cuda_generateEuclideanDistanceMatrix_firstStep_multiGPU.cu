@@ -8,6 +8,8 @@
 #include "cuda_generateEuclideanDistanceMatrix_firstStep.cu.h"
 #include <cuda_runtime.h>
 
+namespace pink {
+
 const int GPU_N_MAX = 4;
 
 struct TGPUplan
@@ -142,3 +144,5 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float
     cudaSetDevice(0);
     cudaDeviceSynchronize();
 }
+
+} // namespace pink

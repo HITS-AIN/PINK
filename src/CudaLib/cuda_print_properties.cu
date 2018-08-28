@@ -8,6 +8,8 @@
 #include "CudaLib.h"
 #include <stdio.h>
 
+namespace pink {
+
 void cuda_print_properties()
 {
     int devCount;
@@ -45,3 +47,5 @@ void cuda_print_properties()
         printf("\n");
     }
 }
+
+} // namespace pink

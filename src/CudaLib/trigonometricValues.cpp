@@ -7,6 +7,8 @@
 #include "CudaLib.h"
 #include <cmath>
 
+namespace pink {
+
 //! Prepare trigonometric values
 void trigonometricValues(float **d_cosAlpha, float **d_sinAlpha, int num_rot)
 {
@@ -34,3 +36,5 @@ void trigonometricValues(float **d_cosAlpha, float **d_sinAlpha, int num_rot)
     free(cosAlpha);
     free(sinAlpha);
 }
+
+} // namespace pink

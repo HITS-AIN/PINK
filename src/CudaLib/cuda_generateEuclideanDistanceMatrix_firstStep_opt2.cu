@@ -7,6 +7,8 @@
 #include "CudaLib.h"
 #include "cuda_generateEuclideanDistanceMatrix_firstStep_opt2.cu.h"
 
+namespace pink {
+
 template
 void cuda_generateEuclideanDistanceMatrix_firstStep_opt2<512>(float *d_som, float *d_rotatedImages,
    float* d_firstStep, int som_size, int num_rot, int image_size);
@@ -26,3 +28,5 @@ void cuda_generateEuclideanDistanceMatrix_firstStep_opt2<64>(float *d_som, float
 template
 void cuda_generateEuclideanDistanceMatrix_firstStep_opt2<32>(float *d_som, float *d_rotatedImages,
    float* d_firstStep, int som_size, int num_rot, int image_size);
+
+} // namespace pink
