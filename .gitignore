@@ -1,7 +1,7 @@
 /build*
+/devel/.env
 /src/UtilitiesLib/Version.h
 /.cproject
-/.env
 /.project
 /.pydevproject
 /.settings
