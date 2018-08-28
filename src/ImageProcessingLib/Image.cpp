@@ -4,11 +4,12 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "Image.h"
-#include "ImageProcessing.h"
 #include <fstream>
 
-namespace PINK {
+#include "Image.h"
+#include "ImageProcessing.h"
+
+namespace pink {
 
 template <>
 void Image<float>::writeBinary(std::string const& filename)
@@ -16,4 +17,4 @@ void Image<float>::writeBinary(std::string const& filename)
     writeImagesToBinaryFile(pixel_, 1, 1, height_, width_, filename);
 }
 
-} // namespace PINK
+} // namespace pink

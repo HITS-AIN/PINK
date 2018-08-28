@@ -5,15 +5,16 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "UtilitiesLib/Error.h"
-#include "UtilitiesLib/Filler.h"
-#include "SOM.h"
 #include <cmath>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
 
-using namespace std;
+#include "SOM.h"
+#include "UtilitiesLib/Error.h"
+#include "UtilitiesLib/Filler.h"
+
+namespace pink {
 
 SOM::SOM(InputData const& inputData)
  : inputData_(inputData),
@@ -122,24 +123,24 @@ void SOM::updateNeurons(float *rotatedImages, int bestMatch, int *bestRotationMa
 void SOM::printUpdateCounter() const
 {
     if (inputData_.verbose) {
-        cout << "\n  Number of updates of each neuron:\n" << endl;
+        std::cout << "\n  Number of updates of each neuron:\n" << std::endl;
         if (inputData_.layout == HEXAGONAL) {
             int radius = (inputData_.som_width - 1)/2;
             for (int pos = 0, x = -radius; x <= radius; ++x) {
                 for (int y = -radius - std::min(0,x); y <= radius - std::max(0,x); ++y, ++pos) {
-                    cout << setw(6) << updateCounterMatrix_[pos] << " ";
+                    std::cout << std::setw(6) << updateCounterMatrix_[pos] << " ";
                 }
-                cout << endl;
+                std::cout << std::endl;
             }
         } else {
             for (int pos = 0, d = 0; d != inputData_.som_depth; ++d) {
                 for (int h = 0; h != inputData_.som_height; ++h) {
                     for (int w = 0; w != inputData_.som_width; ++w, ++pos) {
-                        cout << setw(6) << updateCounterMatrix_[pos] << " ";
+                        std::cout << std::setw(6) << updateCounterMatrix_[pos] << " ";
                     }
-                    cout << endl;
+                    std::cout << std::endl;
                 }
-                cout << endl;
+                std::cout << std::endl;
             }
         }
     }
@@ -151,3 +152,5 @@ void SOM::updateSingleNeuron(float *neuron, float *image, float factor)
         neuron[i] -= (neuron[i] - image[i]) * factor;
     }
 }
+
+} // namespace pink

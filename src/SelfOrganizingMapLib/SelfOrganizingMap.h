@@ -7,13 +7,16 @@
 
 #pragma once
 
+#include <iostream>
+#include <memory>
+
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "UtilitiesLib/DistanceFunctor.h"
 #include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Point.h"
-#include <iostream>
-#include <memory>
+
+namespace pink {
 
 void generateRotatedImages(float *rotatedImages, float *image, int numberOfRotations, int image_dim, int neuron_dim,
     bool useFlip, Interpolation interpolation, int numberOfChannels);
@@ -23,3 +26,5 @@ void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRo
 
 //! Returns the position of the best matching neuron (lowest euclidean distance).
 int findBestMatchingNeuron(float *euclideanDistanceMatrix, int som_size);
+
+} // namespace pink

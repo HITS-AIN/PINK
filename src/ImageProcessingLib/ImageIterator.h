@@ -6,13 +6,14 @@
 
 #pragma once
 
-#include "Image.h"
 #include <fstream>
 #include <memory>
 #include <string>
 #include <vector>
 
-namespace PINK {
+#include "Image.h"
+
+namespace pink {
 
 //! Read iteratively a binary file
 template <class T>
@@ -115,4 +116,4 @@ private:
 
 };
 
-} // namespace PINK
+} // namespace pink

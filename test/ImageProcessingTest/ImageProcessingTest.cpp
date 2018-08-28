@@ -5,23 +5,24 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include <algorithm>
+#include <cmath>
+#include <vector>
+
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "UtilitiesLib/EqualFloatArrays.h"
 #include "UtilitiesLib/Filler.h"
 #include "gtest/gtest.h"
-#include <cmath>
-#include <vector>
 
-using namespace std;
-using namespace PINK;
+using namespace pink;
 
 TEST(ImageProcessingTest, Rotation90)
 {
     int height = 4;
     int width = 3;
     int size = height * width;
-    vector<float> image(size), image2(size), image3(size);
+    std::vector<float> image(size), image2(size), image3(size);
     fillWithRandomNumbers(&image[0], size);
 
     // 4 times rotating by 90 degrees should result in original image
@@ -38,7 +39,7 @@ TEST(ImageProcessingTest, CompareRotation90WithRotation)
     int height = 13;
     int width = 13;
     int size = height * width;
-    vector<float> image(size), image2(size), image3(size);
+    std::vector<float> image(size), image2(size), image3(size);
     fillWithRandomNumbers(&image[0], size);
 
     rotate_90degrees(height, width, &image[0], &image2[0]);
@@ -52,7 +53,7 @@ TEST(ImageProcessingTest, BilinearInterpolation)
     int height = 12;
     int width = 12;
     int size = height * width;
-    vector<float> image(size), image2(size), image3(size);
+    std::vector<float> image(size), image2(size), image3(size);
     fillWithRandomNumbers(&image[0], size);
 
     rotate_90degrees(height, width, &image[0], &image2[0]);
@@ -77,9 +78,9 @@ TEST(ImageProcessingTest, EuclideanDistanceByDot)
     std::vector<float> b{1.9, -4.0, 0.2};
     std::vector<float> c;
 
-    transform(begin(a), end(a), begin(b), back_inserter(c), minus<float>());
+    std::transform(begin(a), end(a), begin(b), back_inserter(c), std::minus<float>());
 
-    float dot = std::accumulate(begin(c), end(c), 0.0, [](float dot, float c){
+    auto&& dot = std::accumulate(begin(c), end(c), 0.0, [] (float dot, float c) {
         return dot + std::pow(c, 2);
     });
 

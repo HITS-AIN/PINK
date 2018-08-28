@@ -5,8 +5,6 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "ImageProcessing.h"
-#include "UtilitiesLib/Error.h"
 #include <cmath>
 #include <fstream>
 #include <iostream>
@@ -16,7 +14,10 @@
 #include <stdexcept>
 #include <vector>
 
-using namespace std;
+#include "ImageProcessing.h"
+#include "UtilitiesLib/Error.h"
+
+namespace pink {
 
 std::ostream& operator << (std::ostream& os, Interpolation interpolation)
 {
@@ -295,11 +296,11 @@ void printImage(float *image, int height, int width)
 {
     for (int j = 0; j < height; ++j) {
         for (int i = 0; i < width; ++i) {
-            cout << setw(10) << fixed << setprecision(3) << image[i*height+j] << " ";
+            std::cout << std::setw(10) << std::fixed << std::setprecision(3) << image[i*height+j] << " ";
         }
-        cout << endl;
+        std::cout << std::endl;
     }
-    cout << endl;
+    std::cout << std::endl;
 }
 
 void writeImagesToBinaryFile(std::vector<float> const& images, int numberOfImages, int numberOfChannels,
@@ -336,7 +337,7 @@ void writeRotatedImages(float* images, int image_dim, int numberOfImages, std::s
     int height = numberOfImages * image_dim;
     int width = image_dim;
     int image_size = image_dim * image_dim;
-    vector<float> image(height * width);
+    std::vector<float> image(height * width);
 
     for (int i = 0; i < numberOfImages; ++i) {
         for (int j = 0; j < image_size; ++j) image[j + i*image_size] = images[j + i*image_size];
@@ -344,3 +345,5 @@ void writeRotatedImages(float* images, int image_dim, int numberOfImages, std::s
 
     writeImagesToBinaryFile(image, 1, 1, height, width, filename);
 }
+
+} // namespace std

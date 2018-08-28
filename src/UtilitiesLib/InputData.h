@@ -6,9 +6,12 @@
 
 #pragma once
 
+#include <string>
+
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "Version.h"
-#include <string>
+
+namespace pink {
 
 //! Type for SOM layout.
 enum Layout {
@@ -117,3 +120,5 @@ struct InputData
 };
 
 void stringToUpper(char* s);
+
+} // namespace pink

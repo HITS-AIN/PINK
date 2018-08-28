@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace PINK {
+namespace pink {
 
 //! Rectangular image
 template <class T>
@@ -69,4 +69,4 @@ private:
 template <>
 void Image<float>::writeBinary(std::string const& filename);
 
-} // namespace PINK
+} // namespace pink

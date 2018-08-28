@@ -27,9 +27,7 @@
     #include "CudaLib/CudaLib.h"
 #endif
 
-using namespace std;
-using namespace PINK;
-using namespace chrono;
+using namespace pink;
 
 int main (int argc, char **argv)
 {
@@ -38,7 +36,7 @@ int main (int argc, char **argv)
     #endif
 
     // Start timer
-    const auto startTime = steady_clock::now();
+    auto&& startTime = myclock::now();
 
     InputData inputData(argc, argv);
     SOM som(inputData);
@@ -47,9 +45,9 @@ int main (int argc, char **argv)
         if (inputData.useCuda)
         {
             if (inputData.useMultipleGPUs and cuda_getNumberOfGPUs() > 1)
-                cout << "  Use multiple GPU code with " << cuda_getNumberOfGPUs() << " GPUs." << endl;
+                std::cout << "  Use multiple GPU code with " << cuda_getNumberOfGPUs() << " GPUs." << std::endl;
             else
-                cout << "  Use single GPU code." << endl;
+                std::cout << "  Use single GPU code." << std::endl;
 
             if (inputData.executionPath == TRAIN)
                 cuda_trainSelfOrganizingMap(inputData);
@@ -67,14 +65,14 @@ int main (int argc, char **argv)
             fatalError("Unknown execution path.");
 
     // Stop and print timer
-    const auto stopTime = steady_clock::now();
-    const auto duration = stopTime - startTime;
-    cout << "\n  Total time (hh:mm:ss): "
-         << setfill('0') << setw(2) << duration_cast<hours>(duration).count() << ":"
-         << setfill('0') << setw(2) << duration_cast<minutes>(duration % hours(1)).count() << ":"
-         << setfill('0') << setw(2) << duration_cast<seconds>(duration % minutes(1)).count()
-         << "     (= " << duration_cast<seconds>(duration).count() << "s)" << endl;
+    auto&& stopTime = myclock::now();
+    auto&& duration = stopTime - startTime;
+    std::cout << "\n  Total time (hh:mm:ss): "
+         << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::hours>(duration).count() << ":"
+         << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::minutes>(duration % std::chrono::hours(1)).count() << ":"
+         << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::seconds>(duration % std::chrono::minutes(1)).count()
+         << "     (= " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << "s)" << std::endl;
 
-    cout << "\n  Successfully finished. Have a nice day.\n" << endl;
+    std::cout << "\n  Successfully finished. Have a nice day.\n" << std::endl;
     return 0;
 }

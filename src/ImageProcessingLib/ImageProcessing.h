@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+namespace pink {
+
 /**
  * @brief Interpolation type for images.
  */
@@ -120,3 +122,5 @@ void readImagesFromBinaryFile(std::vector<float> &images, int &numberOfImages, i
     int &height, int &width, std::string const& filename);
 
 void writeRotatedImages(float *images, int image_dim, int numberOfRotations, std::string const& filename);
+
+} // namespace pink

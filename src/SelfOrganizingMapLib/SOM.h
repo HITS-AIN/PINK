@@ -7,12 +7,18 @@
 
 #pragma once
 
-#include "UtilitiesLib/DistanceFunctor.h"
-#include "UtilitiesLib/DistributionFunctor.h"
-#include "UtilitiesLib/InputData.h"
+#include <chrono>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "UtilitiesLib/DistanceFunctor.h"
+#include "UtilitiesLib/DistributionFunctor.h"
+#include "UtilitiesLib/InputData.h"
+
+using myclock = std::chrono::steady_clock;
+
+namespace pink {
 
 /**
  * @brief Main class for self organizing matrix.
@@ -70,3 +76,5 @@ private:
     std::vector<int> updateCounterMatrix_;
 
 };
+
+} // namespace pink

@@ -4,10 +4,6 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "ImageProcessingLib/Image.h"
-#include "ImageProcessingLib/ImageIterator.h"
-#include "InputData.h"
-#include "UtilitiesLib/Error.h"
 #include <cmath>
 #include <getopt.h>
 #include <iostream>
@@ -16,7 +12,12 @@
 #include <sstream>
 #include <stdlib.h>
 
-using namespace std;
+#include "ImageProcessingLib/Image.h"
+#include "ImageProcessingLib/ImageIterator.h"
+#include "InputData.h"
+#include "UtilitiesLib/Error.h"
+
+namespace pink {
 
 std::ostream& operator << (std::ostream& os, Layout layout)
 {
@@ -306,8 +307,8 @@ InputData::InputData(int argc, char **argv)
             }
             case 'v':
             {
-                cout << "Pink version " << PROJECT_VERSION << endl;
-                cout << "Git revision " << GIT_REVISION << endl;
+                std::cout << "Pink version " << PROJECT_VERSION << std::endl;
+                std::cout << "Git revision " << GIT_REVISION << std::endl;
                 exit(0);
             }
             case 'h':
@@ -360,7 +361,7 @@ InputData::InputData(int argc, char **argv)
         fatalError("Unkown execution path.");
     }
 
-    PINK::ImageIterator<float> iterImage(imagesFilename);
+    ImageIterator<float> iterImage(imagesFilename);
 
     if (iterImage->getWidth() != iterImage->getHeight()) {
         print_usage();
@@ -391,7 +392,7 @@ InputData::InputData(int argc, char **argv)
     if (neuron_dim == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
     if (neuron_dim > image_dim) {
         print_usage();
-        cout << "ERROR: Neuron dimension must be smaller or equal to image dimension.";
+        std::cout << "ERROR: Neuron dimension must be smaller or equal to image dimension.";
         exit(EXIT_FAILURE);
     }
 
@@ -438,87 +439,89 @@ void InputData::print_header() const
 
 void InputData::print_parameters() const
 {
-    cout << "  Image file = " << imagesFilename << endl
-         << "  Result file = " << resultFilename << endl;
+    std::cout << "  Image file = " << imagesFilename << "\n"
+              << "  Result file = " << resultFilename << "\n";
 
     if (executionPath == MAP)
-        cout << "  SOM file = " << somFilename << endl;
+        std::cout << "  SOM file = " << somFilename << "\n";
 
-    cout << "  Number of images = " << numberOfImages << endl
-         << "  Number of channels = " << numberOfChannels << endl
-         << "  Image dimension = " << image_dim << "x" << image_dim << endl
-         << "  SOM dimension (width x height x depth) = " << som_width << "x" << som_height << "x" << som_depth << endl
-         << "  SOM size = " << som_size << endl
-         << "  Number of iterations = " << numIter << endl
-         << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << endl
-         << "  Progress = " << progressFactor << endl
-         << "  Intermediate storage of SOM = " << intermediate_storage << endl
-         << "  Layout = " << layout << endl
-         << "  Initialization type = " << init << endl
-         << "  Interpolation type = " << interpolation << endl
-         << "  Seed = " << seed << endl
-         << "  Number of rotations = " << numberOfRotations << endl
-         << "  Use mirrored image = " << useFlip << endl
-         << "  Number of CPU threads = " << numberOfThreads << endl
-         << "  Use CUDA = " << useCuda << endl
-         << "  Use multiple GPUs = " << useMultipleGPUs << endl
-         << "  Distribution function for SOM update = " << function << endl
-         << "  Sigma = " << sigma << endl
-         << "  Damping factor = " << damping << endl
-         << "  Maximum distance for SOM update = " << maxUpdateDistance << endl
-         << "  Use periodic boundary conditions = " << usePBC << endl
-         << endl;
+    std::cout << "  Number of images = " << numberOfImages << "\n"
+              << "  Number of channels = " << numberOfChannels << "\n"
+              << "  Image dimension = " << image_dim << "x" << image_dim << "\n"
+              << "  SOM dimension (width x height x depth) = " << som_width << "x" << som_height << "x" << som_depth << "\n"
+              << "  SOM size = " << som_size << "\n"
+              << "  Number of iterations = " << numIter << "\n"
+              << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
+              << "  Progress = " << progressFactor << "\n"
+              << "  Intermediate storage of SOM = " << intermediate_storage << "\n"
+              << "  Layout = " << layout << "\n"
+              << "  Initialization type = " << init << "\n"
+              << "  Interpolation type = " << interpolation << "\n"
+              << "  Seed = " << seed << "\n"
+              << "  Number of rotations = " << numberOfRotations << "\n"
+              << "  Use mirrored image = " << useFlip << "\n"
+              << "  Number of CPU threads = " << numberOfThreads << "\n"
+              << "  Use CUDA = " << useCuda << "\n"
+              << "  Use multiple GPUs = " << useMultipleGPUs << "\n"
+              << "  Distribution function for SOM update = " << function << "\n"
+              << "  Sigma = " << sigma << "\n"
+              << "  Damping factor = " << damping << "\n"
+              << "  Maximum distance for SOM update = " << maxUpdateDistance << "\n"
+              << "  Use periodic boundary conditions = " << usePBC << "\n"
+              << std::endl;
 
     if (verbose)
-        cout << "  Block size 1 = " << block_size_1 << endl
-             << endl;
+        std::cout << "  Block size 1 = " << block_size_1 << "\n"
+                  << std::endl;
 }
 
 void InputData::print_usage() const
 {
     print_header();
-    cout << "\n"
-            "  Usage:\n"
-            "\n"
-            "    Pink [Options] --train <image-file> <result-file>\n"
-            "    Pink [Options] --map   <image-file> <result-file> <SOM-file>\n"
-            "\n"
-            "  Options:\n"
-            "\n"
-            "    --cuda-off                      Switch off CUDA acceleration.\n"
-            "    --dist-func, -f <string>        Distribution function for SOM update (see below).\n"
-            "    --flip-off                      Switch off usage of mirrored images.\n"
-            "    --help, -h                      Print this lines.\n"
-            "    --init, -x <string>             Type of SOM initialization (zero = default, random, random_with_preferred_direction, SOM-file).\n"
-            "    --interpolation <string>        Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
-            "    --inter-store <string>          Store intermediate SOM results at every progress step (off = default, overwrite, keep).\n"
-            "    --layout, -l <string>           Layout of SOM (quadratic = default, quadhex, hexagonal).\n"
-            "    --neuron-dimension, -d <int>    Dimension for quadratic SOM neurons (default = image-dimension * sqrt(2)/2).\n"
-            "    --numrot, -n <int>              Number of rotations (1 or a multiple of 4, default = 360).\n"
-            "    --numthreads, -t <int>          Number of CPU threads (default = auto).\n"
-            "    --num-iter <int>                Number of iterations (default = 1).\n"
-            "    --multi-GPU-off                 Switch off usage of multiple GPUs.\n"
-            "    --pbc                           Use periodic boundary conditions for SOM.\n"
-            "    --progress, -p <float>          Print level of progress (default = 0.1).\n"
-            "                                    If < 1 relative progress, else number of images.\n"
-            "    --seed, -s <int>                Seed for random number generator (default = 1234).\n"
-            "    --som-width <int>               Width dimension of SOM (default = 10).\n"
-            "    --som-height <int>              Height dimension of SOM (default = 10).\n"
-            "    --som-depth <int>               Depth dimension of SOM (default = 1).\n"
-            "    --max-update-distance <float>   Maximum distance for SOM update (default = off).\n"
-            "    --version, -v                   Print version number.\n"
-            "    --verbose                       Print more output.\n"
-            "\n"
-            "  Distribution function:\n"
-            "\n"
-            "    <string> <float> <float>\n"
-            "\n"
-            "    gaussian sigma damping-factor\n"
-            "    mexicanHat sigma damping-factor\n"
-            << endl;
+    std::cout << "\n"
+                 "  Usage:\n"
+                 "\n"
+                 "    Pink [Options] --train <image-file> <result-file>\n"
+                 "    Pink [Options] --map   <image-file> <result-file> <SOM-file>\n"
+                 "\n"
+                 "  Options:\n"
+                 "\n"
+                 "    --cuda-off                      Switch off CUDA acceleration.\n"
+                 "    --dist-func, -f <string>        Distribution function for SOM update (see below).\n"
+                 "    --flip-off                      Switch off usage of mirrored images.\n"
+                 "    --help, -h                      Print this lines.\n"
+                 "    --init, -x <string>             Type of SOM initialization (zero = default, random, random_with_preferred_direction, SOM-file).\n"
+                 "    --interpolation <string>        Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
+                 "    --inter-store <string>          Store intermediate SOM results at every progress step (off = default, overwrite, keep).\n"
+                 "    --layout, -l <string>           Layout of SOM (quadratic = default, quadhex, hexagonal).\n"
+                 "    --neuron-dimension, -d <int>    Dimension for quadratic SOM neurons (default = image-dimension * sqrt(2)/2).\n"
+                 "    --numrot, -n <int>              Number of rotations (1 or a multiple of 4, default = 360).\n"
+                 "    --numthreads, -t <int>          Number of CPU threads (default = auto).\n"
+                 "    --num-iter <int>                Number of iterations (default = 1).\n"
+                 "    --multi-GPU-off                 Switch off usage of multiple GPUs.\n"
+                 "    --pbc                           Use periodic boundary conditions for SOM.\n"
+                 "    --progress, -p <float>          Print level of progress (default = 0.1).\n"
+                 "                                    If < 1 relative progress, else number of images.\n"
+                 "    --seed, -s <int>                Seed for random number generator (default = 1234).\n"
+                 "    --som-width <int>               Width dimension of SOM (default = 10).\n"
+                 "    --som-height <int>              Height dimension of SOM (default = 10).\n"
+                 "    --som-depth <int>               Depth dimension of SOM (default = 1).\n"
+                 "    --max-update-distance <float>   Maximum distance for SOM update (default = off).\n"
+                 "    --version, -v                   Print version number.\n"
+                 "    --verbose                       Print more output.\n"
+                 "\n"
+                 "  Distribution function:\n"
+                 "\n"
+                 "    <string> <float> <float>\n"
+                 "\n"
+                 "    gaussian sigma damping-factor\n"
+                 "    mexicanHat sigma damping-factor\n"
+              << std::endl;
 }
 
 void stringToUpper(char* s)
 {
     for (char *ps = s; *ps != '\0'; ++ps) *ps = toupper(*ps);
 }
+
+} // namespace pink

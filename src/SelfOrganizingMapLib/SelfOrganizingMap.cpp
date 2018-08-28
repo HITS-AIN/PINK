@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-using namespace std;
+namespace pink {
 
 void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int image_dim, int neuron_dim,
     bool useFlip, Interpolation interpolation, int numberOfChannels)
@@ -107,3 +107,5 @@ int findBestMatchingNeuron(float *euclideanDistanceMatrix, int som_size)
     }
     return bestMatch;
 }
+
+} // namespace pink
