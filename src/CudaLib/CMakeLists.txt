@@ -11,10 +11,6 @@ list(APPEND CUDA_NVCC_FLAGS "
  -gencode=arch=compute_70,code=sm_70
  -gencode=arch=compute_70,code=compute_70
 ")
-list(APPEND CUDA_NVCC_FLAGS_RELEASE "-O3")
-list(APPEND CUDA_NVCC_FLAGS_DEBUG "-O0 -g -G -DDEBUG_MODE")
-list(APPEND CUDA_NVCC_FLAGS_RELWITHDEBINFO "-O3 -g -G -DDEBUG_MODE")
-list(APPEND CUDA_NVCC_FLAGS_PROFILING "-O3 -g -G -pg -DDEBUG_MODE")
 
 include_directories(
     ..
