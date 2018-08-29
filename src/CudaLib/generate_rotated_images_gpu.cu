@@ -1,14 +1,14 @@
 /**
- * @file   cuda_generate_rotated_images.cu
+ * @file   CudaLib/generate_rotated_images_gpu.cu
  * @date   Oct 30, 2014
  * @author Bernd Doser, HITS gGmbH
  */
 
 #include <stdio.h>
 
+#include "crop.h"
 #include "CudaLib.h"
-#include "crop_kernel.h"
-#include "flip_kernel.h"
+#include "flip.h"
 #include "rotate_and_crop_nearest_neighbor.h"
 #include "rotate_and_crop_bilinear.h"
 #include "rotate_90degrees_list.h"
@@ -20,7 +20,7 @@ namespace pink {
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
-void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_rot, int image_dim, int neuron_dim,
+void generate_rotated_images_gpu(float* d_rotatedImages, float* d_image, int num_rot, int image_dim, int neuron_dim,
     bool useFlip, Interpolation interpolation, float *d_cosAlpha, float *d_sinAlpha, int numberOfChannels)
 {
     int neuron_size = neuron_dim * neuron_dim;
@@ -36,14 +36,14 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
         // Start kernel
         for (int c = 0; c < numberOfChannels; ++c)
         {
-            crop_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + c*neuron_size,
+            crop<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + c*neuron_size,
                 d_image + c*image_size, neuron_dim, image_dim);
 
             cudaError_t error = cudaGetLastError();
 
             if (error != cudaSuccess)
             {
-                fprintf(stderr, "Failed to launch CUDA kernel crop_kernel (error code %s)!\n", cudaGetErrorString(error));
+                fprintf(stderr, "Failed to launch CUDA kernel crop (error code %s)!\n", cudaGetErrorString(error));
                 exit(EXIT_FAILURE);
             }
         }
@@ -71,7 +71,7 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
                     rotate_and_crop_bilinear<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + (c+numberOfChannels)*neuron_size, d_image + c*image_size,
                         neuron_size, neuron_dim, image_dim, d_cosAlpha, d_sinAlpha, numberOfChannels);
                 else {
-                    fprintf(stderr, "cuda_generateRotatedImages: unknown interpolation type!\n");
+                    fprintf(stderr, "generate_rotated_images_gpu: unknown interpolation type!\n");
                     exit(EXIT_FAILURE);
                 }
 
@@ -79,7 +79,7 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
 
                 if (error != cudaSuccess)
                 {
-                    fprintf(stderr, "Failed to launch CUDA kernel rotateAndCrop_kernel (error code %s)!\n", cudaGetErrorString(error));
+                    fprintf(stderr, "Failed to launch CUDA kernel rotateAndCrop (error code %s)!\n", cudaGetErrorString(error));
                     exit(EXIT_FAILURE);
                 }
             }
@@ -99,18 +99,18 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
         // Start kernel
         for (int c = 0; c < numberOfChannels; ++c)
         {
-            rotate90degreesList_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + c*neuron_size,
+            rotate_90degrees_list<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + c*neuron_size,
                 neuron_dim, mc_neuron_size, offset);
-            rotate90degreesList_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + c*neuron_size + offset,
+            rotate_90degrees_list<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + c*neuron_size + offset,
                 neuron_dim, mc_neuron_size, offset);
-            rotate90degreesList_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + c*neuron_size + 2*offset,
+            rotate_90degrees_list<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + c*neuron_size + 2*offset,
                 neuron_dim, mc_neuron_size, offset);
 
             cudaError_t error = cudaGetLastError();
 
             if (error != cudaSuccess)
             {
-                fprintf(stderr, "Failed to launch CUDA kernel rotate90degrees_kernel (error code %s)!\n", cudaGetErrorString(error));
+                fprintf(stderr, "Failed to launch CUDA kernel rotate_90degrees_list (error code %s)!\n", cudaGetErrorString(error));
                 exit(EXIT_FAILURE);
             }
         }
@@ -126,14 +126,14 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
         // Start kernel
         for (int c = 0; c < numberOfChannels; ++c)
         {
-            flip_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + num_rot * numberOfChannels * neuron_size,
+            flip<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + num_rot * numberOfChannels * neuron_size,
                 d_rotatedImages, neuron_dim, neuron_size);
 
             cudaError_t error = cudaGetLastError();
 
             if (error != cudaSuccess)
             {
-                fprintf(stderr, "Failed to launch CUDA kernel flip_kernel (error code %s)!\n", cudaGetErrorString(error));
+                fprintf(stderr, "Failed to launch CUDA kernel flip (error code %s)!\n", cudaGetErrorString(error));
                 exit(EXIT_FAILURE);
             }
         }

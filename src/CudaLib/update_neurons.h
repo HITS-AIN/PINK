@@ -1,8 +1,10 @@
 /**
- * @file   CudaLib/updateNeurons_kernel.h
+ * @file   CudaLib/update_neurons.h
  * @date   Nov 14, 2014
  * @author Bernd Doser, HITS gGmbH
  */
+
+#include <cuda_runtime.h>
 
 #include "UtilitiesLib/InputData.h"
 
@@ -268,7 +270,7 @@ private:
 //! CUDA Kernel Device code updating quadratic self organizing map using gaussian function.
 template <unsigned int block_size, class FunctionFunctor, class DistanceFunctor>
 __global__ void
-updateNeurons_kernel(float *som, float *rotatedImages, int *bestRotationMatrix, int *bestMatch,
+update_neurons(float *som, float *rotatedImages, int *bestRotationMatrix, int *bestMatch,
     int neuron_size, FunctionFunctor functionFunctor, DistanceFunctor distanceFunctor,
     float damping, float maxUpdateDistance)
 {

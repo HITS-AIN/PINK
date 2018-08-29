@@ -8,6 +8,8 @@
 #include "CudaLib.h"
 #include <cstdio>
 
+#include <cuda_runtime.h>
+
 namespace pink {
 
 float* cuda_alloc_float(int size)

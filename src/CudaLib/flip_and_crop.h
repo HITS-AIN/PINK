@@ -1,8 +1,10 @@
 /**
- * @file   CudaLib/flipAndCrop_kernel.h
+ * @file   CudaLib/flip_and_crop.h
  * @date   Nov 13, 2014
  * @author Bernd Doser, HITS gGmbH
  */
+
+#include <cuda_runtime.h>
 
 namespace pink {
 
@@ -11,7 +13,7 @@ namespace pink {
  */
 template <unsigned int block_size>
 __global__ void
-flipAndCrop_kernel(float *dest, float *source, int new_dim, int old_dim)
+flip_and_crop(float *dest, float *source, int new_dim, int old_dim)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;

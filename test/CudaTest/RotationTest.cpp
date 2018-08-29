@@ -72,7 +72,7 @@ class FullRotationTest : public ::testing::TestWithParam<FullRotationTestData>
 {};
 
 //! Compare rotated images between CPU and GPU version.
-TEST_P(FullRotationTest, cuda_generateRotatedImages)
+TEST_P(FullRotationTest, generate_rotated_images)
 {
     FullRotationTestData data = GetParam();
 
@@ -104,7 +104,7 @@ TEST_P(FullRotationTest, cuda_generateRotatedImages)
     float *d_cosAlpha = NULL, *d_sinAlpha = NULL;
     trigonometricValues(&d_cosAlpha, &d_sinAlpha, data.num_rot/4);
 
-    cuda_generateRotatedImages(d_rotatedImages, d_image, data.num_rot, data.image_dim, data.neuron_dim,
+    generate_rotated_images_gpu(d_rotatedImages, d_image, data.num_rot, data.image_dim, data.neuron_dim,
         data.useFlip, data.interpolation, d_cosAlpha, d_sinAlpha, data.num_channels);
 
     float *gpu_rotatedImages = new float[num_rot_using_flip * mc_neuron_size];

@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 #include "CudaLib.h"
-#include "updateNeurons_kernel.h"
+#include "update_neurons.h"
 
 #define BLOCK_SIZE 32
 
@@ -62,35 +62,35 @@ void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotatio
             if (layout == QUADRATIC) {
                 if (usePBC) {
                     if (dimensionality == 1) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<1, true>(som_width),
                             damping, maxUpdateDistance);
                     } else if (dimensionality == 2) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<2, true>(som_width, som_height),
                             damping, maxUpdateDistance);
                     } else if (dimensionality == 3) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<3, true>(som_width, som_height, som_depth),
                             damping, maxUpdateDistance);
                     }
                 } else {
                     if (dimensionality == 1) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<1>(som_width),
                             damping, maxUpdateDistance);
                     } else if (dimensionality == 2) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<2>(som_width, som_height),
                             damping, maxUpdateDistance);
                     } else if (dimensionality == 3) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, GaussianFunctor(sigma), CartesianDistanceFunctor<3>(som_width, som_height, som_depth),
                             damping, maxUpdateDistance);
                     }
                 }
             } else if (layout == HEXAGONAL) {
-                updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                     d_bestMatch, neuron_size, GaussianFunctor(sigma), HexagonalDistanceFunctor(som_width),
                     damping, maxUpdateDistance);
             }
@@ -98,35 +98,35 @@ void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotatio
             if (layout == QUADRATIC) {
                 if (usePBC) {
                     if (dimensionality == 1) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<1, true>(som_width),
                             damping, maxUpdateDistance);
                     } else if (dimensionality == 2) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<2, true>(som_width, som_height),
                             damping, maxUpdateDistance);
                     } else if (dimensionality == 3) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<3, true>(som_width, som_height, som_depth),
                             damping, maxUpdateDistance);
                     }
                 } else {
                     if (dimensionality == 1) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<1>(som_width),
                             damping, maxUpdateDistance);
                     } else if (dimensionality == 2) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<2>(som_width, som_height),
                             damping, maxUpdateDistance);
                     } else if (dimensionality == 3) {
-                        updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                        update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                             d_bestMatch, neuron_size, MexicanHatFunctor(sigma), CartesianDistanceFunctor<3>(som_width, som_height, som_depth),
                             damping, maxUpdateDistance);
                     }
                 }
             } else if (layout == HEXAGONAL) {
-                updateNeurons_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
+                update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                     d_bestMatch, neuron_size, MexicanHatFunctor(sigma), HexagonalDistanceFunctor(som_width),
                     damping, maxUpdateDistance);
             }
@@ -136,7 +136,7 @@ void cuda_updateNeurons(float *d_som, float *d_rotatedImages, int *d_bestRotatio
 
         if (error != cudaSuccess)
         {
-            fprintf(stderr, "Failed to launch CUDA kernel updateNeurons_kernel (error code %s)!\n", cudaGetErrorString(error));
+            fprintf(stderr, "Failed to launch CUDA kernel update_neurons (error code %s)!\n", cudaGetErrorString(error));
             exit(EXIT_FAILURE);
         }
     }

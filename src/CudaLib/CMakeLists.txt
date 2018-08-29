@@ -29,13 +29,13 @@ cuda_add_library(
     cuda_generateEuclideanDistanceMatrix_firstStep_opt2.cu
     cuda_generateEuclideanDistanceMatrix_firstStep_opt3.cu
     cuda_generateEuclideanDistanceMatrix_secondStep.cu
-    cuda_generateRotatedImages.cu
     cuda_mapping.cpp
     cuda_trainSelfOrganizingMap.cpp
     cuda_rotate.cu
     cuda_print_properties.cu
     cuda_updateNeurons.cu
     euclidean_distance.cu
+    generate_rotated_images_gpu.cu
     trigonometricValues.cpp
 )
 
