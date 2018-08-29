@@ -8,6 +8,8 @@
 
 #include <random>
 
+namespace pink {
+
 /**
  * @brief Fill array with random numbers.
  */
@@ -33,3 +35,5 @@ void fillWithValue(T *a, int length, T value = 0)
         a[i] = value;
     }
 }
+
+} // namespace pink

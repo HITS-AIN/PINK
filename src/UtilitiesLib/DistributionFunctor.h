@@ -10,6 +10,8 @@
 #include <cmath>
 #include <stdexcept>
 
+namespace pink {
+
 /**
  * @brief Abstract base for distribution functor.
  */
@@ -66,3 +68,5 @@ private:
     float sigma2;
 
 };
+
+} // namespace pink

@@ -4,10 +4,13 @@
  * @author Bernd Doser <bernd.doser@h-its.org>
  */
 
-#include "CudaLib/CudaLib.h"
-#include "CudaLib/euclidean_distance.h"
 #include "gtest/gtest.h"
 #include <vector>
+
+#include "CudaLib/CudaLib.h"
+#include "CudaLib/euclidean_distance.h"
+
+using namespace pink;
 
 TEST(mixed_precision, float)
 {

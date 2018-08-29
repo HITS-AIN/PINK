@@ -9,6 +9,8 @@
 #include <cmath>
 #include <string>
 
+using namespace pink;
+
 struct DistributionFunctorTestData
 {
     DistributionFunctorTestData(float sigma) : sigma(sigma) {}

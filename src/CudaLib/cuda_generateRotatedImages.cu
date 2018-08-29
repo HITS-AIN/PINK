@@ -1,16 +1,17 @@
 /**
- * @file   cuda_generateEuclideanDistanceMatrix_algo2_firstStep.cu
+ * @file   cuda_generate_rotated_images.cu
  * @date   Oct 30, 2014
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include <stdio.h>
+
 #include "CudaLib.h"
 #include "crop_kernel.h"
 #include "flip_kernel.h"
-#include "rotateAndCropNearestNeighbor_kernel.h"
-#include "rotateAndCropBilinear_kernel.h"
-#include "rotate90degreesList_kernel.h"
-#include <stdio.h>
+#include "rotate_and_crop_nearest_neighbor.h"
+#include "rotate_and_crop_bilinear.h"
+#include "rotate_90degrees_list.h"
 
 namespace pink {
 
@@ -64,10 +65,10 @@ void cuda_generateRotatedImages(float* d_rotatedImages, float* d_image, int num_
             for (int c = 0; c < numberOfChannels; ++c)
             {
                 if (interpolation == NEAREST_NEIGHBOR)
-                    rotateAndCropNearestNeighbor_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + (c+numberOfChannels)*neuron_size, d_image + c*image_size,
+                    rotate_and_crop_nearest_neighbor<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + (c+numberOfChannels)*neuron_size, d_image + c*image_size,
                         neuron_size, neuron_dim, image_dim, d_cosAlpha, d_sinAlpha, numberOfChannels);
                 else if (interpolation == BILINEAR)
-                    rotateAndCropBilinear_kernel<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + (c+numberOfChannels)*neuron_size, d_image + c*image_size,
+                    rotate_and_crop_bilinear<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + (c+numberOfChannels)*neuron_size, d_image + c*image_size,
                         neuron_size, neuron_dim, image_dim, d_cosAlpha, d_sinAlpha, numberOfChannels);
                 else {
                     fprintf(stderr, "cuda_generateRotatedImages: unknown interpolation type!\n");

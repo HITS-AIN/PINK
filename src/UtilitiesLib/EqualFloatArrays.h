@@ -9,6 +9,8 @@
 #include "gtest/gtest.h"
 #include <cmath>
 
+namespace pink {
+
 //! Threshold for equality check of two floating point numbers.
 const float defaultTolerance = float(1.0 / (1 << 22));
 
@@ -46,3 +48,5 @@ template <class T>
     }
     return ::testing::AssertionSuccess();
 }
+
+} // namespace pink

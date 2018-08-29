@@ -4,7 +4,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-namespace pink {
+#include <cuda_runtime.h>
 
 /**
  * CUDA Kernel Device code for flipping an image.
@@ -20,5 +20,3 @@ flip_kernel(float *dest, float *source, int dim, int size)
 
     dest[blockIdx.z*size + (dim-x-1)*dim + y] = source[blockIdx.z*size + x*dim + y];
 }
-
-} // namespace pink

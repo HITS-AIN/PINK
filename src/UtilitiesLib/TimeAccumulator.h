@@ -8,6 +8,8 @@
 
 #include <chrono>
 
+namespace pink {
+
 class TimeAccumulator
 {
 public:
@@ -28,3 +30,5 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> startTime_;
 
 };
+
+} // namespace pink

@@ -8,6 +8,8 @@
 
 #include <iostream>
 
+namespace pink {
+
 struct Point
 {
     Point(int x = 0, int y = 0) : x(x), y(y) {}
@@ -18,3 +20,5 @@ struct Point
 
 //! Pretty printing of Point.
 std::ostream& operator << (std::ostream& os, Point point);
+
+} // namespace pink

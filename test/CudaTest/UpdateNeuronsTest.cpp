@@ -16,6 +16,8 @@
 #include <iostream>
 #include <vector>
 
+using namespace pink;
+
 struct FullUpdateNeuronsTestData
 {
     FullUpdateNeuronsTestData(int som_dim, int neuron_dim, int num_rot, int num_channels)

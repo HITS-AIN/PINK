@@ -8,6 +8,8 @@
 
 #include <iostream>
 
+namespace pink {
+
 /**
  * @brief Exit with fatal error message
  */
@@ -16,3 +18,5 @@ inline void fatalError(std::string const& msg)
     std::cout << "FATAL ERROR: " << msg << std::endl;
     exit(1);
 }
+
+} // namespace pink

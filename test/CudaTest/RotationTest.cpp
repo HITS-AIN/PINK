@@ -15,16 +15,18 @@
 #include <iostream>
 #include <vector>
 
+using namespace pink;
+
 //! Check CUDA image rotation with CPU function.
 TEST(RotationTest, DISABLED_45degree)
 {
-    PINK::Image<float> image(64, 64, 1.0);
+    Image<float> image(64, 64, 1.0);
     float angle = 45.0*M_PI/180.0;
 
-    PINK::Image<float> image2(64, 64, 0.0);
+    Image<float> image2(64, 64, 0.0);
     //rotate(image.getHeight(), image.getWidth(), &image.getPixel()[0], &image2.getPixel()[0], angle);
 
-    PINK::Image<float> image3(64, 64, 0.0);
+    Image<float> image3(64, 64, 0.0);
     cuda_rotate(image.getHeight(), image.getWidth(), &image.getPixel()[0], &image3.getPixel()[0], angle);
 
     EXPECT_EQ(image2, image3);

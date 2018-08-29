@@ -15,6 +15,8 @@
 #include <iostream>
 #include <vector>
 
+using namespace pink;
+
 //! Compare squared euclidean distance between CPU and GPU version.
 TEST(EuclideanDistanceTest, Array)
 {

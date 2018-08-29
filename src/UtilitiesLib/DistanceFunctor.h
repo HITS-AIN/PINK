@@ -12,6 +12,8 @@
 #include <cmath>
 #include <iostream>
 
+namespace pink {
+
 /**
  * @brief Abstract base for distance functor.
  */
@@ -237,3 +239,5 @@ private:
     int dim_;
 
 };
+
+} // namespace pink

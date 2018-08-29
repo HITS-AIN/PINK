@@ -1,10 +1,10 @@
 /**
- * @file   CudaLib/rotateAndCrop_kernel.h
+ * @file   CudaLib/rotate_90degrees_list.h
  * @date   Nov 4, 2014
  * @author Bernd Doser, HITS gGmbH
  */
 
-namespace pink {
+#include <cuda_runtime.h>
 
 /**
  * CUDA Kernel Device code for special clockwise rotation of 90 degrees of a list of quadratic images.
@@ -20,5 +20,3 @@ rotate90degreesList_kernel(float *images, int dim, int size, int offset)
 
     images[offset + blockIdx.z*size + (dim-y-1)*dim + x] = images[blockIdx.z*size + x*dim + y];
 }
-
-} // namespace pink

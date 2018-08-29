@@ -7,6 +7,8 @@
 #include "CheckArrays.h"
 #include <iostream>
 
+namespace pink {
+
 void checkArrayForNan(float* a, int length, std::string const& msg)
 {
     for (int i = 0; i < length; ++i) {
@@ -30,3 +32,5 @@ void checkArrayForNanAndNegative(float* a, int length, std::string const& msg)
         }
     }
 }
+
+} // namespace pink

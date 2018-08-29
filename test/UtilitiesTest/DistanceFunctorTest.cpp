@@ -9,6 +9,8 @@
 #include <cmath>
 #include <string>
 
+using namespace pink;
+
 TEST(DistanceFunctorTest, Cartesian)
 {
     // 1-dim
