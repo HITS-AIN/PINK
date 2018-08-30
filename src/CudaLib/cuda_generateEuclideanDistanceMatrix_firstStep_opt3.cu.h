@@ -27,7 +27,7 @@ __global__ void euclidean_distance_opt3_kernel(float *som, float *rotatedImages,
  */
 template <unsigned int block_size>
 void cuda_generateEuclideanDistanceMatrix_firstStep_opt3(float *d_som, float *d_rotatedImages,
-    float* d_firstStep, int som_size, int num_rot, int neuron_size)
+    int som_size, int num_rot, int neuron_size)
 {
     // Setup execution parameters
     int grid_size = ceil((float)neuron_size/block_size);

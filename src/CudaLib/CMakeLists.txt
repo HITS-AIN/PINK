@@ -30,10 +30,10 @@ cuda_add_library(
     cuda_trainSelfOrganizingMap.cpp
     cuda_rotate.cu
     cuda_print_properties.cu
-    cuda_updateNeurons.cu
     euclidean_distance.cu
     generate_rotated_images_gpu.cu
     trigonometricValues.cpp
+    update_neurons.cu
 )
 
 target_link_libraries(

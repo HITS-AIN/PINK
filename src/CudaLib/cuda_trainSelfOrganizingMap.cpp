@@ -107,10 +107,10 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
                 inputData.som_size, d_som, inputData.numberOfChannels * inputData.neuron_size,
                 inputData.numberOfRotationsAndFlip, d_rotatedImages, inputData.block_size_1, inputData.useMultipleGPUs);
 
-            cuda_updateNeurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
+            update_neurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
                 inputData.som_width, inputData.som_height, inputData.som_depth, inputData.som_size,
-                inputData.numberOfChannels * inputData.neuron_size, inputData.numberOfRotationsAndFlip,
-                inputData.function, inputData.layout, inputData.sigma, inputData.damping, inputData.maxUpdateDistance,
+                inputData.numberOfChannels * inputData.neuron_size, inputData.function, inputData.layout,
+				inputData.sigma, inputData.damping, inputData.maxUpdateDistance,
                 inputData.usePBC, inputData.dimensionality);
 
             cuda_copyDeviceToHost_int(&bestMatch, d_bestMatch, 1);
