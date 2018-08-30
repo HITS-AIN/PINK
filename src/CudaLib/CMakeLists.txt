@@ -1,6 +1,3 @@
-# No propagation of host compiler flags to CUDA compiler via -Xcompiler 
-set(CUDA_PROPAGATE_HOST_FLAGS OFF)
-
 # Set flags for CUDA compiler
 list(APPEND CUDA_NVCC_FLAGS "
 -arch=sm_61
