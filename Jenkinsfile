@@ -29,7 +29,7 @@ pipeline {
               step([
                 $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
                 defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
-                parserConfigurations: [[parserName: 'GNU Make + GNU C Compiler (gcc)', pattern: 'build-gcc-5/make.out']],
+                parserConfigurations: [[parserName: 'GCC 5 warnings', pattern: 'build-gcc-5/make.out']],
                 unHealthy: ''
               ])
             }
@@ -51,7 +51,7 @@ pipeline {
               step([
                 $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
                 defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
-                parserConfigurations: [[parserName: 'GNU Make + GNU C Compiler (gcc)', pattern: 'build-gcc-7/make.out']],
+                parserConfigurations: [[parserName: 'GCC 7 warnings', pattern: 'build-gcc-7/make.out']],
                 unHealthy: ''
               ])
             }
@@ -73,7 +73,7 @@ pipeline {
               step([
                 $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
                 defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
-                parserConfigurations: [[parserName: 'Clang (LLVM based)', pattern: 'build-clang-5/make.out']],
+                parserConfigurations: [[parserName: 'Clang 5 warnings', pattern: 'build-clang-5/make.out']],
                 unHealthy: ''
               ])
             }
