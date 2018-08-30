@@ -79,7 +79,7 @@ InputData::InputData()
     neuron_size(0),
     som_total_size(0),
     numberOfRotationsAndFlip(0),
-    interpolation(BILINEAR),
+    interpolation(Interpolation::BILINEAR),
     executionPath(UNDEFINED),
     intermediate_storage(OFF),
     function(GAUSSIAN),
@@ -233,8 +233,8 @@ InputData::InputData(int argc, char **argv)
             case 5:
             {
                 stringToUpper(optarg);
-                if (strcmp(optarg, "NEAREST_NEIGHBOR") == 0) interpolation = NEAREST_NEIGHBOR;
-                else if (strcmp(optarg, "BILINEAR") == 0) interpolation = BILINEAR;
+                if (strcmp(optarg, "NEAREST_NEIGHBOR") == 0) interpolation = Interpolation::NEAREST_NEIGHBOR;
+                else if (strcmp(optarg, "BILINEAR") == 0) interpolation = Interpolation::BILINEAR;
                 else {
                     print_usage();
                     printf ("optarg = %s\n", optarg);
@@ -415,11 +415,11 @@ void InputData::print_header() const
     std::cout << "\n"
                  "  *************************************************************************\n"
                  "  *                                                                       *\n"
-                 "  *                      PPPPP    II   NN    NN   KK  KK                  *\n"
-                 "  *                      PP  PP   II   NNN   NN   KK KK                   *\n"
-                 "  *                      PPPPP    II   NN NN NN   KKKK                    *\n"
-                 "  *                      PP       II   NN   NNN   KK KK                   *\n"
-                 "  *                      PP       II   NN    NN   KK  KK                  *\n"
+                 "  *                    PPPPP    II   NN    NN   KK  KK                    *\n"
+                 "  *                    PP  PP   II   NNN   NN   KK KK                     *\n"
+                 "  *                    PPPPP    II   NN NN NN   KKKK                      *\n"
+                 "  *                    PP       II   NN   NNN   KK KK                     *\n"
+                 "  *                    PP       II   NN    NN   KK  KK                    *\n"
                  "  *                                                                       *\n"
                  "  *       Parallelized rotation and flipping INvariant Kohonen maps       *\n"
                  "  *                                                                       *\n"

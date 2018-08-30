@@ -43,7 +43,7 @@ TEST(ImageProcessingTest, CompareRotation90WithRotation)
     fillWithRandomNumbers(&image[0], size);
 
     rotate_90degrees(height, width, &image[0], &image2[0]);
-    rotate(height, width, &image[0], &image3[0], 0.5*M_PI, NEAREST_NEIGHBOR);
+    rotate(height, width, &image[0], &image3[0], 0.5*M_PI, Interpolation::NEAREST_NEIGHBOR);
 
     EXPECT_TRUE(EqualFloatArrays(&image2[0], &image3[0], size));
 }
@@ -58,7 +58,7 @@ TEST(ImageProcessingTest, BilinearInterpolation)
 
     rotate_90degrees(height, width, &image[0], &image2[0]);
     //printImage(&image2[0], width, height);
-    rotate(height, width, &image[0], &image3[0], 0.5*M_PI, BILINEAR);
+    rotate(height, width, &image[0], &image3[0], 0.5*M_PI, Interpolation::BILINEAR);
     //printImage(&image3[0], width, height);
 
     EXPECT_TRUE(EqualFloatArrays(&image2[0], &image3[0], size));

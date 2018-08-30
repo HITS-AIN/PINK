@@ -10,16 +10,9 @@
 #include <string>
 #include <vector>
 
-namespace pink {
+#include "Interpolation.h"
 
-/**
- * @brief Interpolation type for images.
- */
-enum Interpolation
-{
-    NEAREST_NEIGHBOR,  //!< Refuse values behind the comma.
-    BILINEAR           //!< Interpolate value by distance to pixels.
-};
+namespace pink {
 
 //! Pretty printing of interpolation type.
 std::ostream& operator << (std::ostream& os, Interpolation interpolation);
@@ -37,7 +30,7 @@ std::ostream& operator << (std::ostream& os, Interpolation interpolation);
  * y2 = sin(alpha) * (x1 - x0) + cos(alpha) * (y1 - y0) + y0
  */
 void rotate(int height, int width, float *source, float *dest, float alpha,
-    Interpolation interpolation = BILINEAR);
+    Interpolation interpolation = Interpolation::BILINEAR);
 
 /**
  * @brief Special rotation of 90 degrees clockwise.
@@ -67,7 +60,7 @@ void flipAndCrop(int height, int width, int height_new, int width_new, float *so
  * The combined execution is more efficient.
  */
 void rotateAndCrop(int height, int width, int height_new, int width_new, float *source,
-    float *dest, float alpha, Interpolation interpolation = BILINEAR);
+    float *dest, float alpha, Interpolation interpolation = Interpolation::BILINEAR);
 
 /**
  * @brief Euclidean distance of two float arrays.

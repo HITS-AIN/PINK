@@ -5,23 +5,22 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include <cmath>
+#include <chrono>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+
+#ifndef NDEBUG
+    #include <fenv.h>
+#endif
+
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageIterator.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "UtilitiesLib/Error.h"
 #include "UtilitiesLib/InputData.h"
-#include <cmath>
-#include <chrono>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-#include <string.h>
-#include <stdlib.h>
-
-#if DEBUG_MODE
-    #include <fenv.h>
-#endif
 
 #if PINK_USE_CUDA
     #include "CudaLib/CudaLib.h"
@@ -29,9 +28,9 @@
 
 using namespace pink;
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-    #if DEBUG_MODE
+    #ifndef NDEBUG
         feenableexcept(FE_INVALID | FE_OVERFLOW);
     #endif
 

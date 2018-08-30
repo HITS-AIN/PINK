@@ -127,21 +127,21 @@ TEST_P(FullRotationTest, generate_rotated_images)
 
 INSTANTIATE_TEST_CASE_P(FullRotationTest_all, FullRotationTest,
     ::testing::Values(
-        FullRotationTestData( 3,  3,   4, false, NEAREST_NEIGHBOR, 1),
-        FullRotationTestData( 2,  2,   4, false, NEAREST_NEIGHBOR, 1),
-        FullRotationTestData( 2,  2,   4, true,  NEAREST_NEIGHBOR, 1),
-        FullRotationTestData( 8,  2,   4, false, NEAREST_NEIGHBOR, 1),
-        FullRotationTestData(64, 44,   4, false, NEAREST_NEIGHBOR, 1),
-        FullRotationTestData(64, 44,   4, true,  NEAREST_NEIGHBOR, 1),
-        FullRotationTestData(10, 10,   8, false, NEAREST_NEIGHBOR, 1),
-        FullRotationTestData( 4,  2, 360, false, NEAREST_NEIGHBOR, 1),
-        FullRotationTestData( 3,  3, 360, true,  NEAREST_NEIGHBOR, 1),
-        FullRotationTestData( 4,  2, 360, true,  NEAREST_NEIGHBOR, 1),
-//        FullRotationTestData( 2,  2,   8, false, BILINEAR,         1)
-//        FullRotationTestData( 4,  2,   4, false, BILINEAR,         1),
-        FullRotationTestData( 3,  3,   4, false, NEAREST_NEIGHBOR, 2),
-        FullRotationTestData( 3,  3,   8, false, NEAREST_NEIGHBOR, 2),
-        FullRotationTestData( 4,  2,   8, false, NEAREST_NEIGHBOR, 2),
-        FullRotationTestData( 4,  2,   8, true,  NEAREST_NEIGHBOR, 2),
-        FullRotationTestData( 4,  2, 360, true,  NEAREST_NEIGHBOR, 2)
+        FullRotationTestData( 3,  3,   4, false, Interpolation::NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 2,  2,   4, false, Interpolation::NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 2,  2,   4, true,  Interpolation::NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 8,  2,   4, false, Interpolation::NEAREST_NEIGHBOR, 1),
+        FullRotationTestData(64, 44,   4, false, Interpolation::NEAREST_NEIGHBOR, 1),
+        FullRotationTestData(64, 44,   4, true,  Interpolation::NEAREST_NEIGHBOR, 1),
+        FullRotationTestData(10, 10,   8, false, Interpolation::NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 4,  2, 360, false, Interpolation::NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 3,  3, 360, true,  Interpolation::NEAREST_NEIGHBOR, 1),
+        FullRotationTestData( 4,  2, 360, true,  Interpolation::NEAREST_NEIGHBOR, 1),
+//        FullRotationTestData( 2,  2,   8, false, Interpolation::BILINEAR,         1)
+//        FullRotationTestData( 4,  2,   4, false, Interpolation::BILINEAR,         1),
+        FullRotationTestData( 3,  3,   4, false, Interpolation::NEAREST_NEIGHBOR, 2),
+        FullRotationTestData( 3,  3,   8, false, Interpolation::NEAREST_NEIGHBOR, 2),
+        FullRotationTestData( 4,  2,   8, false, Interpolation::NEAREST_NEIGHBOR, 2),
+        FullRotationTestData( 4,  2,   8, true,  Interpolation::NEAREST_NEIGHBOR, 2),
+        FullRotationTestData( 4,  2, 360, true,  Interpolation::NEAREST_NEIGHBOR, 2)
 ));

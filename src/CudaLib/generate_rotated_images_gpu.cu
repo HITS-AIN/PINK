@@ -64,10 +64,10 @@ void generate_rotated_images_gpu(float* d_rotatedImages, float* d_image, int num
             // Start kernel
             for (int c = 0; c < numberOfChannels; ++c)
             {
-                if (interpolation == NEAREST_NEIGHBOR)
+                if (interpolation == Interpolation::NEAREST_NEIGHBOR)
                     rotate_and_crop_nearest_neighbor<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + (c+numberOfChannels)*neuron_size, d_image + c*image_size,
                         neuron_size, neuron_dim, image_dim, d_cosAlpha, d_sinAlpha, numberOfChannels);
-                else if (interpolation == BILINEAR)
+                else if (interpolation == Interpolation::BILINEAR)
                     rotate_and_crop_bilinear<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_rotatedImages + (c+numberOfChannels)*neuron_size, d_image + c*image_size,
                         neuron_size, neuron_dim, image_dim, d_cosAlpha, d_sinAlpha, numberOfChannels);
                 else {

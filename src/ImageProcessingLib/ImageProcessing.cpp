@@ -19,14 +19,6 @@
 
 namespace pink {
 
-std::ostream& operator << (std::ostream& os, Interpolation interpolation)
-{
-    if (interpolation == NEAREST_NEIGHBOR) os << "nearest_neighbor";
-    else if (interpolation == BILINEAR) os << "bilinear";
-    else os << "undefined";
-    return os;
-}
-
 void rotate_nearest_neighbor(int height, int width, float *source, float *dest, float alpha)
 {
     const float cosAlpha = cos(alpha);
@@ -104,9 +96,9 @@ void rotate_90degrees(int height, int width, float *source, float *dest)
 
 void rotate(int height, int width, float *source, float *dest, float alpha, Interpolation interpolation)
 {
-    if (interpolation == NEAREST_NEIGHBOR)
+    if (interpolation == Interpolation::NEAREST_NEIGHBOR)
         rotate_nearest_neighbor(height, width, source, dest, alpha);
-    else if (interpolation == BILINEAR)
+    else if (interpolation == Interpolation::BILINEAR)
         rotate_bilinear(height, width, source, dest, alpha);
     else {
         fatalError("rotateAndCrop: unknown interpolation\n");
@@ -223,9 +215,9 @@ void rotateAndCrop_bilinear(int height, int width, int height_new, int width_new
 
 void rotateAndCrop(int height, int width, int height_new, int width_new, float *source, float *dest, float alpha, Interpolation interpolation)
 {
-    if (interpolation == NEAREST_NEIGHBOR)
+    if (interpolation == Interpolation::NEAREST_NEIGHBOR)
         rotateAndCrop_nearest_neighbor(height, width, height_new, width_new, source, dest, alpha);
-    else if (interpolation == BILINEAR)
+    else if (interpolation == Interpolation::BILINEAR)
         rotateAndCrop_bilinear(height, width, height_new, width_new, source, dest, alpha);
     else {
         fatalError("rotateAndCrop: unknown interpolation");
