@@ -14,7 +14,7 @@ using namespace pink;
 
 TEST(mixed_precision, float)
 {
-	std::vector<float> image{1.0, 2.7, 0.0, -0.8};
+    std::vector<float> image{1.0, 2.7, 0.0, -0.8};
 
     EXPECT_FLOAT_EQ(2.7, image[1]);
 
