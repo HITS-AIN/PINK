@@ -8,14 +8,13 @@
 
 #include <fstream>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "Image.h"
 
 namespace pink {
 
-//! Read iteratively a binary file
+//! Read iteratively a binary image file
 template <class T>
 class ImageIterator
 {
@@ -96,7 +95,7 @@ private:
     void next()
     {
         if (count_ < numberOfImages_) {
-            ptrCurrentImage_ = PtrImage(new ImageType(height_, width_, numberOfChannels_));
+            ptrCurrentImage_ = std::make_shared<ImageType>(height_, width_, numberOfChannels_);
             ptrStream_->read((char*)&ptrCurrentImage_->getPixel()[0], numberOfChannels_ * height_ * width_ * sizeof(float));
             ++count_;
         } else {

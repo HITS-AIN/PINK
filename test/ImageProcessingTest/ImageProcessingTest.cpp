@@ -7,13 +7,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include "gtest/gtest.h"
 #include <vector>
 
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "UtilitiesLib/EqualFloatArrays.h"
 #include "UtilitiesLib/Filler.h"
-#include "gtest/gtest.h"
 
 using namespace pink;
 

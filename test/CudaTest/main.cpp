@@ -1,12 +1,10 @@
-/*
- * main.cpp
- *
- *  Created on: Oct 6, 2014
- *      Author: Bernd Doser, HITS gGmbH
+/**
+ * @file   CudaTest/main.cpp
+ * @date   Oct 6, 2014
+ * @author Bernd Doser, HITS gGmbH
  */
 
 #include "gtest/gtest.h"
-#include <string>
 
 int main(int argc, char **argv)
 {

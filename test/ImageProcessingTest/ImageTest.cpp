@@ -5,10 +5,10 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include "gtest/gtest.h"
 #include <string>
 
 #include "ImageProcessingLib/ImageIterator.h"
-#include "gtest/gtest.h"
 
 using namespace pink;
 
