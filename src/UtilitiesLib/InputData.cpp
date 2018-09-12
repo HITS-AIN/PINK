@@ -19,77 +19,40 @@
 
 namespace pink {
 
-std::ostream& operator << (std::ostream& os, Layout layout)
-{
-    if (layout == QUADRATIC) os << "quadratic";
-    else if (layout == HEXAGONAL) os << "hexagonal";
-    else if (layout == QUADHEX) os << "quadhex";
-    else os << "undefined";
-    return os;
-}
-
-std::ostream& operator << (std::ostream& os, Function function)
-{
-    if (function == GAUSSIAN) os << "gaussian";
-    else if (function == MEXICANHAT) os << "mexicanhat";
-    else os << "undefined";
-    return os;
-}
-
-std::ostream& operator << (std::ostream& os, SOMInitialization init)
-{
-    if (init == ZERO) os << "zero";
-    else if (init == RANDOM) os << "random";
-    else if (init == RANDOM_WITH_PREFERRED_DIRECTION) os << "random_with_preferred_direction";
-    else if (init == FILEINIT) os << "file_init";
-    else os << "undefined";
-    return os;
-}
-
-std::ostream& operator << (std::ostream& os, IntermediateStorageType type)
-{
-    if (type == OFF) os << "off";
-    else if (type == OVERWRITE) os << "overwrite";
-    else if (type == KEEP) os << "keep";
-    else os << "undefined";
-    return os;
-}
-
 InputData::InputData()
- :
-    verbose(false),
-    som_width(10),
-    som_height(10),
-    som_depth(1),
-    neuron_dim(-1),
-    layout(QUADRATIC),
-    seed(1234),
-    numberOfRotations(360),
-    numberOfThreads(-1),
-    init(ZERO),
-    numIter(1),
-    progressFactor(0.1),
-    useFlip(true),
-    useCuda(true),
-    numberOfImages(0),
-    numberOfChannels(0),
-    image_dim(0),
-    image_size(0),
-    som_size(0),
-    neuron_size(0),
-    som_total_size(0),
-    numberOfRotationsAndFlip(0),
-    interpolation(Interpolation::BILINEAR),
-    executionPath(UNDEFINED),
-    intermediate_storage(OFF),
-    function(GAUSSIAN),
-    sigma(DEFAULT_SIGMA),
-    damping(DEFAULT_DAMPING),
-    block_size_1(256),
-    maxUpdateDistance(-1.0),
-    useMultipleGPUs(true),
-    usePBC(false),
-    dimensionality(1)
+ : verbose(false),
+   som_width(10),
+   som_height(10),
+   som_depth(1),
+   neuron_dim(-1),
+   layout(Layout::CARTESIAN),
+   seed(1234),
+   numberOfRotations(360),
+   numberOfThreads(-1),
+   init(SOMInitialization::ZERO),
+   numIter(1),
+   progressFactor(0.1),
+   useFlip(true),
+   useCuda(true),
+   numberOfImages(0),
+   numberOfChannels(0),
+   image_dim(0),
+   image_size(0),
+   som_size(0),
+   neuron_size(0),
+   som_total_size(0),
+   numberOfRotationsAndFlip(0),
+   interpolation(Interpolation::BILINEAR),
+   executionPath(ExecutionPath::UNDEFINED),
+   intermediate_storage(IntermediateStorageType::OFF),
+   function(DistributionFunction::GAUSSIAN),
+   sigma(DEFAULT_SIGMA),
+   damping(DEFAULT_DAMPING),
+   block_size_1(256),
+   maxUpdateDistance(-1.0),
+   useMultipleGPUs(true),
+   usePBC(false),
+   dimensionality(1)
 {}
 
 InputData::InputData(int argc, char **argv)
@@ -161,9 +124,8 @@ InputData::InputData(int argc, char **argv)
             case 'l':
             {
                 stringToUpper(optarg);
-                if (strcmp(optarg, "QUADRATIC") == 0) layout = QUADRATIC;
-                else if (strcmp(optarg, "HEXAGONAL") == 0) layout = HEXAGONAL;
-                else if (strcmp(optarg, "QUADHEX") == 0) layout = QUADHEX;
+                if (strcmp(optarg, "CARTESIAN") == 0) layout = Layout::CARTESIAN;
+                else if (strcmp(optarg, "HEXAGONAL") == 0) layout = Layout::HEXAGONAL;
                 else {
                     printf ("optarg = %s\n", optarg);
                     printf ("Unkown option %o\n", c);
@@ -206,12 +168,17 @@ InputData::InputData(int argc, char **argv)
             {
                 char* upper_optarg = strdup(optarg);
                 stringToUpper(upper_optarg);
-                if (strcmp(upper_optarg, "ZERO") == 0) init = ZERO;
-                else if (strcmp(upper_optarg, "RANDOM") == 0) init = RANDOM;
-                else if (strcmp(upper_optarg, "RANDOM_WITH_PREFERRED_DIRECTION") == 0) init = RANDOM_WITH_PREFERRED_DIRECTION;
-                else {
-                    init = FILEINIT;
+                if (strcmp(upper_optarg, "ZERO") == 0) init = SOMInitialization::ZERO;
+                else if (strcmp(upper_optarg, "RANDOM") == 0) init = SOMInitialization::RANDOM;
+                else if (strcmp(upper_optarg, "RANDOM_WITH_PREFERRED_DIRECTION") == 0) init = SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION;
+                else if (strcmp(upper_optarg, "FILEINIT") == 0) {
+                    init = SOMInitialization::FILEINIT;
                     somFilename = optarg;
+                } else {
+                    print_usage();
+                    printf ("optarg = %s\n", optarg);
+                    printf ("Unkown option %o\n", c);
+                    exit(EXIT_FAILURE);
                 }
                 break;
             }
@@ -245,7 +212,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 6:
             {
-                executionPath = TRAIN;
+                executionPath = ExecutionPath::TRAIN;
                 int index = optind - 1;
                 if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --train option.");
                 imagesFilename = strdup(argv[index++]);
@@ -256,7 +223,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 7:
             {
-                executionPath = MAP;
+                executionPath = ExecutionPath::MAP;
                 int index = optind - 1;
                 if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --map option.");
                 imagesFilename = strdup(argv[index++]);
@@ -270,9 +237,9 @@ InputData::InputData(int argc, char **argv)
             case 8:
             {
                 stringToUpper(optarg);
-                if (strcmp(optarg, "OFF") == 0) intermediate_storage = OFF;
-                else if (strcmp(optarg, "OVERWRITE") == 0) intermediate_storage = OVERWRITE;
-                else if (strcmp(optarg, "KEEP") == 0) intermediate_storage = KEEP;
+                if (strcmp(optarg, "OFF") == 0) intermediate_storage = IntermediateStorageType::OFF;
+                else if (strcmp(optarg, "OVERWRITE") == 0) intermediate_storage = IntermediateStorageType::OVERWRITE;
+                else if (strcmp(optarg, "KEEP") == 0) intermediate_storage = IntermediateStorageType::KEEP;
                 else {
                     printf ("optarg = %s\n", optarg);
                     printf ("Unkown option %o\n", c);
@@ -320,10 +287,10 @@ InputData::InputData(int argc, char **argv)
             {
                 stringToUpper(optarg);
                 if (strcmp(optarg, "GAUSSIAN") == 0) {
-                    function = GAUSSIAN;
+                    function = DistributionFunction::GAUSSIAN;
                 }
                 else if (strcmp(optarg, "MEXICANHAT") == 0) {
-                    function = MEXICANHAT;
+                    function = DistributionFunction::MEXICANHAT;
                 }
                 else {
                     printf ("optarg = %s\n", optarg);
@@ -354,9 +321,9 @@ InputData::InputData(int argc, char **argv)
         }
     }
 
-    if (executionPath == MAP) {
-        init = FILEINIT;
-    } else if (executionPath == UNDEFINED) {
+    if (executionPath == ExecutionPath::MAP) {
+        init = SOMInitialization::FILEINIT;
+    } else if (executionPath == ExecutionPath::UNDEFINED) {
         print_usage();
         fatalError("Unkown execution path.");
     }
@@ -373,7 +340,7 @@ InputData::InputData(int argc, char **argv)
     image_dim = iterImage->getWidth();
     image_size = image_dim * image_dim;
 
-    if (layout == HEXAGONAL) {
+    if (layout == Layout::HEXAGONAL) {
         if (usePBC) fatalError("Periodic boundary conditions are not supported for hexagonal layout.");
         if ((som_width - 1) % 2) fatalError("For hexagonal layout only odd dimension supported.");
         if (som_width != som_height) fatalError("For hexagonal layout som-width must be equal to som-height.");
@@ -442,7 +409,7 @@ void InputData::print_parameters() const
     std::cout << "  Image file = " << imagesFilename << "\n"
               << "  Result file = " << resultFilename << "\n";
 
-    if (executionPath == MAP)
+    if (executionPath == ExecutionPath::MAP)
         std::cout << "  SOM file = " << somFilename << "\n";
 
     std::cout << "  Number of images = " << numberOfImages << "\n"
@@ -490,10 +457,10 @@ void InputData::print_usage() const
                  "    --dist-func, -f <string>        Distribution function for SOM update (see below).\n"
                  "    --flip-off                      Switch off usage of mirrored images.\n"
                  "    --help, -h                      Print this lines.\n"
-                 "    --init, -x <string>             Type of SOM initialization (zero = default, random, random_with_preferred_direction, SOM-file).\n"
+                 "    --init, -x <string>             Type of SOM initialization (zero = default, random, random_with_preferred_direction, file_init).\n"
                  "    --interpolation <string>        Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
                  "    --inter-store <string>          Store intermediate SOM results at every progress step (off = default, overwrite, keep).\n"
-                 "    --layout, -l <string>           Layout of SOM (quadratic = default, quadhex, hexagonal).\n"
+                 "    --layout, -l <string>           Layout of SOM (quadratic = default, hexagonal).\n"
                  "    --neuron-dimension, -d <int>    Dimension for quadratic SOM neurons (default = image-dimension * sqrt(2)/2).\n"
                  "    --numrot, -n <int>              Number of rotations (1 or a multiple of 4, default = 360).\n"
                  "    --numthreads, -t <int>          Number of CPU threads (default = auto).\n"

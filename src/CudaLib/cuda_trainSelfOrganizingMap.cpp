@@ -80,9 +80,9 @@ void cuda_trainSelfOrganizingMap(InputData const& inputData)
                      << fixed << setprecision(progressPrecision) << setw(3) << progress*100 << " % ("
                      << duration_cast<seconds>(steady_clock::now() - startTime).count() << " s)" << endl;
 
-                if (inputData.intermediate_storage != OFF) {
+                if (inputData.intermediate_storage != IntermediateStorageType::OFF) {
                     string interStoreFilename = inputData.resultFilename;
-                    if (inputData.intermediate_storage == KEEP) {
+                    if (inputData.intermediate_storage == IntermediateStorageType::KEEP) {
                         interStoreFilename.insert(interStoreFilename.find_last_of("."), "_" + to_string(interStoreCount));
                         ++interStoreCount;
                     }

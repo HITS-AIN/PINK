@@ -22,18 +22,18 @@ SOM::SOM(InputData const& inputData)
    updateCounterMatrix_(inputData.som_size)
 {
     // Initialize SOM
-    if (inputData.init == ZERO)
+    if (inputData.init == SOMInitialization::ZERO)
         fillWithValue(&som_[0], som_.size());
-    else if (inputData.init == RANDOM)
+    else if (inputData.init == SOMInitialization::RANDOM)
         fillWithRandomNumbers(&som_[0], som_.size(), inputData.seed);
-    else if (inputData.init == RANDOM_WITH_PREFERRED_DIRECTION) {
+    else if (inputData.init == SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION) {
         fillWithRandomNumbers(&som_[0], som_.size(), inputData.seed);
         for (int n = 0; n < inputData.som_size; ++n)
             for (int c = 0; c < inputData.numberOfChannels; ++c)
                 for (int i = 0; i < inputData.neuron_dim; ++i)
                     som_[(n*inputData.numberOfChannels + c)*inputData.neuron_size + i*inputData.neuron_dim + i] = 1.0f;
     }
-    else if (inputData.init == FILEINIT) {
+    else if (inputData.init == SOMInitialization::FILEINIT) {
         std::ifstream is(inputData.somFilename);
         if (!is) throw std::runtime_error("Error opening " + inputData.somFilename);
 
@@ -56,15 +56,15 @@ SOM::SOM(InputData const& inputData)
         fatalError("Unknown initType.");
 
     // Set distribution function
-    if (inputData_.function == GAUSSIAN)
+    if (inputData_.function == DistributionFunction::GAUSSIAN)
         ptrDistributionFunctor_ = std::make_shared<GaussianFunctor>(inputData_.sigma);
-    else if (inputData_.function == MEXICANHAT)
+    else if (inputData_.function == DistributionFunction::MEXICANHAT)
         ptrDistributionFunctor_ = std::make_shared<MexicanHatFunctor>(inputData_.sigma);
     else
         fatalError("Unknown distribution function.");
 
     // Set distance function
-    if (inputData_.layout == QUADRATIC) {
+    if (inputData_.layout == Layout::CARTESIAN) {
         if (inputData_.usePBC) {
             if (inputData_.dimensionality == 1) {
                 ptrDistanceFunctor_ = std::make_shared<CartesianDistanceFunctor<1, true>>(inputData.som_width);
@@ -82,7 +82,7 @@ SOM::SOM(InputData const& inputData)
                 ptrDistanceFunctor_ = std::make_shared<CartesianDistanceFunctor<3>>(inputData.som_width, inputData.som_height, inputData.som_depth);
             }
         }
-    } else if (inputData_.layout == HEXAGONAL) {
+    } else if (inputData_.layout == Layout::HEXAGONAL) {
         ptrDistanceFunctor_ = std::make_shared<HexagonalDistanceFunctor>(inputData.som_width);
     } else {
         fatalError("Unknown layout.");
@@ -124,7 +124,7 @@ void SOM::printUpdateCounter() const
 {
     if (inputData_.verbose) {
         std::cout << "\n  Number of updates of each neuron:\n" << std::endl;
-        if (inputData_.layout == HEXAGONAL) {
+        if (inputData_.layout == Layout::HEXAGONAL) {
             int radius = (inputData_.som_width - 1)/2;
             for (int pos = 0, x = -radius; x <= radius; ++x) {
                 for (int y = -radius - std::min(0,x); y <= radius - std::max(0,x); ++y, ++pos) {

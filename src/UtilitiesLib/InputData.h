@@ -9,56 +9,15 @@
 #include <string>
 
 #include "ImageProcessingLib/ImageProcessing.h"
+#include "ImageProcessingLib/Interpolation.h"
+#include "IntermediateStorageType.h"
+#include "SOMInitializationType.h"
+#include "UtilitiesLib/DistributionFunction.h"
+#include "UtilitiesLib/ExecutionPath.h"
+#include "UtilitiesLib/Layout.h"
 #include "Version.h"
 
 namespace pink {
-
-//! Type for SOM layout.
-enum Layout {
-    QUADRATIC,
-    QUADHEX,
-    HEXAGONAL
-};
-
-//! Pretty printing of SOM layout type.
-std::ostream& operator << (std::ostream& os, Layout layout);
-
-//! Type for distribution function for SOM update.
-enum Function {
-    GAUSSIAN,
-    MEXICANHAT
-};
-
-//! Pretty printing of SOM layout type.
-std::ostream& operator << (std::ostream& os, Function function);
-
-//! Type for SOM initialization.
-enum SOMInitialization {
-    ZERO,
-    RANDOM,
-    RANDOM_WITH_PREFERRED_DIRECTION,
-    FILEINIT
-};
-
-//! Pretty printing of SOM layout type.
-std::ostream& operator << (std::ostream& os, SOMInitialization init);
-
-//! Type for execution path.
-enum ExecutionPath {
-    UNDEFINED,
-    TRAIN,
-    MAP
-};
-
-//! Type for storage of intermediate SOMs.
-enum IntermediateStorageType {
-    OFF,
-    OVERWRITE,
-    KEEP
-};
-
-//! Pretty printing of IntermediateStorageType.
-std::ostream& operator << (std::ostream& os, IntermediateStorageType type);
 
 #define DEFAULT_SIGMA     1.1
 #define DEFAULT_DAMPING   0.2
@@ -109,7 +68,7 @@ struct InputData
     Interpolation interpolation;
     ExecutionPath executionPath;
     IntermediateStorageType intermediate_storage;
-    Function function;
+    DistributionFunction function;
     float sigma;
     float damping;
     int block_size_1;

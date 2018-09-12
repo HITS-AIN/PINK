@@ -68,9 +68,9 @@ void SOM::training()
                     std::cout << "  Time for SOM update = " << std::chrono::duration_cast<std::chrono::milliseconds>(timer[2]).count() << " ms" << std::endl;
                 }
 
-                if (inputData_.intermediate_storage != OFF) {
+                if (inputData_.intermediate_storage != IntermediateStorageType::OFF) {
                     std::string interStoreFilename = inputData_.resultFilename;
-                    if (inputData_.intermediate_storage == KEEP) {
+                    if (inputData_.intermediate_storage == IntermediateStorageType::KEEP) {
                         interStoreFilename.insert(interStoreFilename.find_last_of("."), "_" + std::to_string(interStoreCount));
                         ++interStoreCount;
                     }

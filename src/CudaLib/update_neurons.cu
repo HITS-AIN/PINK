@@ -37,7 +37,7 @@ findBestMatchingNeuron_kernel(float *euclideanDistanceMatrix, int *bestMatch, in
  */
 void update_neurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,
     int* d_bestMatch, int som_width, int som_height, int som_depth, int som_size, int neuron_size,
-    Function function, Layout layout, float sigma, float damping, float maxUpdateDistance, bool usePBC, int dimensionality)
+	DistributionFunction function, Layout layout, float sigma, float damping, float maxUpdateDistance, bool usePBC, int dimensionality)
 {
     {
         // Start kernel
@@ -58,8 +58,8 @@ void update_neurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMat
         dim3 dimGrid(gridSize, som_size);
 
         // Start kernel
-        if (function == GAUSSIAN) {
-            if (layout == QUADRATIC) {
+        if (function == DistributionFunction::GAUSSIAN) {
+            if (layout == Layout::CARTESIAN) {
                 if (usePBC) {
                     if (dimensionality == 1) {
                         update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
@@ -89,13 +89,13 @@ void update_neurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMat
                             damping, maxUpdateDistance);
                     }
                 }
-            } else if (layout == HEXAGONAL) {
+            } else if (layout == Layout::HEXAGONAL) {
                 update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                     d_bestMatch, neuron_size, GaussianFunctor(sigma), HexagonalDistanceFunctor(som_width),
                     damping, maxUpdateDistance);
             }
-        } else if (function == MEXICANHAT) {
-            if (layout == QUADRATIC) {
+        } else if (function == DistributionFunction::MEXICANHAT) {
+            if (layout == Layout::CARTESIAN) {
                 if (usePBC) {
                     if (dimensionality == 1) {
                         update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
@@ -125,7 +125,7 @@ void update_neurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMat
                             damping, maxUpdateDistance);
                     }
                 }
-            } else if (layout == HEXAGONAL) {
+            } else if (layout == Layout::HEXAGONAL) {
                 update_neurons<BLOCK_SIZE><<<dimGrid, dimBlock>>>(d_som, d_rotatedImages, d_bestRotationMatrix,
                     d_bestMatch, neuron_size, MexicanHatFunctor(sigma), HexagonalDistanceFunctor(som_width),
                     damping, maxUpdateDistance);

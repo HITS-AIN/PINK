@@ -48,17 +48,17 @@ int main(int argc, char **argv)
             else
                 std::cout << "  Use single GPU code." << std::endl;
 
-            if (inputData.executionPath == TRAIN)
+            if (inputData.executionPath == ExecutionPath::TRAIN)
                 cuda_trainSelfOrganizingMap(inputData);
-            else if (inputData.executionPath == MAP)
+            else if (inputData.executionPath == ExecutionPath::MAP)
                 cuda_mapping(inputData);
             else
                 fatalError("Unknown execution path.");
         } else
     #endif
-        if (inputData.executionPath == TRAIN)
+        if (inputData.executionPath == ExecutionPath::TRAIN)
             som.training();
-        else if (inputData.executionPath == MAP)
+        else if (inputData.executionPath == ExecutionPath::MAP)
             som.mapping();
         else
             fatalError("Unknown execution path.");
