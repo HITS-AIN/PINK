@@ -52,7 +52,8 @@ InputData::InputData()
    maxUpdateDistance(-1.0),
    useMultipleGPUs(true),
    usePBC(false),
-   dimensionality(1)
+   dimensionality(1),
+   write_rot_flip(false)
 {}
 
 InputData::InputData(int argc, char **argv)
@@ -84,6 +85,7 @@ InputData::InputData(int argc, char **argv)
         {"som-height",          1, 0, 12},
         {"som-depth",           1, 0, 13},
         {"pbc",                 0, 0, 14},
+		{"store-rot-flip",      1, 0, 15},
         {NULL, 0, NULL, 0}
     };
     int c, option_index = 0;
@@ -270,6 +272,12 @@ InputData::InputData(int argc, char **argv)
             case 14:
             {
                 usePBC = true;
+                break;
+            }
+            case 15:
+            {
+            	write_rot_flip = true;
+            	rot_flip_filename = optarg;
                 break;
             }
             case 'v':
@@ -470,6 +478,7 @@ void InputData::print_usage() const
                  "    --progress, -p <float>          Print level of progress (default = 0.1).\n"
                  "                                    If < 1 relative progress, else number of images.\n"
                  "    --seed, -s <int>                Seed for random number generator (default = 1234).\n"
+                 "    --store-rot-flip <string>       Store the rotation and flip information of the best match of mapping.\n"
                  "    --som-width <int>               Width dimension of SOM (default = 10).\n"
                  "    --som-height <int>              Height dimension of SOM (default = 10).\n"
                  "    --som-depth <int>               Depth dimension of SOM (default = 1).\n"
