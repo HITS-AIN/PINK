@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from __future__ import print_function
 
@@ -132,13 +132,13 @@ class MAPVisualizer():
         return image
 
     #Creates the SOM and saves it to the specified location. Displays map if --display, -d is set to 1.
-    def showMap(self, channel, shareIntensity = True, borderWidth = 2, facecolor = '#ffaadd'):
+    def showMap(self, channel, shareIntensity = True, borderWidth = 2, faceColor = '#ffaadd', somColor = 1):
         print(shareIntensity)
-        if facecolor != "#ffaadd":
+        if faceColor != "#ffaadd":
             print ("WARNING! using non recommended background color! The results will look ugly.")
         figure = pyplot.figure( figsize=(16, 16))
         figure.patch.set_alpha(0.0)
-        figure.patch.set_facecolor(facecolor)
+        figure.patch.set_facecolor(faceColor)
         pyplot.subplots_adjust(left = 0.01, right = 0.99, bottom = 0.01, top = 0.99, wspace = 0.1, hspace = 0.1)
         start=int(len(self.__neurons[0]) / self.__numberOfChannels * channel)
         end=int(len(self.__neurons[0]) / self.__numberOfChannels * (channel+1))
@@ -150,7 +150,7 @@ class MAPVisualizer():
             image = self.calculateMap(self.__neurons[:,start:end], border=borderWidth, shareIntensity=shareIntensity, shape="box")
 
         ax = pyplot.subplot()
-        if color==0:
+        if somColor==0:
             cmap = matplotlib.cm.get_cmap("jet")
         else:
             if channel==0:
@@ -167,7 +167,7 @@ class MAPVisualizer():
                 cmap = matplotlib.cm.get_cmap("Oranges")
             else:
                 cmap = matplotlib.cm.get_cmap()
-        cmap.set_bad(facecolor,1.)
+        cmap.set_bad(faceColor,1.)
         ax.imshow(image.T, aspect='auto', interpolation="nearest", cmap=cmap)
         ax.set_xticks([])
         ax.set_yticks([])
@@ -190,7 +190,7 @@ if __name__ == "__main__":
     save=""
     name="SOM"
     borderWidth=2
-    facecolor="#ffaadd"
+    faceColor="#ffaadd"
     shareIntensity=True
     display=0
     somColor=1
@@ -202,7 +202,7 @@ if __name__ == "__main__":
         elif opt in ("-i", "--shareIntensity"):
             shareIntensity = arg in ["True", "true", "yes", "on", "yeah", "si", "wi", "ja"]
         elif opt in ("-c", "--color"):
-            facecolor = arg
+            faceColor = arg
         elif opt in ("-b", "--border"):
             borderWidth = int(arg)
         elif opt in ("-n", "--name"):
@@ -226,7 +226,7 @@ if __name__ == "__main__":
     print ('Save location is:', save)
     print ('The file name is:', name)
     print ('The border width is:', borderWidth)
-    print ('The background color is:', facecolor)
+    print ('The background color is:', faceColor)
     print ('The intensity is shared:', shareIntensity)
     if(display==1):
         print ('Display is on')
@@ -242,4 +242,4 @@ if __name__ == "__main__":
     myVisualizer.readMap()
     channels=myVisualizer.checkChannels()
     for i in range(0,channels):
-        myVisualizer.showMap(i, shareIntensity, borderWidth, facecolor)
+        myVisualizer.showMap(i, shareIntensity, borderWidth, faceColor, somColor)
