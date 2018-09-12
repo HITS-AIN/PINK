@@ -26,6 +26,16 @@ void SOM::mapping()
     resultFile.write((char*)&inputData_.som_height, sizeof(int));
     resultFile.write((char*)&inputData_.som_depth, sizeof(int));
 
+    std::ofstream write_rot_flip_file;
+    if (inputData_.write_rot_flip) {
+        write_rot_flip_file.open(inputData_.rot_flip_filename);
+        if (!write_rot_flip_file) fatalError("Error opening " + inputData_.rot_flip_filename);
+        write_rot_flip_file.write((char*)&inputData_.numberOfImages, sizeof(int));
+        write_rot_flip_file.write((char*)&inputData_.som_width, sizeof(int));
+        write_rot_flip_file.write((char*)&inputData_.som_height, sizeof(int));
+        write_rot_flip_file.write((char*)&inputData_.som_depth, sizeof(int));
+    }
+
     // Memory allocation
     int rotatedImagesSize = inputData_.numberOfChannels * inputData_.numberOfRotations * inputData_.neuron_size;
     if (inputData_.useFlip) rotatedImagesSize *= 2;
@@ -71,6 +81,10 @@ void SOM::mapping()
             inputData_.numberOfRotationsAndFlip, &rotatedImages[0]);
 
         resultFile.write((char*)&euclideanDistanceMatrix[0], inputData_.som_size * sizeof(float));
+
+        if (inputData_.write_rot_flip) {
+        	write_rot_flip_file.write((char*)&euclideanDistanceMatrix[0], inputData_.som_size * sizeof(float));
+        }
     }
 
     std::cout << "  Progress: " << std::setw(12) << updateCount << " updates, 100 % ("

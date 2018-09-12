@@ -42,6 +42,7 @@ struct InputData
     std::string imagesFilename;
     std::string resultFilename;
     std::string somFilename;
+    std::string rot_flip_filename;
 
     bool verbose;
     int som_width;
@@ -76,6 +77,7 @@ struct InputData
     int useMultipleGPUs;
     int usePBC;
     int dimensionality;
+    bool write_rot_flip;
 };
 
 void stringToUpper(char* s);
