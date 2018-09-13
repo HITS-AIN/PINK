@@ -443,6 +443,8 @@ void InputData::print_parameters() const
               << "  Damping factor = " << damping << "\n"
               << "  Maximum distance for SOM update = " << maxUpdateDistance << "\n"
               << "  Use periodic boundary conditions = " << usePBC << "\n"
+              << "  Store best rotation and flipping parameters = " << write_rot_flip << "\n"
+              << "  Best rotation and flipping parameter filename = " << rot_flip_filename << "\n"
               << std::endl;
 
     if (verbose)

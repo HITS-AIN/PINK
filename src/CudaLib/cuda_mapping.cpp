@@ -35,6 +35,18 @@ void cuda_mapping(InputData const& inputData)
     resultFile.write((char*)&inputData.som_height, sizeof(int));
     resultFile.write((char*)&inputData.som_depth, sizeof(int));
 
+    std::ofstream write_rot_flip_file;
+    vector<int> bestRotationMatrix;
+    if (inputData.write_rot_flip) {
+        bestRotationMatrix.resize(inputData.som_size);
+        write_rot_flip_file.open(inputData.rot_flip_filename);
+        if (!write_rot_flip_file) fatalError("Error opening " + inputData.rot_flip_filename);
+        write_rot_flip_file.write((char*)&inputData.numberOfImages, sizeof(int));
+        write_rot_flip_file.write((char*)&inputData.som_width, sizeof(int));
+        write_rot_flip_file.write((char*)&inputData.som_height, sizeof(int));
+        write_rot_flip_file.write((char*)&inputData.som_depth, sizeof(int));
+    }
+
     // Initialize SOM on host
     SOM som(inputData);
 
@@ -98,6 +110,19 @@ void cuda_mapping(InputData const& inputData)
 
         cuda_copyDeviceToHost_float(&euclideanDistanceMatrix[0], d_euclideanDistanceMatrix, inputData.som_size);
         resultFile.write((char*)&euclideanDistanceMatrix[0], inputData.som_size * sizeof(float));
+
+        if (inputData.write_rot_flip) {
+            cuda_copyDeviceToHost_int(&bestRotationMatrix[0], d_bestRotationMatrix, inputData.som_size);
+//            float angleStepRadians = 2.0 * M_PI / inputData.numberOfRotations;
+        	for (int i = 0; i != inputData.som_size; ++i) {
+        		int flip = 2;
+        		float angle = 0.5;
+//        		char flip = bestRotationMatrix[i] >= inputData.numberOfRotations;
+//        		float angle = i * angleStepRadians;
+        	    write_rot_flip_file.write((char*)&flip, sizeof(int));
+        	    write_rot_flip_file.write((char*)&angle, sizeof(float));
+        	}
+        }
     }
 
     cout << "  Progress: " << setw(12) << updateCount << " updates, 100 % ("
