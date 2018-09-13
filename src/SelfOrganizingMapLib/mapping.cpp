@@ -83,7 +83,13 @@ void SOM::mapping()
         resultFile.write((char*)&euclideanDistanceMatrix[0], inputData_.som_size * sizeof(float));
 
         if (inputData_.write_rot_flip) {
-        	write_rot_flip_file.write((char*)&euclideanDistanceMatrix[0], inputData_.som_size * sizeof(float));
+            float angleStepRadians = 2.0 * M_PI / inputData_.numberOfRotations;
+        	for (int i = 0; i != inputData_.som_size; ++i) {
+        		char flip = bestRotationMatrix[i] >= inputData_.numberOfRotations;
+        		float angle = i * angleStepRadians;
+        	    write_rot_flip_file.write(&flip, sizeof(char));
+        	    write_rot_flip_file.write((char*)&angle, sizeof(float));
+        	}
         }
     }
 
