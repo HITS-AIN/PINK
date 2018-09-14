@@ -173,14 +173,9 @@ InputData::InputData(int argc, char **argv)
                 if (strcmp(upper_optarg, "ZERO") == 0) init = SOMInitialization::ZERO;
                 else if (strcmp(upper_optarg, "RANDOM") == 0) init = SOMInitialization::RANDOM;
                 else if (strcmp(upper_optarg, "RANDOM_WITH_PREFERRED_DIRECTION") == 0) init = SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION;
-                else if (strcmp(upper_optarg, "FILEINIT") == 0) {
+                else {
                     init = SOMInitialization::FILEINIT;
                     somFilename = optarg;
-                } else {
-                    print_usage();
-                    printf ("optarg = %s\n", optarg);
-                    printf ("Unkown option %o\n", c);
-                    exit(EXIT_FAILURE);
                 }
                 break;
             }
