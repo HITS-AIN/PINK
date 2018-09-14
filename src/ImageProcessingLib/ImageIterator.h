@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "Image.h"
@@ -36,6 +37,15 @@ public:
     {
         if (!(*ptrStream_)) throw std::runtime_error("ImageIterator: Error opening " + filename);
 
+        // Skip all header lines starting with #
+        std::string line;
+        int last_position = ptrStream_->tellg();
+        while (std::getline(*ptrStream_, line)) {
+            if (line[0] != '#') break;
+        	last_position = ptrStream_->tellg();
+        }
+
+        ptrStream_->seekg(last_position, ptrStream_->beg);
         ptrStream_->read((char*)&numberOfImages_, sizeof(int));
         ptrStream_->read((char*)&numberOfChannels_, sizeof(int));
         ptrStream_->read((char*)&height_, sizeof(int));
