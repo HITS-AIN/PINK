@@ -74,6 +74,9 @@ private:
     // Counting updates of each neuron
     std::vector<int> updateCounterMatrix_;
 
+    // Header of initialization SOM, will be copied to resulting SOM
+    std::string header_;
+
 };
 
 } // namespace pink
