@@ -42,6 +42,14 @@ class MAPVisualizer():
     #Returns number of channels
     def checkChannels(self):
         inputStream = open(self.__fileName, 'rb')
+        
+        last_position = inputStream.tell()
+        for line in inputStream:
+            if line[:1] != b'#':
+                break
+            last_position = inputStream.tell()
+         
+        inputStream.seek(last_position, 0)
         self.__numberOfChannels = struct.unpack("i", inputStream.read(4))[0]
         return self.__numberOfChannels
 
@@ -49,6 +57,14 @@ class MAPVisualizer():
     def readMap(self):
         #Unpacks the map parameters
         inputStream = open(self.__fileName, 'rb')
+        
+        last_position = inputStream.tell()
+        for line in inputStream:
+            if line[:1] != b'#':
+                break
+            last_position = inputStream.tell()
+         
+        inputStream.seek(last_position, 0)
         self.__numberOfChannels = struct.unpack("i", inputStream.read(4))[0]
         self.__somWidth = struct.unpack("i", inputStream.read(4))[0]
         self.__somHeight = struct.unpack("i", inputStream.read(4))[0]
