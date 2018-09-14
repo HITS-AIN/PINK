@@ -15,9 +15,6 @@
     #include <fenv.h>
 #endif
 
-#include "ImageProcessingLib/Image.h"
-#include "ImageProcessingLib/ImageIterator.h"
-#include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "UtilitiesLib/Error.h"
 #include "UtilitiesLib/InputData.h"
