@@ -72,6 +72,7 @@ void cuda_mapping(InputData const& inputData)
     // Prepare trigonometric values
     float *d_cosAlpha = NULL, *d_sinAlpha = NULL;
     trigonometricValues(&d_cosAlpha, &d_sinAlpha, inputData.numberOfRotations/4);
+    float angleStepRadians = 2.0 * M_PI / inputData.numberOfRotations;
 
     // Progress status
     float progress = 0.0;
@@ -113,13 +114,10 @@ void cuda_mapping(InputData const& inputData)
 
         if (inputData.write_rot_flip) {
             cuda_copyDeviceToHost_int(&bestRotationMatrix[0], d_bestRotationMatrix, inputData.som_size);
-//            float angleStepRadians = 2.0 * M_PI / inputData.numberOfRotations;
         	for (int i = 0; i != inputData.som_size; ++i) {
-        		int flip = 2;
-        		float angle = 0.5;
-//        		char flip = bestRotationMatrix[i] >= inputData.numberOfRotations;
-//        		float angle = i * angleStepRadians;
-        	    write_rot_flip_file.write((char*)&flip, sizeof(int));
+        		char flip = bestRotationMatrix[i] / inputData.numberOfRotations;
+        		float angle = (bestRotationMatrix[i] % inputData.numberOfRotations) * angleStepRadians;
+        	    write_rot_flip_file.write(&flip, sizeof(char));
         	    write_rot_flip_file.write((char*)&angle, sizeof(float));
         	}
         }
