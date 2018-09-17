@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include "UtilitiesLib/DistributionFunction.h"
 #include "UtilitiesLib/InputData.h"
+#include "UtilitiesLib/Layout.h"
 #include "UtilitiesLib/Point.h"
 
 namespace pink {
