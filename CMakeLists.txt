@@ -84,6 +84,12 @@ if(CUDA_FOUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
 endif()
 
+set(PYBIND11_PYTHON_VERSION 3)
+find_package(pybind11)
+if(CUDA_FOUND)
+    add_subdirectory(src/PythonBinding)
+endif()
+
 add_subdirectory(src)
 
 find_package(GTest)
