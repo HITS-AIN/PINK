@@ -41,36 +41,36 @@ class MAPVisualizer():
 
     #Returns number of channels
     def checkChannels(self):
-        inputStream = open(self.__fileName, 'rb')
+        file = open(self.__fileName, 'rb')
         
-        last_position = inputStream.tell()
-        for line in inputStream:
+        last_position = file.tell()
+        for line in file:
             if line[:1] != b'#':
                 break
-            last_position = inputStream.tell()
+            last_position = file.tell()
          
-        inputStream.seek(last_position, 0)
-        self.__numberOfChannels = struct.unpack("i", inputStream.read(4))[0]
+        file.seek(last_position, 0)
+        self.__numberOfChannels = struct.unpack("i", file.read(4))[0]
         return self.__numberOfChannels
 
     #Reads in map data
     def readMap(self):
         #Unpacks the map parameters
-        inputStream = open(self.__fileName, 'rb')
+        file = open(self.__fileName, 'rb')
         
-        last_position = inputStream.tell()
-        for line in inputStream:
+        last_position = file.tell()
+        for line in file:
             if line[:1] != b'#':
                 break
-            last_position = inputStream.tell()
+            last_position = file.tell()
          
-        inputStream.seek(last_position, 0)
-        self.__numberOfChannels = struct.unpack("i", inputStream.read(4))[0]
-        self.__somWidth = struct.unpack("i", inputStream.read(4))[0]
-        self.__somHeight = struct.unpack("i", inputStream.read(4))[0]
-        self.__somDepth = struct.unpack("i", inputStream.read(4))[0]
-        self.__neuronWidth = struct.unpack("i", inputStream.read(4))[0]
-        self.__neuronHeight = struct.unpack("i", inputStream.read(4))[0]
+        file.seek(last_position, 0)
+        self.__numberOfChannels = struct.unpack("i", file.read(4))[0]
+        self.__somWidth = struct.unpack("i", file.read(4))[0]
+        self.__somHeight = struct.unpack("i", file.read(4))[0]
+        self.__somDepth = struct.unpack("i", file.read(4))[0]
+        self.__neuronWidth = struct.unpack("i", file.read(4))[0]
+        self.__neuronHeight = struct.unpack("i", file.read(4))[0]
 
         print ("channels: " + str(self.__numberOfChannels))
         print ("width: " + str(self.__somWidth))
@@ -82,11 +82,11 @@ class MAPVisualizer():
             while True:
                 data = numpy.ones(self.__neuronWidth * self.__neuronHeight * self.__numberOfChannels)
                 for i in range(self.__neuronWidth * self.__neuronHeight * self.__numberOfChannels):
-                    data[i] = struct.unpack_from("f", inputStream.read(4))[0]
+                    data[i] = struct.unpack_from("f", file.read(4))[0]
                 self.__neurons.append(data)
 
         except:
-            inputStream.close()
+            file.close()
         self.__neurons = numpy.array(self.__neurons)
 
         print (str(len(self.__neurons)) + " neurons loaded")

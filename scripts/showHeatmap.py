@@ -83,8 +83,16 @@ if __name__ == "__main__":
         matplotlib.use('Agg')
     import matplotlib.pylab as plt
 
-    inFile = open(inputfile, 'rb')
-    numberOfImages, SOM_width, SOM_height, SOM_depth = struct.unpack('i' * 4, inFile.read(4*4))
+    file = open(inputfile, 'rb')
+        
+    last_position = file.tell()
+    for line in file:
+        if line[:1] != b'#':
+            break
+        last_position = file.tell()
+     
+    file.seek(last_position, 0)
+    numberOfImages, SOM_width, SOM_height, SOM_depth = struct.unpack('i' * 4, file.read(4*4))
 
     print ('Number of images = ', numberOfImages)
     print ('SOM_width = ', SOM_width)
@@ -101,8 +109,8 @@ if __name__ == "__main__":
     size = SOM_width * SOM_height * SOM_depth
     image_width = SOM_width
     image_height = SOM_depth * SOM_height
-    inFile.seek(imageNumber * size * 4, 1)
-    array = numpy.array(struct.unpack('f' * size, inFile.read(size * 4)))
+    file.seek(imageNumber * size * 4, 1)
+    array = numpy.array(struct.unpack('f' * size, file.read(size * 4)))
     data = numpy.ndarray([SOM_width, SOM_height, SOM_depth], 'float', array)
 
     #Checks if the map is hexagonal. If hexagonal, all neurons between hexSize and size will be identical

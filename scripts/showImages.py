@@ -76,8 +76,16 @@ if __name__ == "__main__":
         matplotlib.use('Agg')
     from matplotlib import pyplot
 
-    inFile = open(inputfile, 'rb')
-    numberOfImages, numberOfChannels, width, height = struct.unpack('i' * 4, inFile.read(4 * 4))
+    file = open(inputfile, 'rb')
+        
+    last_position = file.tell()
+    for line in file:
+        if line[:1] != b'#':
+            break
+        last_position = file.tell()
+     
+    file.seek(last_position, 0)
+    numberOfImages, numberOfChannels, width, height = struct.unpack('i' * 4, file.read(4 * 4))
 
     print ('Number of images = ', numberOfImages)
     print ('Number of channels = ', numberOfChannels)
@@ -93,8 +101,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     size = width * height
-    inFile.seek((imageNumber*numberOfChannels + channelNumber) * size*4, 1)
-    array = numpy.array(struct.unpack('f' * size, inFile.read(size*4)))
+    file.seek((imageNumber*numberOfChannels + channelNumber) * size*4, 1)
+    array = numpy.array(struct.unpack('f' * size, file.read(size*4)))
     data = numpy.ndarray([width,height], 'float', array)
 
     fig = pyplot.figure()
