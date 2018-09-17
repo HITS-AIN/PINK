@@ -3,15 +3,12 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src
 )
 
-add_library(
-    PINK
-    SHARED    
+pybind11_add_module(
+    pink MODULE
     som.cpp
 )
-    
-target_link_libraries(
-    PINK
-    ${CONAN_LIBS}
-)
 
-pybind11_add_module(pink MODULE som.cpp)
+#target_link_libraries(
+#    pink
+#    ${CONAN_LIBS}
+#)

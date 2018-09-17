@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <iostream>
 #include <numeric>
+#include <string>
 #include <vector>
 
 namespace pink {
@@ -21,6 +22,10 @@ class Cartesian
 public:
 
     typedef T value_type;
+
+    Cartesian()
+     : length{0}
+    {}
 
     Cartesian(std::array<uint32_t, dim> length, T const& init_value)
      : length(length),
@@ -39,6 +44,11 @@ public:
     	size_t p = 0;
     	for (uint8_t i = 0; i != dim; ++i) p += position[i] * i;
         return data[p];
+    }
+
+    std::string info() const
+    {
+    	return std::string("Cartesian<") + std::to_string(dim) + ">";
     }
 
 private:

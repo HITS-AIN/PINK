@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "UtilitiesLib/Layout.h"
-
 namespace pink {
 
 struct Trainer
