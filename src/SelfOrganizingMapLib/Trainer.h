@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <iostream>
+
 namespace pink {
 
 struct Trainer
@@ -13,6 +15,8 @@ struct Trainer
 	template <typename SOMType, typename ImageType>
 	void operator () (SOMType& som, ImageType const& image) const
 	{
+		std::cout << som.info() << std::endl;
+		std::cout << image.info() << std::endl;
 //		auto&& rotated_images = generate_rotated_images(image);
 //		generate_euclidean_distance_matrix();
 //

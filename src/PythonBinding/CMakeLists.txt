@@ -5,10 +5,5 @@ include_directories(
 
 pybind11_add_module(
     pink MODULE
-    som.cpp
+    pink.cpp
 )
-
-#target_link_libraries(
-#    pink
-#    ${CONAN_LIBS}
-#)

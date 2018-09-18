@@ -15,6 +15,9 @@
 
 namespace pink {
 
+template <class T>
+struct Info;
+
 //! n-dimensional cartesian layout for SOM
 template <uint8_t dim, typename T>
 class Cartesian
@@ -48,7 +51,7 @@ public:
 
     std::string info() const
     {
-    	return std::string("Cartesian<") + std::to_string(dim) + ">";
+    	return std::string("Cartesian<") + std::to_string(dim) + ", " + Info<T>::name() + ">";
     }
 
 private:
@@ -57,6 +60,18 @@ private:
 
     std::vector<T> data;
 
+};
+
+template <>
+struct Info<float>
+{
+	static const std::string name() { return "float"; }
+};
+
+template <uint8_t dim, typename T>
+struct Info<Cartesian<dim, T>>
+{
+	static const std::string name() { return std::string("Cartesian<") + std::to_string(dim) + ", " + Info<T>::name() + ">"; }
 };
 
 } // namespace pink
