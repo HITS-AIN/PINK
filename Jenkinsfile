@@ -17,7 +17,7 @@ pipeline {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-5-conan-1.6'
+              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-5-conan-1.7'
               args '--runtime=nvidia'
             }
           }
@@ -39,7 +39,7 @@ pipeline {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.6'
+              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.7'
               args '--runtime=nvidia'
             }
           }
@@ -61,7 +61,7 @@ pipeline {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-clang-5-conan-1.6'
+              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-clang-5-conan-1.7'
               args '--runtime=nvidia'
             }
           }
@@ -87,7 +87,7 @@ pipeline {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-5-conan-1.6'
+              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-5-conan-1.7'
               args '--runtime=nvidia'
             }
           }
@@ -108,7 +108,7 @@ pipeline {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.6'
+              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.7'
               args '--runtime=nvidia'
             }
           }
@@ -129,7 +129,7 @@ pipeline {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-clang-5-conan-1.6'
+              image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-clang-5-conan-1.7'
               args '--runtime=nvidia'
             }
           }
@@ -152,7 +152,7 @@ pipeline {
       agent {
         docker {
           reuseNode true
-          image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gtest-1.8.0-doxygen-1.8.13'
+          image 'braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.7-doxygen-1.8.13'
           args '--runtime=nvidia'
         }
       }
