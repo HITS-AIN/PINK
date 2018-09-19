@@ -21,5 +21,6 @@ PYBIND11_MODULE(pink, m)
 
     py::class_<Trainer>(m, "trainer")
         .def(py::init())
-        .def("__call__",[](const Trainer& trainer, Cartesian<2, Cartesian<2, float>>& som, Cartesian<2, float> const& image) { return trainer(som, image); });
+        .def("__call__",[](const Trainer& trainer, Cartesian<2, Cartesian<2, float>>& som, Cartesian<2, float> const& image) { return trainer(som, image); })
+        .def("__call__",[](const Trainer& trainer, Cartesian<2, Cartesian<2, float>>& som, py::array_t<double> const& image) { return trainer(som, image); });
 }
