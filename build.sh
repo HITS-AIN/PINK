@@ -1,12 +1,12 @@
 #!/bin/bash
 
-SUFFIX=""
-if [ $# -eq 1 ]; then
-    SUFFIX="-$1"
+if [ $# -ne 2 ]; then
+    echo "Usage: build.sh <suffix> <build-type>"
+    exit 1
 fi
 
-CONAN_DIR="conan$SUFFIX"
-BUILD_DIR="build$SUFFIX"
+CONAN_DIR="conan-$1"
+BUILD_DIR="build-$1"
 export CONAN_USER_HOME=$PWD/$CONAN_DIR
 
 if [ ! -d "$CONAN_DIR" ]; then
@@ -20,5 +20,10 @@ rm -fr $BUILD_DIR
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make 2>&1 |tee make.out
+cmake -DCMAKE_BUILD_TYPE=$2 ..
+
+if [ $1 -eq "doc" ]; then
+    make doc
+else
+    make 2>&1 |tee make.out
+fi

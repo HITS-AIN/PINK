@@ -22,7 +22,7 @@ pipeline {
             }
           }
           steps {
-            sh './build.sh gcc-5'
+            sh './build.sh gcc-5 Release'
           }
           post {
             always {
@@ -44,7 +44,7 @@ pipeline {
             }
           }
           steps {
-            sh './build.sh gcc-7'
+            sh './build.sh gcc-7 Release'
           }
           post {
             always {
@@ -66,7 +66,7 @@ pipeline {
             }
           }
           steps {
-            sh './build.sh clang-5'
+            sh './build.sh clang-5 Release'
           }
           post {
             always {
@@ -157,12 +157,7 @@ pipeline {
         }
       }
       steps {
-        sh '''
-            mkdir -p build-doc
-            cd build-doc
-            cmake ..
-            make doc
-        '''
+        sh './build.sh doc Release'
         publishHTML( target: [
           allowMissing: false,
           alwaysLinkToLastBuild: false,
