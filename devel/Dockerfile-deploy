@@ -1,4 +1,4 @@
-FROM braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.6
+FROM braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.7
 
 MAINTAINER Bernd Doser <bernd.doser@h-its.org>
 
