@@ -15,13 +15,16 @@ using namespace pink;
 
 TEST(SelfOrganizingMapTest, cartesian_2d)
 {
+	typedef Cartesian<2, float> NeuronType;
+	typedef Cartesian<2, NeuronType> SOMType;
+
 	uint32_t som_size = 3;
 	uint32_t image_size = 100;
 	uint32_t neuron_size = image_size * std::sqrt(2.0) / 2.0;
 
-	Cartesian<2, float> image({image_size, image_size}, 0.0);
-	Cartesian<2, float> neuron({neuron_size, neuron_size}, 0.0);
-	Cartesian<2, Cartesian<2, float>> som({som_size, som_size}, neuron);
+	NeuronType image({image_size, image_size}, 0.0);
+	NeuronType neuron({neuron_size, neuron_size}, 0.0);
+	SOMType som({som_size, som_size}, neuron);
 
 	Trainer trainer;
 	trainer(som, image);
@@ -29,13 +32,16 @@ TEST(SelfOrganizingMapTest, cartesian_2d)
 
 TEST(SelfOrganizingMapTest, cartesian_3d)
 {
+	typedef Cartesian<2, float> NeuronType;
+	typedef Cartesian<3, NeuronType> SOMType;
+
 	uint32_t som_size = 3;
 	uint32_t image_size = 100;
 	uint32_t neuron_size = image_size * std::sqrt(2.0) / 2.0;
 
-	Cartesian<2, float> image({image_size, image_size}, 0.0);
-	Cartesian<2, float> neuron({neuron_size, neuron_size}, 0.0);
-	Cartesian<3, Cartesian<2, float>> som({som_size, som_size, som_size}, neuron);
+	NeuronType image({image_size, image_size}, 0.0);
+	NeuronType neuron({neuron_size, neuron_size}, 0.0);
+	SOMType som({som_size, som_size}, neuron);
 
 	Trainer trainer;
 	trainer(som, image);

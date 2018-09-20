@@ -26,6 +26,9 @@ public:
 
     typedef T value_type;
 
+    template <typename T2>
+    using layout_type = Cartesian<dim, T2>;
+
     Cartesian()
      : length{0}
     {}

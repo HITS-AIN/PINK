@@ -22,7 +22,7 @@ struct DistributionFunctorBase
 };
 
 /**
- * @brief Functor for mexican hat.
+ * @brief Functor for gaussian
  *
  * 1.0 / (sigma * math.sqrt(2.0 * math.pi)) * math.exp(-1.0/2.0 * (x / sigma)**2 )
  */
