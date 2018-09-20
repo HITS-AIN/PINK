@@ -63,5 +63,6 @@ PYBIND11_MODULE(pink, m)
 		{
 			py::buffer_info info = b.request();
 			new (&m) Matrix(info.shape[0], info.shape[1]);
+			memcpy(m.data(), info.ptr, info.shape[0] * info.shape[1]);
 		});
 }

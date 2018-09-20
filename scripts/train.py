@@ -31,6 +31,8 @@ trainer = pink.trainer()
 trainer(som, image)
 
 m = pink.Matrix(np_image)
-print(m)
+np_m = np.array(m, copy = True)
+
+print(np_m)
 
 #trainer(som, np_image)
