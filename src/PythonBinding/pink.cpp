@@ -63,6 +63,14 @@ PYBIND11_MODULE(pink, m)
 		{
 			py::buffer_info info = b.request();
 			new (&m) Matrix(info.shape[0], info.shape[1]);
-			memcpy(m.data(), info.ptr, info.shape[0] * info.shape[1]);
+			std::cout << static_cast<float*>(info.ptr)[0] << std::endl;
+			std::cout << static_cast<float*>(info.ptr)[1] << std::endl;
+			std::cout << static_cast<float*>(info.ptr)[2] << std::endl;
+			std::cout << static_cast<float*>(info.ptr)[3] << std::endl;
+			std::cout << info.shape[0] << std::endl;
+			std::cout << info.shape[1] << std::endl;
+			std::cout << m.rows() << std::endl;
+			std::cout << m.cols() << std::endl;
+			memcpy(m.data(), info.ptr, info.shape[0] * info.shape[1] * sizeof(float));
 		});
 }
