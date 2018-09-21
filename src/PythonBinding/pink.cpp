@@ -8,69 +8,48 @@
 namespace py = pybind11;
 using namespace pink;
 
-template<typename T>
-void declare_layout(py::module &m, std::string const& typestr)
-{
-    py::class_<T>(m, typestr.c_str(), py::buffer_protocol())
-        .def(py::init())
-        .def("info", &T::info);
-}
-
-class Matrix {
-public:
-    Matrix(size_t rows, size_t cols) : m_rows(rows), m_cols(cols) {
-        m_data = new float[rows*cols];
-    }
-    float *data() { return m_data; }
-    size_t rows() const { return m_rows; }
-    size_t cols() const { return m_cols; }
-private:
-    size_t m_rows, m_cols;
-    float *m_data;
-};
-
 PYBIND11_MODULE(pink, m)
 {
-    m.doc() = "pybind11 PINK plugin";
+    m.doc() = "PINK python interface";
 
-    declare_layout<Cartesian<2, float>>(m, "cartesian_2d_float");
-    declare_layout<Cartesian<2, Cartesian<2, float>>>(m, "cartesian_2d_cartesian_2d_float");
+    py::class_<Cartesian<2, float>>(m, "cartesian_2d_float", py::buffer_protocol())
+        .def(py::init())
+		.def("__init__", [](Cartesian<2, float> &m, py::buffer b)
+		{
+			py::buffer_info info = b.request();
+
+	        if (info.ndim != 2)
+	            throw std::runtime_error("Incompatible buffer dimension!");
+
+			auto&& p = static_cast<float*>(info.ptr);
+			new (&m) Cartesian<2, float>({info.shape[0], info.shape[1]}, std::vector<float>(p, p + info.shape[0] * info.shape[1]));
+		})
+        .def("info", &Cartesian<2, float>::info);
+
+    py::class_<Cartesian<2, Cartesian<2, float>>>(m, "cartesian_2d_cartesian_2d_float", py::buffer_protocol())
+        .def(py::init())
+		.def("__init__", [](Cartesian<2, Cartesian<2, float>> &m, py::buffer b)
+		{
+			py::buffer_info info = b.request();
+
+	        if (info.ndim != 4)
+	            throw std::runtime_error("Incompatible buffer dimension!");
+
+			auto&& p = static_cast<float*>(info.ptr);
+			std::vector<Cartesian<2, float>> som;
+			for (int i = 0; i != info.shape[0] * info.shape[1]; ++i) {
+				som.push_back(Cartesian<2, float>({info.shape[2], info.shape[3]}, std::vector<float>(p, p + info.shape[2] * info.shape[3])));
+				p += info.shape[2] * info.shape[3];
+			}
+
+			new (&m) Cartesian<2, Cartesian<2, float>>({info.shape[0], info.shape[1]}, std::move(som));
+		})
+        .def("info", &Cartesian<2, Cartesian<2, float>>::info);
 
     py::class_<Trainer>(m, "trainer")
         .def(py::init())
         .def("__call__", [](Trainer const& trainer, Cartesian<2, Cartesian<2, float>>& som, Cartesian<2, float> const& image)
         {
     	    return trainer(som, image);
-        })
-        .def("__call__", [](Trainer const& trainer, Cartesian<2, Cartesian<2, float>>& som, py::array_t<float> const& image)
-        {
-    	    //return trainer(som, image);
         });
-
-    py::class_<Matrix>(m, "Matrix", py::buffer_protocol())
-       .def_buffer([](Matrix &m) -> py::buffer_info {
-            return py::buffer_info(
-                m.data(),                               /* Pointer to buffer */
-                sizeof(float),                          /* Size of one scalar */
-                py::format_descriptor<float>::format(), /* Python struct-style format descriptor */
-                2,                                      /* Number of dimensions */
-                { m.rows(), m.cols() },                 /* Buffer dimensions */
-                { sizeof(float) * m.rows(),             /* Strides (in bytes) for each index */
-                  sizeof(float) }
-            );
-        })
-		.def("__init__", [](Matrix &m, py::buffer b)
-		{
-			py::buffer_info info = b.request();
-			new (&m) Matrix(info.shape[0], info.shape[1]);
-			std::cout << static_cast<float*>(info.ptr)[0] << std::endl;
-			std::cout << static_cast<float*>(info.ptr)[1] << std::endl;
-			std::cout << static_cast<float*>(info.ptr)[2] << std::endl;
-			std::cout << static_cast<float*>(info.ptr)[3] << std::endl;
-			std::cout << info.shape[0] << std::endl;
-			std::cout << info.shape[1] << std::endl;
-			std::cout << m.rows() << std::endl;
-			std::cout << m.cols() << std::endl;
-			memcpy(m.data(), info.ptr, info.shape[0] * info.shape[1] * sizeof(float));
-		});
 }

@@ -6,7 +6,8 @@ include_directories(
 add_executable(
     SelfOrganizingMapTest
     main.cpp
-    training.cpp
+    Cartesian.cpp
+    Trainer.cpp
 )
     
 target_link_libraries(

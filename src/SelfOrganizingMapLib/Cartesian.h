@@ -26,16 +26,27 @@ public:
 
     typedef T value_type;
 
-    template <typename T2>
-    using layout_type = Cartesian<dim, T2>;
-
+    /// Default construction
     Cartesian()
      : length{0}
     {}
 
-    Cartesian(std::array<uint32_t, dim> length, T const& init_value)
+    /// Construction
+    Cartesian(std::array<uint32_t, dim> length)
      : length(length),
-	   data(std::accumulate(length.begin(), length.end(), 1, std::multiplies<uint32_t>()), init_value)
+	   data(std::accumulate(length.begin(), length.end(), 1, std::multiplies<uint32_t>()))
+    {}
+
+    /// Construction and copy data
+    Cartesian(std::array<uint32_t, dim> length, std::vector<T> const& data)
+     : length(length),
+	   data(data)
+    {}
+
+    /// Construction and move data
+    Cartesian(std::array<uint32_t, dim> length, std::vector<T>&& data)
+     : length(length),
+	   data(data)
     {}
 
     T& get(std::array<uint32_t, dim> position)
