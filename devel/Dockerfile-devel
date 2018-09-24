@@ -1,0 +1,13 @@
+FROM braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.7-docker-18.06-eclipse-cpp-2018-09
+
+MAINTAINER Bernd Doser <bernd.doser@h-its.org>
+
+RUN apt-get update \
+ && apt-get install -y \
+    python3-tk \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install -I \
+    matplotlib \
+    numpy 
