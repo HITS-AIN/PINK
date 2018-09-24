@@ -40,6 +40,8 @@ if __name__ == "__main__":
     np_som = np.ndarray(shape=(3, 3, 44, 44), dtype=np.float32)
     som = pink.cartesian_2d_cartesian_2d_float(np_som)
 
+    trainer = pink.trainer()
+
     for i in range(images.shape[0]):
 
         if args.display:
@@ -48,7 +50,6 @@ if __name__ == "__main__":
             
         image = pink.cartesian_2d_float(images[i])
 
-        trainer = pink.trainer()
         trainer(som, image)
     
     trained_som = np.array(som, copy=True)

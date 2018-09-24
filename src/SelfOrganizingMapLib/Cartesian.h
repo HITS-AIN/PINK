@@ -63,6 +63,8 @@ public:
         return data[p];
     }
 
+    std::array<uint32_t, dim> get_length() const { return length; }
+
     std::string info() const
     {
     	return std::string("Cartesian<") + std::to_string(dim) + ", " + Info<T>::name() + ">";

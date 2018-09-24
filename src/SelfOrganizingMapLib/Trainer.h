@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-#include "ImageProcessingLib/ImageRotator.h"
+#include "ImageProcessingLib/CropAndRotate.h"
 
 namespace pink {
 
