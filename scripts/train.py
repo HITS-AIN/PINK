@@ -21,21 +21,23 @@ def gaussian(distance, sigma=1.0):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='PINK SOM training')
-    parser.add_argument('inputfile')
+    parser.add_argument('images')
+    parser.add_argument('som')
     parser.add_argument('-d', '--display', action='store_true', help='Display SOM during training')
     parser.add_argument('-v', '--verbose', action='store_true', help='Be talkative')
     
     args = parser.parse_args()
-    print('Input file:', args.inputfile)
+    print('Images file:', args.images)
+    print('SOM file:', args.som)
     print('Display:', args.display)
     print('Verbose:', args.verbose)
 
-    images = np.load(args.inputfile).astype(np.float32)
+    images = np.load(args.images).astype(np.float32)
     if args.verbose:
         print('Image shape: ', images.shape, ', dtype: ', images.dtype)
         print('Image shape[0]: ', images.shape[0])
 
-    np_som = np.ndarray(shape=(3, 3, 64, 64), dtype=np.float32)
+    np_som = np.ndarray(shape=(3, 3, 44, 44), dtype=np.float32)
     som = pink.cartesian_2d_cartesian_2d_float(np_som)
 
     for i in range(images.shape[0]):
@@ -50,3 +52,4 @@ if __name__ == "__main__":
         trainer(som, image)
     
     trained_som = np.array(som, copy=True)
+    
