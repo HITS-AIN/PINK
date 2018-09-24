@@ -3,7 +3,7 @@
 PINK Training of SOM
 """
 
-import getopt
+import argparse
 import math
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,60 +14,24 @@ __author__  = "Bernd Doser"
 __email__   = "bernd.doser@h-its.org"
 __license__ = "GPLv3"
 
-def print_usage():
-    print('')
-    print('Usage:')
-    print('')
-    print('  train.py [Options] <inputfile>')
-    print('')
-    print('Options:')
-    print('')
-    print('  --display, -d          Display SOM during training.')
-    print('  --help, -h             Print this lines.')
-    print('  --verbose, -v          Be talkative.')
-    print('')
-
 def gaussian(distance, sigma=1.0):
     """ Returns the value of an gaussian distribution """
     return 1.0 / (sigma * math.sqrt(2.0 * math.pi)) * math.exp(-0.5 * math.pow((distance / sigma), 2))
 
 if __name__ == "__main__":
     
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:h:v:", ["display", "help", "verbose"])
-    except getopt.GetoptError:
-        print_usage()
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description='PINK SOM training')
+    parser.add_argument('inputfile')
+    parser.add_argument('-d', '--display', action='store_true', help='Display SOM during training')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Be talkative')
+    
+    args = parser.parse_args()
+    print('Input file:', args.inputfile)
+    print('Display:', args.display)
+    print('Verbose:', args.verbose)
 
-    display = False
-    verbose = False
-
-    # Use inputted parameters
-    for opt, arg in opts:
-        if opt in ("-d", "--display"):
-            display = True
-        elif opt in ("-h", "--help"):
-            print_usage()
-            sys.exit()
-        elif opt in ("-v", "--verbose"):
-            verbose = True
-        else:
-            print_usage()
-            print ('ERROR: Unhandled option')
-
-    if len(args) != 1:
-        print_usage()
-        print ('ERROR: Input file is missing.')
-        sys.exit(1)
-
-    inputfile = args[0]
-
-    print('Input file:', inputfile)
-    print('Display:', display)
-    print('Verbose:', verbose)
-
-    images = np.load(inputfile).astype(np.float32)
-    if verbose:
+    images = np.load(args.inputfile).astype(np.float32)
+    if args.verbose:
         print('Image shape: ', images.shape, ', dtype: ', images.dtype)
         print('Image shape[0]: ', images.shape[0])
 
@@ -76,7 +40,7 @@ if __name__ == "__main__":
 
     for i in range(images.shape[0]):
 
-        if display:
+        if args.display:
             plt.matshow(images[i])
             plt.show()
             
