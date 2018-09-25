@@ -21,8 +21,8 @@ def gaussian(distance, sigma=1.0):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='PINK SOM training')
-    parser.add_argument('images')
-    parser.add_argument('som')
+    parser.add_argument('images', help='Input file of images')
+    parser.add_argument('som', help='Output file of SOM')
     parser.add_argument('-d', '--display', action='store_true', help='Display SOM during training')
     parser.add_argument('-v', '--verbose', action='store_true', help='Be talkative')
     
@@ -35,22 +35,39 @@ if __name__ == "__main__":
     images = np.load(args.images).astype(np.float32)
     if args.verbose:
         print('Image shape: ', images.shape, ', dtype: ', images.dtype)
-        print('Image shape[0]: ', images.shape[0])
 
-    np_som = np.ndarray(shape=(3, 3, 44, 44), dtype=np.float32)
+#     np_som = np.array([[images[0], images[1], images[2]],
+#                        [images[3], images[4], images[5]],
+#                        [images[6], images[7], images[8]]], dtype = np.float32)
+    np_som = np.random.rand(3, 3, 44, 44).astype(np.float32)
+    if args.verbose:
+        print('SOM shape: ', np_som.shape, ', dtype: ', np_som.dtype)
+        
+    if args.display:
+        new_dim = np_som.shape[0] * np_som.shape[2]
+        plt.matshow(np_som.swapaxes(1,2).reshape((new_dim, new_dim)))
+        plt.show()
+
     som = pink.cartesian_2d_cartesian_2d_float(np_som)
-
-    trainer = pink.trainer()
+    trainer = pink.trainer(number_of_rotations = 90, verbosity = 1)
 
     for i in range(images.shape[0]):
 
         if args.display:
             plt.matshow(images[i])
             plt.show()
-            
+
         image = pink.cartesian_2d_float(images[i])
 
         trainer(som, image)
-    
-    trained_som = np.array(som, copy=True)
-    
+
+        np_som = np.array(som, copy=True)
+        if args.verbose:
+            print('SOM shape: ', np_som.shape, ', dtype: ', np_som.dtype)
+
+        if args.display:
+            new_dim = np_som.shape[0] * np_som.shape[2]
+            plt.matshow(np_som.swapaxes(1,2).reshape((new_dim, new_dim)))
+            plt.show()
+
+    print('\n  Successfully finished. Have a nice day.\n')

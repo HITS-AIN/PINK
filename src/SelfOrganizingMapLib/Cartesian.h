@@ -18,7 +18,7 @@ namespace pink {
 template <class T>
 struct Info;
 
-//! n-dimensional cartesian layout for SOM
+//! n-dimensional cartesian layout
 template <uint8_t dim, typename T>
 class Cartesian
 {

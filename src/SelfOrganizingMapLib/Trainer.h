@@ -16,14 +16,13 @@ class Trainer
 {
 public:
 
-	Trainer(int verbosity = 0, int number_of_rotations = 360, float progress_factor = 0.1,
-        bool use_flip = true, bool use_cuda = true, bool write_rot_flip = false)
+	Trainer(int verbosity = 0, int number_of_rotations = 360, bool use_flip = true,
+		float progress_factor = 0.1, bool use_cuda = true)
      : verbosity(verbosity),
 	   number_of_rotations(number_of_rotations),
-	   progress_factor(progress_factor),
 	   use_flip(use_flip),
-	   use_cuda(use_cuda),
-	   write_rot_flip(write_rot_flip)
+	   progress_factor(progress_factor),
+	   use_cuda(use_cuda)
     {}
 
     template <typename SOMType>
@@ -42,10 +41,9 @@ private:
 
 	int verbosity;
 	int number_of_rotations;
-	float progress_factor;
 	bool use_flip;
+	float progress_factor;
 	bool use_cuda;
-	bool write_rot_flip;
 
 };
 

@@ -44,10 +44,27 @@ PYBIND11_MODULE(pink, m)
 
 			new (&m) Cartesian<2, Cartesian<2, float>>({info.shape[0], info.shape[1]}, std::move(som));
 		})
+//        .def_buffer([](Cartesian<2, Cartesian<2, float>> &m) -> py::buffer_info {
+//             return py::buffer_info(
+//                 m.data(),                               /* Pointer to buffer */
+//                 sizeof(float),                          /* Size of one scalar */
+//                 py::format_descriptor<float>::format(), /* Python struct-style format descriptor */
+//                 4,                                      /* Number of dimensions */
+//                 { m.rows(), m.cols() },                 /* Buffer dimensions */
+//                 { sizeof(float) * m.rows(),             /* Strides (in bytes) for each index */
+//                   sizeof(float) }
+//             );
+//         })
         .def("info", &Cartesian<2, Cartesian<2, float>>::info);
 
     py::class_<Trainer>(m, "trainer")
-        .def(py::init())
+        .def(py::init<int, int, bool, float, bool>(),
+        	py::arg("verbosity") = 0,
+			py::arg("number_of_rotations") = 360,
+			py::arg("use_flip") = true,
+			py::arg("progress_factor") = 0.1,
+			py::arg("use_cuda") = true
+	    )
         .def("__call__", [](Trainer const& trainer, Cartesian<2, Cartesian<2, float>>& som, Cartesian<2, float> const& image)
         {
     	    return trainer(som, image);
