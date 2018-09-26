@@ -93,7 +93,7 @@ def print_usage():
     print ('')
     print ('Usage:')
     print ('')
-    print ('  showSOM.py [Options] <inputfile>')
+    print ('  rotations.py [Options] <inputfile>')
     print ('')
     print ('Options:')
     print ('')
