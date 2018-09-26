@@ -49,6 +49,9 @@ public:
 	   data(data)
     {}
 
+    T* get_data_pointer() { return &data[0]; }
+    T const* get_data_pointer() const { return &data[0]; }
+
     T& get(std::array<uint32_t, dim> position)
     {
     	size_t p = 0;

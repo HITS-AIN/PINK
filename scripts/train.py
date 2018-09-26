@@ -21,8 +21,8 @@ def gaussian(distance, sigma=1.0):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='PINK SOM training')
-    parser.add_argument('images', help='Input file of images')
     parser.add_argument('som', help='Output file of SOM')
+    parser.add_argument('images', nargs='+', help='Input file of images')
     parser.add_argument('-d', '--display', action='store_true', help='Display SOM during training')
     parser.add_argument('-v', '--verbose', action='store_true', help='Be talkative')
     
@@ -32,14 +32,17 @@ if __name__ == "__main__":
     print('Display:', args.display)
     print('Verbose:', args.verbose)
 
-    images = np.load(args.images).astype(np.float32)
+    images = np.load(args.images[0]).astype(np.float32)
+    for input in args.images[1:]:
+        print(input)
+        images = np.append(images, np.load(input).astype(np.float32), axis = 0)
+
+    np.random.shuffle(images)
+
     if args.verbose:
         print('Image shape: ', images.shape, ', dtype: ', images.dtype)
 
-#     np_som = np.array([[images[0], images[1], images[2]],
-#                        [images[3], images[4], images[5]],
-#                        [images[6], images[7], images[8]]], dtype = np.float32)
-    np_som = np.random.rand(3, 3, 44, 44).astype(np.float32)
+    np_som = np.random.rand(5, 5, 44, 44).astype(np.float32)
     if args.verbose:
         print('SOM shape: ', np_som.shape, ', dtype: ', np_som.dtype)
         
@@ -48,26 +51,20 @@ if __name__ == "__main__":
         plt.matshow(np_som.swapaxes(1,2).reshape((new_dim, new_dim)))
         plt.show()
 
-    som = pink.cartesian_2d_cartesian_2d_float(np_som)
-    trainer = pink.trainer(number_of_rotations = 90, verbosity = 1)
+    som = pink.som_cartesian_2d_cartesian_2d_float(np_som)
+    trainer = pink.trainer(number_of_rotations = 180, verbosity = args.verbose)
 
+    #for i in range(5):
     for i in range(images.shape[0]):
 
-        if args.display:
-            plt.matshow(images[i])
-            plt.show()
-
         image = pink.cartesian_2d_float(images[i])
-
         trainer(som, image)
 
-        np_som = np.array(som, copy=True)
-        if args.verbose:
-            print('SOM shape: ', np_som.shape, ', dtype: ', np_som.dtype)
+        np_som = np.array(som, copy = False)
 
-        if args.display:
+        if args.display and i % 100 == 0:
             new_dim = np_som.shape[0] * np_som.shape[2]
             plt.matshow(np_som.swapaxes(1,2).reshape((new_dim, new_dim)))
             plt.show()
 
-    print('\n  Successfully finished. Have a nice day.\n')
+    print('All done.')
