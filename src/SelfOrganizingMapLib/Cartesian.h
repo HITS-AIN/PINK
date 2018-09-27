@@ -25,48 +25,62 @@ class Cartesian
 public:
 
     typedef T value_type;
+	typedef Cartesian<dim, T> SelfType;
+	typedef typename std::array<uint32_t, dim> DimensionType;
 
     /// Default construction
     Cartesian()
-     : length{0}
+     : dimension{0}
     {}
 
-    /// Construction
+    /// Construction without initialization
     Cartesian(std::array<uint32_t, dim> length)
-     : length(length),
+     : dimension(length),
 	   data(std::accumulate(length.begin(), length.end(), 1, std::multiplies<uint32_t>()))
     {}
 
-    /// Construction and copy data
-    Cartesian(std::array<uint32_t, dim> length, std::vector<T> const& data)
-     : length(length),
+    /// Construction and copy data into SOM
+    Cartesian(DimensionType const& dimension, T* data)
+     : dimension(dimension),
+	   data(data, data +
+           std::accumulate(dimension.begin(), dimension.end(), 1, std::multiplies<uint32_t>()))
+    {}
+
+    /// Construction and copy vector
+    Cartesian(DimensionType const& dimension, std::vector<T> const& data)
+     : dimension(dimension),
 	   data(data)
     {}
 
-    /// Construction and move data
-    Cartesian(std::array<uint32_t, dim> length, std::vector<T>&& data)
-     : length(length),
+    /// Construction and move vector
+    Cartesian(DimensionType const& dimension, std::vector<T>&& data)
+     : dimension(dimension),
 	   data(data)
     {}
+
+    bool operator == (SelfType const& other) const
+	{
+		return dimension == other.dimension and data == other.data;
+	}
 
     T* get_data_pointer() { return &data[0]; }
     T const* get_data_pointer() const { return &data[0]; }
 
-    T& get(std::array<uint32_t, dim> position)
+    T& get(DimensionType const& position)
     {
     	size_t p = 0;
     	for (uint8_t i = 0; i != dim; ++i) p += position[i] * i;
         return data[p];
     }
 
-    T const& get(std::array<uint32_t, dim> position) const
+    T const& get(DimensionType const& position) const
     {
     	size_t p = 0;
     	for (uint8_t i = 0; i != dim; ++i) p += position[i] * i;
         return data[p];
     }
 
-    std::array<uint32_t, dim> get_length() const { return length; }
+    std::array<uint32_t, dim> get_dimension() const { return dimension; }
 
     std::string info() const
     {
@@ -75,11 +89,19 @@ public:
 
 private:
 
-    std::array<uint32_t, dim> length;
+    DimensionType dimension;
 
     std::vector<T> data;
 
 };
+
+inline std::ostream& operator << (std::ostream& os, Cartesian<2, float> const& cartesian)
+{
+	auto&& dimension = cartesian.get_dimension();
+	auto&& data = cartesian.get_data_pointer();
+	for (size_t i = 0; i != dimension[0] * dimension[1]; ++i) os << data[i] << " ";
+    return os << std::endl;
+}
 
 template <>
 struct Info<float>

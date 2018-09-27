@@ -23,7 +23,9 @@ PYBIND11_MODULE(pink, m)
 	            throw std::runtime_error("Incompatible buffer dimension!");
 
 			auto&& p = static_cast<float*>(info.ptr);
-			new (&m) Cartesian<2, float>({info.shape[0], info.shape[1]}, std::vector<float>(p, p + info.shape[0] * info.shape[1]));
+			auto&& dim0 = static_cast<uint32_t>(info.shape[0]);
+			auto&& dim1 = static_cast<uint32_t>(info.shape[1]);
+			new (&m) Cartesian<2, float>({dim0, dim1}, std::vector<float>(p, p + dim0 * dim1));
 		})
         .def_buffer([](Cartesian<2, float> &m) -> py::buffer_info {
              return py::buffer_info(
@@ -31,9 +33,9 @@ PYBIND11_MODULE(pink, m)
                  sizeof(float),                          /* Size of one scalar */
                  py::format_descriptor<float>::format(), /* Python struct-style format descriptor */
                  2,                                      /* Number of dimensions */
-                 { m.get_length()[0],
-				   m.get_length()[1]},                   /* Buffer dimensions */
-                 { sizeof(float) * m.get_length()[1],
+                 { m.get_dimension()[0],
+				   m.get_dimension()[1]},                /* Buffer dimensions */
+                 { sizeof(float) * m.get_dimension()[1],
                    sizeof(float) }                       /* Strides (in bytes) for each index */
              );
          })
@@ -47,8 +49,12 @@ PYBIND11_MODULE(pink, m)
 
 	        if (info.ndim != 4) throw std::runtime_error("Incompatible buffer dimension!");
 
-			new (&m) SOM_generic<CartesianLayout<2>, CartesianLayout<2>, float>(
-				{info.shape[0], info.shape[1]}, {info.shape[2], info.shape[3]}, static_cast<float*>(info.ptr));
+			auto&& p = static_cast<float*>(info.ptr);
+			auto&& dim0 = static_cast<uint32_t>(info.shape[0]);
+			auto&& dim1 = static_cast<uint32_t>(info.shape[1]);
+			auto&& dim2 = static_cast<uint32_t>(info.shape[2]);
+			auto&& dim3 = static_cast<uint32_t>(info.shape[3]);
+			new (&m) SOM_generic<CartesianLayout<2>, CartesianLayout<2>, float>({dim0, dim1}, {dim2, dim3}, p);
 		})
         .def_buffer([](SOM_generic<CartesianLayout<2>, CartesianLayout<2>, float> &m) -> py::buffer_info {
              return py::buffer_info(

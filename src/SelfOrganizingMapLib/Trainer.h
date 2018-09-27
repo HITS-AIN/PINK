@@ -20,13 +20,13 @@ class Trainer
 public:
 
 	Trainer(int verbosity = 0, int number_of_rotations = 360, bool use_flip = true,
-		float progress_factor = 0.1, bool use_cuda = true)
+		float progress_factor = 0.1, bool use_cuda = true, int max_update_distance = 0)
      : verbosity(verbosity),
 	   number_of_rotations(number_of_rotations),
 	   use_flip(use_flip),
 	   progress_factor(progress_factor),
 	   use_cuda(use_cuda),
-	   max_update_distance(0)
+	   max_update_distance(max_update_distance)
     {
         if (number_of_rotations % 4 != 0) throw std::runtime_error("Trainer: number of rotations must be divisible by 4");
     }
@@ -52,7 +52,7 @@ public:
 		std::vector<int> bestRotationMatrix(som_size);
 
 		generateRotatedImages(&rotatedImages[0], const_cast<float*>(image.get_data_pointer()), number_of_rotations,
-	        image.get_length()[0], som.get_neuron_dimension()[0], use_flip, Interpolation::BILINEAR, 1);
+	        image.get_dimension()[0], som.get_neuron_dimension()[0], use_flip, Interpolation::BILINEAR, 1);
 
 		generateEuclideanDistanceMatrix(&euclideanDistanceMatrix[0], &bestRotationMatrix[0],
 	        som_size, som.get_data_pointer(), neuron_size, numberOfRotationsAndFlip, &rotatedImages[0]);
