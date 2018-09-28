@@ -41,7 +41,19 @@
 
 ## Usage
 
-  Please execute 'Pink -h' for current usage and options.
+To train a the [self-organizing map](https://en.wikipedia.org/wiki/Self-organizing_map) (SOM) please execute
+```
+Pink --train <image-file> <result-file>
+```
+where `image-file` is the input file of images for the training and `result-file` is the output file for the trained SOM. All files are in binary mode described [here](https://github.com/HITS-AIN/PINK/wiki/Description-of-the-binary-file-formats).
+
+To map an image to the trained SOM please execute
+```
+Pink --map <image-file> <result-file> <SOM-file>
+```
+where `image-file` is the input file of images for the mapping, `SOM-file` is the input file for the trained SOM, and `result-file` is the output file for the resulting heatmap.
+
+Please use also the command `Pink -h` to get more informations about the usage and the options.
 
 
 ## Python scripts
