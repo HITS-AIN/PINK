@@ -1,3 +1,4 @@
+#include <pybind11/functional.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
@@ -74,7 +75,8 @@ PYBIND11_MODULE(pink, m)
          });
 
     py::class_<Trainer>(m, "trainer")
-        .def(py::init<int, int, bool, float, bool, int>(),
+        .def(py::init<std::function<float(float)>, int, int, bool, float, bool, int>(),
+           	py::arg("distribution_function"),
         	py::arg("verbosity") = 0,
 			py::arg("number_of_rotations") = 360,
 			py::arg("use_flip") = true,

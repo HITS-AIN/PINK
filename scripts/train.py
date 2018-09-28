@@ -14,9 +14,16 @@ __author__  = "Bernd Doser"
 __email__   = "bernd.doser@h-its.org"
 __license__ = "GPLv3"
 
-def gaussian(distance, sigma=1.0):
+class GaussianFunctor(object):
     """ Returns the value of an gaussian distribution """
-    return 1.0 / (sigma * math.sqrt(2.0 * math.pi)) * math.exp(-0.5 * math.pow((distance / sigma), 2))
+    
+    def __init__(self, sigma = 1.1, damping = 0.2): 
+        self.sigma = sigma
+        self.damping = damping 
+
+    def __call__(self, distance):
+        return self.damping / (self.sigma * math.sqrt(2.0 * math.pi)) * math.exp(-0.5 * math.pow((distance / self.sigma), 2))
+
 
 if __name__ == "__main__":
     
@@ -24,7 +31,7 @@ if __name__ == "__main__":
     parser.add_argument('images', nargs='+', help='Input file of images')
     parser.add_argument('-i', '--input-som', help='Input file of SOM initialization')
     parser.add_argument('-o', '--output-som', help='Output file of resulting SOM')
-    parser.add_argument('--som-dim', default=5, help='Dimension of SOM if initialized from scratch')
+    parser.add_argument('--som-dim', type=int, default=5, help='Dimension of SOM if initialized from scratch')
     parser.add_argument('-d', '--display', action='store_true', help='Display SOM during training')
     parser.add_argument('-v', '--verbose', action='store_true', help='Be talkative')
     
@@ -33,6 +40,7 @@ if __name__ == "__main__":
         print('Images file:', args.images)
         print('Input SOM file:', args.input_som)
         print('Output SOM file:', args.output_som)
+        print('SOM dimension:', args.som_dim)
         print('Display:', args.display)
 
     images = np.load(args.images[0]).astype(np.float32)
@@ -41,7 +49,7 @@ if __name__ == "__main__":
 
     image_dim = images.shape[1]
     neuron_dim = int(image_dim * math.sqrt(2.0) / 2.0)
-    
+
     # Randomize order of input images
     np.random.shuffle(images)
 
@@ -64,7 +72,8 @@ if __name__ == "__main__":
         plt.show()
 
     som = pink.som_cartesian_2d_cartesian_2d_float(np_som)
-    trainer = pink.trainer(number_of_rotations = 180, verbosity = 0)
+    trainer = pink.trainer(distribution_function = GaussianFunctor(sigma = 1.1, damping = 1.0),
+                           number_of_rotations = 180, verbosity = 0)
 
     for i in range(images.shape[0]):
 

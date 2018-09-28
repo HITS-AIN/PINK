@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <functional>
 #include <iostream>
 #include <vector>
 
@@ -19,9 +20,11 @@ class Trainer
 {
 public:
 
-	Trainer(int verbosity = 0, int number_of_rotations = 360, bool use_flip = true,
+	Trainer(std::function<float(float)> distribution_function, int verbosity = 0,
+		int number_of_rotations = 360, bool use_flip = true,
 		float progress_factor = 0.1, bool use_cuda = true, int max_update_distance = 0)
-     : verbosity(verbosity),
+     : distribution_function(distribution_function),
+	   verbosity(verbosity),
 	   number_of_rotations(number_of_rotations),
 	   use_flip(use_flip),
 	   progress_factor(progress_factor),
@@ -59,14 +62,11 @@ public:
 
 		int bestMatch = findBestMatchingNeuron(&euclideanDistanceMatrix[0], som_size);
 
-		float sigma = 1.1;
-		float damping = 0.2;
 	    float *current_neuron = som.get_data_pointer();
-
 	    for (int i = 0; i < som_size; ++i) {
 	        float distance = CartesianDistanceFunctor<2, false>(som.get_som_dimension()[0], som.get_som_dimension()[1])(bestMatch, i);
 	        if (max_update_distance <= 0 or distance < max_update_distance) {
-	            float factor = GaussianFunctor(sigma)(distance) * damping;
+	            float factor = distribution_function(distance);
 	            float *current_image = &rotatedImages[0] + bestRotationMatrix[i] * neuron_size;
 	            for (int j = 0; j < neuron_size; ++j) {
 	            	current_neuron[j] -= (current_neuron[j] - current_image[j]) * factor;
@@ -86,6 +86,7 @@ public:
 
 private:
 
+    std::function<float(float)> distribution_function;
 	int verbosity;
 	int number_of_rotations;
 	bool use_flip;
