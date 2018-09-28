@@ -22,7 +22,7 @@ cd $BUILD_DIR
 
 cmake -DCMAKE_BUILD_TYPE=$2 ..
 
-if [ "$1" -eq "doc" ]; then
+if [ "$1" == "doc" ]; then
     make doc
 else
     make 2>&1 |tee make.out
