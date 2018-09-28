@@ -27,19 +27,20 @@ TEST(SelfOrganizingMapTest, train_cartesian_2d)
 	SOMType som({som_size, som_size}, {neuron_size, neuron_size}, 0.0);
 
 	Trainer trainer(
-        0,     // int verbosity
-		4,     // int number_of_rotations
-		true,  // bool use_flip
-		0.1,   // float progress_factor
-        true,  // bool use_cuda
-		0      // int max_update_distance
+	    GaussianFunctor(1.1, 0.2),  // std::function<float(float)> distribution_function
+        0,                  // int verbosity
+		4,                  // int number_of_rotations
+		true,               // bool use_flip
+		0.1,                // float progress_factor
+        true,               // bool use_cuda
+		0                   // int max_update_distance
 	);
 
 	trainer(som, image);
 
-	float v1 = GaussianFunctor(1.1)(0.0) * 0.2;
-	float v2 = GaussianFunctor(1.1)(1.0) * 0.2;
-	float v3 = GaussianFunctor(1.1)(std::sqrt(2.0)) * 0.2;
+	float v1 = GaussianFunctor(1.1, 0.2)(0.0);
+	float v2 = GaussianFunctor(1.1, 0.2)(1.0);
+	float v3 = GaussianFunctor(1.1, 0.2)(std::sqrt(2.0));
 
 	for (int i = 0; i != 4; ++i) {
 	    EXPECT_FLOAT_EQ(v1, som.get_neuron({0, 0}).get_data_pointer()[i]);

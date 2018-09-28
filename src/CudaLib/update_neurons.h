@@ -7,68 +7,9 @@
 #include <cuda_runtime.h>
 
 #include "UtilitiesLib/InputData.h"
+#include "UtilitiesLib/DistributionFunctor.h"
 
 namespace pink {
-
-// Function pointers are also possible for the distribution- and distance function, but have a significant overhead.
-
-__device__ bool isPositive(int n)
-{
-    return n >= 0;
-}
-
-struct DistributionFunctorBase
-{
-    __device__ virtual float operator () (float distance) const = 0;
-    virtual ~DistributionFunctorBase() {};
-};
-
-struct GaussianFunctor : public DistributionFunctorBase
-{
-    GaussianFunctor(float sigma) : sigma(sigma) {}
-
-    ~GaussianFunctor() {};
-
-    __device__ float operator () (float distance) const
-    {
-        return 1.0 / (sigma * sqrt(2.0 * M_PI)) * exp(-0.5 * powf((distance/sigma),2));
-    }
-
-private:
-
-    float sigma;
-
-};
-
-struct MexicanHatFunctor : public DistributionFunctorBase
-{
-    MexicanHatFunctor(float sigma) : sigma(sigma), sigma2(sigma*sigma) {}
-
-    ~MexicanHatFunctor() {};
-
-    __device__ float operator () (float distance) const
-    {
-        float distance2 = distance * distance;
-        return 2.0 / (sqrt(3.0 * sigma) * powf(M_PI, 0.25)) * (1.0 - distance2/sigma2) * exp(-distance2 / (2.0 * sigma2));
-    }
-
-private:
-
-    float sigma;
-    float sigma2;
-
-};
-
-__device__ void getHexagonalIndices(int p, int dim, int &x, int &y)
-{
-    int radius = (dim - 1)/2;
-    int pos = 0;
-    for (x = -radius; x <= radius; ++x) {
-        for (y = -radius - min(0,x); y <= radius - max(0,x); ++y, ++pos) {
-            if (pos == p) return;
-        }
-    }
-}
 
 //! Abstract base for distance functor.
 struct DistanceFunctorBase
@@ -240,6 +181,22 @@ private:
 
 };
 
+__device__ bool isPositive(int n)
+{
+    return n >= 0;
+}
+
+__device__ void getHexagonalIndices(int p, int dim, int &x, int &y)
+{
+    int radius = (dim - 1)/2;
+    int pos = 0;
+    for (x = -radius; x <= radius; ++x) {
+        for (y = -radius - min(0,x); y <= radius - max(0,x); ++y, ++pos) {
+            if (pos == p) return;
+        }
+    }
+}
+
 //! Calculate the distance in hexagonal grid.
 struct HexagonalDistanceFunctor : public DistanceFunctorBase
 {
@@ -272,7 +229,7 @@ template <unsigned int block_size, class FunctionFunctor, class DistanceFunctor>
 __global__ void
 update_neurons(float *som, float *rotatedImages, int *bestRotationMatrix, int *bestMatch,
     int neuron_size, FunctionFunctor functionFunctor, DistanceFunctor distanceFunctor,
-    float damping, float maxUpdateDistance)
+    float maxUpdateDistance)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i >= neuron_size) return;
@@ -282,8 +239,7 @@ update_neurons(float *som, float *rotatedImages, int *bestRotationMatrix, int *b
 
     if (maxUpdateDistance <= 0.0 or distance < maxUpdateDistance)
     {
-        float factor = functionFunctor(distance) * damping;
-        som[pos] -= (som[pos] - rotatedImages[bestRotationMatrix[blockIdx.y] * neuron_size + i]) * factor;
+        som[pos] -= (som[pos] - rotatedImages[bestRotationMatrix[blockIdx.y] * neuron_size + i]) * functionFunctor(distance);
     }
 }
 

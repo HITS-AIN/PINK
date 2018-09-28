@@ -67,9 +67,9 @@ SOM::SOM(InputData const& inputData)
 
     // Set distribution function
     if (inputData_.function == DistributionFunction::GAUSSIAN)
-        ptrDistributionFunctor_ = std::make_shared<GaussianFunctor>(inputData_.sigma);
+        ptrDistributionFunctor_ = std::make_shared<GaussianFunctor>(inputData_.sigma, inputData_.damping);
     else if (inputData_.function == DistributionFunction::MEXICANHAT)
-        ptrDistributionFunctor_ = std::make_shared<MexicanHatFunctor>(inputData_.sigma);
+        ptrDistributionFunctor_ = std::make_shared<MexicanHatFunctor>(inputData_.sigma, inputData_.damping);
     else
         fatalError("Unknown distribution function.");
 
@@ -123,7 +123,7 @@ void SOM::updateNeurons(float *rotatedImages, int bestMatch, int *bestRotationMa
     for (int i = 0; i < inputData_.som_size; ++i) {
         distance = (*ptrDistanceFunctor_)(bestMatch, i);
         if (inputData_.maxUpdateDistance <= 0.0 or distance < inputData_.maxUpdateDistance) {
-            factor = (*ptrDistributionFunctor_)(distance) * inputData_.damping;
+            factor = (*ptrDistributionFunctor_)(distance);
             updateSingleNeuron(current_neuron, rotatedImages + bestRotationMatrix[i]
                 * inputData_.numberOfChannels * inputData_.neuron_size, factor);
         }
