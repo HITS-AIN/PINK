@@ -8,13 +8,11 @@
 #pragma once
 
 #ifdef __CUDACC__
-#include <cuda_runtime.h>
+  #include <cuda_runtime.h>
+#else
+  #include <cmath>
+  #include "Error.h"
 #endif
-
-#include "Error.h"
-#include <algorithm>
-#include <cmath>
-#include <iostream>
 
 namespace pink {
 
