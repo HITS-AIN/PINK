@@ -81,7 +81,7 @@ PYBIND11_MODULE(pink, m)
 			py::arg("number_of_rotations") = 360,
 			py::arg("use_flip") = true,
 			py::arg("progress_factor") = 0.1,
-			py::arg("use_cuda") = true,
+			py::arg("use_gpu") = true,
 			py::arg("max_update_distance") = 0
 	    )
         .def("__call__", [](Trainer const& trainer, SOM_generic<CartesianLayout<2>, CartesianLayout<2>, float>& som, Cartesian<2, float> const& image)

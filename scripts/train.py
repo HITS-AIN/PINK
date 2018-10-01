@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
     som = pink.som_cartesian_2d_cartesian_2d_float(np_som)
     trainer = pink.trainer(distribution_function = GaussianFunctor(sigma = 1.1, damping = 1.0),
-                           number_of_rotations = 180, verbosity = 0)
+                           number_of_rotations = 180, verbosity = 0, use_gpu = False)
 
     for i in range(images.shape[0]):
 

@@ -14,7 +14,19 @@
 
 using namespace pink;
 
-TEST(SelfOrganizingMapTest, train_cartesian_2d)
+TEST(SelfOrganizingMapTest, trainer_num_rot)
+{
+	EXPECT_THROW(Trainer trainer(GaussianFunctor(1.1, 0.2), 0,  -4, true, 0.1, false), std::runtime_error);
+	EXPECT_THROW(Trainer trainer(GaussianFunctor(1.1, 0.2), 0,  -1, true, 0.1, false), std::runtime_error);
+	EXPECT_THROW(Trainer trainer(GaussianFunctor(1.1, 0.2), 0,   0, true, 0.1, false), std::runtime_error);
+	EXPECT_THROW(Trainer trainer(GaussianFunctor(1.1, 0.2), 0,  90, true, 0.1, false), std::runtime_error);
+
+	EXPECT_NO_THROW(Trainer trainer(GaussianFunctor(1.1, 0.2), 0,   1, true, 0.1, false));
+	EXPECT_NO_THROW(Trainer trainer(GaussianFunctor(1.1, 0.2), 0,   4, true, 0.1, false));
+	EXPECT_NO_THROW(Trainer trainer(GaussianFunctor(1.1, 0.2), 0, 720, true, 0.1, false));
+}
+
+TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
 {
 	typedef Cartesian<2, float> NeuronType;
 	typedef SOM_generic<CartesianLayout<2>, CartesianLayout<2>, float> SOMType;
@@ -28,12 +40,12 @@ TEST(SelfOrganizingMapTest, train_cartesian_2d)
 
 	Trainer trainer(
 	    GaussianFunctor(1.1, 0.2),  // std::function<float(float)> distribution_function
-        0,                  // int verbosity
-		4,                  // int number_of_rotations
-		true,               // bool use_flip
-		0.1,                // float progress_factor
-        true,               // bool use_cuda
-		0                   // int max_update_distance
+        0,                          // int verbosity
+		4,                          // int number_of_rotations
+		true,                       // bool use_flip
+		0.1,                        // float progress_factor
+        false,                      // bool use_cuda
+		0                           // int max_update_distance
 	);
 
 	trainer(som, image);
