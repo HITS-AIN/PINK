@@ -43,7 +43,7 @@ SOM::SOM(InputData const& inputData)
         while (std::getline(is, line)) {
             if (line[0] != '#') break;
             header_ += line + '\n';
-        	last_position = is.tellg();
+            last_position = is.tellg();
         }
 
         is.seekg(last_position, is.beg);

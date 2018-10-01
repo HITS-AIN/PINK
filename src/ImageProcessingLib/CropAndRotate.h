@@ -16,11 +16,11 @@ namespace pink {
 /// The image must be quadratic.
 struct CropAndRotate
 {
-	CropAndRotate(uint32_t number_of_rotations)
-	 : number_of_rotations(number_of_rotations)
-	{
-		assert(number_of_rotations % 4 == 0);
-	}
+    CropAndRotate(uint32_t number_of_rotations)
+     : number_of_rotations(number_of_rotations)
+    {
+        assert(number_of_rotations % 4 == 0);
+    }
 
 //	template <typename ImageType>
 //	std::vector<ImageType> operator () (ImageType const& image) const
@@ -56,7 +56,7 @@ struct CropAndRotate
 
 private:
 
-	uint32_t number_of_rotations;
+    uint32_t number_of_rotations;
 
 };
 

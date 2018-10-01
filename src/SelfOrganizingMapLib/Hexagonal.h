@@ -24,7 +24,7 @@ public:
 
     Hexagonal(uint32_t length)
      : length(length),
-	   data(get_size(length))
+       data(get_size(length))
     {}
 
     T& get(uint32_t position)
@@ -37,7 +37,7 @@ private:
     //! Return number of elements for a regular hexagon
     size_t get_size(uint32_t length) const
     {
-    	uint32_t radius = (length - 1)/2;
+        uint32_t radius = (length - 1)/2;
         return length * length - radius * (radius + 1);
     }
 

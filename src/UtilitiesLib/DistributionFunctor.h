@@ -22,9 +22,9 @@ namespace pink {
 struct DistributionFunctorBase
 {
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
-	virtual float operator () (float distance) const = 0;
+    virtual float operator () (float distance) const = 0;
 
     virtual ~DistributionFunctorBase() {}
 };
@@ -38,11 +38,11 @@ struct GaussianFunctor : public DistributionFunctorBase
 {
     GaussianFunctor(float sigma, float damping)
      : sigma(sigma),
-	   damping(damping)
+       damping(damping)
     {}
 
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
     float operator () (float distance) const
     {
@@ -66,15 +66,15 @@ struct MexicanHatFunctor : public DistributionFunctorBase
 {
     MexicanHatFunctor(float sigma, float damping)
      : sigma(sigma),
-	   damping(damping)
+       damping(damping)
     {
         if (sigma <= 0.0) throw std::runtime_error("MexicanHatFunctor: sigma <= 0 not defined.");
     }
 
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
-	float operator () (float distance) const
+    float operator () (float distance) const
     {
         float distance2 = distance * distance;
         float sigma2 = sigma * sigma;

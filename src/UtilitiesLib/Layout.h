@@ -12,7 +12,7 @@ namespace pink {
 
 //! SOM layout type
 enum class Layout {
-	CARTESIAN,
+    CARTESIAN,
     HEXAGONAL
 };
 

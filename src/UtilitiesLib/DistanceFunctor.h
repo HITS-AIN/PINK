@@ -22,7 +22,7 @@ namespace pink {
 struct DistanceFunctorBase
 {
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
     virtual float operator () (int p1, int p2) const = 0;
 
@@ -44,7 +44,7 @@ struct CartesianDistanceFunctor<1, false> : public DistanceFunctorBase
     {}
 
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
     float operator () (int p1, int p2) const
     {
@@ -68,7 +68,7 @@ struct CartesianDistanceFunctor<1, true> : public DistanceFunctorBase
     {}
 
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
     float operator () (int p1, int p2) const
     {
@@ -94,7 +94,7 @@ struct CartesianDistanceFunctor<2, false> : public DistanceFunctorBase
     {}
 
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
     float operator () (int p1, int p2) const
     {
@@ -123,7 +123,7 @@ struct CartesianDistanceFunctor<2, true> : public DistanceFunctorBase
     {}
 
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
     float operator () (int p1, int p2) const
     {
@@ -159,7 +159,7 @@ struct CartesianDistanceFunctor<3, false> : public DistanceFunctorBase
     {}
 
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
     float operator () (int p1, int p2) const
     {
@@ -192,7 +192,7 @@ struct CartesianDistanceFunctor<3, true> : public DistanceFunctorBase
     {}
 
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
     float operator () (int p1, int p2) const
     {
@@ -230,7 +230,7 @@ struct HexagonalDistanceFunctor : public DistanceFunctorBase
        {}
 
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
     float operator () (int p1, int p2) const
     {
@@ -258,12 +258,12 @@ struct HexagonalDistanceFunctor : public DistanceFunctorBase
 private:
 
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
     bool isPositive(int n) const { return n >= 0; }
 
 #ifdef __CUDACC__
-	__device__
+    __device__
 #endif
     void getHexagonalIndices(int p, int &x, int &y) const
     {

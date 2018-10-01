@@ -15,7 +15,7 @@ struct DistributionFunctorTestData
 {
     DistributionFunctorTestData(float sigma, float damping)
      : sigma(sigma),
-	   damping(damping)
+       damping(damping)
     {}
 
     float sigma;
@@ -27,7 +27,7 @@ class FullDistributionFunctorTest : public ::testing::TestWithParam<Distribution
 
 TEST(DistributionFunctorTest, GaussianSpecial)
 {
-	GaussianFunctor gauss(1.2, 1.0);
+    GaussianFunctor gauss(1.2, 1.0);
 
     EXPECT_NEAR(gauss(9.0), 2.028607587901271e-13, 1e-6);
     EXPECT_NEAR(gauss(10.0), 2.7673267835957437e-16, 1e-6);
@@ -35,7 +35,7 @@ TEST(DistributionFunctorTest, GaussianSpecial)
 
 TEST_P(FullDistributionFunctorTest, Gaussian)
 {
-	GaussianFunctor gauss(GetParam().sigma, GetParam().damping);
+    GaussianFunctor gauss(GetParam().sigma, GetParam().damping);
 
     // max value
     EXPECT_NEAR(gauss(0.0), 1.0 / (GetParam().sigma * std::sqrt(2.0 * M_PI)), 1e-6);
@@ -48,7 +48,7 @@ TEST_P(FullDistributionFunctorTest, Gaussian)
 TEST_P(FullDistributionFunctorTest, MexicanHat)
 {
     try {
-    	MexicanHatFunctor mexican_hat(GetParam().sigma, GetParam().damping);
+        MexicanHatFunctor mexican_hat(GetParam().sigma, GetParam().damping);
 
         // max value
         EXPECT_NEAR(mexican_hat(0.0), 2.0 / (std::sqrt(3.0 * GetParam().sigma * std::sqrt(M_PI))), 1e-6);

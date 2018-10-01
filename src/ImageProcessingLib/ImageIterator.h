@@ -42,7 +42,7 @@ public:
         int last_position = ptrStream_->tellg();
         while (std::getline(*ptrStream_, line)) {
             if (line[0] != '#') break;
-        	last_position = ptrStream_->tellg();
+            last_position = ptrStream_->tellg();
         }
 
         ptrStream_->seekg(last_position, ptrStream_->beg);
