@@ -6,6 +6,7 @@
 #include "SelfOrganizingMapLib/Hexagonal.h"
 #include "SelfOrganizingMapLib/SOM_generic.h"
 #include "SelfOrganizingMapLib/Trainer.h"
+#include "UtilitiesLib/Version.h"
 
 namespace py = pybind11;
 using namespace pink;
@@ -13,6 +14,7 @@ using namespace pink;
 PYBIND11_MODULE(pink, m)
 {
     m.doc() = "PINK python interface";
+    m.attr("__version__") = std::string(PROJECT_VERSION) + " revision " + std::string(GIT_REVISION);
 
     py::class_<Cartesian<2, float>>(m, "cartesian_2d_float", py::buffer_protocol())
         .def(py::init())

@@ -27,6 +27,8 @@ class GaussianFunctor():
 
 def main():
     """ Main routine of PINK training """
+    
+    print(pink.__version__)
 
     parser = argparse.ArgumentParser(description='PINK SOM training')
     parser.add_argument('images', nargs='+', help='Input file of images')
