@@ -40,6 +40,7 @@ target_link_libraries(
     CudaLib
     ${CUDA_LIBRARIES}
     ${CUDA_CUBLAS_LIBRARIES}
+    SelfOrganizingMapLib
 )
 
 install( 
