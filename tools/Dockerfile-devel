@@ -25,20 +25,8 @@ RUN pip3 install --upgrade pip && \
     tensorflow \
     tqdm
 
-RUN conan remote add braintwister https://api.bintray.com/conan/braintwister/conan && \
-    conan remote add conan-community https://api.bintray.com/conan/conan-community/conan && \
-    conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-
-RUN git clone https://github.com/HITS-AIN/PINK.git && \
-    cd PINK && git checkout redesign && \
-    mkdir build && cd build && \
-    cmake .. && \
-    make
-
 ENV PYTHONPATH /PINK/build/lib
 ENV JUPYTER_PATH /PINK/build/lib
-
-COPY notebooks /notebooks
 
 WORKDIR /notebooks
 EXPOSE 8888
