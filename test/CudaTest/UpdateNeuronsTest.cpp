@@ -6,8 +6,6 @@
 
 #include "CudaLib/CudaLib.h"
 #include "UtilitiesLib/EqualFloatArrays.h"
-#include "ImageProcessingLib/ImageProcessing.h"
-#include "SelfOrganizingMapLib/SelfOrganizingMap.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Filler.h"
