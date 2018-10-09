@@ -229,17 +229,31 @@ float calculateEuclideanDistance(float *a, float *b, int length)
     return sqrt(calculateEuclideanDistanceWithoutSquareRoot(a,b,length));
 }
 
+//float calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length)
+//{
+//    float *pa = a;
+//    float *pb = b;
+//    float c = 0.0;
+//    float tmp;
+//    for (int i = 0; i < length; ++i, ++pa, ++pb) {
+//        tmp = *pa - *pb;
+//        c += tmp * tmp;
+//    }
+//    return c;
+//}
+
 float calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length)
 {
-    float *pa = a;
-    float *pb = b;
-    float c = 0.0;
-    float tmp;
-    for (int i = 0; i < length; ++i, ++pa, ++pb) {
-        tmp = *pa - *pb;
-        c += tmp * tmp;
-    }
-    return c;
+	std::vector<float> diff(length);
+    for (int i = 0; i < length; ++i) diff[i] = a[i] - b[i];
+    return dot(diff);
+}
+
+float dot(std::vector<float> const& v)
+{
+	float dot = 0.0;
+    for (auto&& e : v) dot += e * e;
+    return dot;
 }
 
 void normalize(float *a, int length)

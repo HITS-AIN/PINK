@@ -16,14 +16,14 @@ using namespace pink;
 
 TEST(mixed_precision, dp4a)
 {
-//	std::vector<int8_t> in1{12, 127, 0, -128};
-//	std::vector<int8_t> in2{55, -10, 27, 0};
-//	std::vector<int8_t> in1{12, 127, 1, -128};
-//	std::vector<int8_t> in2{55, -10, 27, 2};
-//	std::vector<int8_t> in1{127, 127, 127, 127};
-//	std::vector<int8_t> in2{127, 127, 127, 127};
-	std::vector<uint8_t> in1{255, 255, 255, 255};
-	std::vector<uint8_t> in2{255, 255, 255, 255};
+//	std::vector<uint8_t> in1{12, 127, 0, -128};
+//	std::vector<uint8_t> in2{55, -10, 27, 0};
+	std::vector<uint8_t> in1{12, 127, 1, 128};
+	std::vector<uint8_t> in2{55, 10, 27, 2};
+//	std::vector<uint8_t> in1{127, 127, 127, 127};
+//	std::vector<uint8_t> in2{127, 127, 127, 127};
+//	std::vector<uint8_t> in1{255, 255, 255, 255};
+//	std::vector<uint8_t> in2{255, 255, 255, 255};
 
 	const int i2p8 = std::pow(2, 8);
 	const int i2p16 = std::pow(2, 16);
@@ -31,9 +31,6 @@ TEST(mixed_precision, dp4a)
 
     uint c_in1 = in1[0] + in1[1] * i2p8 + in1[2] * i2p16 + in1[3] * i2p24;
     uint c_in2 = in2[0] + in2[1] * i2p8 + in2[2] * i2p16 + in2[3] * i2p24;
-
-    std::cout << c_in1 << std::endl;
-    std::cout << c_in2 << std::endl;
 
     uint in3 = 0;
     uint out = 0;

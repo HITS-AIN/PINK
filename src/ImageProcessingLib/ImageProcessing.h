@@ -76,6 +76,8 @@ float calculateEuclideanDistance(float *a, float *b, int length);
  */
 float calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length);
 
+float dot(std::vector<float> const& v);
+
 /**
  * @brief Normalize image values.
  *
