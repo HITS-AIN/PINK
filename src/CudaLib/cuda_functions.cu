@@ -42,6 +42,21 @@ int* cuda_alloc_int(int size)
     return d;
 }
 
+uint* cuda_alloc_uint(int size)
+{
+    uint *d;
+
+    cudaError_t error = cudaMalloc((void **) &d, size * sizeof(uint));
+
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "cudaMalloc failed (error code %s)!\n", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
+
+    return d;
+}
+
 void cuda_fill_zero(float* d, int size)
 {
     cudaError_t error = cudaMemset(d, 0, size * sizeof(float));
@@ -97,6 +112,17 @@ void cuda_copyHostToDevice_int(int *dest, int *source, int size)
     }
 }
 
+void cuda_copyHostToDevice_uint(uint *dest, uint *source, int size)
+{
+    cudaError_t error = cudaMemcpy(dest, source, size * sizeof(uint), cudaMemcpyHostToDevice);
+
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "cudaMemcpy HostToDevice int failed (error code %s)!\n", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
+}
+
 void cuda_copyDeviceToHost_float(float *dest, float *source, int size)
 {
     cudaError_t error = cudaMemcpy(dest, source, size * sizeof(float), cudaMemcpyDeviceToHost);
@@ -111,6 +137,17 @@ void cuda_copyDeviceToHost_float(float *dest, float *source, int size)
 void cuda_copyDeviceToHost_int(int *dest, int *source, int size)
 {
     cudaError_t error = cudaMemcpy(dest, source, size * sizeof(int), cudaMemcpyDeviceToHost);
+
+    if (error != cudaSuccess)
+    {
+        fprintf(stderr, "cudaMemcpy DeviceToHost int failed (error code %s)!\n", cudaGetErrorString(error));
+        exit(EXIT_FAILURE);
+    }
+}
+
+void cuda_copyDeviceToHost_uint(uint *dest, uint *source, int size)
+{
+    cudaError_t error = cudaMemcpy(dest, source, size * sizeof(uint), cudaMemcpyDeviceToHost);
 
     if (error != cudaSuccess)
     {

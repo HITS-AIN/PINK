@@ -8,26 +8,38 @@
 
 namespace pink {
 
+typedef unsigned int uint;
+
 __global__
-void cuda_euclidean_distance(float *a1, float *a2, size_t size)
+void cuda_euclidean_distance(int *d_in1, int *d_in2, int *d_in3, int* d_out)
 {
+	int tx = threadIdx.x;
+
 #if __CUDA_ARCH__ >= 610
-
-    //unsigned int __dp4a(a1, a2, c);
-
-#else
-
+	d_out[tx] = __dp4a(d_in1[tx], d_in2[tx], d_in3[tx]);
 #endif
 }
 
-void euclidean_distance(float *a1, float *a2, size_t size)
+void euclidean_distance_dp4a(int *d_in1, int *d_in2, int *d_in3, int *d_out, size_t size)
 {
-    int8_t *ia;
-    cudaMalloc((void **) &ia, size * sizeof(int8_t));
+    cuda_euclidean_distance<<<1, 1>>>(d_in1, d_in2, d_in3, d_out);
+    cudaDeviceSynchronize();
+}
 
-    //cuda_convert_float_to_int8<<<1, 1>>>(ia, a1, size);
+__global__
+void cuda_euclidean_distance(uint *d_in1, uint *d_in2, uint *d_in3, uint* d_out)
+{
+	int tx = threadIdx.x;
 
-    cuda_euclidean_distance<<<1, 1>>>(a1, a2, size);
+#if __CUDA_ARCH__ >= 610
+	d_out[tx] = __dp4a(d_in1[tx], d_in2[tx], d_in3[tx]);
+#endif
+}
+
+void euclidean_distance_dp4a(uint *d_in1, uint *d_in2, uint *d_in3, uint *d_out, size_t size)
+{
+    cuda_euclidean_distance<<<1, 1>>>(d_in1, d_in2, d_in3, d_out);
+    cudaDeviceSynchronize();
 }
 
 } // namespace pink

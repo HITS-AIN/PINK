@@ -83,6 +83,9 @@ float* cuda_alloc_float(int size);
 //! Basic allocation for device memory.
 int* cuda_alloc_int(int size);
 
+//! Basic allocation for device memory.
+uint* cuda_alloc_uint(int size);
+
 //! Fill device memory with zero.
 void cuda_fill_zero(float *d, int size);
 
@@ -98,11 +101,17 @@ void cuda_copyHostToDevice_float(float *dest, float *source, int size);
 //! Copy memory from host to device.
 void cuda_copyHostToDevice_int(int *dest, int *source, int size);
 
+//! Copy memory from host to device.
+void cuda_copyHostToDevice_uint(uint *dest, uint *source, int size);
+
 //! Copy memory from device to host.
 void cuda_copyDeviceToHost_float(float *dest, float *source, int size);
 
 //! Copy memory from device to host.
 void cuda_copyDeviceToHost_int(int *dest, int *source, int size);
+
+//! Copy memory from device to host.
+void cuda_copyDeviceToHost_uint(uint *dest, uint *source, int size);
 
 //! Return number of GPUs.
 int cuda_getNumberOfGPUs();

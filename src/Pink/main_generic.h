@@ -16,10 +16,12 @@ void main_generic(InputData const & input_data)
 {
 	SOM_generic<SOMLayout, NeuronLayout, T> som;
 
+    auto&& distribution_function = GaussianFunctor(input_data.sigma, input_data.damping);
+
 	if (input_data.executionPath == ExecutionPath::TRAIN)
 	{
         Trainer trainer(
-            GaussianFunctor(1.1, 0.2),
+            distribution_function,
             input_data.verbose,
 			input_data.numberOfRotations,
 			input_data.useFlip,
@@ -27,10 +29,11 @@ void main_generic(InputData const & input_data)
 			input_data.useCuda,
 			input_data.maxUpdateDistance
         );
-        for (auto&& iter_image_cur = ImageIterator<float>(input_data.imagesFilename), iter_image_end = ImageIterator<float>();
+        for (auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename), iter_image_end = ImageIterator<T>();
         	iter_image_cur != iter_image_end; ++iter_image_cur)
         {
-        	Cartesian<2, float> image({3, 3}, iter_image_cur->getPointerOfFirstPixel());
+        	Cartesian<2, T> image({iter_image_cur->getWidth(),
+                iter_image_cur->getHeight()}, iter_image_cur->getPointerOfFirstPixel());
             trainer(som, image);
         }
 	} else if (input_data.executionPath == ExecutionPath::MAP) {
