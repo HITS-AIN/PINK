@@ -14,7 +14,7 @@ namespace pink {
 template <typename SOMLayout, typename NeuronLayout, typename T>
 void main_generic(InputData const & input_data)
 {
-	SOM_generic<SOMLayout, NeuronLayout, T> som;
+	SOM_generic<SOMLayout, NeuronLayout, T> som(input_data);
 
     auto&& distribution_function = GaussianFunctor(input_data.sigma, input_data.damping);
 

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "Cartesian.h"
+#include "UtilitiesLib/InputData.h"
 
 namespace pink {
 
@@ -48,6 +49,9 @@ public:
      : som_dimension{0},
        neuron_dimension{0}
     {}
+
+    /// Construction by input data
+    SOM_generic(InputData const& input_data);
 
     /// Construction without initialization
     SOM_generic(SOMDimensionType const& som_dimension, NeuronDimensionType const& neuron_dimension)
@@ -101,5 +105,33 @@ private:
     std::vector<T> data;
 
 };
+
+template <>
+SOM_generic<CartesianLayout<1>, CartesianLayout<2>, float>::SOM_generic(InputData const& input_data)
+ : som_dimension{{input_data.som_width}},
+   neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(get_size(som_dimension) * get_size(neuron_dimension))
+{}
+
+template <>
+SOM_generic<CartesianLayout<2>, CartesianLayout<2>, float>::SOM_generic(InputData const& input_data)
+ : som_dimension{{input_data.som_width, input_data.som_height}},
+   neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(get_size(som_dimension) * get_size(neuron_dimension))
+{}
+
+template <>
+SOM_generic<CartesianLayout<3>, CartesianLayout<2>, float>::SOM_generic(InputData const& input_data)
+ : som_dimension{{input_data.som_width, input_data.som_height, input_data.som_depth}},
+   neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(get_size(som_dimension) * get_size(neuron_dimension))
+{}
+
+template <>
+SOM_generic<HexagonalLayout, CartesianLayout<2>, float>::SOM_generic(InputData const& input_data)
+ : som_dimension{{input_data.som_width}},
+   neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(get_size(som_dimension) * get_size(neuron_dimension))
+{}
 
 } // namespace pink
