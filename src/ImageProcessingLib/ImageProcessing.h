@@ -40,12 +40,12 @@ void rotate_90degrees(int height, int width, float *source, float *dest);
 /**
  * @brief Plain-C function for image mirroring.
  */
-void flip(int height, int width, float * source, float *dest);
+void flip(int height, int width, float *source, float *dest);
 
 /**
  * @brief Plain-C function for cropping an image.
  */
-void crop(int height, int width, int height_new, int width_new, float * source, float *dest);
+void crop(int height, int width, int height_new, int width_new, float *source, float *dest);
 
 /**
  * @brief Plain-C function for flipping and cropping an image.

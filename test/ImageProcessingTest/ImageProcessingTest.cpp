@@ -87,24 +87,30 @@ TEST(ImageProcessingTest, EuclideanDistanceByDot)
     EXPECT_NEAR(0.1732, std::sqrt(dot), 1e-4);
 }
 
-TEST(ImageProcessingTest, Flip)
+// Flip direction is left-right
+TEST(ImageProcessingTest, flip)
 {
-    int dim = 3;
-    int size = dim*dim;
+	std::vector<float> a{1, 2, 3, 4};
 
-    std::vector<float> va(size);
-    float *a = &va[0];
-    fillWithRandomNumbers(a,size);
+	std::vector<float> b(4);
+    flip(2, 2, &a[0], &b[0]);
 
-    std::vector<float> vb(size);
-    float *b = &vb[0];
-    flip(dim,dim,a,b);
+	std::vector<float> c{3, 4, 1, 2};
+    EXPECT_EQ(c, b);
+}
 
-    std::vector<float> vc(size);
-    float *c = &vc[0];
-    flip(dim,dim,b,c);
+// Check double flip invariance
+TEST(ImageProcessingTest, double_flip)
+{
+    std::vector<float> a{1, 2, 3, 4};
 
-    EXPECT_EQ(va, vc);
+	std::vector<float> b(4);
+    flip(2, 2, &a[0], &b[0]);
+
+	std::vector<float> c(4);
+    flip(2, 2, &b[0], &c[0]);
+
+    EXPECT_EQ(a, c);
 }
 
 TEST(ImageProcessingTest, Crop)
