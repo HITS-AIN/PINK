@@ -11,7 +11,7 @@ namespace pink {
 typedef unsigned int uint;
 
 __global__
-void cuda_euclidean_distance(int *d_in1, int *d_in2, int *d_in3, int* d_out)
+void dot_dp4a_kernel(int *d_in1, int *d_in2, int *d_in3, int* d_out)
 {
 	int tx = threadIdx.x;
 
@@ -20,14 +20,14 @@ void cuda_euclidean_distance(int *d_in1, int *d_in2, int *d_in3, int* d_out)
 #endif
 }
 
-void euclidean_distance_dp4a(int *d_in1, int *d_in2, int *d_in3, int *d_out, size_t size)
+void dot_dp4a(int *d_in1, int *d_in2, int *d_in3, int *d_out, size_t size)
 {
-    cuda_euclidean_distance<<<1, 1>>>(d_in1, d_in2, d_in3, d_out);
+	dot_dp4a_kernel<<<1, 1>>>(d_in1, d_in2, d_in3, d_out);
     cudaDeviceSynchronize();
 }
 
 __global__
-void cuda_euclidean_distance(uint *d_in1, uint *d_in2, uint *d_in3, uint* d_out)
+void dot_dp4a_kernel(uint *d_in1, uint *d_in2, uint *d_in3, uint* d_out)
 {
 	int tx = threadIdx.x;
 
@@ -36,9 +36,9 @@ void cuda_euclidean_distance(uint *d_in1, uint *d_in2, uint *d_in3, uint* d_out)
 #endif
 }
 
-void euclidean_distance_dp4a(uint *d_in1, uint *d_in2, uint *d_in3, uint *d_out, size_t size)
+void dot_dp4a(uint *d_in1, uint *d_in2, uint *d_in3, uint *d_out, size_t size)
 {
-    cuda_euclidean_distance<<<1, 1>>>(d_in1, d_in2, d_in3, d_out);
+    dot_dp4a_kernel<<<1, 1>>>(d_in1, d_in2, d_in3, d_out);
     cudaDeviceSynchronize();
 }
 

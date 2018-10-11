@@ -4,24 +4,20 @@
  * @author Bernd Doser <bernd.doser@h-its.org>
  */
 
+#include <CudaLib/dot_dp4a.h>
 #include "gtest/gtest.h"
 #include <cmath>
 #include <iostream>
 #include <vector>
 
 #include "CudaLib/CudaLib.h"
-#include "CudaLib/euclidean_distance.h"
 
 using namespace pink;
 
-TEST(mixed_precision, dp4a)
+TEST(mixed_precision, dp4a_uint8)
 {
-//	std::vector<uint8_t> in1{12, 127, 0, -128};
-//	std::vector<uint8_t> in2{55, -10, 27, 0};
 	std::vector<uint8_t> in1{12, 127, 1, 128};
 	std::vector<uint8_t> in2{55, 10, 27, 2};
-//	std::vector<uint8_t> in1{127, 127, 127, 127};
-//	std::vector<uint8_t> in2{127, 127, 127, 127};
 //	std::vector<uint8_t> in1{255, 255, 255, 255};
 //	std::vector<uint8_t> in2{255, 255, 255, 255};
 
@@ -45,7 +41,7 @@ TEST(mixed_precision, dp4a)
     cuda_copyHostToDevice_uint(d_in3, &in3, 1);
     cuda_copyHostToDevice_uint(d_out, &out, 1);
 
-    euclidean_distance_dp4a(d_in1, d_in2, d_in3, d_out, 1);
+    dot_dp4a(d_in1, d_in2, d_in3, d_out, 1);
 
     cuda_copyDeviceToHost_uint(&out, d_out, 1);
 
