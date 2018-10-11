@@ -6,31 +6,16 @@
 
 #pragma once
 
+#include <stddef.h>
 #include <array>
-#include <cstdint>
-#include <iostream>
-#include <numeric>
-#include <string>
+#include <functional>
 #include <vector>
 
 #include "Cartesian.h"
+#include "Hexagonal.h"
 #include "UtilitiesLib/InputData.h"
 
 namespace pink {
-
-template <size_t dim>
-struct CartesianLayout
-{
-	static const size_t dimensionality = dim;
-    typedef typename std::array<uint32_t, dimensionality> DimensionType;
-};
-
-struct HexagonalLayout
-{
-	static const size_t dimensionality = 1;
-    typedef typename std::array<uint32_t, dimensionality> DimensionType;
-};
-
 
 //! Primary template for generic SOM
 template <typename SOMLayout, typename NeuronLayout, typename T>

@@ -15,6 +15,13 @@
 
 namespace pink {
 
+template <size_t dim>
+struct CartesianLayout
+{
+	static const size_t dimensionality = dim;
+    typedef typename std::array<uint32_t, dimensionality> DimensionType;
+};
+
 template <class T>
 struct Info;
 

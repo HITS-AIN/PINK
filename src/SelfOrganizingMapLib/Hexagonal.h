@@ -14,6 +14,12 @@
 
 namespace pink {
 
+struct HexagonalLayout
+{
+	static const size_t dimensionality = 1;
+    typedef typename std::array<uint32_t, dimensionality> DimensionType;
+};
+
 //! Hexagonal layout for SOM, only supported for 2-dimensional
 template <typename T>
 class Hexagonal
