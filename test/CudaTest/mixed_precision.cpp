@@ -45,7 +45,7 @@ TEST(mixed_precision, dp4a_uint8)
 
     cuda_copyDeviceToHost_uint(&out, d_out, 1);
 
-    EXPECT_EQ(in1[0]*in2[0] + in1[1]*in2[1] + in1[2]*in2[2] + in1[3]*in2[3], out);
+    EXPECT_EQ(static_cast<uint32_t>(in1[0]*in2[0] + in1[1]*in2[1] + in1[2]*in2[2] + in1[3]*in2[3]), out);
 }
 
 //TEST(mixed_precision, float)
