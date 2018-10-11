@@ -1,6 +1,6 @@
 /**
- * @file   SelfOrganizingMapLib/Trainer.h
- * @date   Sep 10, 2018
+ * @file   SelfOrganizingMapLib/TrainerGPU.h
+ * @date   Oct 11, 2018
  * @author Bernd Doser, HITS gGmbH
  */
 
@@ -13,29 +13,26 @@
 #include "ImageProcessingLib/CropAndRotate.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMap.h"
+#include "UtilitiesLib/pink_exception.h"
 
 namespace pink {
 
-class Trainer
+class TrainerGPU
 {
 public:
 
-    Trainer(std::function<float(float)> distribution_function, int verbosity = 0,
+    TrainerGPU(std::function<float(float)> distribution_function, int verbosity = 0,
         int number_of_rotations = 360, bool use_flip = true,
-        float progress_factor = 0.1, bool use_gpu = true, int max_update_distance = 0)
+        float progress_factor = 0.1, int max_update_distance = 0)
      : distribution_function(distribution_function),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
        progress_factor(progress_factor),
-       use_gpu(use_gpu),
        max_update_distance(max_update_distance)
     {
         if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
-            throw std::runtime_error("Trainer: number of rotations must be 1 or larger then 1 and divisible by 4");
-#if PINK_USE_CUDA
-        if (use_gpu) throw std::runtime_error("Trainer: Pink is not compiled with CUDA support.");
-#endif
+            throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
     }
 
     template <typename SOMType>
@@ -95,7 +92,6 @@ private:
     int number_of_rotations;
     bool use_flip;
     float progress_factor;
-    bool use_gpu;
     int max_update_distance;
 
 };

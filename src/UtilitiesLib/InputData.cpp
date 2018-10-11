@@ -88,14 +88,17 @@ InputData::InputData(int argc, char **argv)
         {"store-rot-flip",      1, 0, 15},
         {NULL, 0, NULL, 0}
     };
-    int c, option_index = 0;
+
+    int c = 0;
+    int option_index = 0;
+    int neuron_dim_in = 0;
     while ((c = getopt_long(argc, argv, "vd:l:s:n:t:x:p:a:hf:", long_options, &option_index)) != -1)
     {
         switch (c)
         {
             case 'd':
             {
-                neuron_dim = atoi(optarg);
+                neuron_dim_in = atoi(optarg);
                 break;
             }
             case 0:
@@ -340,7 +343,9 @@ InputData::InputData(int argc, char **argv)
 
     numberOfImages = iterImage.getNumberOfImages();
     numberOfChannels = iterImage.getNumberOfChannels();
-    image_dim = iterImage->getWidth();
+
+    // TODO: remove static_cast after new data read iterator
+    image_dim = static_cast<uint32_t>(iterImage->getWidth());
     image_size = image_dim * image_dim;
 
     if (layout == Layout::HEXAGONAL) {
@@ -359,7 +364,7 @@ InputData::InputData(int argc, char **argv)
     if (som_height > 1) ++dimensionality;
     if (som_depth > 1) ++dimensionality;
 
-    if (neuron_dim == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
+    if (neuron_dim_in == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
     if (neuron_dim > image_dim) {
         print_usage();
         std::cout << "ERROR: Neuron dimension must be smaller or equal to image dimension.";

@@ -1,11 +1,11 @@
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+#include <SelfOrganizingMapLib/SOM.h>
 
 #include "SelfOrganizingMapLib/Cartesian.h"
 #include "SelfOrganizingMapLib/Hexagonal.h"
-#include "SelfOrganizingMapLib/SOM_generic.h"
-#include "SelfOrganizingMapLib/Trainer.h"
+#include "SelfOrganizingMapLib/TrainerCPU.h"
 #include "UtilitiesLib/Version.h"
 
 namespace py = pybind11;
@@ -44,9 +44,9 @@ PYBIND11_MODULE(pink, m)
          })
         .def("info", &Cartesian<2, float>::info);
 
-    py::class_<SOM_generic<CartesianLayout<2>, CartesianLayout<2>, float>>(m, "som_cartesian_2d_cartesian_2d_float", py::buffer_protocol())
+    py::class_<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m, "som_cartesian_2d_cartesian_2d_float", py::buffer_protocol())
         .def(py::init())
-        .def("__init__", [](SOM_generic<CartesianLayout<2>, CartesianLayout<2>, float> &m, py::buffer b)
+        .def("__init__", [](SOM<CartesianLayout<2>, CartesianLayout<2>, float> &m, py::buffer b)
         {
             py::buffer_info info = b.request();
 
@@ -57,9 +57,9 @@ PYBIND11_MODULE(pink, m)
             auto&& dim1 = static_cast<uint32_t>(info.shape[1]);
             auto&& dim2 = static_cast<uint32_t>(info.shape[2]);
             auto&& dim3 = static_cast<uint32_t>(info.shape[3]);
-            new (&m) SOM_generic<CartesianLayout<2>, CartesianLayout<2>, float>({dim0, dim1}, {dim2, dim3}, p);
+            new (&m) SOM<CartesianLayout<2>, CartesianLayout<2>, float>({dim0, dim1}, {dim2, dim3}, p);
         })
-        .def_buffer([](SOM_generic<CartesianLayout<2>, CartesianLayout<2>, float> &m) -> py::buffer_info {
+        .def_buffer([](SOM<CartesianLayout<2>, CartesianLayout<2>, float> &m) -> py::buffer_info {
              return py::buffer_info(
                  m.get_data_pointer(),                   /* Pointer to buffer */
                  sizeof(float),                          /* Size of one scalar */
@@ -76,17 +76,16 @@ PYBIND11_MODULE(pink, m)
              );
          });
 
-    py::class_<Trainer>(m, "trainer")
-        .def(py::init<std::function<float(float)>, int, int, bool, float, bool, int>(),
+    py::class_<TrainerCPU>(m, "trainer")
+        .def(py::init<std::function<float(float)>, int, int, bool, float, int>(),
             py::arg("distribution_function"),
             py::arg("verbosity") = 0,
             py::arg("number_of_rotations") = 360,
             py::arg("use_flip") = true,
             py::arg("progress_factor") = 0.1,
-            py::arg("use_gpu") = true,
             py::arg("max_update_distance") = 0
         )
-        .def("__call__", [](Trainer const& trainer, SOM_generic<CartesianLayout<2>, CartesianLayout<2>, float>& som, Cartesian<2, float> const& image)
+        .def("__call__", [](TrainerCPU const& trainer, SOM<CartesianLayout<2>, CartesianLayout<2>, float>& som, Cartesian<2, float> const& image)
         {
             return trainer(som, image);
         });

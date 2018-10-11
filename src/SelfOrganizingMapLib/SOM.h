@@ -1,82 +1,137 @@
 /**
  * @file   SelfOrganizingMapLib/SOM.h
- * @brief  Self organizing Kohonen-map.
- * @date   Nov 25, 2014
+ * @date   Sep 25, 2018
  * @author Bernd Doser, HITS gGmbH
  */
 
 #pragma once
 
-#include <chrono>
-#include <memory>
+#include <array>
+#include <cstdint>
+#include <iostream>
+#include <numeric>
+#include <string>
 #include <vector>
 
-#include "UtilitiesLib/DistanceFunctor.h"
-#include "UtilitiesLib/DistributionFunctor.h"
+#include "Cartesian.h"
 #include "UtilitiesLib/InputData.h"
-
-using myclock = std::chrono::steady_clock;
 
 namespace pink {
 
-/**
- * @brief Main class for self organizing matrix.
- */
+template <size_t dim>
+struct CartesianLayout
+{
+	static const size_t dimensionality = dim;
+    typedef typename std::array<uint32_t, dimensionality> DimensionType;
+};
+
+struct HexagonalLayout
+{
+	static const size_t dimensionality = 1;
+    typedef typename std::array<uint32_t, dimensionality> DimensionType;
+};
+
+
+//! Primary template for generic SOM
+template <typename SOMLayout, typename NeuronLayout, typename T>
 class SOM
 {
 public:
 
-    SOM(InputData const& inputData);
+    typedef T value_type;
+    typedef SOM<SOMLayout, NeuronLayout, T> SelfType;
+    typedef typename SOMLayout::DimensionType SOMDimensionType;
+    typedef typename NeuronLayout::DimensionType NeuronDimensionType;
+    typedef Cartesian<NeuronLayout::dimensionality, T> NeuronType;
 
-    void write(std::string const& filename) const;
+    /// Default construction
+    SOM()
+     : som_dimension{0},
+       neuron_dimension{0}
+    {}
 
-    int getSize() const { return som_.size(); }
+    /// Construction by input data
+    SOM(InputData const& input_data);
 
-    int getSizeInBytes() const { return som_.size() * sizeof(float); }
+    /// Construction without initialization
+    SOM(SOMDimensionType const& som_dimension, NeuronDimensionType const& neuron_dimension)
+     : som_dimension(som_dimension),
+       neuron_dimension(neuron_dimension),
+       data(get_size(som_dimension) * get_size(neuron_dimension))
+    {}
 
-    std::vector<float> getData() { return som_; }
+    /// Construction and initialize all element to value
+    SOM(SOMDimensionType const& som_dimension, NeuronDimensionType const& neuron_dimension, T value = 0.0)
+     : som_dimension(som_dimension),
+       neuron_dimension(neuron_dimension),
+       data(get_size(som_dimension) * get_size(neuron_dimension), value)
+    {}
 
-    const std::vector<float> getData() const { return som_; }
+    /// Construction and copy data into SOM
+    SOM(SOMDimensionType const& som_dimension, NeuronDimensionType const& neuron_dimension, T* data)
+     : som_dimension(som_dimension),
+       neuron_dimension(neuron_dimension),
+       data(data, data + get_size(som_dimension) * get_size(neuron_dimension))
+    {}
 
-    float* getDataPointer() { return &som_[0]; }
+    bool operator == (SelfType const& other) const
+    {
+        return som_dimension == other.som_dimension and
+               neuron_dimension == other.neuron_dimension and
+               data == other.data;
+    }
 
-    float const* getDataPointer() const { return &som_[0]; }
+    T* get_data_pointer() { return &data[0]; }
+    T const* get_data_pointer() const { return &data[0]; }
 
-    //! Main CPU based routine for SOM training.
-    void training();
+    NeuronType get_neuron(SOMDimensionType const& position) {
+        return NeuronType(neuron_dimension, &data[(position[0] * som_dimension[1] + position[1]) * get_size(neuron_dimension)]);
+    }
 
-    //! Main CPU based routine for SOM mapping.
-    void mapping();
-
-    //! Updating self organizing map.
-    void updateNeurons(float *rotatedImages, int bestMatch, int *bestRotationMatrix);
-
-    //! Save position of current SOM update.
-    void updateCounter(int bestMatch) { ++updateCounterMatrix_[bestMatch]; }
-
-    //! Print matrix of SOM updates.
-    void printUpdateCounter() const;
+    SOMDimensionType get_som_dimension() const { return som_dimension; }
+    NeuronDimensionType get_neuron_dimension() const { return neuron_dimension; }
 
 private:
 
-    //! Updating one single neuron.
-    void updateSingleNeuron(float *neuron, float *image, float factor);
+    template <typename T2, size_t dim>
+    T2 get_size(std::array<T2, dim> const& dimension) {
+        return std::accumulate(dimension.begin(), dimension.end(), 1, std::multiplies<T2>());
+    }
 
-    InputData const& inputData_;
+    SOMDimensionType som_dimension;
 
-    //! The real self organizing matrix.
-    std::vector<float> som_;
+    NeuronDimensionType neuron_dimension;
 
-    std::shared_ptr<DistributionFunctorBase> ptrDistributionFunctor_;
-
-    std::shared_ptr<DistanceFunctorBase> ptrDistanceFunctor_;
-
-    // Counting updates of each neuron
-    std::vector<int> updateCounterMatrix_;
-
-    // Header of initialization SOM, will be copied to resulting SOM
-    std::string header_;
+    std::vector<T> data;
 
 };
+
+template <>
+SOM<CartesianLayout<1>, CartesianLayout<2>, float>::SOM(InputData const& input_data)
+ : som_dimension{{input_data.som_width}},
+   neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(get_size(som_dimension) * get_size(neuron_dimension))
+{}
+
+template <>
+SOM<CartesianLayout<2>, CartesianLayout<2>, float>::SOM(InputData const& input_data)
+ : som_dimension{{input_data.som_width, input_data.som_height}},
+   neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(get_size(som_dimension) * get_size(neuron_dimension))
+{}
+
+template <>
+SOM<CartesianLayout<3>, CartesianLayout<2>, float>::SOM(InputData const& input_data)
+ : som_dimension{{input_data.som_width, input_data.som_height, input_data.som_depth}},
+   neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(get_size(som_dimension) * get_size(neuron_dimension))
+{}
+
+template <>
+SOM<HexagonalLayout, CartesianLayout<2>, float>::SOM(InputData const& input_data)
+ : som_dimension{{input_data.som_width}},
+   neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(get_size(som_dimension) * get_size(neuron_dimension))
+{}
 
 } // namespace pink

@@ -9,7 +9,7 @@ add_executable(
     mixed_precision.cpp
     EuclideanDistanceTest.cpp
     RotationTest.cpp
-    UpdateNeuronsTest.cpp
+    #UpdateNeuronsTest.cpp
 )
     
 target_link_libraries(

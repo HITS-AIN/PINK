@@ -45,10 +45,10 @@ struct InputData
     std::string rot_flip_filename;
 
     bool verbose;
-    int som_width;
-    int som_height;
-    int som_depth;
-    int neuron_dim;
+    uint32_t som_width;
+    uint32_t som_height;
+    uint32_t som_depth;
+    uint32_t neuron_dim;
     Layout layout;
     int seed;
     int numberOfRotations;
@@ -60,7 +60,7 @@ struct InputData
     bool useCuda;
     int numberOfImages;
     int numberOfChannels;
-    int image_dim;
+    uint32_t image_dim;
     int image_size;
     int som_size;
     int neuron_size;
