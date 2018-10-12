@@ -8,24 +8,19 @@
 #include <cmath>
 #include "gtest/gtest.h"
 
-#include "SelfOrganizingMapLib/Cartesian.h"
+#include "SelfOrganizingMapLib/CartesianLayout.h"
+#include "SelfOrganizingMapLib/Data.h"
 #include "ImageProcessingLib/CropAndRotate.h"
 
 using namespace pink;
 
 TEST(SelfOrganizingMapTest, cartesian_2d)
 {
-    Cartesian<2, float> c;
+    Data<CartesianLayout<2>, float> c;
     EXPECT_EQ((std::array<uint32_t, 2>{0, 0}), c.get_dimension());
 
-    Cartesian<2, float> c2({3, 3});
+    Data<CartesianLayout<2>, float> c2({3, 3});
     EXPECT_EQ((std::array<uint32_t, 2>{3, 3}), c2.get_dimension());
 
     //auto&& rotated_images = CropAndRotate(360)(c2);
-}
-
-TEST(SelfOrganizingMapTest, cartesian_2d_cartesian_2d)
-{
-    Cartesian<2, Cartesian<2, float>> c;
-    Cartesian<2, Cartesian<2, float>> c2({3, 3});
 }

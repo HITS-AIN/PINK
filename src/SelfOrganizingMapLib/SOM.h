@@ -9,10 +9,12 @@
 #include <stddef.h>
 #include <array>
 #include <functional>
+#include <numeric>
 #include <vector>
 
-#include "Cartesian.h"
-#include "Hexagonal.h"
+#include "CartesianLayout.h"
+#include "Data.h"
+#include "HexagonalLayout.h"
 #include "UtilitiesLib/InputData.h"
 
 namespace pink {
@@ -27,7 +29,7 @@ public:
     typedef SOM<SOMLayout, NeuronLayout, T> SelfType;
     typedef typename SOMLayout::DimensionType SOMDimensionType;
     typedef typename NeuronLayout::DimensionType NeuronDimensionType;
-    typedef Cartesian<NeuronLayout::dimensionality, T> NeuronType;
+    typedef Data<NeuronLayout, T> NeuronType;
 
     /// Default construction
     SOM()
@@ -46,7 +48,7 @@ public:
     {}
 
     /// Construction and initialize all element to value
-    SOM(SOMDimensionType const& som_dimension, NeuronDimensionType const& neuron_dimension, T value = 0.0)
+    SOM(SOMDimensionType const& som_dimension, NeuronDimensionType const& neuron_dimension, T value)
      : som_dimension(som_dimension),
        neuron_dimension(neuron_dimension),
        data(get_size(som_dimension) * get_size(neuron_dimension), value)

@@ -1,10 +1,15 @@
+/**
+ * @file   SelfOrganizingMapLib/pink.cpp
+ * @date   Oct 12, 2018
+ * @author Bernd Doser, HITS gGmbH
+ */
+
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-#include <SelfOrganizingMapLib/SOM.h>
 
-#include "SelfOrganizingMapLib/Cartesian.h"
-#include "SelfOrganizingMapLib/Hexagonal.h"
+#include "SelfOrganizingMapLib/Data.h"
+#include "SelfOrganizingMapLib/SOM.h"
 #include "SelfOrganizingMapLib/TrainerCPU.h"
 #include "UtilitiesLib/Version.h"
 
@@ -16,9 +21,9 @@ PYBIND11_MODULE(pink, m)
     m.doc() = "PINK python interface";
     m.attr("__version__") = std::string(PROJECT_VERSION) + " revision " + std::string(GIT_REVISION);
 
-    py::class_<Cartesian<2, float>>(m, "cartesian_2d_float", py::buffer_protocol())
+    py::class_<Data<CartesianLayout<2>, float>>(m, "data_cartesian_2d_float", py::buffer_protocol())
         .def(py::init())
-        .def("__init__", [](Cartesian<2, float> &m, py::buffer b)
+        .def("__init__", [](Data<CartesianLayout<2>, float> &m, py::buffer b)
         {
             py::buffer_info info = b.request();
 
@@ -28,9 +33,9 @@ PYBIND11_MODULE(pink, m)
             auto&& p = static_cast<float*>(info.ptr);
             auto&& dim0 = static_cast<uint32_t>(info.shape[0]);
             auto&& dim1 = static_cast<uint32_t>(info.shape[1]);
-            new (&m) Cartesian<2, float>({dim0, dim1}, std::vector<float>(p, p + dim0 * dim1));
+            new (&m) Data<CartesianLayout<2>, float>({dim0, dim1}, p);
         })
-        .def_buffer([](Cartesian<2, float> &m) -> py::buffer_info {
+        .def_buffer([](Data<CartesianLayout<2>, float> &m) -> py::buffer_info {
              return py::buffer_info(
                  m.get_data_pointer(),                   /* Pointer to buffer */
                  sizeof(float),                          /* Size of one scalar */
@@ -41,8 +46,7 @@ PYBIND11_MODULE(pink, m)
                  { sizeof(float) * m.get_dimension()[1],
                    sizeof(float) }                       /* Strides (in bytes) for each index */
              );
-         })
-        .def("info", &Cartesian<2, float>::info);
+         });
 
     py::class_<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m, "som_cartesian_2d_cartesian_2d_float", py::buffer_protocol())
         .def(py::init())
@@ -76,7 +80,7 @@ PYBIND11_MODULE(pink, m)
              );
          });
 
-    py::class_<TrainerCPU>(m, "trainer")
+    py::class_<Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "trainer")
         .def(py::init<std::function<float(float)>, int, int, bool, float, int>(),
             py::arg("distribution_function"),
             py::arg("verbosity") = 0,
@@ -85,7 +89,8 @@ PYBIND11_MODULE(pink, m)
             py::arg("progress_factor") = 0.1,
             py::arg("max_update_distance") = 0
         )
-        .def("__call__", [](TrainerCPU const& trainer, SOM<CartesianLayout<2>, CartesianLayout<2>, float>& som, Cartesian<2, float> const& image)
+        .def("__call__", [](Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> const& trainer,
+            SOM<CartesianLayout<2>, CartesianLayout<2>, float>& som, Data<CartesianLayout<2>, float> const& image)
         {
             return trainer(som, image);
         });

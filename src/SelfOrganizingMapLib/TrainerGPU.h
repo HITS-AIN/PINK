@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <thrust/host_vector.h>
+#include <thrust/device_vector.h>
 #include <functional>
 #include <iostream>
 #include <vector>
@@ -13,15 +15,17 @@
 #include "ImageProcessingLib/CropAndRotate.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMap.h"
+#include "Trainer.h"
 #include "UtilitiesLib/pink_exception.h"
 
 namespace pink {
 
-class TrainerGPU
+template <typename SOMLayout, typename DataLayout, typename T>
+class Trainer<SOMLayout, DataLayout, T, true>
 {
 public:
 
-    TrainerGPU(std::function<float(float)> distribution_function, int verbosity = 0,
+    Trainer(std::function<float(float)> distribution_function, int verbosity = 0,
         int number_of_rotations = 360, bool use_flip = true,
         float progress_factor = 0.1, int max_update_distance = 0)
      : distribution_function(distribution_function),
@@ -30,13 +34,13 @@ public:
        use_flip(use_flip),
        progress_factor(progress_factor),
        max_update_distance(max_update_distance)
+	   //list_of_spatial_transformed_images(number_of_rotations)
     {
         if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
     }
 
-    template <typename SOMType>
-    void operator () (SOMType& som, typename SOMType::NeuronType const& image) const
+    void operator () (SOM<SOMLayout, DataLayout, T>& som, Data<DataLayout, T> const& data) const
     {
         int som_size = som.get_som_dimension()[0] * som.get_som_dimension()[1];
         int neuron_size = som.get_neuron_dimension()[0] * som.get_neuron_dimension()[1];
@@ -55,8 +59,8 @@ public:
         std::vector<float> euclideanDistanceMatrix(som_size);
         std::vector<int> bestRotationMatrix(som_size);
 
-        generateRotatedImages(&rotatedImages[0], const_cast<float*>(image.get_data_pointer()), number_of_rotations,
-            image.get_dimension()[0], som.get_neuron_dimension()[0], use_flip, Interpolation::BILINEAR, 1);
+        generateRotatedImages(&rotatedImages[0], const_cast<float*>(data.get_data_pointer()), number_of_rotations,
+            data.get_dimension()[0], som.get_neuron_dimension()[0], use_flip, Interpolation::BILINEAR, 1);
 
         generateEuclideanDistanceMatrix(&euclideanDistanceMatrix[0], &bestRotationMatrix[0],
             som_size, som.get_data_pointer(), neuron_size, numberOfRotationsAndFlip, &rotatedImages[0]);
@@ -93,6 +97,8 @@ private:
     bool use_flip;
     float progress_factor;
     int max_update_distance;
+
+    thrust::device_vector<T> list_of_spatial_transformed_images;
 
 };
 
