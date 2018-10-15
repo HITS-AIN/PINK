@@ -33,8 +33,8 @@ public:
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
        progress_factor(progress_factor),
-       max_update_distance(max_update_distance)
-	   //list_of_spatial_transformed_images(number_of_rotations)
+       max_update_distance(max_update_distance),
+	   list_of_spatial_transformed_images(number_of_rotations)
     {
         if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
@@ -69,7 +69,7 @@ public:
 
         float *current_neuron = som.get_data_pointer();
         for (int i = 0; i < som_size; ++i) {
-            float distance = CartesianDistanceFunctor<2, false>(som.get_som_dimension()[0], som.get_som_dimension()[1])(bestMatch, i);
+            float distance = 1.0; // CartesianDistanceFunctor<2, false>(som.get_som_dimension()[0], som.get_som_dimension()[1])(bestMatch, i);
             if (max_update_distance <= 0 or distance < max_update_distance) {
                 float factor = distribution_function(distance);
                 float *current_image = &rotatedImages[0] + bestRotationMatrix[i] * neuron_size;

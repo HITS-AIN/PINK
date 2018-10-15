@@ -57,7 +57,7 @@ struct InputData
     int numIter;
     float progressFactor;
     bool useFlip;
-    bool useCuda;
+    bool use_gpu;
     int numberOfImages;
     int numberOfChannels;
     uint32_t image_dim;

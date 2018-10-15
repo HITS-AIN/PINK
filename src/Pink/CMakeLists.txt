@@ -6,6 +6,7 @@ include_directories(
 add_executable(
     Pink
     main.cpp
+    main_cpu.cpp
 )
 
 target_link_libraries(

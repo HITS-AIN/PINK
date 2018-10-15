@@ -15,12 +15,12 @@
     #include <fenv.h>
 #endif
 
-#include "main_generic.h"
+#include "main_cpu.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/pink_exception.h"
 
 #if PINK_USE_CUDA
-    #include "CudaLib/CudaLib.h"
+    #include "CudaLib/main_gpu.h"
 #endif
 
 using myclock = std::chrono::steady_clock;
@@ -38,19 +38,14 @@ int main(int argc, char **argv)
 
 		InputData input_data(argc, argv);
 
-		if (input_data.layout == Layout::CARTESIAN)
-			if (input_data.dimensionality == 1)
-				main_generic<CartesianLayout<1>, CartesianLayout<2>, float, false>(input_data);
-			else if (input_data.dimensionality == 2)
-				main_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>(input_data);
-			else if (input_data.dimensionality == 3)
-				main_generic<CartesianLayout<3>, CartesianLayout<2>, float, false>(input_data);
-			else
-				pink::exception("Unsupported dimensionality of " + input_data.dimensionality);
-		else if (input_data.layout == Layout::HEXAGONAL)
-			main_generic<HexagonalLayout, CartesianLayout<2>, float, false>(input_data);
-		else
-			pink::exception("Unknown layout");
+		if (input_data.use_gpu)
+#if PINK_USE_CUDA
+            main_gpu(input_data);
+#else
+		    pink::exception("PINK was not compiled with CUDA support");
+#endif
+        else
+            main_cpu(input_data);
 
 		// Stop and print timer
 		auto&& stopTime = myclock::now();

@@ -15,7 +15,7 @@
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageIterator.h"
 #include "InputData.h"
-#include "UtilitiesLib/Error.h"
+#include "pink_exception.h"
 
 namespace pink {
 
@@ -24,7 +24,7 @@ InputData::InputData()
    som_width(10),
    som_height(10),
    som_depth(1),
-   neuron_dim(-1),
+   neuron_dim(0),
    layout(Layout::CARTESIAN),
    seed(1234),
    numberOfRotations(360),
@@ -33,7 +33,7 @@ InputData::InputData()
    numIter(1),
    progressFactor(0.1),
    useFlip(true),
-   useCuda(true),
+   use_gpu(true),
    numberOfImages(0),
    numberOfChannels(0),
    image_dim(0),
@@ -91,7 +91,7 @@ InputData::InputData(int argc, char **argv)
 
     int c = 0;
     int option_index = 0;
-    int neuron_dim_in = 0;
+    int neuron_dim_in = -1;
     while ((c = getopt_long(argc, argv, "vd:l:s:n:t:x:p:a:hf:", long_options, &option_index)) != -1)
     {
         switch (c)
@@ -162,7 +162,7 @@ InputData::InputData(int argc, char **argv)
             case 't':
             {
                 numberOfThreads = atoi(optarg);
-                if (useCuda and numberOfThreads > 1) {
+                if (use_gpu and numberOfThreads > 1) {
                     print_usage();
                     printf ("ERROR: Number of CPU threads must be 1 using CUDA.\n");
                     exit(EXIT_FAILURE);
@@ -189,7 +189,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 3:
             {
-                useCuda = false;
+                use_gpu = false;
                 break;
             }
             case 4:
@@ -214,9 +214,9 @@ InputData::InputData(int argc, char **argv)
             {
                 executionPath = ExecutionPath::TRAIN;
                 int index = optind - 1;
-                if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --train option.");
+                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --train option.");
                 imagesFilename = strdup(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --train option.");
+                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --train option.");
                 resultFilename = strdup(argv[index++]);
                 optind = index - 1;
                 break;
@@ -225,11 +225,11 @@ InputData::InputData(int argc, char **argv)
             {
                 executionPath = ExecutionPath::MAP;
                 int index = optind - 1;
-                if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --map option.");
+                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --map option.");
                 imagesFilename = strdup(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --map option.");
+                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --map option.");
                 resultFilename = strdup(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --map option.");
+                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --map option.");
                 somFilename = strdup(argv[index++]);
                 optind = index - 1;
                 break;
@@ -258,7 +258,7 @@ InputData::InputData(int argc, char **argv)
                 maxUpdateDistance = atof(optarg);
                 if (maxUpdateDistance <= 0.0) {
                     print_usage();
-                    fatalError("max-update-distance must be positive.");
+                    pink::exception("max-update-distance must be positive.");
                 }
                 break;
             }
@@ -305,9 +305,9 @@ InputData::InputData(int argc, char **argv)
                     exit(EXIT_FAILURE);
                 }
                 int index = optind;
-                if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --dist-func option.");
+                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --dist-func option.");
                 sigma = atof(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') fatalError("Missing arguments for --dist-func option.");
+                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --dist-func option.");
                 damping = atof(argv[index++]);
                 optind = index;
                 break;
@@ -331,14 +331,14 @@ InputData::InputData(int argc, char **argv)
         init = SOMInitialization::FILEINIT;
     } else if (executionPath == ExecutionPath::UNDEFINED) {
         print_usage();
-        fatalError("Unkown execution path.");
+        pink::exception("Unkown execution path.");
     }
 
     ImageIterator<float> iterImage(imagesFilename);
 
     if (iterImage->getWidth() != iterImage->getHeight()) {
         print_usage();
-        fatalError("Only quadratic images are supported.");
+        pink::exception("Only quadratic images are supported.");
     }
 
     numberOfImages = iterImage.getNumberOfImages();
@@ -349,26 +349,27 @@ InputData::InputData(int argc, char **argv)
     image_size = image_dim * image_dim;
 
     if (layout == Layout::HEXAGONAL) {
-        if (usePBC) fatalError("Periodic boundary conditions are not supported for hexagonal layout.");
-        if ((som_width - 1) % 2) fatalError("For hexagonal layout only odd dimension supported.");
-        if (som_width != som_height) fatalError("For hexagonal layout som-width must be equal to som-height.");
-        if (som_depth != 1) fatalError("For hexagonal layout som-depth must be equal to 1.");
+        if (usePBC) pink::exception("Periodic boundary conditions are not supported for hexagonal layout.");
+        if ((som_width - 1) % 2) pink::exception("For hexagonal layout only odd dimension supported.");
+        if (som_width != som_height) pink::exception("For hexagonal layout som-width must be equal to som-height.");
+        if (som_depth != 1) pink::exception("For hexagonal layout som-depth must be equal to 1.");
         int radius = (som_width - 1)/2;
         som_size = som_width * som_height - radius * (radius + 1);
     }
     else som_size = som_width * som_height * som_depth;
 
-    if (som_width < 2) fatalError("som-width must be > 1.");
-    if (som_height < 1) fatalError("som-height must be > 0.");
-    if (som_depth < 1) fatalError("som-depth must be > 0.");
+    if (som_width < 2) pink::exception("som-width must be > 1.");
+    if (som_height < 1) pink::exception("som-height must be > 0.");
+    if (som_depth < 1) pink::exception("som-depth must be > 0.");
     if (som_height > 1) ++dimensionality;
     if (som_depth > 1) ++dimensionality;
 
     if (neuron_dim_in == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
     if (neuron_dim > image_dim) {
         print_usage();
-        std::cout << "ERROR: Neuron dimension must be smaller or equal to image dimension.";
-        exit(EXIT_FAILURE);
+        std::cout << "neuron_dim = " << neuron_dim << std::endl;
+        std::cout << "image_dim = " << image_dim << std::endl;
+        pink::exception("ERROR: Neuron dimension must be smaller or equal to image dimension.");
     }
 
     neuron_size = neuron_dim * neuron_dim;
@@ -377,7 +378,7 @@ InputData::InputData(int argc, char **argv)
 
     if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
 #if PINK_USE_CUDA
-    if (useCuda) numberOfThreads = 1;
+    if (use_gpu) numberOfThreads = 1;
 #endif
     omp_set_num_threads(numberOfThreads);
 
@@ -436,20 +437,22 @@ void InputData::print_parameters() const
               << "  Number of rotations = " << numberOfRotations << "\n"
               << "  Use mirrored image = " << useFlip << "\n"
               << "  Number of CPU threads = " << numberOfThreads << "\n"
-              << "  Use CUDA = " << useCuda << "\n"
+              << "  Use CUDA = " << use_gpu << "\n"
               << "  Use multiple GPUs = " << useMultipleGPUs << "\n"
               << "  Distribution function for SOM update = " << function << "\n"
               << "  Sigma = " << sigma << "\n"
               << "  Damping factor = " << damping << "\n"
               << "  Maximum distance for SOM update = " << maxUpdateDistance << "\n"
               << "  Use periodic boundary conditions = " << usePBC << "\n"
-              << "  Store best rotation and flipping parameters = " << write_rot_flip << "\n"
-              << "  Best rotation and flipping parameter filename = " << rot_flip_filename << "\n"
-              << std::endl;
+              << "  Store best rotation and flipping parameters = " << write_rot_flip << "\n";
+
+    if (!rot_flip_filename.empty())
+        std::cout << "  Best rotation and flipping parameter filename = " << rot_flip_filename << "\n";
 
     if (verbose)
-        std::cout << "  Block size 1 = " << block_size_1 << "\n"
-                  << std::endl;
+        std::cout << "  Block size 1 = " << block_size_1 << "\n";
+
+    std::cout << std::endl;
 }
 
 void InputData::print_usage() const
