@@ -76,14 +76,14 @@ def main():
         plt.matshow(np_som.swapaxes(1, 2).reshape((new_dim, new_dim)))
         plt.show()
 
-    som = pink.som_cartesian_2d_cartesian_2d_float(np_som)
+    som = pink.som(np_som)
     trainer = pink.trainer(distribution_function=GaussianFunctor(sigma=1.1, damping=1.0),
-                           number_of_rotations=180, verbosity=0, use_gpu=False)
+                           number_of_rotations=180, verbosity=0)
 
     for i in range(images.shape[0]):
 
-        image = pink.cartesian_2d_float(images[i])
-        trainer(som, image)
+        data = pink.data(images[i])
+        trainer(som, data)
 
         np_som = np.array(som, copy=False)
 

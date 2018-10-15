@@ -1,6 +1,16 @@
-FROM braintwister/ubuntu-16.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.7-docker-18.06-eclipse-cpp-2018-09
+FROM braintwister/ubuntu-18.04-cuda-9.2-cmake-3.12-gcc-7-conan-1.8-docker-18.06-eclipse-cpp-2018-09
 
 MAINTAINER Bernd Doser <bernd.doser@h-its.org>
+
+ENV TZ 'Europe/Berlin'
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN echo $TZ > /etc/timezone && \
+  apt-get update && apt-get install -y tzdata && \
+  rm /etc/localtime && \
+  ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+  dpkg-reconfigure -f noninteractive tzdata && \
+  apt-get clean
 
 RUN apt-get update \
  && apt-get install -y \

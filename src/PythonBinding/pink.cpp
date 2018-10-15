@@ -21,7 +21,7 @@ PYBIND11_MODULE(pink, m)
     m.doc() = "PINK python interface";
     m.attr("__version__") = std::string(PROJECT_VERSION) + " revision " + std::string(GIT_REVISION);
 
-    py::class_<Data<CartesianLayout<2>, float>>(m, "data_cartesian_2d_float", py::buffer_protocol())
+    py::class_<Data<CartesianLayout<2>, float>>(m, "data", py::buffer_protocol())
         .def(py::init())
         .def("__init__", [](Data<CartesianLayout<2>, float> &m, py::buffer b)
         {
@@ -48,7 +48,7 @@ PYBIND11_MODULE(pink, m)
              );
          });
 
-    py::class_<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m, "som_cartesian_2d_cartesian_2d_float", py::buffer_protocol())
+    py::class_<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m, "som", py::buffer_protocol())
         .def(py::init())
         .def("__init__", [](SOM<CartesianLayout<2>, CartesianLayout<2>, float> &m, py::buffer b)
         {
