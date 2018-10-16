@@ -1,5 +1,5 @@
 /**
- * @file   SelfOrganizingMapLib/Trainer.h
+ * @file   SelfOrganizingMapLib/TrainerCPU.h
  * @date   Sep 10, 2018
  * @author Bernd Doser, HITS gGmbH
  */
@@ -18,27 +18,28 @@
 
 namespace pink {
 
-
 template <typename SOMLayout, typename DataLayout, typename T>
 class Trainer<SOMLayout, DataLayout, T, false>
 {
 public:
 
     Trainer(std::function<float(float)> distribution_function, uint32_t image_dim, uint32_t neuron_dim,
-    		uint32_t number_of_channels, int verbosity = 0, int number_of_rotations = 360, bool use_flip = true,
-            int max_update_distance = 0, Interpolation interpolation = Interpolation::BILINEAR)
-         : distribution_function(distribution_function),
-    	   image_dim(image_dim),
-    	   neuron_dim(neuron_dim),
-		   number_of_channels(number_of_channels),
-           verbosity(verbosity),
-           number_of_rotations(number_of_rotations),
-           use_flip(use_flip),
-           max_update_distance(max_update_distance),
-           interpolation(interpolation)
+        uint32_t number_of_channels, int verbosity = 0, int number_of_rotations = 360, bool use_flip = true,
+        int max_update_distance = 0, Interpolation interpolation = Interpolation::BILINEAR)
+     : distribution_function(distribution_function),
+       image_dim(image_dim),
+       neuron_dim(neuron_dim),
+       number_of_channels(number_of_channels),
+       verbosity(verbosity),
+       number_of_rotations(number_of_rotations),
+       use_flip(use_flip),
+       max_update_distance(max_update_distance),
+       interpolation(interpolation)
     {
-        if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
+        if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0)) {
+        	std::cout << "number_of_rotations = " << number_of_rotations << std::endl;
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
+        }
     }
 
     void operator () (SOM<SOMLayout, DataLayout, T>& som, Data<DataLayout, T> const& data) const

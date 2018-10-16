@@ -6,9 +6,10 @@
 
 #pragma once
 
-#include <stddef.h>
 #include <array>
 #include <functional>
+#include <stddef.h>
+#include <thrust/device_vector.h>
 #include <vector>
 
 #include "CartesianLayout.h"
@@ -97,6 +98,8 @@ private:
 
     // Header of initialization SOM, will be copied to resulting SOM
     std::string header;
+
+    thrust::device_vector<T> d_data;
 
 };
 

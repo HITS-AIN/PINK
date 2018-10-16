@@ -1,6 +1,7 @@
 include_directories(
-    ${PYTHON_INCLUDE_DIRS}
+    ${CUDA_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/src
+    ${PYTHON_INCLUDE_DIRS}
 )
 
 pybind11_add_module(

@@ -32,6 +32,9 @@ void main_generic(InputData const & input_data)
 	{
 		Trainer<SOMLayout, DataLayout, T, UseGPU> trainer(
 			distribution_function,
+			input_data.image_dim,
+			input_data.neuron_dim,
+			input_data.numberOfChannels,
 			input_data.verbose,
 			input_data.numberOfRotations,
 			input_data.useFlip,
