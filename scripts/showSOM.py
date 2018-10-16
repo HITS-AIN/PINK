@@ -38,12 +38,7 @@ class MAPVisualizer():
         inputStream = open(self.__fileName, 'rb')
         somTools.ignoreHeaderComments(inputStream)
 
-        self.__numberOfChannels = struct.unpack("i", inputStream.read(4))[0]
-        self.__somWidth = struct.unpack("i", inputStream.read(4))[0]
-        self.__somHeight = struct.unpack("i", inputStream.read(4))[0]
-        self.__somDepth = struct.unpack("i", inputStream.read(4))[0]
-        self.__neuronWidth = struct.unpack("i", inputStream.read(4))[0]
-        self.__neuronHeight = struct.unpack("i", inputStream.read(4))[0]
+        self.__somWidth, self.__somHeight, self.__somDepth, self.__neuronWidth, self.__neuronHeight, self.__numberOfChannels = struct.unpack('i' * 6, inputStream.read(4*6))
 
         print ("channels: " + str(self.__numberOfChannels))
         print ("width: " + str(self.__somWidth))
