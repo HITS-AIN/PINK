@@ -1,5 +1,5 @@
 /**
- * @file   Pink/main_cpu_generic.h
+ * @file   Pink/main_generic.h
  * @brief  Generic main routine of PINK
  * @date   Oct 8, 2018
  * @author Bernd Doser, HITS gGmbH
@@ -8,16 +8,21 @@
 #include "SelfOrganizingMapLib/Data.h"
 #include "SelfOrganizingMapLib/FileIO.h"
 #include "SelfOrganizingMapLib/SOM.h"
-#include "SelfOrganizingMapLib/TrainerCPU.h"
 #include "ImageProcessingLib/ImageIterator.h"
 #include "UtilitiesLib/DistributionFunction.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/pink_exception.h"
 
+#ifdef __CUDACC__
+    #include "SelfOrganizingMapLib/TrainerGPU.h"
+#else
+    #include "SelfOrganizingMapLib/TrainerCPU.h"
+#endif
+
 namespace pink {
 
-template <typename SOMLayout, typename DataLayout, typename T>
-void main_cpu_generic(InputData const & input_data)
+template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
+void main_generic(InputData const & input_data)
 {
 	SOM<SOMLayout, DataLayout, T> som(input_data);
 
@@ -25,7 +30,7 @@ void main_cpu_generic(InputData const & input_data)
 
 	if (input_data.executionPath == ExecutionPath::TRAIN)
 	{
-		Trainer<SOMLayout, DataLayout, T, false> trainer(
+		Trainer<SOMLayout, DataLayout, T, UseGPU> trainer(
 			distribution_function,
 			input_data.verbose,
 			input_data.numberOfRotations,

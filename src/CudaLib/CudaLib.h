@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <thrust/device_vector.h>
+
 #include "UtilitiesLib/DistributionFunction.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Layout.h"
@@ -66,8 +68,10 @@ void cuda_generateEuclideanDistanceMatrix_secondStep(float *d_euclideanDistanceM
     float* d_firstStep, int som_size, int num_rot);
 
 //! Host routine starting kernel for rotated images.
-void generate_rotated_images_gpu(float* d_rotatedImages, float* d_image, int num_rot, int image_dim, int neuron_dim,
-    bool flip, Interpolation interpolation, float *d_cosAlpha, float *d_sinAlpha, int numberOfChannels);
+template <typename T>
+void generate_rotated_images_gpu(thrust::device_vector<T> d_rotatedImages, thrust::device_vector<T> d_image,
+    int num_rot, int image_dim, int neuron_dim, bool useFlip, Interpolation interpolation,
+	thrust::device_vector<T> d_cosAlpha, thrust::device_vector<T> d_sinAlpha, int numberOfChannels);
 
 //! Host routine starting kernel for updating neurons.
 void update_neurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,

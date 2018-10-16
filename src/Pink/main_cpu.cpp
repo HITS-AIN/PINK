@@ -16,7 +16,7 @@
 #endif
 
 #include "main_cpu.h"
-#include "main_cpu_generic.h"
+#include "SelfOrganizingMapLib/main_generic.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/pink_exception.h"
 
@@ -26,15 +26,15 @@ void main_cpu(InputData const & input_data)
 {
 	if (input_data.layout == Layout::CARTESIAN)
 		if (input_data.dimensionality == 1)
-			main_cpu_generic<CartesianLayout<1>, CartesianLayout<2>, float>(input_data);
+			main_generic<CartesianLayout<1>, CartesianLayout<2>, float, false>(input_data);
 		else if (input_data.dimensionality == 2)
-			main_cpu_generic<CartesianLayout<2>, CartesianLayout<2>, float>(input_data);
+			main_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>(input_data);
 		else if (input_data.dimensionality == 3)
-			main_cpu_generic<CartesianLayout<3>, CartesianLayout<2>, float>(input_data);
+			main_generic<CartesianLayout<3>, CartesianLayout<2>, float, false>(input_data);
 		else
 			pink::exception("Unsupported dimensionality of " + input_data.dimensionality);
 	else if (input_data.layout == Layout::HEXAGONAL)
-		main_cpu_generic<HexagonalLayout, CartesianLayout<2>, float>(input_data);
+		main_generic<HexagonalLayout, CartesianLayout<2>, float, false>(input_data);
 	else
 		pink::exception("Unknown layout");
 }

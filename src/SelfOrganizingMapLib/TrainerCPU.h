@@ -24,15 +24,18 @@ class Trainer<SOMLayout, DataLayout, T, false>
 {
 public:
 
-    Trainer(std::function<float(float)> distribution_function, int verbosity = 0,
-        int number_of_rotations = 360, bool use_flip = true,
-        float progress_factor = 0.1, int max_update_distance = 0)
-     : distribution_function(distribution_function),
-       verbosity(verbosity),
-       number_of_rotations(number_of_rotations),
-       use_flip(use_flip),
-       progress_factor(progress_factor),
-       max_update_distance(max_update_distance)
+    Trainer(std::function<float(float)> distribution_function, uint32_t image_dim, uint32_t neuron_dim,
+    		uint32_t number_of_channels, int verbosity = 0, int number_of_rotations = 360, bool use_flip = true,
+            int max_update_distance = 0, Interpolation interpolation = Interpolation::BILINEAR)
+         : distribution_function(distribution_function),
+    	   image_dim(image_dim),
+    	   neuron_dim(neuron_dim),
+		   number_of_channels(number_of_channels),
+           verbosity(verbosity),
+           number_of_rotations(number_of_rotations),
+           use_flip(use_flip),
+           max_update_distance(max_update_distance),
+           interpolation(interpolation)
     {
         if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
@@ -58,7 +61,7 @@ public:
         std::vector<int> bestRotationMatrix(som_size);
 
         generateRotatedImages(&rotatedImages[0], const_cast<float*>(data.get_data_pointer()), number_of_rotations,
-            data.get_dimension()[0], som.get_neuron_dimension()[0], use_flip, Interpolation::BILINEAR, 1);
+            data.get_dimension()[0], som.get_neuron_dimension()[0], use_flip, interpolation, 1);
 
         generateEuclideanDistanceMatrix(&euclideanDistanceMatrix[0], &bestRotationMatrix[0],
             som_size, som.get_data_pointer(), neuron_size, numberOfRotationsAndFlip, &rotatedImages[0]);
@@ -90,11 +93,14 @@ public:
 private:
 
     std::function<float(float)> distribution_function;
+    uint32_t image_dim;
+    uint32_t neuron_dim;
+    uint32_t number_of_channels;
     int verbosity;
     int number_of_rotations;
     bool use_flip;
-    float progress_factor;
     int max_update_distance;
+    Interpolation interpolation;
 
 };
 

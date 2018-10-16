@@ -1,4 +1,5 @@
 include_directories(
+    ${CUDA_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/src
     ${GTEST_INCLUDE_DIR}
 )
