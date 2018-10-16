@@ -31,8 +31,14 @@ void write(SOM<SOMLayout, NeuronLayout, T> const& som, std::string const& filena
     for (int dim = 0; dim != neuron_layout.dimensionality; ++dim) os << neuron_layout.dimension[dim] << " ";
 
     // binary part
-    for (int dim = 0; dim != som_layout.dimensionality; ++dim) os.write((char*)&som_layout.dimension[dim], sizeof(typename SOMLayout::IndexType));
-    for (int dim = 0; dim != neuron_layout.dimensionality; ++dim) os.write((char*)&neuron_layout.dimension[dim], sizeof(typename NeuronLayout::IndexType));
+    for (int dim = 0; dim != som_layout.dimensionality; ++dim) {
+    	int tmp = som_layout.dimension[dim];
+    	os.write((char*)&tmp, sizeof(int));
+    }
+    for (int dim = 0; dim != neuron_layout.dimensionality; ++dim) {
+    	int tmp = neuron_layout.dimension[dim];
+	    os.write((char*)&tmp, sizeof(int));
+    }
     os.write((char*)som.get_data_pointer(), som_layout.get_size() * neuron_layout.get_size() * sizeof(T));
 }
 
