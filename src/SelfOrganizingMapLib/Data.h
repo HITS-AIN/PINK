@@ -9,7 +9,6 @@
 #include <stddef.h>
 #include <array>
 #include <functional>
-#include <numeric>
 #include <vector>
 
 namespace pink {
@@ -20,9 +19,9 @@ class Data
 {
 public:
 
-    typedef T value_type;
+    typedef T ValueType;
     typedef Data<DataLayout, T> SelfType;
-    typedef typename DataLayout::DimensionType DataDimensionType;
+    typedef DataLayout DataLayoutType;
 
     /// Default construction
     Data()
@@ -30,42 +29,41 @@ public:
     {}
 
     /// Construction without initialization
-    Data(DataDimensionType const& data_dimension)
+    Data(DataLayoutType const& data_dimension)
      : data_dimension(data_dimension),
-       data(get_size(data_dimension))
+       data(data_dimension.get_size())
     {}
 
     /// Construction and initialize all element to value
-    Data(DataDimensionType const& Data_dimension, T value)
+    Data(DataLayoutType const& Data_dimension, T value)
      : data_dimension(data_dimension),
-       data(get_size(data_dimension), value)
+       data(data_dimension.get_size(), value)
     {}
 
     /// Construction and copy data into Data
-    Data(DataDimensionType const& data_dimension, T* data)
+    Data(DataLayoutType const& data_dimension, T* data)
      : data_dimension(data_dimension),
-       data(data, data + get_size(data_dimension))
+       data(data, data + data_dimension.get_size())
     {}
 
-    bool operator == (SelfType const& other) const
+    auto operator == (SelfType const& other) const
     {
         return data_dimension == other.data_dimension and
                data == other.data;
     }
 
-    T* get_data_pointer() { return &data[0]; }
-    T const* get_data_pointer() const { return &data[0]; }
+    auto get_data_pointer() { return &data[0]; }
+    auto get_data_pointer() const { return &data[0]; }
 
-    DataDimensionType get_dimension() const { return data_dimension; }
+    auto get_dimension() -> typename DataLayoutType::DimensionType { return data_dimension.dimension; }
+    auto get_dimension() const -> typename DataLayoutType::DimensionType const { return data_dimension.dimension; }
 
 private:
 
-    template <typename T2, size_t dim>
-    T2 get_size(std::array<T2, dim> const& dimension) {
-        return std::accumulate(dimension.begin(), dimension.end(), 1, std::multiplies<T2>());
-    }
+    template <typename A, typename B>
+    friend void write(Data<A, B> const& data, std::string const& filename);
 
-    DataDimensionType data_dimension;
+    DataLayoutType data_dimension;
 
     std::vector<T> data;
 

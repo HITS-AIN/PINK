@@ -36,14 +36,17 @@ PYBIND11_MODULE(pink, m)
             new (&m) Data<CartesianLayout<2>, float>({dim0, dim1}, p);
         })
         .def_buffer([](Data<CartesianLayout<2>, float> &m) -> py::buffer_info {
+
+	         auto&& dimension = m.get_dimension();
+
              return py::buffer_info(
                  m.get_data_pointer(),                   /* Pointer to buffer */
                  sizeof(float),                          /* Size of one scalar */
                  py::format_descriptor<float>::format(), /* Python struct-style format descriptor */
                  2,                                      /* Number of dimensions */
-                 { m.get_dimension()[0],
-                   m.get_dimension()[1]},                /* Buffer dimensions */
-                 { sizeof(float) * m.get_dimension()[1],
+                 { dimension[0],
+                   dimension[1]},                        /* Buffer dimensions */
+                 { sizeof(float) * dimension[1],
                    sizeof(float) }                       /* Strides (in bytes) for each index */
              );
          });
@@ -64,18 +67,22 @@ PYBIND11_MODULE(pink, m)
             new (&m) SOM<CartesianLayout<2>, CartesianLayout<2>, float>({dim0, dim1}, {dim2, dim3}, p);
         })
         .def_buffer([](SOM<CartesianLayout<2>, CartesianLayout<2>, float> &m) -> py::buffer_info {
+
+    	     auto&& som_dimension = m.get_som_dimension();
+    	     auto&& neuron_dimension = m.get_neuron_dimension();
+
              return py::buffer_info(
                  m.get_data_pointer(),                   /* Pointer to buffer */
                  sizeof(float),                          /* Size of one scalar */
                  py::format_descriptor<float>::format(), /* Python struct-style format descriptor */
                  4,                                      /* Number of dimensions */
-                 { m.get_som_dimension()[0],
-                   m.get_som_dimension()[1],
-                   m.get_neuron_dimension()[0],
-                   m.get_neuron_dimension()[1]},         /* Buffer dimensions */
-                 { sizeof(float) * m.get_neuron_dimension()[1] * m.get_neuron_dimension()[0] * m.get_som_dimension()[1],
-                   sizeof(float) * m.get_neuron_dimension()[1] * m.get_neuron_dimension()[0],
-                   sizeof(float) * m.get_neuron_dimension()[1],
+                 { som_dimension[0],
+                   som_dimension[1],
+                   neuron_dimension[0],
+                   neuron_dimension[1]},                 /* Buffer dimensions */
+                 { sizeof(float) * neuron_dimension[1] * neuron_dimension[0] * som_dimension[1],
+                   sizeof(float) * neuron_dimension[1] * neuron_dimension[0],
+                   sizeof(float) * neuron_dimension[1],
                    sizeof(float) }                       /* Strides (in bytes) for each index */
              );
          });

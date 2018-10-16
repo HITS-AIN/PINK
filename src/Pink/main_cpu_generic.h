@@ -6,6 +6,7 @@
  */
 
 #include "SelfOrganizingMapLib/Data.h"
+#include "SelfOrganizingMapLib/FileIO.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "SelfOrganizingMapLib/TrainerCPU.h"
 #include "ImageProcessingLib/ImageIterator.h"
@@ -40,10 +41,19 @@ void main_cpu_generic(InputData const & input_data)
 				iter_image_cur->getPointerOfFirstPixel());
 			trainer(som, data);
 		}
-	} else if (input_data.executionPath == ExecutionPath::MAP) {
+
+	    std::cout << "  Write final SOM to " << input_data.resultFilename << " ... " << std::flush;
+	    write(som, input_data.resultFilename);
+	    std::cout << "done." << std::endl;
+	}
+	else if (input_data.executionPath == ExecutionPath::MAP)
+	{
 		//Mapper mapper;
-	} else
-    	pink::exception("Unknown execution path");
+	}
+	else
+    {
+        pink::exception("Unknown execution path");
+    }
 }
 
 } // namespace pink

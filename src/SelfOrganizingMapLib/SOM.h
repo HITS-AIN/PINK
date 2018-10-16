@@ -9,7 +9,6 @@
 #include <stddef.h>
 #include <array>
 #include <functional>
-#include <numeric>
 #include <vector>
 
 #include "CartesianLayout.h"
@@ -25,10 +24,10 @@ class SOM
 {
 public:
 
-    typedef T value_type;
+    typedef T ValueType;
+    typedef SOMLayout SOMLayoutType;
+    typedef NeuronLayout NeuronLayoutType;
     typedef SOM<SOMLayout, NeuronLayout, T> SelfType;
-    typedef typename SOMLayout::DimensionType SOMDimensionType;
-    typedef typename NeuronLayout::DimensionType NeuronDimensionType;
     typedef Data<NeuronLayout, T> NeuronType;
 
     /// Default construction
@@ -41,55 +40,63 @@ public:
     SOM(InputData const& input_data);
 
     /// Construction without initialization
-    SOM(SOMDimensionType const& som_dimension, NeuronDimensionType const& neuron_dimension)
+    SOM(SOMLayoutType const& som_dimension, NeuronLayoutType const& neuron_dimension)
      : som_dimension(som_dimension),
        neuron_dimension(neuron_dimension),
-       data(get_size(som_dimension) * get_size(neuron_dimension))
+       data(som_dimension.get_size() * neuron_dimension.get_size())
     {}
 
     /// Construction and initialize all element to value
-    SOM(SOMDimensionType const& som_dimension, NeuronDimensionType const& neuron_dimension, T value)
+    SOM(SOMLayoutType const& som_dimension, NeuronLayoutType const& neuron_dimension, T value)
      : som_dimension(som_dimension),
        neuron_dimension(neuron_dimension),
-       data(get_size(som_dimension) * get_size(neuron_dimension), value)
+       data(som_dimension.get_size() * neuron_dimension.get_size(), value)
     {}
 
     /// Construction and copy data into SOM
-    SOM(SOMDimensionType const& som_dimension, NeuronDimensionType const& neuron_dimension, T* data)
+    SOM(SOMLayoutType const& som_dimension, NeuronLayoutType const& neuron_dimension, T* data)
      : som_dimension(som_dimension),
        neuron_dimension(neuron_dimension),
-       data(data, data + get_size(som_dimension) * get_size(neuron_dimension))
+       data(data, data + som_dimension.get_size() * neuron_dimension.get_size())
     {}
 
-    bool operator == (SelfType const& other) const
+    auto operator == (SelfType const& other) const
     {
         return som_dimension == other.som_dimension and
                neuron_dimension == other.neuron_dimension and
                data == other.data;
     }
 
-    T* get_data_pointer() { return &data[0]; }
-    T const* get_data_pointer() const { return &data[0]; }
+    auto get_data_pointer() { return &data[0]; }
+    auto get_data_pointer() const { return &data[0]; }
 
-    NeuronType get_neuron(SOMDimensionType const& position) {
-        return NeuronType(neuron_dimension, &data[(position[0] * som_dimension[1] + position[1]) * get_size(neuron_dimension)]);
+    auto get_neuron(SOMLayoutType const& position) {
+        return NeuronType(neuron_dimension, &data[(position.dimension[0] * som_dimension.dimension[1] + position.dimension[1]) * neuron_dimension.get_size()]);
     }
 
-    SOMDimensionType get_som_dimension() const { return som_dimension; }
-    NeuronDimensionType get_neuron_dimension() const { return neuron_dimension; }
+    auto get_som_layout() -> SOMLayoutType { return som_dimension; }
+    auto get_som_layout() const -> SOMLayoutType const { return som_dimension; }
+    auto get_neuron_layout() -> NeuronLayoutType { return neuron_dimension; }
+    auto get_neuron_layout() const -> NeuronLayoutType const { return neuron_dimension; }
+
+    auto get_som_dimension() -> typename SOMLayoutType::DimensionType { return som_dimension.dimension; }
+    auto get_som_dimension() const -> typename SOMLayoutType::DimensionType const { return som_dimension.dimension; }
+    auto get_neuron_dimension() -> typename NeuronLayoutType::DimensionType { return neuron_dimension.dimension; }
+    auto get_neuron_dimension() const -> typename NeuronLayoutType::DimensionType const { return neuron_dimension.dimension; }
 
 private:
 
-    template <typename T2, size_t dim>
-    T2 get_size(std::array<T2, dim> const& dimension) {
-        return std::accumulate(dimension.begin(), dimension.end(), 1, std::multiplies<T2>());
-    }
+    template <typename A, typename B, typename C>
+    friend void write(SOM<A, B, C> const& som, std::string const& filename);
 
-    SOMDimensionType som_dimension;
+    SOMLayoutType som_dimension;
 
-    NeuronDimensionType neuron_dimension;
+    NeuronLayoutType neuron_dimension;
 
     std::vector<T> data;
+
+    // Header of initialization SOM, will be copied to resulting SOM
+    std::string header;
 
 };
 
@@ -97,28 +104,28 @@ template <>
 SOM<CartesianLayout<1>, CartesianLayout<2>, float>::SOM(InputData const& input_data)
  : som_dimension{{input_data.som_width}},
    neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
-   data(get_size(som_dimension) * get_size(neuron_dimension))
+   data(som_dimension.get_size() * neuron_dimension.get_size())
 {}
 
 template <>
 SOM<CartesianLayout<2>, CartesianLayout<2>, float>::SOM(InputData const& input_data)
  : som_dimension{{input_data.som_width, input_data.som_height}},
    neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
-   data(get_size(som_dimension) * get_size(neuron_dimension))
+   data(som_dimension.get_size() * neuron_dimension.get_size())
 {}
 
 template <>
 SOM<CartesianLayout<3>, CartesianLayout<2>, float>::SOM(InputData const& input_data)
  : som_dimension{{input_data.som_width, input_data.som_height, input_data.som_depth}},
    neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
-   data(get_size(som_dimension) * get_size(neuron_dimension))
+   data(som_dimension.get_size() * neuron_dimension.get_size())
 {}
 
 template <>
 SOM<HexagonalLayout, CartesianLayout<2>, float>::SOM(InputData const& input_data)
  : som_dimension{{input_data.som_width}},
    neuron_dimension{{input_data.neuron_dim, input_data.neuron_dim}},
-   data(get_size(som_dimension) * get_size(neuron_dimension))
+   data(som_dimension.get_size() * neuron_dimension.get_size())
 {}
 
 } // namespace pink
