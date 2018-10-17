@@ -24,41 +24,41 @@ namespace pink {
 template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
 void main_generic(InputData const & input_data)
 {
-	SOM<SOMLayout, DataLayout, T> som(input_data);
+    SOM<SOMLayout, DataLayout, T> som(input_data);
 
     auto&& distribution_function = GaussianFunctor(input_data.sigma, input_data.damping);
 
-	if (input_data.executionPath == ExecutionPath::TRAIN)
-	{
-		Trainer<SOMLayout, DataLayout, T, UseGPU> trainer(
-			distribution_function,
-			input_data.image_dim,
-			input_data.neuron_dim,
-			input_data.numberOfChannels,
-			input_data.verbose,
-			input_data.numberOfRotations,
-			input_data.useFlip,
-			input_data.progressFactor,
-			input_data.maxUpdateDistance
-		);
+    if (input_data.executionPath == ExecutionPath::TRAIN)
+    {
+        Trainer<SOMLayout, DataLayout, T, UseGPU> trainer(
+            distribution_function,
+            input_data.image_dim,
+            input_data.neuron_dim,
+            input_data.numberOfChannels,
+            input_data.verbose,
+            input_data.numberOfRotations,
+            input_data.useFlip,
+            input_data.progressFactor,
+            input_data.maxUpdateDistance
+        );
 
-		for (auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename), iter_image_end = ImageIterator<T>();
-			iter_image_cur != iter_image_end; ++iter_image_cur)
-		{
-			Data<DataLayout, T> data({input_data.image_dim, input_data.image_dim},
-				iter_image_cur->getPointerOfFirstPixel());
-			trainer(som, data);
-		}
+        for (auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename), iter_image_end = ImageIterator<T>();
+            iter_image_cur != iter_image_end; ++iter_image_cur)
+        {
+            Data<DataLayout, T> data({input_data.image_dim, input_data.image_dim},
+                iter_image_cur->getPointerOfFirstPixel());
+            trainer(som, data);
+        }
 
-	    std::cout << "  Write final SOM to " << input_data.resultFilename << " ... " << std::flush;
-	    write(som, input_data.resultFilename);
-	    std::cout << "done." << std::endl;
-	}
-	else if (input_data.executionPath == ExecutionPath::MAP)
-	{
-		//Mapper mapper;
-	}
-	else
+        std::cout << "  Write final SOM to " << input_data.resultFilename << " ... " << std::flush;
+        write(som, input_data.resultFilename);
+        std::cout << "done." << std::endl;
+    }
+    else if (input_data.executionPath == ExecutionPath::MAP)
+    {
+        //Mapper mapper;
+    }
+    else
     {
         pink::exception("Unknown execution path");
     }

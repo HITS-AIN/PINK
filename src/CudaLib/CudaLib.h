@@ -71,7 +71,7 @@ void cuda_generateEuclideanDistanceMatrix_secondStep(float *d_euclideanDistanceM
 template <typename T>
 void generate_rotated_images_gpu(thrust::device_vector<T> d_rotatedImages, thrust::device_vector<T> d_image,
     int num_rot, int image_dim, int neuron_dim, bool useFlip, Interpolation interpolation,
-	thrust::device_vector<T> d_cosAlpha, thrust::device_vector<T> d_sinAlpha, int numberOfChannels);
+    thrust::device_vector<T> d_cosAlpha, thrust::device_vector<T> d_sinAlpha, int numberOfChannels);
 
 //! Host routine starting kernel for updating neurons.
 void update_neurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,

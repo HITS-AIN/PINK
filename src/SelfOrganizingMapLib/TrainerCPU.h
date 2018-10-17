@@ -37,7 +37,7 @@ public:
        interpolation(interpolation)
     {
         if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0)) {
-        	std::cout << "number_of_rotations = " << number_of_rotations << std::endl;
+            std::cout << "number_of_rotations = " << number_of_rotations << std::endl;
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
         }
     }

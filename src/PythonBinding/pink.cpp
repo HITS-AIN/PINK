@@ -37,7 +37,7 @@ PYBIND11_MODULE(pink, m)
         })
         .def_buffer([](Data<CartesianLayout<2>, float> &m) -> py::buffer_info {
 
-	         auto&& dimension = m.get_dimension();
+             auto&& dimension = m.get_dimension();
 
              return py::buffer_info(
                  m.get_data_pointer(),                   /* Pointer to buffer */
@@ -68,8 +68,8 @@ PYBIND11_MODULE(pink, m)
         })
         .def_buffer([](SOM<CartesianLayout<2>, CartesianLayout<2>, float> &m) -> py::buffer_info {
 
-    	     auto&& som_dimension = m.get_som_dimension();
-    	     auto&& neuron_dimension = m.get_neuron_dimension();
+             auto&& som_dimension = m.get_som_dimension();
+             auto&& neuron_dimension = m.get_neuron_dimension();
 
              return py::buffer_info(
                  m.get_data_pointer(),                   /* Pointer to buffer */

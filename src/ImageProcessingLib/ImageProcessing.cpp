@@ -244,14 +244,14 @@ float calculateEuclideanDistance(float *a, float *b, int length)
 
 float calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length)
 {
-	std::vector<float> diff(length);
+    std::vector<float> diff(length);
     for (int i = 0; i < length; ++i) diff[i] = a[i] - b[i];
     return dot(diff);
 }
 
 float dot(std::vector<float> const& v)
 {
-	float dot = 0.0;
+    float dot = 0.0;
     for (auto&& e : v) dot += e * e;
     return dot;
 }

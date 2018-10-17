@@ -23,7 +23,7 @@ namespace pink {
 template <typename T>
 void generate_rotated_images_gpu(thrust::device_vector<T> d_rotatedImages, thrust::device_vector<T> d_image,
     int num_rot, int image_dim, int neuron_dim, bool useFlip, Interpolation interpolation,
-	thrust::device_vector<T> d_cosAlpha, thrust::device_vector<T> d_sinAlpha, int numberOfChannels)
+    thrust::device_vector<T> d_cosAlpha, thrust::device_vector<T> d_sinAlpha, int numberOfChannels)
 {
 //    int neuron_size = neuron_dim * neuron_dim;
 //    int image_size = image_dim * image_dim;
@@ -145,6 +145,6 @@ void generate_rotated_images_gpu(thrust::device_vector<T> d_rotatedImages, thrus
 template
 void generate_rotated_images_gpu<float>(thrust::device_vector<float> d_rotatedImages, thrust::device_vector<float> d_image,
     int num_rot, int image_dim, int neuron_dim, bool useFlip, Interpolation interpolation,
-	thrust::device_vector<float> d_cosAlpha, thrust::device_vector<float> d_sinAlpha, int numberOfChannels);
+    thrust::device_vector<float> d_cosAlpha, thrust::device_vector<float> d_sinAlpha, int numberOfChannels);
 
 } // namespace pink

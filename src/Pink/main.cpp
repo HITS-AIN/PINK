@@ -29,32 +29,32 @@ using namespace pink;
 int main(int argc, char **argv)
 {
     try {
-		#ifndef NDEBUG
-			feenableexcept(FE_INVALID | FE_OVERFLOW);
-		#endif
+        #ifndef NDEBUG
+            feenableexcept(FE_INVALID | FE_OVERFLOW);
+        #endif
 
-		// Start timer
-		auto&& startTime = myclock::now();
+        // Start timer
+        auto&& startTime = myclock::now();
 
-		InputData input_data(argc, argv);
+        InputData input_data(argc, argv);
 
-		if (input_data.use_gpu)
+        if (input_data.use_gpu)
 #if PINK_USE_CUDA
             main_gpu(input_data);
 #else
-		    pink::exception("PINK was not compiled with CUDA support");
+            pink::exception("PINK was not compiled with CUDA support");
 #endif
         else
             main_cpu(input_data);
 
-		// Stop and print timer
-		auto&& stopTime = myclock::now();
-		auto&& duration = stopTime - startTime;
-		std::cout << "\n  Total time (hh:mm:ss): "
-			 << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::hours>(duration).count() << ":"
-			 << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::minutes>(duration % std::chrono::hours(1)).count() << ":"
-			 << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::seconds>(duration % std::chrono::minutes(1)).count()
-			 << "     (= " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << "s)" << std::endl;
+        // Stop and print timer
+        auto&& stopTime = myclock::now();
+        auto&& duration = stopTime - startTime;
+        std::cout << "\n  Total time (hh:mm:ss): "
+             << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::hours>(duration).count() << ":"
+             << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::minutes>(duration % std::chrono::hours(1)).count() << ":"
+             << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::seconds>(duration % std::chrono::minutes(1)).count()
+             << "     (= " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << "s)" << std::endl;
 
 
     } catch ( pink::exception const& e ) {

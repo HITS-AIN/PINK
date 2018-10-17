@@ -90,12 +90,12 @@ TEST(ImageProcessingTest, EuclideanDistanceByDot)
 // Flip direction is left-right
 TEST(ImageProcessingTest, flip)
 {
-	std::vector<float> a{1, 2, 3, 4};
+    std::vector<float> a{1, 2, 3, 4};
 
-	std::vector<float> b(4);
+    std::vector<float> b(4);
     flip(2, 2, &a[0], &b[0]);
 
-	std::vector<float> c{3, 4, 1, 2};
+    std::vector<float> c{3, 4, 1, 2};
     EXPECT_EQ(c, b);
 }
 
@@ -104,10 +104,10 @@ TEST(ImageProcessingTest, double_flip)
 {
     std::vector<float> a{1, 2, 3, 4};
 
-	std::vector<float> b(4);
+    std::vector<float> b(4);
     flip(2, 2, &a[0], &b[0]);
 
-	std::vector<float> c(4);
+    std::vector<float> c(4);
     flip(2, 2, &b[0], &c[0]);
 
     EXPECT_EQ(a, c);

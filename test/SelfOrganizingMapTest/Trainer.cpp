@@ -18,7 +18,7 @@ using namespace pink;
 
 TEST(SelfOrganizingMapTest, trainer_num_rot)
 {
-	typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
+    typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
     EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,  -4, true, 0.1, false), std::runtime_error);
     EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,  -1, true, 0.1, false), std::runtime_error);
@@ -34,7 +34,7 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
 {
     typedef Data<CartesianLayout<2>, float> DataType;
     typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> SOMType;
-	typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
+    typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
     uint32_t som_size = 2;
     uint32_t image_size = 2;
