@@ -51,6 +51,9 @@ ENV JUPYTER_PATH /PINK/build/lib
 
 COPY notebooks /notebooks
 
+# Set up notebook config
+COPY jupyter_notebook_config.py /root/.jupyter/
+
 WORKDIR /notebooks
 EXPOSE 8888
 
