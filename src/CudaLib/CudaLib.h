@@ -76,7 +76,7 @@ void generate_rotated_images_gpu(thrust::device_vector<T> d_rotatedImages, thrus
 //! Host routine starting kernel for updating neurons.
 void update_neurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,
     int* d_bestMatch, int som_width, int som_height, int som_depth, int som_size, int neuron_size,
-    DistributionFunction function, Layout layout, float sigma, float damping, float maxUpdateDistance, bool usePBC, int dimensionality);
+    DistributionFunction function, Layout layout, float sigma, float damping, float max_update_distance, bool usePBC, int dimensionality);
 
 //! Prepare trigonometric values
 void trigonometricValues(float **d_cosAlpha, float **d_sinAlpha, int num_rot);

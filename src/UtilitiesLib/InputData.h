@@ -73,7 +73,7 @@ struct InputData
     float sigma;
     float damping;
     int block_size_1;
-    int maxUpdateDistance;
+    float max_update_distance;
     int useMultipleGPUs;
     int usePBC;
     int dimensionality;

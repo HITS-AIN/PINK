@@ -20,14 +20,14 @@ TEST(SelfOrganizingMapTest, trainer_num_rot)
 {
     typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,  -4), std::runtime_error);
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,  -1), std::runtime_error);
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,   0), std::runtime_error);
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,  90), std::runtime_error);
+    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,  -4), std::runtime_error);
+    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,  -1), std::runtime_error);
+    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,   0), std::runtime_error);
+    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,  90), std::runtime_error);
 
-    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,   1));
-    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,   4));
-    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0, 720));
+    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,   1));
+    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,   4));
+    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 720));
 }
 
 TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
@@ -46,8 +46,6 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
 
     MyTrainer trainer(
         GaussianFunctor(1.1, 0.2),  // std::function<float(float)> distribution_function
-		image_dim,                  // image_dim
-		neuron_dim,                 // neuron_dim
 	    1,                          // number_of_channels
         0,                          // int verbosity
         4                           // int number_of_rotations

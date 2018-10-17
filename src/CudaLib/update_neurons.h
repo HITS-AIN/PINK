@@ -17,7 +17,7 @@ template <unsigned int block_size, class FunctionFunctor, class DistanceFunctor>
 __global__ void
 update_neurons(float *som, float *rotatedImages, int *bestRotationMatrix, int *bestMatch,
     int neuron_size, FunctionFunctor functionFunctor, DistanceFunctor distanceFunctor,
-    float maxUpdateDistance)
+    float max_update_distance)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i >= neuron_size) return;
@@ -25,7 +25,7 @@ update_neurons(float *som, float *rotatedImages, int *bestRotationMatrix, int *b
     float distance = distanceFunctor(*bestMatch, blockIdx.y);
     int pos = blockIdx.y * neuron_size + i;
 
-    if (maxUpdateDistance <= 0.0 or distance < maxUpdateDistance)
+    if (max_update_distance <= 0.0 or distance < max_update_distance)
     {
         som[pos] -= (som[pos] - rotatedImages[bestRotationMatrix[blockIdx.y] * neuron_size + i]) * functionFunctor(distance);
     }

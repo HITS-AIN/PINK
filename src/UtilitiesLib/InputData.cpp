@@ -49,7 +49,7 @@ InputData::InputData()
    sigma(DEFAULT_SIGMA),
    damping(DEFAULT_DAMPING),
    block_size_1(256),
-   maxUpdateDistance(-1.0),
+   max_update_distance(-1.0),
    useMultipleGPUs(true),
    usePBC(false),
    dimensionality(1),
@@ -255,8 +255,8 @@ InputData::InputData(int argc, char **argv)
             }
             case 10:
             {
-                maxUpdateDistance = atof(optarg);
-                if (maxUpdateDistance <= 0.0) {
+                max_update_distance = atof(optarg);
+                if (max_update_distance <= 0.0) {
                     print_usage();
                     pink::exception("max-update-distance must be positive.");
                 }
@@ -442,7 +442,7 @@ void InputData::print_parameters() const
               << "  Distribution function for SOM update = " << function << "\n"
               << "  Sigma = " << sigma << "\n"
               << "  Damping factor = " << damping << "\n"
-              << "  Maximum distance for SOM update = " << maxUpdateDistance << "\n"
+              << "  Maximum distance for SOM update = " << max_update_distance << "\n"
               << "  Use periodic boundary conditions = " << usePBC << "\n"
               << "  Store best rotation and flipping parameters = " << write_rot_flip << "\n";
 

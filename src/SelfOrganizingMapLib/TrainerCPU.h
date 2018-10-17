@@ -23,13 +23,10 @@ class Trainer<SOMLayout, DataLayout, T, false>
 {
 public:
 
-    Trainer(std::function<float(float)> distribution_function, uint32_t image_dim, uint32_t neuron_dim,
-        uint32_t number_of_channels, int verbosity = 0, int number_of_rotations = 360, bool use_flip = true,
-        int max_update_distance = 0, Interpolation interpolation = Interpolation::BILINEAR)
+    Trainer(std::function<float(float)> distribution_function, int verbosity = 0,
+        int number_of_rotations = 360, bool use_flip = true,
+        float max_update_distance = 0.0, Interpolation interpolation = Interpolation::BILINEAR)
      : distribution_function(distribution_function),
-       image_dim(image_dim),
-       neuron_dim(neuron_dim),
-       number_of_channels(number_of_channels),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
@@ -94,13 +91,10 @@ public:
 private:
 
     std::function<float(float)> distribution_function;
-    uint32_t image_dim;
-    uint32_t neuron_dim;
-    uint32_t number_of_channels;
     int verbosity;
     int number_of_rotations;
     bool use_flip;
-    int max_update_distance;
+    float max_update_distance;
     Interpolation interpolation;
 
 };

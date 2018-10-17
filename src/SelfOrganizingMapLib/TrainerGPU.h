@@ -24,13 +24,10 @@ class Trainer<SOMLayout, DataLayout, T, true>
 {
 public:
 
-    Trainer(std::function<float(float)> distribution_function, uint32_t image_dim, uint32_t neuron_dim,
-        uint32_t number_of_channels, int verbosity = 0, int number_of_rotations = 360, bool use_flip = true,
-        int max_update_distance = 0, Interpolation interpolation = Interpolation::BILINEAR)
+    Trainer(std::function<float(float)> distribution_function, int verbosity = 0,
+        int number_of_rotations = 360, bool use_flip = true,
+        float max_update_distance = 0.0, Interpolation interpolation = Interpolation::BILINEAR)
      : distribution_function(distribution_function),
-       image_dim(image_dim),
-       neuron_dim(neuron_dim),
-       number_of_channels(number_of_channels),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
@@ -58,6 +55,10 @@ public:
     void operator () (SOM<SOMLayout, DataLayout, T>& som, Data<DataLayout, T> const& data) const
     {
         thrust::device_vector<T> d_image(data.get_data());
+
+        auto image_dim = data.get_dimension()[0];
+        auto neuron_dim = som.get_neuron_dimension()[0];
+        auto number_of_channels = som.get_neuron_dimension()[2];
 
         generate_rotated_images_gpu(d_list_of_spatial_transformed_images, d_image, number_of_rotations,
             image_dim, neuron_dim, use_flip, interpolation, d_cosAlpha, d_sinAlpha, number_of_channels);
@@ -112,13 +113,10 @@ public:
 private:
 
     std::function<float(float)> distribution_function;
-    uint32_t image_dim;
-    uint32_t neuron_dim;
-    uint32_t number_of_channels;
     int verbosity;
     int number_of_rotations;
     bool use_flip;
-    int max_update_distance;
+    float max_update_distance;
     Interpolation interpolation;
 
     thrust::device_vector<T> d_list_of_spatial_transformed_images;
