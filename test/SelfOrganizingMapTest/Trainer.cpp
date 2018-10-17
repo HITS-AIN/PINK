@@ -46,7 +46,6 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
 
     MyTrainer trainer(
         GaussianFunctor(1.1, 0.2),  // std::function<float(float)> distribution_function
-	    1,                          // number_of_channels
         0,                          // int verbosity
         4                           // int number_of_rotations
     );
