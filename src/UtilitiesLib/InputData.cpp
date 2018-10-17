@@ -34,8 +34,8 @@ InputData::InputData()
    progressFactor(0.1),
    useFlip(true),
    use_gpu(true),
-   numberOfImages(0),
-   numberOfChannels(0),
+   number_of_images(0),
+   number_of_channels(0),
    image_dim(0),
    image_size(0),
    som_size(0),
@@ -341,8 +341,8 @@ InputData::InputData(int argc, char **argv)
         pink::exception("Only quadratic images are supported.");
     }
 
-    numberOfImages = iterImage.getNumberOfImages();
-    numberOfChannels = iterImage.getNumberOfChannels();
+    number_of_images = iterImage.getNumberOfImages();
+    number_of_channels = iterImage.getNumberOfChannels();
 
     // TODO: remove static_cast after new data read iterator
     image_dim = static_cast<uint32_t>(iterImage->getWidth());
@@ -421,8 +421,8 @@ void InputData::print_parameters() const
     if (executionPath == ExecutionPath::MAP)
         std::cout << "  SOM file = " << somFilename << "\n";
 
-    std::cout << "  Number of images = " << numberOfImages << "\n"
-              << "  Number of channels = " << numberOfChannels << "\n"
+    std::cout << "  Number of images = " << number_of_images << "\n"
+              << "  Number of channels = " << number_of_channels << "\n"
               << "  Image dimension = " << image_dim << "x" << image_dim << "\n"
               << "  SOM dimension (width x height x depth) = " << som_width << "x" << som_height << "x" << som_depth << "\n"
               << "  SOM size = " << som_size << "\n"

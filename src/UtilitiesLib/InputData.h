@@ -58,8 +58,8 @@ struct InputData
     float progressFactor;
     bool useFlip;
     bool use_gpu;
-    int numberOfImages;
-    int numberOfChannels;
+    uint32_t number_of_images;
+    uint32_t number_of_channels;
     uint32_t image_dim;
     int image_size;
     int som_size;

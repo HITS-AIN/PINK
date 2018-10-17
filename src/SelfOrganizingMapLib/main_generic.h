@@ -34,12 +34,12 @@ void main_generic(InputData const & input_data)
             distribution_function,
             input_data.image_dim,
             input_data.neuron_dim,
-            input_data.numberOfChannels,
+            input_data.number_of_channels,
             input_data.verbose,
             input_data.numberOfRotations,
             input_data.useFlip,
-            input_data.progressFactor,
-            input_data.maxUpdateDistance
+            input_data.maxUpdateDistance,
+			input_data.interpolation
         );
 
         for (auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename), iter_image_end = ImageIterator<T>();
