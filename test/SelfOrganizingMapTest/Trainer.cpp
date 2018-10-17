@@ -20,14 +20,14 @@ TEST(SelfOrganizingMapTest, trainer_num_rot)
 {
     typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,  -4, true, 0.1, false), std::runtime_error);
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,  -1, true, 0.1, false), std::runtime_error);
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,   0, true, 0.1, false), std::runtime_error);
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,  90, true, 0.1, false), std::runtime_error);
+    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,  -4), std::runtime_error);
+    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,  -1), std::runtime_error);
+    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,   0), std::runtime_error);
+    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,  90), std::runtime_error);
 
-    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,   1, true, 0.1, false));
-    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,   4, true, 0.1, false));
-    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 720, true, 0.1, false));
+    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,   1));
+    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0,   4));
+    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 0, 0, 0, 720));
 }
 
 TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
@@ -36,21 +36,21 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
     typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> SOMType;
     typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
-    uint32_t som_size = 2;
-    uint32_t image_size = 2;
-    uint32_t neuron_size = 2;
+    uint32_t som_dim = 2;
+    uint32_t image_dim = 2;
+    uint32_t neuron_dim = 2;
 
     std::vector<float> data{1, 1, 1, 1};
-    DataType image({image_size, image_size}, &data[0]);
-    SOMType som({som_size, som_size}, {neuron_size, neuron_size}, 0.0);
+    DataType image({image_dim, image_dim}, &data[0]);
+    SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, 0.0);
 
     MyTrainer trainer(
         GaussianFunctor(1.1, 0.2),  // std::function<float(float)> distribution_function
+		image_dim,                  // image_dim
+		neuron_dim,                 // neuron_dim
+	    1,                          // number_of_channels
         0,                          // int verbosity
-        4,                          // int number_of_rotations
-        true,                       // bool use_flip
-        0.1,                        // float progress_factor
-        0                           // int max_update_distance
+        4                           // int number_of_rotations
     );
 
     trainer(som, image);
