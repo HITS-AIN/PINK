@@ -33,7 +33,7 @@ RUN pip3 install --upgrade pip && \
     matplotlib \
     numpy \
     tensorflow \
-    tqdm
+    tqdm==4.20.0
 
 RUN conan remote add braintwister https://api.bintray.com/conan/braintwister/conan && \
     conan remote add conan-community https://api.bintray.com/conan/conan-community/conan && \
@@ -43,7 +43,8 @@ RUN git clone https://github.com/HITS-AIN/PINK.git && \
     cd PINK && git checkout redesign && \
     mkdir build && cd build && \
     cmake .. && \
-    make
+    make && \
+    make test
 
 ENV PYTHONPATH /PINK/build/lib
 ENV JUPYTER_PATH /PINK/build/lib

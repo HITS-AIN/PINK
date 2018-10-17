@@ -14,3 +14,10 @@ target_link_libraries(
     ImageProcessingLib
     SelfOrganizingMapLib
 )
+
+if(PINK_USE_CUDA)
+    target_link_libraries(
+        pink PRIVATE
+        CudaLib
+    )
+endif()
