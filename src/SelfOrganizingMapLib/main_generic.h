@@ -5,6 +5,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include <iostream>
+
 #include "SelfOrganizingMapLib/Data.h"
 #include "SelfOrganizingMapLib/FileIO.h"
 #include "SelfOrganizingMapLib/SOM.h"
@@ -31,12 +33,13 @@ void main_generic(InputData const & input_data)
     if (input_data.executionPath == ExecutionPath::TRAIN)
     {
         Trainer<SOMLayout, DataLayout, T, UseGPU> trainer(
+            som,
             distribution_function,
             input_data.verbose,
             input_data.numberOfRotations,
             input_data.useFlip,
             input_data.max_update_distance,
-			input_data.interpolation
+            input_data.interpolation
         );
 
         for (auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename), iter_image_end = ImageIterator<T>();
@@ -44,7 +47,7 @@ void main_generic(InputData const & input_data)
         {
             Data<DataLayout, T> data({input_data.image_dim, input_data.image_dim},
                 iter_image_cur->getPointerOfFirstPixel());
-            trainer(som, data);
+            trainer(data);
         }
 
         std::cout << "  Write final SOM to " << input_data.resultFilename << " ... " << std::flush;

@@ -13,7 +13,9 @@
 #include "CudaLib/CudaLib.h"
 #include "ImageProcessingLib/CropAndRotate.h"
 #include "ImageProcessingLib/ImageProcessing.h"
+#include "Data.h"
 #include "SelfOrganizingMap.h"
+#include "SOM.h"
 #include "Trainer.h"
 #include "UtilitiesLib/pink_exception.h"
 
@@ -22,12 +24,16 @@ namespace pink {
 template <typename SOMLayout, typename DataLayout, typename T>
 class Trainer<SOMLayout, DataLayout, T, true>
 {
+    typedef SOM<SOMLayout, DataLayout, T> SOMType;
+    typedef Data<SOMLayout, uint32_t> UpdateCounterType;
+
 public:
 
-    Trainer(std::function<float(float)> distribution_function, int verbosity = 0,
+    Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity = 0,
         int number_of_rotations = 360, bool use_flip = true,
         float max_update_distance = 0.0, Interpolation interpolation = Interpolation::BILINEAR)
-     : distribution_function(distribution_function),
+     : som(som),
+       distribution_function(distribution_function),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
@@ -52,7 +58,7 @@ public:
         d_sinAlpha = sin_alpha;
     }
 
-    void operator () (SOM<SOMLayout, DataLayout, T>& som, Data<DataLayout, T> const& data) const
+    void operator () (Data<DataLayout, T> const& data) const
     {
         thrust::device_vector<T> d_image(data.get_data());
 
@@ -111,6 +117,12 @@ public:
     }
 
 private:
+
+    /// A reference to the SOM will be trained
+    SOMType& som;
+
+    /// Counting updates of each neuron
+    UpdateCounterType update_counter;
 
     std::function<float(float)> distribution_function;
     int verbosity;

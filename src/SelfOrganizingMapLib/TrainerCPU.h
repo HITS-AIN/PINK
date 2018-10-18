@@ -21,12 +21,16 @@ namespace pink {
 template <typename SOMLayout, typename DataLayout, typename T>
 class Trainer<SOMLayout, DataLayout, T, false>
 {
+    typedef SOM<SOMLayout, DataLayout, T> SOMType;
+    typedef Data<SOMLayout, uint32_t> UpdateCounterType;
+
 public:
 
-    Trainer(std::function<float(float)> distribution_function, int verbosity = 0,
+    Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity = 0,
         int number_of_rotations = 360, bool use_flip = true,
         float max_update_distance = 0.0, Interpolation interpolation = Interpolation::BILINEAR)
-     : distribution_function(distribution_function),
+     : som(som),
+	   distribution_function(distribution_function),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
@@ -39,7 +43,7 @@ public:
         }
     }
 
-    void operator () (SOM<SOMLayout, DataLayout, T>& som, Data<DataLayout, T> const& data) const
+    void operator () (Data<DataLayout, T> const& data) const
     {
         int som_size = som.get_som_dimension()[0] * som.get_som_dimension()[1];
         int neuron_size = som.get_neuron_dimension()[0] * som.get_neuron_dimension()[1];
@@ -89,6 +93,12 @@ public:
     }
 
 private:
+
+    /// A reference to the SOM will be trained
+    SOMType& som;
+
+    /// Counting updates of each neuron
+    UpdateCounterType update_counter;
 
     std::function<float(float)> distribution_function;
     int verbosity;

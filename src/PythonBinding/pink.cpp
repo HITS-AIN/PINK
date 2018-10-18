@@ -88,16 +88,16 @@ PYBIND11_MODULE(pink, m)
          });
 
     py::class_<Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "trainer")
-        .def(py::init<std::function<float(float)>, int, int, bool, float>(),
+        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, int, bool, float>(),
+            py::arg("som"),
             py::arg("distribution_function"),
             py::arg("verbosity") = 0,
             py::arg("number_of_rotations") = 360,
             py::arg("use_flip") = true,
             py::arg("max_update_distance") = 0.0
         )
-        .def("__call__", [](Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> const& trainer,
-            SOM<CartesianLayout<2>, CartesianLayout<2>, float>& som, Data<CartesianLayout<2>, float> const& image)
+        .def("__call__", [](Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> const& trainer, Data<CartesianLayout<2>, float> const& image)
         {
-            return trainer(som, image);
+            return trainer(image);
         });
 }

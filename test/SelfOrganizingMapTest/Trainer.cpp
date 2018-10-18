@@ -18,16 +18,23 @@ using namespace pink;
 
 TEST(SelfOrganizingMapTest, trainer_num_rot)
 {
+    typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> MySOM;
     typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,  -4), std::runtime_error);
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,  -1), std::runtime_error);
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,   0), std::runtime_error);
-    EXPECT_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,  90), std::runtime_error);
+    uint32_t som_dim = 2;
+    uint32_t neuron_dim = 2;
+    MySOM som({som_dim, som_dim}, {neuron_dim, neuron_dim}, 0.0);
 
-    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,   1));
-    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0,   4));
-    EXPECT_NO_THROW(MyTrainer(GaussianFunctor(1.1, 0.2), 0, 720));
+    auto&& f = GaussianFunctor(1.1, 0.2);
+
+    EXPECT_THROW(MyTrainer(som, f, 0,  -4), std::runtime_error);
+    EXPECT_THROW(MyTrainer(som, f, 0,  -1), std::runtime_error);
+    EXPECT_THROW(MyTrainer(som, f, 0,   0), std::runtime_error);
+    EXPECT_THROW(MyTrainer(som, f, 0,  90), std::runtime_error);
+
+    EXPECT_NO_THROW(MyTrainer(som, f, 0,   1));
+    EXPECT_NO_THROW(MyTrainer(som, f, 0,   4));
+    EXPECT_NO_THROW(MyTrainer(som, f, 0, 720));
 }
 
 TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
@@ -44,13 +51,10 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
     DataType image({image_dim, image_dim}, &data[0]);
     SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, 0.0);
 
-    MyTrainer trainer(
-        GaussianFunctor(1.1, 0.2),  // std::function<float(float)> distribution_function
-        0,                          // int verbosity
-        4                           // int number_of_rotations
-    );
+    auto&& f = GaussianFunctor(1.1, 0.2);
 
-    trainer(som, image);
+    MyTrainer trainer(som, f, 0, 4);
+    trainer(image);
 
     float v1 = GaussianFunctor(1.1, 0.2)(0.0);
     float v2 = GaussianFunctor(1.1, 0.2)(1.0);
