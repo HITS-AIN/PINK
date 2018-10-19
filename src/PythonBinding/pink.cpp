@@ -33,7 +33,7 @@ PYBIND11_MODULE(pink, m)
             auto&& p = static_cast<float*>(info.ptr);
             auto&& dim0 = static_cast<uint32_t>(info.shape[0]);
             auto&& dim1 = static_cast<uint32_t>(info.shape[1]);
-            new (&m) Data<CartesianLayout<2>, float>({dim0, dim1}, p);
+            new (&m) Data<CartesianLayout<2>, float>({dim0, dim1}, std::vector<float>(p, p + dim0 * dim1));
         })
         .def_buffer([](Data<CartesianLayout<2>, float> &m) -> py::buffer_info {
 

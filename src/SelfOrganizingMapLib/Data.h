@@ -40,10 +40,16 @@ public:
        data(data_dimension.get_size(), value)
     {}
 
-    /// Construction and copy data into Data
-    Data(DataLayoutType const& data_dimension, T* data)
+    /// Construction and copy data
+    Data(DataLayoutType const& data_dimension, std::vector<T> const& data)
      : data_dimension(data_dimension),
-       data(data, data + data_dimension.get_size())
+       data(data)
+    {}
+
+    /// Construction and move data
+    Data(DataLayoutType const& data_dimension, std::vector<T>&& data)
+     : data_dimension(data_dimension),
+       data(data)
     {}
 
     auto operator == (SelfType const& other) const

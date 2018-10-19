@@ -45,8 +45,9 @@ void main_generic(InputData const & input_data)
         for (auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename), iter_image_end = ImageIterator<T>();
             iter_image_cur != iter_image_end; ++iter_image_cur)
         {
-            Data<DataLayout, T> data({input_data.image_dim, input_data.image_dim},
-                iter_image_cur->getPointerOfFirstPixel());
+        	auto&& beg = iter_image_cur->getPointerOfFirstPixel();
+        	auto&& end = beg + iter_image_cur->getSize();
+            Data<DataLayout, T> data({input_data.image_dim, input_data.image_dim}, std::vector<T>(beg, end));
             trainer(data);
         }
 

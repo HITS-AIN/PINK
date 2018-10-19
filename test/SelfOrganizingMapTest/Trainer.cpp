@@ -47,8 +47,7 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
     uint32_t image_dim = 2;
     uint32_t neuron_dim = 2;
 
-    std::vector<float> data{1, 1, 1, 1};
-    DataType image({image_dim, image_dim}, &data[0]);
+    DataType image({image_dim, image_dim}, {1, 1, 1, 1});
     SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, 0.0);
 
     auto&& f = GaussianFunctor(1.1, 0.2);

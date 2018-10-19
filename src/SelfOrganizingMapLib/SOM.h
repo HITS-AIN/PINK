@@ -72,7 +72,9 @@ public:
     auto get_data_pointer() const { return &data[0]; }
 
     auto get_neuron(SOMLayoutType const& position) {
-        return NeuronType(neuron_dimension, &data[(position.dimension[0] * som_dimension.dimension[1] + position.dimension[1]) * neuron_dimension.get_size()]);
+    	auto&& beg = data.begin() + (position.dimension[0] * som_dimension.dimension[1] + position.dimension[1]) * neuron_dimension.get_size();
+    	auto&& end = beg + neuron_dimension.get_size();
+        return NeuronType(neuron_dimension, std::vector<T>(beg, end));
     }
 
     auto get_som_layout() -> SOMLayoutType { return som_dimension; }

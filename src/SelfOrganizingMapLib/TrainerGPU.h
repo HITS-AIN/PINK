@@ -37,9 +37,11 @@ public:
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
+       number_of_rotations_and_flip(number_of_rotations * (use_flip ? 2 : 1)),
        max_update_distance(max_update_distance),
        interpolation(interpolation),
-       d_list_of_spatial_transformed_images(number_of_rotations)
+       d_list_of_spatial_transformed_images(number_of_rotations_and_flip),
+	   update_counter(som.get_som_layout(), 0)
     {
         if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
@@ -126,8 +128,9 @@ private:
 
     std::function<float(float)> distribution_function;
     int verbosity;
-    int number_of_rotations;
+    uint32_t number_of_rotations;
     bool use_flip;
+    uint32_t number_of_rotations_and_flip;
     float max_update_distance;
     Interpolation interpolation;
 
