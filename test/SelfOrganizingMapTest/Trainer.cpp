@@ -10,15 +10,15 @@
 
 #include "SelfOrganizingMapLib/CartesianLayout.h"
 #include <SelfOrganizingMapLib/Data.h>
-#include <SelfOrganizingMapLib/SOM.h>
-#include <SelfOrganizingMapLib/TrainerCPU.h>
+#include <SelfOrganizingMapLib/SOM_cpu.h>
+#include <SelfOrganizingMapLib/Trainer_cpu.h>
 #include "UtilitiesLib/DistributionFunction.h"
 
 using namespace pink;
 
 TEST(SelfOrganizingMapTest, trainer_num_rot)
 {
-    typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> MySOM;
+    typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float, false> MySOM;
     typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
     uint32_t som_dim = 2;
@@ -40,7 +40,7 @@ TEST(SelfOrganizingMapTest, trainer_num_rot)
 TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
 {
     typedef Data<CartesianLayout<2>, float> DataType;
-    typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> SOMType;
+    typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float, false> SOMType;
     typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
     uint32_t som_dim = 2;

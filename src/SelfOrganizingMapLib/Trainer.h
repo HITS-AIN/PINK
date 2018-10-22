@@ -9,7 +9,7 @@
 namespace pink {
 
 /// Primary template of Trainer should never be instantiated
-template <typename SOMLayout, typename DataLayout, typename T, bool use_gpu>
+template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
 class Trainer;
 
 } // namespace pink

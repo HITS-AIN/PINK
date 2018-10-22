@@ -35,7 +35,7 @@ public:
     {}
 
     /// Construction and initialize all element to value
-    Data(DataLayoutType const& Data_dimension, T value)
+    Data(DataLayoutType const& data_dimension, T value)
      : data_dimension(data_dimension),
        data(data_dimension.get_size(), value)
     {}

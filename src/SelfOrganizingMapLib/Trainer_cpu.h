@@ -1,5 +1,5 @@
 /**
- * @file   SelfOrganizingMapLib/TrainerCPU.h
+ * @file   SelfOrganizingMapLib/Trainer_cpu.h
  * @date   Sep 10, 2018
  * @author Bernd Doser, HITS gGmbH
  */
@@ -13,6 +13,7 @@
 #include "ImageProcessingLib/CropAndRotate.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMap.h"
+#include "SOM_cpu.h"
 #include "Trainer.h"
 #include "UtilitiesLib/pink_exception.h"
 
@@ -21,7 +22,7 @@ namespace pink {
 template <typename SOMLayout, typename DataLayout, typename T>
 class Trainer<SOMLayout, DataLayout, T, false>
 {
-    typedef SOM<SOMLayout, DataLayout, T> SOMType;
+    typedef SOM<SOMLayout, DataLayout, T, false> SOMType;
     typedef Data<SOMLayout, uint32_t> UpdateCounterType;
 
 public:
@@ -30,7 +31,7 @@ public:
         int number_of_rotations = 360, bool use_flip = true,
         float max_update_distance = 0.0, Interpolation interpolation = Interpolation::BILINEAR)
      : som(som),
-	   distribution_function(distribution_function),
+       distribution_function(distribution_function),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),

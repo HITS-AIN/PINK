@@ -9,16 +9,17 @@
 
 #include "SelfOrganizingMapLib/Data.h"
 #include "SelfOrganizingMapLib/FileIO.h"
-#include "SelfOrganizingMapLib/SOM.h"
 #include "ImageProcessingLib/ImageIterator.h"
 #include "UtilitiesLib/DistributionFunction.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/pink_exception.h"
 
 #ifdef __CUDACC__
-    #include "SelfOrganizingMapLib/TrainerGPU.h"
+    #include "SOM_gpu.h"
+    #include "Trainer_gpu.h"
 #else
-    #include "SelfOrganizingMapLib/TrainerCPU.h"
+    #include "SOM_cpu.h"
+    #include "Trainer_cpu.h"
 #endif
 
 namespace pink {
@@ -26,7 +27,7 @@ namespace pink {
 template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
 void main_generic(InputData const & input_data)
 {
-    SOM<SOMLayout, DataLayout, T> som(input_data);
+    SOM<SOMLayout, DataLayout, T, UseGPU> som(input_data);
 
     auto&& distribution_function = GaussianFunctor(input_data.sigma, input_data.damping);
 
@@ -45,8 +46,8 @@ void main_generic(InputData const & input_data)
         for (auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename), iter_image_end = ImageIterator<T>();
             iter_image_cur != iter_image_end; ++iter_image_cur)
         {
-        	auto&& beg = iter_image_cur->getPointerOfFirstPixel();
-        	auto&& end = beg + iter_image_cur->getSize();
+            auto&& beg = iter_image_cur->getPointerOfFirstPixel();
+            auto&& end = beg + iter_image_cur->getSize();
             Data<DataLayout, T> data({input_data.image_dim, input_data.image_dim}, std::vector<T>(beg, end));
             trainer(data);
         }
