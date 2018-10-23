@@ -5,15 +5,16 @@
  */
 
 #include <cuda_runtime.h>
+#include <thrust/device_ptr.h>
 
 namespace pink {
 
 /**
  * CUDA Kernel Device code for flipping an image.
  */
-template <unsigned int block_size>
+template <typename T>
 __global__ void
-flip(float *dest, float *source, int dim, int size)
+flip(thrust::device_ptr<T> dest, thrust::device_ptr<T> source, int dim, int size)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;

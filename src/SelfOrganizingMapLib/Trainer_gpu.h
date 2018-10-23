@@ -81,7 +81,7 @@ public:
 
 //        generate_euclidean_distance_matrix_gpu(d_euclidean_distance_matrix, d_best_rotation_matrix,
 //            som_size, som.get_device_vector(), neuron_size, number_of_rotations_and_flip,
-//			d_list_of_spatial_transformed_images, block_size, use_multiple_gpus);
+//            d_list_of_spatial_transformed_images, block_size, use_multiple_gpus);
 //
 //        update_neurons_gpu(som.get_device_vector(), d_list_of_spatial_transformed_images,
 //            d_best_rotation_matrix, d_euclidean_distance_matrix, d_best_match,

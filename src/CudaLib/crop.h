@@ -5,15 +5,16 @@
  */
 
 #include <cuda_runtime.h>
+#include <thrust/device_ptr.h>
 
 namespace pink {
 
 /**
  * CUDA Kernel Device code for cropping an image.
  */
-template <unsigned int block_size>
+template <typename T>
 __global__ void
-crop(float *dest, float *source, int new_dim, int old_dim)
+crop(thrust::device_ptr<T> dest, thrust::device_ptr<T> source, int new_dim, int old_dim)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
