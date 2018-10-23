@@ -1,5 +1,5 @@
 /**
- * @file   CudaLib/generate_rotated_images_gpu.cu
+ * @file   CudaLib/generate_rotated_images.h
  * @date   Oct 30, 2014
  * @author Bernd Doser, HITS gGmbH
  */
@@ -8,7 +8,6 @@
 #include <thrust/device_vector.h>
 
 #include "crop.h"
-#include "CudaLib.h"
 #include "flip.h"
 #include "rotate_and_crop_nearest_neighbor.h"
 #include "rotate_and_crop_bilinear.h"
@@ -16,28 +15,27 @@
 
 namespace pink {
 
-#define BLOCK_SIZE 32
-
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
 template <typename T>
-void generate_rotated_images_gpu(thrust::device_vector<T> d_rotated_images, thrust::device_vector<T> d_image,
-    int num_rot, int image_dim, int neuron_dim, bool useFlip, Interpolation interpolation,
-    thrust::device_vector<T> d_cosAlpha, thrust::device_vector<T> d_sinAlpha, int numberOfChannels)
+void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust::device_vector<T> const& d_image,
+    uint32_t num_rot, uint32_t image_dim, uint32_t neuron_dim, bool useFlip, Interpolation interpolation,
+    thrust::device_vector<T> const& d_cosAlpha, thrust::device_vector<T> const& d_sinAlpha, uint32_t numberOfChannels)
 {
-    int neuron_size = neuron_dim * neuron_dim;
-    int image_size = image_dim * image_dim;
+	const uint8_t block_size = 32;
+	uint32_t neuron_size = neuron_dim * neuron_dim;
+	uint32_t image_size = image_dim * image_dim;
 
     // Crop first image
     {
         // Setup execution parameters
-        int gridSize = ceil((float)neuron_dim/BLOCK_SIZE);
-        dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
+        int gridSize = ceil((float)neuron_dim/block_size);
+        dim3 dimBlock(block_size, block_size);
         dim3 dimGrid(gridSize, gridSize);
 
         // Start kernel
-        for (int c = 0; c < numberOfChannels; ++c)
+        for (uint32_t c = 0; c < numberOfChannels; ++c)
         {
             crop<<<dimGrid, dimBlock>>>(&d_rotated_images[c * neuron_size],
                 &d_image[c * image_size], neuron_dim, image_dim);
@@ -57,15 +55,15 @@ void generate_rotated_images_gpu(thrust::device_vector<T> d_rotated_images, thru
     // Rotate images between 0 and 90 degrees
     {
         // Setup execution parameters
-        int gridSize = ceil((float)neuron_dim/BLOCK_SIZE);
+        int gridSize = ceil((float)neuron_dim/block_size);
         int num_real_rot = num_rot/4-1;
 
         if (num_real_rot) {
-            dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
+            dim3 dimBlock(block_size, block_size);
             dim3 dimGrid(gridSize, gridSize, num_real_rot);
 
             // Start kernel
-            for (int c = 0; c < numberOfChannels; ++c)
+            for (uint32_t c = 0; c < numberOfChannels; ++c)
             {
                 if (interpolation == Interpolation::NEAREST_NEIGHBOR)
                     rotate_and_crop_nearest_neighbor<<<dimGrid, dimBlock>>>(&d_rotated_images[(c + numberOfChannels) * neuron_size],
@@ -92,15 +90,15 @@ void generate_rotated_images_gpu(thrust::device_vector<T> d_rotated_images, thru
     // Special 90 degree rotation for remaining rotations between 90 and 360 degrees
     {
         // Setup execution parameters
-        int gridSize = ceil((float)neuron_dim/BLOCK_SIZE);
-        dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
+        int gridSize = ceil((float)neuron_dim/block_size);
+        dim3 dimBlock(block_size, block_size);
         dim3 dimGrid(gridSize, gridSize, num_rot/4);
 
         int offset = num_rot/4 * numberOfChannels * neuron_size;
         int mc_neuron_size = numberOfChannels * neuron_size;
 
         // Start kernel
-        for (int c = 0; c < numberOfChannels; ++c)
+        for (uint32_t c = 0; c < numberOfChannels; ++c)
         {
             rotate_90degrees_list<<<dimGrid, dimBlock>>>(&d_rotated_images[c * neuron_size],
                 neuron_dim, mc_neuron_size, offset);
@@ -122,12 +120,12 @@ void generate_rotated_images_gpu(thrust::device_vector<T> d_rotated_images, thru
     if (useFlip)
     {
         // Setup execution parameters
-        int gridSize = ceil((float)neuron_dim/BLOCK_SIZE);
-        dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
+        int gridSize = ceil((float)neuron_dim/block_size);
+        dim3 dimBlock(block_size, block_size);
         dim3 dimGrid(gridSize, gridSize, num_rot * numberOfChannels);
 
         // Start kernel
-        for (int c = 0; c < numberOfChannels; ++c)
+        for (uint32_t c = 0; c < numberOfChannels; ++c)
         {
             flip<<<dimGrid, dimBlock>>>(&d_rotated_images[num_rot * numberOfChannels * neuron_size],
                 &d_rotated_images[0], neuron_dim, neuron_size);
@@ -142,10 +140,5 @@ void generate_rotated_images_gpu(thrust::device_vector<T> d_rotated_images, thru
         }
     }
 }
-
-template
-void generate_rotated_images_gpu<float>(thrust::device_vector<float> d_rotated_images, thrust::device_vector<float> d_image,
-    int num_rot, int image_dim, int neuron_dim, bool useFlip, Interpolation interpolation,
-    thrust::device_vector<float> d_cosAlpha, thrust::device_vector<float> d_sinAlpha, int numberOfChannels);
 
 } // namespace pink

@@ -12,9 +12,9 @@
  */
 template <typename T>
 __global__ void
-rotate_and_crop_nearest_neighbor(thrust::device_ptr<T> rotatedImages, thrust::device_ptr<T> image, int neuron_size,
-    int neuron_dim, int image_dim, thrust::device_ptr<T> const& cosAlpha, thrust::device_ptr<T> const& sinAlpha,
-    int numberOfChannels)
+rotate_and_crop_nearest_neighbor(thrust::device_ptr<T> rotatedImages, thrust::device_ptr<const T> image,
+	int neuron_size, int neuron_dim, int image_dim, thrust::device_ptr<const T> cosAlpha,
+	thrust::device_ptr<const T> sinAlpha, int numberOfChannels)
 {
     int x2 = blockIdx.x * blockDim.x + threadIdx.x;
     int y2 = blockIdx.y * blockDim.y + threadIdx.y;

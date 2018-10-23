@@ -14,7 +14,7 @@ namespace pink {
  */
 template <typename T>
 __global__ void
-crop(thrust::device_ptr<T> dest, thrust::device_ptr<T> source, int new_dim, int old_dim)
+crop(thrust::device_ptr<T> dest, thrust::device_ptr<const T> source, int new_dim, int old_dim)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;

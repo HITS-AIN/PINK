@@ -1,12 +1,11 @@
 /**
- * @file   CudaLib/cuda_generateEuclideanDistanceMatrix_firstStep.cu
+ * @file   CudaLib/generate_euclidean_distance_matrix_first_step_multi_gpu.h
  * @date   Oct 30, 2014
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "CudaLib.h"
-#include "cuda_generateEuclideanDistanceMatrix_firstStep.cu.h"
-#include <cuda_runtime.h>
+#include <stdio.h>
+#include <thrust/device_vector.h>
 
 namespace pink {
 
@@ -28,7 +27,8 @@ struct TGPUplan
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
-void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float *d_rotatedImages,
+template <typename T>
+void generate_euclidean_distance_matrix_first_step_multi_gpu(float *d_som, float *d_rotatedImages,
     float* d_firstStep, int som_size, int num_rot, int neuron_size, int block_size)
 {
     int GPU_N = cuda_getNumberOfGPUs();

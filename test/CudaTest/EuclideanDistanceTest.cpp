@@ -17,24 +17,6 @@
 
 using namespace pink;
 
-//! Compare squared euclidean distance between CPU and GPU version.
-TEST(EuclideanDistanceTest, Array)
-{
-    int length = 72;
-    float *a = new float[length];
-    fillWithRandomNumbers(a, length, 0);
-    float *b = new float[length];
-    fillWithRandomNumbers(b, length, 1);
-
-    float cpu_result = calculateEuclideanDistanceWithoutSquareRoot(a, b, length);
-    float gpu_result = cuda_calculateEuclideanDistanceWithoutSquareRoot(a, b, length);
-
-    EXPECT_FLOAT_EQ(cpu_result, gpu_result);
-
-    delete [] b;
-    delete [] a;
-}
-
 struct FullEuclideanDistanceTestData
 {
     FullEuclideanDistanceTestData(int som_dim, int neuron_dim, int num_rot, int num_channels)

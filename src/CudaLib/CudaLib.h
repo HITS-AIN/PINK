@@ -22,61 +22,11 @@ void cuda_print_properties();
 //! CUDA test routine for image rotation.
 void cuda_rotate(int height, int width, float *source, float *dest, float angle);
 
-//! CUDA test routine for euclidean distance calculation.
-float cuda_calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length);
-
-//! CUDA test routine for euclidean distance calculation second part.
-void cuda_generateEuclideanDistanceMatrix_secondStep(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix, float* d_tmp,
-    int image_size, int numberOfRotations);
-
 //! Main CUDA host routine for SOM training.
 void cuda_trainSelfOrganizingMap(InputData const& inputData);
 
 //! Main CUDA host routine for SOM mapping.
 void cuda_mapping(InputData const& inputData);
-
-//! Host routine starting kernel for euclideanDistanceMatrix.
-void cuda_generateEuclideanDistanceMatrix(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix,
-    int som_size, float* d_som, int image_size, int num_rot, float* d_rotatedImages, int block_size_1,
-    bool useMultipleGPUs);
-
-//! Host routine starting kernel for euclideanDistanceMatrix second part.
-void cuda_generateEuclideanDistanceMatrix_firstStep(float *d_som, float *d_rotatedImages,
-    float* d_firstStep, int som_size, int num_rot, int image_size, int block_size);
-
-//! Host routine starting kernel for euclideanDistanceMatrix second part.
-void cuda_generateEuclideanDistanceMatrix_firstStep_multiGPU(float *d_som, float *d_rotatedImages,
-    float* d_firstStep, int som_size, int num_rot, int image_size, int block_size);
-
-//! Host routine starting kernel for euclideanDistanceMatrix second part.
-template <unsigned int block_size>
-void cuda_generateEuclideanDistanceMatrix_firstStep_opt(float *d_som, float *d_rotatedImages,
-    float* d_firstStep, int som_size, int num_rot, int image_size);
-
-//! Host routine starting kernel for euclideanDistanceMatrix second part.
-template <unsigned int block_size>
-void cuda_generateEuclideanDistanceMatrix_firstStep_opt2(float *d_som, float *d_rotatedImages,
-    float* d_firstStep, int som_size, int num_rot, int image_size);
-
-//! Host routine starting kernel for euclideanDistanceMatrix second part.
-template <unsigned int block_size>
-void cuda_generateEuclideanDistanceMatrix_firstStep_opt3(float *d_som, float *d_rotatedImages,
-    int som_size, int num_rot, int image_size);
-
-//! Host routine starting kernel for euclideanDistanceMatrix second part.
-void cuda_generateEuclideanDistanceMatrix_secondStep(float *d_euclideanDistanceMatrix, int *d_bestRotationMatrix,
-    float* d_firstStep, int som_size, int num_rot);
-
-//! Host routine starting kernel for rotated images.
-template <typename T>
-void generate_rotated_images_gpu(thrust::device_vector<T> d_rotatedImages, thrust::device_vector<T> d_image,
-    int num_rot, int image_dim, int neuron_dim, bool useFlip, Interpolation interpolation,
-    thrust::device_vector<T> d_cosAlpha, thrust::device_vector<T> d_sinAlpha, int numberOfChannels);
-
-//! Host routine starting kernel for updating neurons.
-void update_neurons(float *d_som, float *d_rotatedImages, int *d_bestRotationMatrix, float *d_euclideanDistanceMatrix,
-    int* d_bestMatch, int som_width, int som_height, int som_depth, int som_size, int neuron_size,
-    DistributionFunction function, Layout layout, float sigma, float damping, float max_update_distance, bool usePBC, int dimensionality);
 
 //! Prepare trigonometric values
 void trigonometricValues(float **d_cosAlpha, float **d_sinAlpha, int num_rot);

@@ -13,8 +13,8 @@ namespace pink {
  * CUDA Kernel Device code for flipping an image.
  */
 template <typename T>
-__global__ void
-flip(thrust::device_ptr<T> dest, thrust::device_ptr<T> source, int dim, int size)
+__global__
+void flip(thrust::device_ptr<T> dest, thrust::device_ptr<T> source, int dim, int size)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
