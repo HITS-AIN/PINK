@@ -9,18 +9,31 @@
 
 namespace pink {
 
-const int GPU_N_MAX = 4;
-
-struct TGPUplan
+template <typename T>
+struct Plan
 {
-    float *d_som;
-    float *d_rotatedImages;
-    float *d_firstStep;
+	Plan(thrust::device_vector<T> const& som, thrust::device_vector<T> const& rotated_images,
+        thrust::device_vector<T> first_step)
+	 : som(som),
+	   rotated_images(rotated_images),
+	   first_step(first_step)
+    {
+	    cudaStreamCreate(&stream);
+    }
 
-    int size;
-    int offset;
+	~Plan()
+	{
+        cudaStreamDestroy(stream);
+	}
 
-    //Stream for asynchronous command execution
+    thrust::device_vector<T> som;
+    thrust::device_vector<T> rotated_images;
+    thrust::device_vector<T> first_step;
+
+    uint32_t size;
+    uint32_t offset;
+
+    // CUDA stream for asynchronous command execution
     cudaStream_t stream;
 };
 
@@ -28,23 +41,22 @@ struct TGPUplan
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
 template <typename T>
-void generate_euclidean_distance_matrix_first_step_multi_gpu(float *d_som, float *d_rotatedImages,
-    float* d_firstStep, int som_size, int num_rot, int neuron_size, int block_size)
+void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_ptr<const T> d_som,
+    thrust::device_ptr<const T> d_rotatedImages, thrust::device_ptr<T> d_firstStep,
+	uint32_t num_rot, uint16_t block_size)
 {
-    int GPU_N = cuda_getNumberOfGPUs();
-    if (GPU_N > GPU_N_MAX) GPU_N = GPU_N_MAX;
-
-    TGPUplan plan[GPU_N_MAX];
+    auto&& gpu_ids = cuda_get_gpu_ids();
+    std::vector<Plan> plans;
 
     // Set first device
-    cudaSetDevice(0);
+    cudaSetDevice(gpu_ids[0]);
     cudaStreamCreate(&plan[0].stream);
 
-    plan[0].size = som_size / GPU_N;
+    plan[0].size = som_size / number_of_gpus;
     plan[0].offset = 0;
 
     // Distribute the remaining neurons
-    int rest = som_size % GPU_N;
+    int rest = som_size % number_of_gpus;
     if (rest) ++plan[0].size;
 
     // Allocate device memory
@@ -53,14 +65,14 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(float *d_som, float
     plan[0].d_firstStep = d_firstStep;
 
     // Create streams for issuing GPU command asynchronously
-    for (int i = 1; i < GPU_N; ++i)
+    for (int i = 1; i < number_of_gpus; ++i)
     {
         // Set device
         cudaSetDevice(i);
         cudaStreamCreate(&plan[i].stream);
 
         // Set size and offset
-        plan[i].size = som_size / GPU_N;
+        plan[i].size = som_size / number_of_gpus;
         if (rest > i) ++plan[i].size;
         plan[i].offset = plan[i-1].offset + plan[i-1].size;
 
@@ -75,7 +87,7 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(float *d_som, float
     }
 
     // Start kernel
-    for (int i = 0; i < GPU_N; ++i)
+    for (int i = 0; i < number_of_gpus; ++i)
     {
         // Set device
         cudaSetDevice(i);
@@ -128,17 +140,11 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(float *d_som, float
     }
 
     // Shut down GPU devices
-    for (int i = 0; i < GPU_N; ++i)
+    for (int i = 0; i < number_of_gpus; ++i)
     {
         cudaSetDevice(i);
         cudaStreamSynchronize(plan[i].stream);
         cudaStreamDestroy(plan[i].stream);
-
-        if (i != 0) {
-            cuda_free(plan[i].d_som);
-            cuda_free(plan[i].d_rotatedImages);
-            cuda_free(plan[i].d_firstStep);
-        }
     }
 
     cudaSetDevice(0);

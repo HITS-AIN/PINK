@@ -33,23 +33,21 @@ public:
 
     Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity = 0,
         int number_of_rotations = 360, bool use_flip = true, float max_update_distance = 0.0,
-        Interpolation interpolation = Interpolation::BILINEAR, uint32_t block_size = 1,
+        Interpolation interpolation = Interpolation::BILINEAR, uint16_t block_size = 1,
         bool use_multiple_gpus = true)
      : som(som),
-       som_size(som.get_som_layout().get_size()),
-       neuron_size(som.get_neuron_layout().get_size()),
        block_size(block_size),
        use_multiple_gpus(use_multiple_gpus),
        distribution_function(distribution_function),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
-       number_of_rotations_and_flip(number_of_rotations * (use_flip ? 2 : 1)),
+       number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
        max_update_distance(max_update_distance),
        interpolation(interpolation),
-       d_list_of_spatial_transformed_images(number_of_rotations_and_flip * neuron_size),
-       d_euclidean_distance_matrix(som_size),
-       d_best_rotation_matrix(som_size),
+       d_list_of_spatial_transformed_images(number_of_spatial_transformations * neuron_size),
+       d_euclidean_distance_matrix(som.get_number_of_neurons()),
+       d_best_rotation_matrix(som.get_number_of_neurons()),
        d_best_match(1),
        update_counter(som.get_som_layout(), 0)
     {
@@ -82,7 +80,7 @@ public:
             image_dim, neuron_dim, use_flip, interpolation, d_cosAlpha, d_sinAlpha, number_of_channels);
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
-            som_size, som.get_device_vector(), neuron_size, number_of_rotations_and_flip,
+            som.get_number_of_neurons(), som.get_device_vector(), number_of_spatial_transformations,
             d_list_of_spatial_transformed_images, block_size, use_multiple_gpus);
 
 //        update_neurons_gpu(som.get_device_vector(), d_list_of_spatial_transformed_images,
@@ -102,13 +100,8 @@ private:
     /// A reference to the SOM will be trained
     SOMType& som;
 
-    /// The number of neurons within the SOM
-    uint32_t som_size;
+    uint16_t block_size;
 
-    /// The number of data points within a neuron
-    uint32_t neuron_size;
-
-    uint32_t block_size;
     bool use_multiple_gpus;
 
     /// Counting updates of each neuron
@@ -118,7 +111,8 @@ private:
     int verbosity;
     uint32_t number_of_rotations;
     bool use_flip;
-    uint32_t number_of_rotations_and_flip;
+    uint32_t number_of_spatial_transformations;
+
     float max_update_distance;
     Interpolation interpolation;
 

@@ -44,7 +44,7 @@ void second_step_kernel(thrust::device_ptr<T> euclideanDistanceMatrix,
 template <typename T>
 void generate_euclidean_distance_matrix_second_step(thrust::device_vector<T>& d_euclideanDistanceMatrix,
     thrust::device_vector<uint32_t>& d_bestRotationMatrix, thrust::device_vector<T> const& d_firstStep,
-	uint32_t som_size, uint32_t num_rot)
+	uint32_t num_rot)
 {
 	const uint16_t block_size = 16;
 
