@@ -6,13 +6,11 @@
  */
 
 #include <cmath>
-#include "gtest/gtest.h"
 
-#include "SelfOrganizingMapLib/CartesianLayout.h"
-#include <SelfOrganizingMapLib/Data.h>
-#include <SelfOrganizingMapLib/SOM_cpu.h>
-#include <SelfOrganizingMapLib/Trainer_cpu.h>
-#include "UtilitiesLib/DistributionFunction.h"
+#include "SelfOrganizingMapLib/Trainer.h"
+#include "UtilitiesLib/DistributionFunctor.h"
+
+#include "gtest/gtest.h"
 
 using namespace pink;
 
@@ -55,9 +53,9 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d)
     MyTrainer trainer(som, f, 0, 4);
     trainer(image);
 
-    float v1 = GaussianFunctor(1.1, 0.2)(0.0);
-    float v2 = GaussianFunctor(1.1, 0.2)(1.0);
-    float v3 = GaussianFunctor(1.1, 0.2)(std::sqrt(2.0));
+    float v1 = f(0.0);
+    float v2 = f(1.0);
+    float v3 = f(std::sqrt(2.0));
 
     for (int i = 0; i != 4; ++i) {
         EXPECT_FLOAT_EQ(v1, som.get_neuron({0, 0}).get_data_pointer()[i]);

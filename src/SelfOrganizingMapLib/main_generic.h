@@ -7,20 +7,15 @@
 
 #include <iostream>
 
+#include "ImageProcessingLib/ImageIterator.h"
 #include "SelfOrganizingMapLib/Data.h"
 #include "SelfOrganizingMapLib/FileIO.h"
-#include "ImageProcessingLib/ImageIterator.h"
+#include "SOM.h"
+#include "Trainer.h"
 #include "UtilitiesLib/DistributionFunction.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/pink_exception.h"
 
-#ifdef __CUDACC__
-    #include "SOM_gpu.h"
-    #include "Trainer_gpu.h"
-#else
-    #include "SOM_cpu.h"
-    #include "Trainer_cpu.h"
-#endif
 
 namespace pink {
 

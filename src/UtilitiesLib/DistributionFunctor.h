@@ -1,5 +1,5 @@
 /**
- * @file   UtilitiesLib/DistributionFunctors.h
+ * @file   UtilitiesLib/DistributionFunctor.h
  * @brief  Virtual functors for distribution functions used by updating SOM.
  * @date   Dec 4, 2014
  * @author Bernd Doser, HITS gGmbH

@@ -11,12 +11,7 @@
 #include <string>
 
 #include "Data.h"
-
-#ifdef __CUDACC__
-    #include "SOM_gpu.h"
-#else
-    #include "SOM_cpu.h"
-#endif
+#include "SOM.h"
 
 namespace pink {
 

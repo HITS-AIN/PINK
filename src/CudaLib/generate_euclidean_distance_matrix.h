@@ -18,8 +18,9 @@ namespace pink {
  */
 template <typename T>
 void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclideanDistanceMatrix,
-    thrust::device_vector<uint32_t>& d_bestRotationMatrix, thrust::device_vector<T> const& d_som,
-	uint32_t num_rot, thrust::device_vector<T> const& d_rotatedImages, uint16_t block_size,
+    thrust::device_vector<uint32_t>& d_bestRotationMatrix, uint32_t, number_of_neurons,
+	thrust::device_vector<T> const& d_som, uint32_t num_rot,
+	thrust::device_vector<T> const& d_rotatedImages, uint16_t block_size,
     bool useMultipleGPUs)
 {
 	thrust::device_vector<T> d_firstStep(som_size * num_rot);
