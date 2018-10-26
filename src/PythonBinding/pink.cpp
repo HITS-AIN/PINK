@@ -96,7 +96,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("use_flip") = true,
             py::arg("max_update_distance") = 0.0
         )
-        .def("__call__", [](Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> const& trainer, Data<CartesianLayout<2>, float> const& image)
+        .def("__call__", [](Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>& trainer, Data<CartesianLayout<2>, float> const& image)
         {
             return trainer(image);
         });

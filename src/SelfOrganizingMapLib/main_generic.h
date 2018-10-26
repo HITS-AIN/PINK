@@ -9,6 +9,7 @@
 
 #include "ImageProcessingLib/ImageIterator.h"
 #include "SelfOrganizingMapLib/Data.h"
+#include "SelfOrganizingMapLib/DataIO.h"
 #include "SelfOrganizingMapLib/FileIO.h"
 #include "SOM.h"
 #include "Trainer.h"
@@ -37,8 +38,8 @@ void main_generic(InputData const & input_data)
             ,input_data.max_update_distance
             ,input_data.interpolation
 #ifdef __CUDACC__
-			,input_data.block_size_1
-			,input_data.useMultipleGPUs
+            ,input_data.block_size_1
+            ,input_data.useMultipleGPUs
 #endif
         );
 
@@ -54,6 +55,12 @@ void main_generic(InputData const & input_data)
         std::cout << "  Write final SOM to " << input_data.resultFilename << " ... " << std::flush;
         write(som, input_data.resultFilename);
         std::cout << "done." << std::endl;
+
+        if (input_data.verbose) {
+            std::cout << "\n  Number of updates of each neuron:\n"
+                      << trainer.get_update_info()
+                      << std::endl;
+        }
     }
     else if (input_data.executionPath == ExecutionPath::MAP)
     {

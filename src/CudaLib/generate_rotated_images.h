@@ -24,7 +24,7 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
     uint32_t num_rot, uint32_t image_dim, uint32_t neuron_dim, bool useFlip, Interpolation interpolation,
     thrust::device_vector<T> const& d_cosAlpha, thrust::device_vector<T> const& d_sinAlpha, uint32_t numberOfChannels)
 {
-    const uint8_t block_size = 32;
+    const uint16_t block_size = 32;
     uint32_t neuron_size = neuron_dim * neuron_dim;
     uint32_t image_size = image_dim * image_dim;
 

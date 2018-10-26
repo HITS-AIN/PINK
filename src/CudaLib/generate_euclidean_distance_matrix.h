@@ -29,7 +29,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
 
     // First step ...
     if (use_multiple_gpus and cuda_getNumberOfGPUs() > 1) {
-    	pink::exception("Multi GPUs are not supported.");
+        pink::exception("Multi GPUs are not supported.");
         //generate_euclidean_distance_matrix_first_step_multi_gpu(d_som, d_rotated_images,
         //    d_first_step, number_of_spatial_transformations, block_size);
     } else {

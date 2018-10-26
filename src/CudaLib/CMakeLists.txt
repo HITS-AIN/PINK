@@ -12,7 +12,6 @@ cuda_add_library(
     dot_dp4a.cu
     main_gpu.cu
     trigonometricValues.cpp
-    update_neurons.cu
 )
 
 target_link_libraries(

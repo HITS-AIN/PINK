@@ -6,57 +6,60 @@
 
 #pragma once
 
-#include <stddef.h>
 #include <array>
+#include <cstddef>
 #include <functional>
 #include <vector>
 
 namespace pink {
 
 //! Primary template for generic Data
-template <typename DataLayout, typename T>
+template <typename Layout, typename T>
 class Data
 {
 public:
 
     typedef T ValueType;
-    typedef Data<DataLayout, T> SelfType;
-    typedef DataLayout DataLayoutType;
+    typedef Data<Layout, T> SelfType;
+    typedef Layout LayoutType;
 
     /// Default construction
     Data()
-     : data_dimension{0}
+     : layout{0}
     {}
 
     /// Construction without initialization
-    Data(DataLayoutType const& data_dimension)
-     : data_dimension(data_dimension),
-       data(data_dimension.get_size())
+    Data(LayoutType const& layout)
+     : layout(layout),
+       data(layout.get_size())
     {}
 
     /// Construction and initialize all element to value
-    Data(DataLayoutType const& data_dimension, T value)
-     : data_dimension(data_dimension),
-       data(data_dimension.get_size(), value)
+    Data(LayoutType const& layout, T value)
+     : layout(layout),
+       data(layout.get_size(), value)
     {}
 
     /// Construction and copy data
-    Data(DataLayoutType const& data_dimension, std::vector<T> const& data)
-     : data_dimension(data_dimension),
+    Data(LayoutType const& layout, std::vector<T> const& data)
+     : layout(layout),
        data(data)
     {}
 
     /// Construction and move data
-    Data(DataLayoutType const& data_dimension, std::vector<T>&& data)
-     : data_dimension(data_dimension),
+    Data(LayoutType const& layout, std::vector<T>&& data)
+     : layout(layout),
        data(data)
     {}
 
     auto operator == (SelfType const& other) const
     {
-        return data_dimension == other.data_dimension and
+        return layout == other.layout and
                data == other.data;
     }
+
+    auto operator [] (uint32_t position) -> T& { return data[position]; }
+    auto operator [] (uint32_t position) const -> T const& { return data[position]; }
 
     auto get_data() { return data; }
     auto get_data() const { return data; }
@@ -64,15 +67,15 @@ public:
     auto get_data_pointer() { return &data[0]; }
     auto get_data_pointer() const { return &data[0]; }
 
-    auto get_dimension() -> typename DataLayoutType::DimensionType { return data_dimension.dimension; }
-    auto get_dimension() const -> typename DataLayoutType::DimensionType const { return data_dimension.dimension; }
+    auto get_dimension() -> typename LayoutType::DimensionType { return layout.dimension; }
+    auto get_dimension() const -> typename LayoutType::DimensionType const { return layout.dimension; }
 
 private:
 
     template <typename A, typename B>
     friend void write(Data<A, B> const& data, std::string const& filename);
 
-    DataLayoutType data_dimension;
+    LayoutType layout;
 
     std::vector<T> data;
 

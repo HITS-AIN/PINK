@@ -71,12 +71,12 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
     }
 }
 
-void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix,
+void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, uint32_t *bestRotationMatrix,
     int som_size, float* som, int image_size, int num_rot, float* rotatedImages)
 {
     float tmp;
     float* pdist = euclideanDistanceMatrix;
-    int* prot = bestRotationMatrix;
+    uint32_t* prot = bestRotationMatrix;
     float *psom = NULL;
 
     for (int i = 0; i < som_size; ++i) euclideanDistanceMatrix[i] = FLT_MAX;
