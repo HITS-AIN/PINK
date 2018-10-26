@@ -22,20 +22,24 @@ namespace pink {
 template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
 void main_generic(InputData const & input_data)
 {
-    SOM<SOMLayout, DataLayout, T, UseGPU> som(input_data);
+    SOM<SOMLayout, DataLayout, T> som(input_data);
 
     auto&& distribution_function = GaussianFunctor(input_data.sigma, input_data.damping);
 
     if (input_data.executionPath == ExecutionPath::TRAIN)
     {
         Trainer<SOMLayout, DataLayout, T, UseGPU> trainer(
-            som,
-            distribution_function,
-            input_data.verbose,
-            input_data.numberOfRotations,
-            input_data.useFlip,
-            input_data.max_update_distance,
-            input_data.interpolation
+            som
+            ,distribution_function
+            ,input_data.verbose
+            ,input_data.numberOfRotations
+            ,input_data.useFlip
+            ,input_data.max_update_distance
+            ,input_data.interpolation
+#ifdef __CUDACC__
+			,input_data.block_size_1
+			,input_data.useMultipleGPUs
+#endif
         );
 
         for (auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename), iter_image_end = ImageIterator<T>();

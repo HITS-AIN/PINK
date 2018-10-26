@@ -70,11 +70,11 @@ void euclidean_distance_kernel(thrust::device_ptr<const T> som, thrust::device_p
 template <typename T>
 void generate_euclidean_distance_matrix_first_step(thrust::device_vector<T> const& d_som,
     thrust::device_vector<T> const& d_rotatedImages, thrust::device_vector<T>& d_firstStep,
-	uint32_t num_rot, uint16_t block_size)
+    uint32_t number_of_spatial_transformations, uint32_t number_of_neurons, uint32_t neuron_size, uint16_t block_size)
 {
     // Setup execution parameters
     dim3 dimBlock(block_size);
-    dim3 dimGrid(num_rot, som_size);
+    dim3 dimGrid(number_of_spatial_transformations, number_of_neurons);
 
     // Start kernel
     switch (block_size)

@@ -32,21 +32,21 @@ class TrainerBase
 
 public:
 
-	TrainerBase(std::function<float(float)> distribution_function, int verbosity,
-		int number_of_rotations, bool use_flip, float max_update_distance,
-		Interpolation interpolation, SOMLayout const& som_layout)
-	 : distribution_function(distribution_function),
-	   verbosity(verbosity),
-	   number_of_rotations(number_of_rotations),
-	   use_flip(use_flip),
-	   number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
-	   max_update_distance(max_update_distance),
-	   interpolation(interpolation),
-	   update_counter(som_layout)
-	{
-		if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
-			throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
-	}
+    TrainerBase(std::function<float(float)> distribution_function, int verbosity,
+        int number_of_rotations, bool use_flip, float max_update_distance,
+        Interpolation interpolation, SOMLayout const& som_layout)
+     : distribution_function(distribution_function),
+       verbosity(verbosity),
+       number_of_rotations(number_of_rotations),
+       use_flip(use_flip),
+       number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
+       max_update_distance(max_update_distance),
+       interpolation(interpolation),
+       update_counter(som_layout)
+    {
+        if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
+            throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
+    }
 
 protected:
 
@@ -63,11 +63,17 @@ protected:
     UpdateCounterType update_counter;
 };
 
+/// Primary template will never be instantiated
+template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
+class Trainer;
+
+#ifndef __CUDACC__
+
 /// CPU version of training
-template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU = false>
-class Trainer : public TrainerBase<SOMLayout, DataLayout, T>
+template <typename SOMLayout, typename DataLayout, typename T>
+class Trainer<SOMLayout, DataLayout, T, false>  : public TrainerBase<SOMLayout, DataLayout, T>
 {
-    typedef SOM<SOMLayout, DataLayout, T, false> SOMType;
+    typedef SOM<SOMLayout, DataLayout, T> SOMType;
     typedef Data<SOMLayout, uint32_t> UpdateCounterType;
 
 public:
@@ -77,10 +83,10 @@ public:
         Interpolation interpolation = Interpolation::BILINEAR)
      : TrainerBase<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, som.get_som_layout()),
-	   som(som)
+       som(som)
     {}
 
-    void operator () (Data<DataLayout, T> const& data)
+    void operator () (Data<DataLayout, T> const& data) const
     {
         int som_size = som.get_som_dimension()[0] * som.get_som_dimension()[1];
         int neuron_size = som.get_neuron_dimension()[0] * som.get_neuron_dimension()[1];
@@ -135,12 +141,13 @@ private:
     SOMType& som;
 };
 
-#ifdef __CUDACC__
+#else // __CUDACC__
+
 /// GPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
 class Trainer<SOMLayout, DataLayout, T, true> : public TrainerBase<SOMLayout, DataLayout, T>
 {
-    typedef SOM<SOMLayout, DataLayout, T, true> SOMType;
+    typedef SOM<SOMLayout, DataLayout, T> SOMType;
     typedef Data<SOMLayout, uint32_t> UpdateCounterType;
 
 public:
@@ -152,13 +159,19 @@ public:
      : TrainerBase<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, som.get_som_layout()),
        som(som),
+	   number_of_channels(1),
        block_size(block_size),
-	   use_multiple_gpus(use_multiple_gpus),
-       d_list_of_spatial_transformed_images(this->number_of_spatial_transformations * neuron_size),
+       use_multiple_gpus(use_multiple_gpus),
+       d_list_of_spatial_transformed_images(this->number_of_spatial_transformations * som.get_neuron_size()),
        d_euclidean_distance_matrix(som.get_number_of_neurons()),
        d_best_rotation_matrix(som.get_number_of_neurons()),
        d_best_match(1)
     {
+    	if (som.get_neuron_layout().dimensionality > 2)
+    	{
+    		number_of_channels *= som.get_neuron_dimension()[2];
+    	}
+
         std::vector<T> cos_alpha(number_of_rotations - 1);
         std::vector<T> sin_alpha(number_of_rotations - 1);
 
@@ -180,13 +193,12 @@ public:
 
         auto image_dim = data.get_dimension()[0];
         auto neuron_dim = som.get_neuron_dimension()[0];
-        auto number_of_channels = som.get_neuron_layout().dimensionality == 2 ? 1 : som.get_neuron_dimension()[2];
 
         generate_rotated_images(d_list_of_spatial_transformed_images, d_image, this->number_of_rotations,
             image_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha, number_of_channels);
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
-            som.get_number_of_neurons(), som.get_device_vector(), this->number_of_spatial_transformations,
+            som.get_number_of_neurons(), som.get_neuron_size(), som.get_device_vector(), this->number_of_spatial_transformations,
             d_list_of_spatial_transformed_images, block_size, use_multiple_gpus);
 
     //        update_neurons_gpu(som.get_device_vector(), d_list_of_spatial_transformed_images,
@@ -206,7 +218,10 @@ private:
     /// A reference to the SOM will be trained
     SOMType& som;
 
+    uint32_t number_of_channels;
+
     uint16_t block_size;
+
     bool use_multiple_gpus;
 
     thrust::device_vector<T> d_list_of_spatial_transformed_images;
@@ -217,6 +232,7 @@ private:
     thrust::device_vector<T> d_cosAlpha;
     thrust::device_vector<T> d_sinAlpha;
 };
+
 #endif
 
 } // namespace pink

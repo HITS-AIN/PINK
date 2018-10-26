@@ -16,8 +16,8 @@
 namespace pink {
 
 //! Write SOM in binary mode
-template <typename SOMLayout, typename NeuronLayout, typename T, bool UseGPU>
-void write(SOM<SOMLayout, NeuronLayout, T, UseGPU> const& som, std::string const& filename)
+template <typename SOMLayout, typename NeuronLayout, typename T>
+void write(SOM<SOMLayout, NeuronLayout, T> const& som, std::string const& filename)
 {
     std::ofstream os(filename);
     if (!os) throw std::runtime_error("Error opening " + filename);

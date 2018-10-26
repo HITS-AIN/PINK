@@ -9,8 +9,8 @@
 #include <pybind11/pybind11.h>
 
 #include "SelfOrganizingMapLib/Data.h"
-#include "SelfOrganizingMapLib/SOM_cpu.h"
-#include "SelfOrganizingMapLib/Trainer_cpu.h"
+#include "SelfOrganizingMapLib/SOM.h"
+#include "SelfOrganizingMapLib/Trainer.h"
 #include "UtilitiesLib/Version.h"
 
 namespace py = pybind11;
@@ -51,9 +51,9 @@ PYBIND11_MODULE(pink, m)
              );
          });
 
-    py::class_<SOM<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "som", py::buffer_protocol())
+    py::class_<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m, "som", py::buffer_protocol())
         .def(py::init())
-        .def("__init__", [](SOM<CartesianLayout<2>, CartesianLayout<2>, float, false> &m, py::buffer b)
+        .def("__init__", [](SOM<CartesianLayout<2>, CartesianLayout<2>, float> &m, py::buffer b)
         {
             py::buffer_info info = b.request();
 
@@ -64,9 +64,9 @@ PYBIND11_MODULE(pink, m)
             auto&& dim1 = static_cast<uint32_t>(info.shape[1]);
             auto&& dim2 = static_cast<uint32_t>(info.shape[2]);
             auto&& dim3 = static_cast<uint32_t>(info.shape[3]);
-            new (&m) SOM<CartesianLayout<2>, CartesianLayout<2>, float, false>({dim0, dim1}, {dim2, dim3}, p);
+            new (&m) SOM<CartesianLayout<2>, CartesianLayout<2>, float>({dim0, dim1}, {dim2, dim3}, p);
         })
-        .def_buffer([](SOM<CartesianLayout<2>, CartesianLayout<2>, float, false> &m) -> py::buffer_info {
+        .def_buffer([](SOM<CartesianLayout<2>, CartesianLayout<2>, float> &m) -> py::buffer_info {
 
              auto&& som_dimension = m.get_som_dimension();
              auto&& neuron_dimension = m.get_neuron_dimension();
@@ -88,7 +88,7 @@ PYBIND11_MODULE(pink, m)
          });
 
     py::class_<Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "trainer")
-        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float, false>&, std::function<float(float)>, int, int, bool, float>(),
+        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, int, bool, float>(),
             py::arg("som"),
             py::arg("distribution_function"),
             py::arg("verbosity") = 0,

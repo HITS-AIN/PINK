@@ -22,7 +22,7 @@
 namespace pink {
 
 //! Primary template for generic SOM
-template <typename SOMLayout, typename NeuronLayout, typename T, bool UseGPU>
+template <typename SOMLayout, typename NeuronLayout, typename T>
 class SOM
 {
 public:
@@ -30,7 +30,7 @@ public:
     typedef T ValueType;
     typedef SOMLayout SOMLayoutType;
     typedef NeuronLayout NeuronLayoutType;
-    typedef SOM<SOMLayout, NeuronLayout, T, true> SelfType;
+    typedef SOM<SOMLayout, NeuronLayout, T> SelfType;
     typedef Data<NeuronLayout, T> NeuronType;
 
     /// Default construction
@@ -80,6 +80,7 @@ public:
     }
 
     auto get_number_of_neurons() -> uint32_t const { return som_layout.get_size(); }
+    auto get_neuron_size() -> uint32_t const { return neuron_layout.get_size(); }
 
     auto get_som_layout() -> SOMLayoutType { return som_layout; }
     auto get_som_layout() const -> SOMLayoutType const { return som_layout; }
@@ -98,8 +99,8 @@ public:
 
 private:
 
-    template <typename A, typename B, typename C, bool D>
-    friend void write(SOM<A, B, C, D> const& som, std::string const& filename);
+    template <typename A, typename B, typename C>
+    friend void write(SOM<A, B, C> const& som, std::string const& filename);
 
     SOMLayoutType som_layout;
 
@@ -115,32 +116,32 @@ private:
 #endif
 };
 
-//template <bool UseGPU>
-//SOM<CartesianLayout<1>, CartesianLayout<2>, float, UseGPU>::SOM(InputData const& input_data)
-// : som_layout{{input_data.som_width}},
-//   neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
-//   data(som_layout.get_size() * neuron_layout.get_size())
-//{}
-//
-//template <bool UseGPU>
-//SOM<CartesianLayout<2>, CartesianLayout<2>, float, UseGPU>::SOM(InputData const& input_data)
-// : som_layout{{input_data.som_width, input_data.som_height}},
-//   neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
-//   data(som_layout.get_size() * neuron_layout.get_size())
-//{}
-//
-//template <bool UseGPU>
-//SOM<CartesianLayout<3>, CartesianLayout<2>, float, UseGPU>::SOM(InputData const& input_data)
-// : som_layout{{input_data.som_width, input_data.som_height, input_data.som_depth}},
-//   neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
-//   data(som_layout.get_size() * neuron_layout.get_size())
-//{}
-//
-//template <bool UseGPU>
-//SOM<HexagonalLayout, CartesianLayout<2>, float, UseGPU>::SOM(InputData const& input_data)
-// : som_layout{{input_data.som_width}},
-//   neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
-//   data(som_layout.get_size() * neuron_layout.get_size())
-//{}
+template <>
+SOM<CartesianLayout<1>, CartesianLayout<2>, float>::SOM(InputData const& input_data)
+ : som_layout{{input_data.som_width}},
+   neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(som_layout.get_size() * neuron_layout.get_size())
+{}
+
+template <>
+SOM<CartesianLayout<2>, CartesianLayout<2>, float>::SOM(InputData const& input_data)
+ : som_layout{{input_data.som_width, input_data.som_height}},
+   neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(som_layout.get_size() * neuron_layout.get_size())
+{}
+
+template <>
+SOM<CartesianLayout<3>, CartesianLayout<2>, float>::SOM(InputData const& input_data)
+ : som_layout{{input_data.som_width, input_data.som_height, input_data.som_depth}},
+   neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(som_layout.get_size() * neuron_layout.get_size())
+{}
+
+template <>
+SOM<HexagonalLayout, CartesianLayout<2>, float>::SOM(InputData const& input_data)
+ : som_layout{{input_data.som_width}},
+   neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
+   data(som_layout.get_size() * neuron_layout.get_size())
+{}
 
 } // namespace pink

@@ -19,20 +19,20 @@ template <uint16_t block_size, typename T>
 __global__
 void second_step_kernel(thrust::device_ptr<T> euclideanDistanceMatrix,
     thrust::device_ptr<uint32_t> bestRotationMatrix, thrust::device_ptr<const T> firstStep,
-	uint32_t num_rot, uint32_t som_size)
+    uint32_t number_of_spatial_transformations, uint32_t number_of_neurons)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
-    if (i >= som_size) return;
+    if (i >= number_of_neurons) return;
 
-    thrust::device_ptr<const T> pFirstStep = firstStep + i * num_rot;
+    thrust::device_ptr<const T> pFirstStep = firstStep + i * number_of_spatial_transformations;
     thrust::device_ptr<T> pDist = euclideanDistanceMatrix + i;
 
     *pDist = pFirstStep[0];
     bestRotationMatrix[i] = 0;
 
-    for (uint32_t n = 1; n < num_rot; ++n) {
+    for (uint32_t n = 1; n < number_of_spatial_transformations; ++n) {
         if (pFirstStep[n] < *pDist) {
-        	*pDist = pFirstStep[n];
+            *pDist = pFirstStep[n];
             bestRotationMatrix[i] = n;
         }
     }
@@ -44,17 +44,17 @@ void second_step_kernel(thrust::device_ptr<T> euclideanDistanceMatrix,
 template <typename T>
 void generate_euclidean_distance_matrix_second_step(thrust::device_vector<T>& d_euclideanDistanceMatrix,
     thrust::device_vector<uint32_t>& d_bestRotationMatrix, thrust::device_vector<T> const& d_firstStep,
-	uint32_t num_rot)
+    uint32_t number_of_spatial_transformations, uint32_t number_of_neurons)
 {
-	const uint16_t block_size = 16;
+    const uint16_t block_size = 16;
 
     // Setup execution parameters
     dim3 dimBlock(block_size);
-    dim3 dimGrid(ceil((T)som_size/block_size));
+    dim3 dimGrid(ceil((T)number_of_neurons / block_size));
 
     // Start kernel
     second_step_kernel<block_size><<<dimGrid, dimBlock>>>(&d_euclideanDistanceMatrix[0],
-        &d_bestRotationMatrix[0], &d_firstStep[0], num_rot, som_size);
+        &d_bestRotationMatrix[0], &d_firstStep[0], number_of_spatial_transformations, number_of_neurons);
 
     cudaError_t error = cudaGetLastError();
 

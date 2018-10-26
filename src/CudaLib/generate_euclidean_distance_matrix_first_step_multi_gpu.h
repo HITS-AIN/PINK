@@ -12,19 +12,19 @@ namespace pink {
 template <typename T>
 struct Plan
 {
-	Plan(thrust::device_vector<T> const& som, thrust::device_vector<T> const& rotated_images,
+    Plan(thrust::device_vector<T> const& som, thrust::device_vector<T> const& rotated_images,
         thrust::device_vector<T> first_step)
-	 : som(som),
-	   rotated_images(rotated_images),
-	   first_step(first_step)
+     : som(som),
+       rotated_images(rotated_images),
+       first_step(first_step)
     {
-	    cudaStreamCreate(&stream);
+        cudaStreamCreate(&stream);
     }
 
-	~Plan()
-	{
+    ~Plan()
+    {
         cudaStreamDestroy(stream);
-	}
+    }
 
     thrust::device_vector<T> som;
     thrust::device_vector<T> rotated_images;
@@ -43,7 +43,7 @@ struct Plan
 template <typename T>
 void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_ptr<const T> d_som,
     thrust::device_ptr<const T> d_rotatedImages, thrust::device_ptr<T> d_firstStep,
-	uint32_t num_rot, uint16_t block_size)
+    uint32_t num_rot, uint16_t block_size)
 {
     auto&& gpu_ids = cuda_get_gpu_ids();
     std::vector<Plan> plans;
