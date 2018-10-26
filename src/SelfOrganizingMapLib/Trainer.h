@@ -12,9 +12,12 @@
 #include <vector>
 
 #include "Data.h"
+#include "find_best_match.h"
+#include "generate_rotated_images.h"
+#include "generate_euclidean_distance_matrix.h"
 #include "ImageProcessingLib/Interpolation.h"
-#include "SelfOrganizingMap.h"
 #include "SOM.h"
+#include "UtilitiesLib/DistanceFunctor.h"
 #include "UtilitiesLib/pink_exception.h"
 
 #ifdef __CUDACC__
@@ -97,31 +100,24 @@ public:
         if (this->use_flip) numberOfRotationsAndFlip *= 2;
         int rotatedImagesSize = numberOfRotationsAndFlip * neuron_size;
 
-        if (this->verbosity) std::cout << "som_size = " << som_size << "\n"
-                                 << "neuron_size = " << neuron_size << "\n"
-                                 << "number_of_rotations = " << this->number_of_rotations << "\n"
-                                 << "numberOfRotationsAndFlip = " << numberOfRotationsAndFlip << "\n"
-                                 << "rotatedImagesSize = " << rotatedImagesSize << std::endl;
-
         // Memory allocation
-        std::vector<T> rotatedImages(rotatedImagesSize);
-        std::vector<T> euclideanDistanceMatrix(som_size);
-        std::vector<uint32_t> bestRotationMatrix(som_size);
+        std::vector<T> euclidean_distance_matrix(som_size);
+        std::vector<uint32_t> best_rotation_matrix(som_size);
 
-        generateRotatedImages(&rotatedImages[0], const_cast<float*>(data.get_data_pointer()), this->number_of_rotations,
-            data.get_dimension()[0], som.get_neuron_dimension()[0], this->use_flip, this->interpolation, 1);
+        auto&& rotated_images = generate_rotated_images(rotated_images, data, this->number_of_rotations,
+            data.get_dimension()[0], som.get_neuron_dimension()[0], this->use_flip, this->interpolation);
 
-        generateEuclideanDistanceMatrix(&euclideanDistanceMatrix[0], &bestRotationMatrix[0],
-            som_size, som.get_data_pointer(), neuron_size, numberOfRotationsAndFlip, &rotatedImages[0]);
+        generate_euclidean_distance_matrix(&euclidean_distance_matrix[0], &best_rotation_matrix[0],
+            som_size, som.get_data_pointer(), neuron_size, numberOfRotationsAndFlip, &rotated_images[0]);
 
-        uint32_t best_match = findBestMatchingNeuron(&euclideanDistanceMatrix[0], som_size);
+        uint32_t best_match = find_best_match(euclidean_distance_matrix[0], som_size);
 
-        float *current_neuron = som.get_data_pointer();
+        auto&& current_neuron = som.get_data_pointer();
         for (int i = 0; i < som_size; ++i) {
             float distance = CartesianDistanceFunctor<2, false>(som.get_som_dimension()[0], som.get_som_dimension()[1])(best_match, i);
             if (this->max_update_distance <= 0 or distance < this->max_update_distance) {
                 float factor = this->distribution_function(distance);
-                float *current_image = &rotatedImages[0] + bestRotationMatrix[i] * neuron_size;
+                float *current_image = &rotated_images[0] + best_rotation_matrix[i] * neuron_size;
                 for (int j = 0; j < neuron_size; ++j) {
                     current_neuron[j] -= (current_neuron[j] - current_image[j]) * factor;
                 }

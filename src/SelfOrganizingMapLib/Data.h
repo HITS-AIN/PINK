@@ -61,11 +61,11 @@ public:
     auto operator [] (uint32_t position) -> T& { return data[position]; }
     auto operator [] (uint32_t position) const -> T const& { return data[position]; }
 
-    auto get_data() { return data; }
-    auto get_data() const { return data; }
-
-    auto get_data_pointer() { return &data[0]; }
-    auto get_data_pointer() const { return &data[0]; }
+//    auto get_data() { return data; }
+//    auto get_data() const { return data; }
+//
+//    auto get_data_pointer() { return &data[0]; }
+//    auto get_data_pointer() const { return &data[0]; }
 
     auto get_dimension() -> typename LayoutType::DimensionType { return layout.dimension; }
     auto get_dimension() const -> typename LayoutType::DimensionType const { return layout.dimension; }

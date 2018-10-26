@@ -7,3 +7,4 @@
 /.settings
 /.vscode
 /data
+*__pycache__
