@@ -32,7 +32,7 @@ InputData::InputData()
    init(SOMInitialization::ZERO),
    numIter(1),
    progressFactor(0.1),
-   useFlip(true),
+   use_flip(true),
    use_gpu(true),
    number_of_images(0),
    number_of_channels(0),
@@ -42,6 +42,7 @@ InputData::InputData()
    neuron_size(0),
    som_total_size(0),
    numberOfRotationsAndFlip(0),
+   spatial_transformed_image_size(0),
    interpolation(Interpolation::BILINEAR),
    executionPath(ExecutionPath::UNDEFINED),
    intermediate_storage(IntermediateStorageType::OFF),
@@ -184,7 +185,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 2:
             {
-                useFlip = false;
+                use_flip = false;
                 break;
             }
             case 3:
@@ -374,7 +375,9 @@ InputData::InputData(int argc, char **argv)
 
     neuron_size = neuron_dim * neuron_dim;
     som_total_size = som_size * neuron_size;
-    numberOfRotationsAndFlip = useFlip ? 2*numberOfRotations : numberOfRotations;
+    numberOfRotationsAndFlip = use_flip ? 2 * numberOfRotations : numberOfRotations;
+
+    spatial_transformed_image_size = static_cast<uint32_t>(2 * image_dim / std::sqrt(2.0)) + 1;
 
     if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
 #if PINK_USE_CUDA
@@ -428,6 +431,7 @@ void InputData::print_parameters() const
               << "  SOM size = " << som_size << "\n"
               << "  Number of iterations = " << numIter << "\n"
               << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
+              << "  Image dimension of rotated images  = " << spatial_transformed_image_size << "\n"
               << "  Progress = " << progressFactor << "\n"
               << "  Intermediate storage of SOM = " << intermediate_storage << "\n"
               << "  Layout = " << layout << "\n"
@@ -435,7 +439,7 @@ void InputData::print_parameters() const
               << "  Interpolation type = " << interpolation << "\n"
               << "  Seed = " << seed << "\n"
               << "  Number of rotations = " << numberOfRotations << "\n"
-              << "  Use mirrored image = " << useFlip << "\n"
+              << "  Use mirrored image = " << use_flip << "\n"
               << "  Number of CPU threads = " << numberOfThreads << "\n"
               << "  Use CUDA = " << use_gpu << "\n"
               << "  Use multiple GPUs = " << useMultipleGPUs << "\n"

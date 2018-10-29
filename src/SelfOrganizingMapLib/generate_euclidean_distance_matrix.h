@@ -14,7 +14,7 @@ namespace pink {
 
 template <typename T>
 void generate_euclidean_distance_matrix(std::vector<T>& euclidean_distance_matrix,
-    std::vector<uint32_t> const& best_rotation_matrix, int som_size, std::vector<T> const& som,
+    std::vector<uint32_t>& best_rotation_matrix, int som_size, std::vector<T> const& som,
     int image_size,	int num_rot, std::vector<T> const& rotated_images)
 {
     T tmp;

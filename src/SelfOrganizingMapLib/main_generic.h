@@ -14,9 +14,9 @@
 #include "SOM.h"
 #include "Trainer.h"
 #include "UtilitiesLib/DistributionFunction.h"
+#include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/pink_exception.h"
-
 
 namespace pink {
 
@@ -34,7 +34,8 @@ void main_generic(InputData const & input_data)
             ,distribution_function
             ,input_data.verbose
             ,input_data.numberOfRotations
-            ,input_data.useFlip
+            ,input_data.use_flip
+            ,input_data.spatial_transformed_image_size
             ,input_data.max_update_distance
             ,input_data.interpolation
 #ifdef __CUDACC__

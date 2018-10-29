@@ -13,7 +13,6 @@ add_executable(
     
 target_link_libraries(
     SelfOrganizingMapTest
-    SelfOrganizingMapLib
     ${GTEST_BOTH_LIBRARIES}
     ${CUDA_LIBRARIES}
 )

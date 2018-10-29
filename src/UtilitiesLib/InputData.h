@@ -56,7 +56,7 @@ struct InputData
     SOMInitialization init;
     int numIter;
     float progressFactor;
-    bool useFlip;
+    bool use_flip;
     bool use_gpu;
     uint32_t number_of_images;
     uint32_t number_of_channels;
@@ -66,6 +66,7 @@ struct InputData
     int neuron_size;
     int som_total_size;
     int numberOfRotationsAndFlip;
+    uint32_t spatial_transformed_image_size;
     Interpolation interpolation;
     ExecutionPath executionPath;
     IntermediateStorageType intermediate_storage;

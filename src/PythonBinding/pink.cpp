@@ -8,6 +8,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
+#include "ImageProcessingLib/Interpolation.h"
 #include "SelfOrganizingMapLib/Data.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "SelfOrganizingMapLib/Trainer.h"
@@ -64,7 +65,7 @@ PYBIND11_MODULE(pink, m)
             auto&& dim1 = static_cast<uint32_t>(info.shape[1]);
             auto&& dim2 = static_cast<uint32_t>(info.shape[2]);
             auto&& dim3 = static_cast<uint32_t>(info.shape[3]);
-            new (&m) SOM<CartesianLayout<2>, CartesianLayout<2>, float>({dim0, dim1}, {dim2, dim3}, p);
+            new (&m) SOM<CartesianLayout<2>, CartesianLayout<2>, float>({dim0, dim1}, {dim2, dim3}, std::vector<float>(p, p + dim0 * dim1 * dim2 * dim3));
         })
         .def_buffer([](SOM<CartesianLayout<2>, CartesianLayout<2>, float> &m) -> py::buffer_info {
 
@@ -88,16 +89,18 @@ PYBIND11_MODULE(pink, m)
          });
 
     py::class_<Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "trainer")
-        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, int, bool, float>(),
+        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, uint32_t, float, Interpolation>(),
             py::arg("som"),
             py::arg("distribution_function"),
             py::arg("verbosity") = 0,
             py::arg("number_of_rotations") = 360,
             py::arg("use_flip") = true,
-            py::arg("max_update_distance") = 0.0
+            py::arg("spatial_transformed_image_size") = 0,
+            py::arg("max_update_distance") = 0.0,
+            py::arg("interpolation") = Interpolation::BILINEAR
         )
-        .def("__call__", [](Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>& trainer, Data<CartesianLayout<2>, float> const& image)
+        .def("__call__", [](Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>& trainer, Data<CartesianLayout<2>, float> const& data)
         {
-            return trainer(image);
+            return trainer(data);
         });
 }

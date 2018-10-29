@@ -11,6 +11,10 @@
 #include <functional>
 #include <vector>
 
+#ifdef __CUDACC__
+    #include <thrust/device_vector.h>
+#endif
+
 namespace pink {
 
 //! Primary template for generic Data
@@ -34,7 +38,7 @@ public:
        data(layout.get_size())
     {}
 
-    /// Construction and initialize all element to value
+    /// Construction and initialize all elements to value
     Data(LayoutType const& layout, T value)
      : layout(layout),
        data(layout.get_size(), value)
@@ -63,12 +67,18 @@ public:
 
 //    auto get_data() { return data; }
 //    auto get_data() const { return data; }
-//
-//    auto get_data_pointer() { return &data[0]; }
-//    auto get_data_pointer() const { return &data[0]; }
+
+    auto get_data_pointer() { return &data[0]; }
+    auto get_data_pointer() const { return &data[0]; }
 
     auto get_dimension() -> typename LayoutType::DimensionType { return layout.dimension; }
     auto get_dimension() const -> typename LayoutType::DimensionType const { return layout.dimension; }
+
+#ifdef __CUDACC__
+    /// Return SOM device vector
+    auto get_device_vector() -> thrust::device_vector<T>& { return d_data; }
+    auto get_device_vector() const -> thrust::device_vector<T> const& { return d_data; }
+#endif
 
 private:
 
@@ -79,6 +89,9 @@ private:
 
     std::vector<T> data;
 
+#ifdef __CUDACC__
+    thrust::device_vector<T> d_data;
+#endif
 };
 
 } // namespace pink

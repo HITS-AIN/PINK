@@ -49,18 +49,27 @@ public:
        data(som_layout.get_size() * neuron_layout.get_size())
     {}
 
-    /// Construction and initialize all element to value
+    /// Construction and initialize all elements to value
     SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout, T value)
      : som_layout(som_layout),
        neuron_layout(neuron_layout),
        data(som_layout.get_size() * neuron_layout.get_size(), value)
     {}
 
-    /// Construction and copy data into SOM
-    SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout, T* data)
+    /// Construction and copy data
+    SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout,
+        std::vector<T> const& data)
      : som_layout(som_layout),
        neuron_layout(neuron_layout),
-       data(data, data + som_layout.get_size() * neuron_layout.get_size())
+       data(data)
+    {}
+
+    /// Construction and move data
+    SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout,
+        std::vector<T>&& data)
+     : som_layout(som_layout),
+       neuron_layout(neuron_layout),
+       data(data)
     {}
 
     auto operator == (SelfType const& other) const
@@ -94,7 +103,8 @@ public:
 
 #ifdef __CUDACC__
     /// Return SOM device vector
-    thrust::device_vector<T> get_device_vector() { return d_data; }
+    auto get_device_vector() -> thrust::device_vector<T>& { return d_data; }
+    auto get_device_vector() const -> thrust::device_vector<T> const& { return d_data; }
 #endif
 
 private:

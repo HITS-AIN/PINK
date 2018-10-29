@@ -12,7 +12,6 @@ pybind11_add_module(
 target_link_libraries(
     pink PRIVATE
     ImageProcessingLib
-    SelfOrganizingMapLib
 )
 
 if(PINK_USE_CUDA)
