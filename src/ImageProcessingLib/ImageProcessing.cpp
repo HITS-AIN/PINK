@@ -119,7 +119,7 @@ void flip(int height, int width, float *source, float *dest)
     }
 }
 
-void crop(int height, int width, int height_new, int width_new, float * source, float *dest)
+void crop(int height, int width, int height_new, int width_new, float *source, float *dest)
 {
     int width_margin = (width - width_new) / 2;
     int height_margin = (height - height_new) / 2;

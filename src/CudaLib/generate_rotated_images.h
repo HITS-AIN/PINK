@@ -19,14 +19,19 @@ namespace pink {
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
-template <typename T>
-void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust::device_vector<T> const& d_image,
+template <typename LayoutType, typename T>
+void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, Data<LayoutType, T> const& data,
     uint32_t num_rot, uint32_t image_dim, uint32_t neuron_dim, bool useFlip, Interpolation interpolation,
-    thrust::device_vector<T> const& d_cosAlpha, thrust::device_vector<T> const& d_sinAlpha, uint32_t numberOfChannels)
+    thrust::device_vector<T> const& d_cosAlpha, thrust::device_vector<T> const& d_sinAlpha)
 {
     const uint16_t block_size = 32;
     uint32_t neuron_size = neuron_dim * neuron_dim;
     uint32_t image_size = image_dim * image_dim;
+
+    auto&& d_image = data.get_device_vector();
+
+    uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 0;
+    for (uint32_t i = 3; i != data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
     // Crop first image
     {
@@ -36,7 +41,7 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
         dim3 dimGrid(gridSize, gridSize);
 
         // Start kernel
-        for (uint32_t c = 0; c < numberOfChannels; ++c)
+        for (uint32_t c = 0; c < spacing; ++c)
         {
             crop<<<dimGrid, dimBlock>>>(&d_rotated_images[c * neuron_size],
                 &d_image[c * image_size], neuron_dim, image_dim);
@@ -64,14 +69,14 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
             dim3 dimGrid(gridSize, gridSize, num_real_rot);
 
             // Start kernel
-            for (uint32_t c = 0; c < numberOfChannels; ++c)
+            for (uint32_t c = 0; c < spacing; ++c)
             {
                 if (interpolation == Interpolation::NEAREST_NEIGHBOR)
-                    rotate_and_crop_nearest_neighbor<<<dimGrid, dimBlock>>>(&d_rotated_images[(c + numberOfChannels) * neuron_size],
-                        &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], numberOfChannels);
+                    rotate_and_crop_nearest_neighbor<<<dimGrid, dimBlock>>>(&d_rotated_images[(c + spacing) * neuron_size],
+                        &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], spacing);
                 else if (interpolation == Interpolation::BILINEAR)
-                    rotate_and_crop_bilinear<<<dimGrid, dimBlock>>>(&d_rotated_images[(c + numberOfChannels) * neuron_size],
-                        &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], numberOfChannels);
+                    rotate_and_crop_bilinear<<<dimGrid, dimBlock>>>(&d_rotated_images[(c + spacing) * neuron_size],
+                        &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], spacing);
                 else {
                     fprintf(stderr, "generate_rotated_images_gpu: unknown interpolation type!\n");
                     exit(EXIT_FAILURE);
@@ -95,11 +100,11 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
         dim3 dimBlock(block_size, block_size);
         dim3 dimGrid(gridSize, gridSize, num_rot/4);
 
-        int offset = num_rot/4 * numberOfChannels * neuron_size;
-        int mc_neuron_size = numberOfChannels * neuron_size;
+        int offset = num_rot/4 * spacing * neuron_size;
+        int mc_neuron_size = spacing * neuron_size;
 
         // Start kernel
-        for (uint32_t c = 0; c < numberOfChannels; ++c)
+        for (uint32_t c = 0; c < spacing; ++c)
         {
             rotate_90degrees_list<<<dimGrid, dimBlock>>>(&d_rotated_images[c * neuron_size],
                 neuron_dim, mc_neuron_size, offset);
@@ -123,12 +128,12 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
         // Setup execution parameters
         int gridSize = ceil((float)neuron_dim/block_size);
         dim3 dimBlock(block_size, block_size);
-        dim3 dimGrid(gridSize, gridSize, num_rot * numberOfChannels);
+        dim3 dimGrid(gridSize, gridSize, num_rot * spacing);
 
         // Start kernel
-        for (uint32_t c = 0; c < numberOfChannels; ++c)
+        for (uint32_t c = 0; c < spacing; ++c)
         {
-            flip<<<dimGrid, dimBlock>>>(&d_rotated_images[num_rot * numberOfChannels * neuron_size],
+            flip<<<dimGrid, dimBlock>>>(&d_rotated_images[num_rot * spacing * neuron_size],
                 &d_rotated_images[0], neuron_dim, neuron_size);
 
             cudaError_t error = cudaGetLastError();

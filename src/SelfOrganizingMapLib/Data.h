@@ -71,6 +71,9 @@ public:
     auto get_data_pointer() { return &data[0]; }
     auto get_data_pointer() const { return &data[0]; }
 
+    auto get_layout() -> LayoutType { return layout; }
+    auto get_layout() const -> LayoutType const { return layout; }
+
     auto get_dimension() -> typename LayoutType::DimensionType { return layout.dimension; }
     auto get_dimension() const -> typename LayoutType::DimensionType const { return layout.dimension; }
 

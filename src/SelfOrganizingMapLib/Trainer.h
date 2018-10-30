@@ -47,7 +47,7 @@ public:
        interpolation(interpolation),
        update_info(som_layout)
     {
-        if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
+        if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
     }
 
@@ -177,7 +177,7 @@ public:
         auto&& image_dim = data.get_dimension()[0];
         auto&& neuron_dim = som.get_neuron_dimension()[0];
 
-        generate_rotated_images(d_list_of_spatial_transformed_images, data.get_device_vector(), this->number_of_rotations,
+        generate_rotated_images(d_list_of_spatial_transformed_images, data, this->number_of_rotations,
             image_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha);
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
