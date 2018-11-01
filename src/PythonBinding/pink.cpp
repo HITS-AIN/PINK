@@ -1,5 +1,5 @@
 /**
- * @file   SelfOrganizingMapLib/pink.cpp
+ * @file   PythonBinding/pink.cpp
  * @date   Oct 12, 2018
  * @author Bernd Doser, HITS gGmbH
  */

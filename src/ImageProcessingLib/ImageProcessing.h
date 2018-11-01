@@ -14,9 +14,6 @@
 
 namespace pink {
 
-//! Pretty printing of interpolation type.
-std::ostream& operator << (std::ostream& os, Interpolation interpolation);
-
 /**
  * @brief Plain-C function for image rotation.
  *
