@@ -66,7 +66,7 @@ struct InputData
     int neuron_size;
     int som_total_size;
     int numberOfRotationsAndFlip;
-    uint32_t spatial_transformed_image_size;
+    uint32_t spatial_transformed_image_dim;
     Interpolation interpolation;
     ExecutionPath executionPath;
     IntermediateStorageType intermediate_storage;

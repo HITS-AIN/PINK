@@ -9,11 +9,6 @@
 
 #include <thrust/device_vector.h>
 
-#include "UtilitiesLib/DistributionFunction.h"
-#include "UtilitiesLib/InputData.h"
-#include "UtilitiesLib/Layout.h"
-#include "UtilitiesLib/Point.h"
-
 namespace pink {
 
 //! Print CUDA device properties.
@@ -21,12 +16,6 @@ void cuda_print_properties();
 
 //! CUDA test routine for image rotation.
 void cuda_rotate(int height, int width, float *source, float *dest, float angle);
-
-//! Main CUDA host routine for SOM training.
-void cuda_trainSelfOrganizingMap(InputData const& inputData);
-
-//! Main CUDA host routine for SOM mapping.
-void cuda_mapping(InputData const& inputData);
 
 //! Prepare trigonometric values
 void trigonometricValues(float **d_cosAlpha, float **d_sinAlpha, int num_rot);

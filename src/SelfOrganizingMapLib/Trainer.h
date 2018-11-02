@@ -35,14 +35,14 @@ class TrainerBase
 public:
 
     TrainerBase(std::function<float(float)> distribution_function, int verbosity,
-        uint32_t number_of_rotations, bool use_flip, uint32_t spatial_transformed_image_size,
+        uint32_t number_of_rotations, bool use_flip, uint32_t spatial_transformed_image_dim,
         float max_update_distance, Interpolation interpolation, SOMLayout const& som_layout)
      : distribution_function(distribution_function),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
        number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
-       spatial_transformed_image_size(spatial_transformed_image_size),
+       spatial_transformed_image_dim(spatial_transformed_image_dim),
        max_update_distance(max_update_distance),
        interpolation(interpolation),
        update_info(som_layout)
@@ -62,7 +62,7 @@ protected:
     uint32_t number_of_rotations;
     bool use_flip;
     uint32_t number_of_spatial_transformations;
-    uint32_t spatial_transformed_image_size;
+    uint32_t spatial_transformed_image_dim;
 
     float max_update_distance;
     Interpolation interpolation;
@@ -87,24 +87,23 @@ class Trainer<SOMLayout, DataLayout, T, false> : public TrainerBase<SOMLayout, D
 public:
 
     Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
-        uint32_t number_of_rotations, bool use_flip, uint32_t spatial_transformed_image_size, float max_update_distance,
+        uint32_t number_of_rotations, bool use_flip, uint32_t spatial_transformed_image_dim, float max_update_distance,
         Interpolation interpolation)
      : TrainerBase<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
-           use_flip, spatial_transformed_image_size, max_update_distance, interpolation, som.get_som_layout()),
+           use_flip, spatial_transformed_image_dim, max_update_distance, interpolation, som.get_som_layout()),
        som(som)
     {}
 
     void operator () (Data<DataLayout, T> const& data)
     {
         int som_size = som.get_som_dimension()[0] * som.get_som_dimension()[1];
-        int neuron_size = som.get_neuron_dimension()[0] * som.get_neuron_dimension()[1];
 
         // Memory allocation
         std::vector<T> euclidean_distance_matrix(som_size);
         std::vector<uint32_t> best_rotation_matrix(som_size);
 
         auto&& list_of_spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
-            this->use_flip, this->interpolation, this->spatial_transformed_image_size);
+            this->use_flip, this->interpolation, this->spatial_transformed_image_dim);
 
 //        generate_euclidean_distance_matrix(&euclidean_distance_matrix[0], &best_rotation_matrix[0],
 //            som_size, som.get_data_pointer(), neuron_size, numberOfRotationsAndFlip, &rotated_images[0]);
@@ -145,10 +144,10 @@ class Trainer<SOMLayout, DataLayout, T, true> : public TrainerBase<SOMLayout, Da
 public:
 
     Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
-        uint32_t number_of_rotations, bool use_flip, uint32_t spatial_transformed_image_size, float max_update_distance,
+        uint32_t number_of_rotations, bool use_flip, uint32_t spatial_transformed_image_dim, float max_update_distance,
         Interpolation interpolation, uint16_t block_size, bool use_multiple_gpus)
      : TrainerBase<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
-           use_flip, spatial_transformed_image_size, max_update_distance, interpolation, som.get_som_layout()),
+           use_flip, spatial_transformed_image_dim, max_update_distance, interpolation, som.get_som_layout()),
        som(som),
        block_size(block_size),
        use_multiple_gpus(use_multiple_gpus),
@@ -161,7 +160,7 @@ public:
         std::vector<T> sin_alpha(number_of_rotations - 1);
 
         float angle_step_radians = 0.5 * M_PI / number_of_rotations;
-        for (int i = 0; i < number_of_rotations - 1; ++i) {
+        for (uint32_t i = 0; i < number_of_rotations - 1; ++i) {
             float angle = (i+1) * angle_step_radians;
             cos_alpha[i] = std::cos(angle);
             sin_alpha[i] = std::sin(angle);

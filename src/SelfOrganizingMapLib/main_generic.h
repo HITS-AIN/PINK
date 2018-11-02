@@ -35,7 +35,7 @@ void main_generic(InputData const & input_data)
             ,input_data.verbose
             ,input_data.numberOfRotations
             ,input_data.use_flip
-            ,input_data.spatial_transformed_image_size
+            ,input_data.spatial_transformed_image_dim
             ,input_data.max_update_distance
             ,input_data.interpolation
 #ifdef __CUDACC__

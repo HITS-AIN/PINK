@@ -42,7 +42,7 @@ InputData::InputData()
    neuron_size(0),
    som_total_size(0),
    numberOfRotationsAndFlip(0),
-   spatial_transformed_image_size(0),
+   spatial_transformed_image_dim(0),
    interpolation(Interpolation::BILINEAR),
    executionPath(ExecutionPath::UNDEFINED),
    intermediate_storage(IntermediateStorageType::OFF),
@@ -377,7 +377,7 @@ InputData::InputData(int argc, char **argv)
     som_total_size = som_size * neuron_size;
     numberOfRotationsAndFlip = use_flip ? 2 * numberOfRotations : numberOfRotations;
 
-    spatial_transformed_image_size = static_cast<uint32_t>(2 * image_dim / std::sqrt(2.0)) + 1;
+    spatial_transformed_image_dim = static_cast<uint32_t>(2 * image_dim / std::sqrt(2.0)) + 1;
 
     if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
 #if PINK_USE_CUDA
@@ -431,7 +431,7 @@ void InputData::print_parameters() const
               << "  SOM size = " << som_size << "\n"
               << "  Number of iterations = " << numIter << "\n"
               << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
-              << "  Image dimension of rotated images  = " << spatial_transformed_image_size << "\n"
+              << "  Image dimension of rotated images  = " << spatial_transformed_image_dim << "\n"
               << "  Progress = " << progressFactor << "\n"
               << "  Intermediate storage of SOM = " << intermediate_storage << "\n"
               << "  Layout = " << layout << "\n"
