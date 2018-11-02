@@ -42,7 +42,6 @@ InputData::InputData()
    neuron_size(0),
    som_total_size(0),
    numberOfRotationsAndFlip(0),
-   spatial_transformed_image_dim(0),
    interpolation(Interpolation::BILINEAR),
    executionPath(ExecutionPath::UNDEFINED),
    intermediate_storage(IntermediateStorageType::OFF),
@@ -365,19 +364,14 @@ InputData::InputData(int argc, char **argv)
     if (som_height > 1) ++dimensionality;
     if (som_depth > 1) ++dimensionality;
 
-    if (neuron_dim_in == -1) neuron_dim = image_dim * sqrt(2.0) / 2.0;
-    if (neuron_dim > image_dim) {
-        print_usage();
-        std::cout << "neuron_dim = " << neuron_dim << std::endl;
-        std::cout << "image_dim = " << image_dim << std::endl;
-        pink::exception("ERROR: Neuron dimension must be smaller or equal to image dimension.");
+    if (neuron_dim_in == -1) {
+        if (numberOfRotations == 1) neuron_dim = image_dim;
+        else neuron_dim = static_cast<uint32_t>(2 * image_dim / std::sqrt(2.0)) + 1;
     }
 
     neuron_size = neuron_dim * neuron_dim;
     som_total_size = som_size * neuron_size;
     numberOfRotationsAndFlip = use_flip ? 2 * numberOfRotations : numberOfRotations;
-
-    spatial_transformed_image_dim = static_cast<uint32_t>(2 * image_dim / std::sqrt(2.0)) + 1;
 
     if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
 #if PINK_USE_CUDA
@@ -431,7 +425,6 @@ void InputData::print_parameters() const
               << "  SOM size = " << som_size << "\n"
               << "  Number of iterations = " << numIter << "\n"
               << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
-              << "  Image dimension of rotated images  = " << spatial_transformed_image_dim << "\n"
               << "  Progress = " << progressFactor << "\n"
               << "  Intermediate storage of SOM = " << intermediate_storage << "\n"
               << "  Layout = " << layout << "\n"

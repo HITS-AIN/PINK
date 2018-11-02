@@ -24,10 +24,10 @@ void generate_euclidean_distance_matrix(std::vector<T>& euclidean_distance_matri
     for (uint32_t i = 0; i < som_size; ++i) euclidean_distance_matrix[i] = std::numeric_limits<T>::max();
 
     for (uint32_t i = 0; i < som_size; ++i, ++pdist, ++prot) {
-        #pragma omp parallel for private(tmp)
+        //#pragma omp parallel for private(tmp)
         for (uint32_t j = 0; j < num_rot; ++j) {
             tmp = euclidean_distance_square(&som[i * image_size], &rotated_images[j * image_size], image_size);
-            #pragma omp critical
+            //#pragma omp critical
             if (tmp < *pdist) {
                 *pdist = tmp;
                 *prot = j;

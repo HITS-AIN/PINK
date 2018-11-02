@@ -89,13 +89,12 @@ PYBIND11_MODULE(pink, m)
          });
 
     py::class_<Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "trainer")
-        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, uint32_t, float, Interpolation>(),
+        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, float, Interpolation>(),
             py::arg("som"),
             py::arg("distribution_function"),
             py::arg("verbosity") = 0,
             py::arg("number_of_rotations") = 360,
             py::arg("use_flip") = true,
-            py::arg("spatial_transformed_image_size") = 0,
             py::arg("max_update_distance") = 0.0,
             py::arg("interpolation") = Interpolation::BILINEAR
         )

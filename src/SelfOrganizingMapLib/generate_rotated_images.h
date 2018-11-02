@@ -23,11 +23,9 @@ namespace pink {
 /// it will be rotated in the plain spanned by the first two dimensions.
 template <typename LayoutType, typename T>
 auto generate_rotated_images(Data<LayoutType, T> const& data,
-    uint32_t num_rot, bool use_flip, Interpolation interpolation, uint32_t neuron_dim)
+    uint32_t number_of_rotations, bool use_flip, Interpolation interpolation, uint32_t neuron_dim)
 {
-    std::vector<T> rotated_images;
-
-    // Images must be quadratic
+    // Images must have at least two dimensions
     if (data.get_layout().dimensionality < 2) pink::exception("Date must have at least two dimensions for image rotation.");
     // Images must be quadratic
     if (data.get_dimension()[0] != data.get_dimension()[1]) pink::exception("Images must be quadratic.");
@@ -36,11 +34,14 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
     auto&& image_size = data.get_dimension()[0] * data.get_dimension()[1];
     auto&& neuron_size = neuron_dim * neuron_dim;
 
-    int num_real_rot = num_rot/4;
-    T angle_step_radians = 2.0 * M_PI / num_rot;
+    uint32_t number_of_spatial_transformations = number_of_rotations * (use_flip ? 2 : 1);
+    std::vector<T> rotated_images(number_of_spatial_transformations * neuron_size);
+
+    int num_real_rot = number_of_rotations / 4;
+    T angle_step_radians = 2.0 * M_PI / number_of_rotations;
 
     int spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 0;
-    for (uint32_t i = 3; i != data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
+    for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
     int offset1 = num_real_rot * spacing * neuron_size;
     int offset2 = 2 * offset1;
@@ -74,10 +75,10 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
     // Flip images
     if (use_flip)
     {
-        T *flipped_rotated_images = &rotated_images[spacing * num_rot * neuron_size];
+        T *flipped_rotated_images = &rotated_images[spacing * number_of_rotations * neuron_size];
 
         #pragma omp parallel for
-        for (uint32_t i = 0; i < num_rot; ++i) {
+        for (uint32_t i = 0; i < number_of_rotations; ++i) {
             for (int j = 0; j < spacing; ++j) {
                 flip(&rotated_images[(i * spacing + j) * neuron_size], flipped_rotated_images + (i * spacing + j) * neuron_size, neuron_dim, neuron_dim);
             }

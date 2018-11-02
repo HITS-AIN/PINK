@@ -36,14 +36,13 @@ class TrainerBase
 public:
 
     TrainerBase(std::function<float(float)> distribution_function, int verbosity,
-        uint32_t number_of_rotations, bool use_flip, uint32_t spatial_transformed_image_dim,
-        float max_update_distance, Interpolation interpolation, SOMLayout const& som_layout)
+        uint32_t number_of_rotations, bool use_flip, float max_update_distance,
+        Interpolation interpolation, SOMLayout const& som_layout)
      : distribution_function(distribution_function),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
        number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
-       spatial_transformed_image_dim(spatial_transformed_image_dim),
        max_update_distance(max_update_distance),
        interpolation(interpolation),
        update_info(som_layout)
@@ -63,7 +62,6 @@ protected:
     uint32_t number_of_rotations;
     bool use_flip;
     uint32_t number_of_spatial_transformations;
-    uint32_t spatial_transformed_image_dim;
 
     float max_update_distance;
     Interpolation interpolation;
@@ -88,24 +86,25 @@ class Trainer<SOMLayout, DataLayout, T, false> : public TrainerBase<SOMLayout, D
 public:
 
     Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
-        uint32_t number_of_rotations, bool use_flip, uint32_t spatial_transformed_image_dim, float max_update_distance,
+        uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation)
      : TrainerBase<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
-           use_flip, spatial_transformed_image_dim, max_update_distance, interpolation, som.get_som_layout()),
+           use_flip, max_update_distance, interpolation, som.get_som_layout()),
        som(som)
     {}
 
     void operator () (Data<DataLayout, T> const& data)
     {
         uint32_t som_size = som.get_som_dimension()[0] * som.get_som_dimension()[1];
-        uint32_t neuron_size = this->spatial_transformed_image_dim * this->spatial_transformed_image_dim;
+        uint32_t neuron_dim = som.get_neuron_dimension()[0];
+        uint32_t neuron_size = neuron_dim * neuron_dim;
 
         // Memory allocation
         std::vector<T> euclidean_distance_matrix(som_size);
         std::vector<uint32_t> best_rotation_matrix(som_size);
 
         auto&& list_of_spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
-            this->use_flip, this->interpolation, this->spatial_transformed_image_dim);
+            this->use_flip, this->interpolation, neuron_dim);
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             som_size, som.get_data(), neuron_size, this->number_of_spatial_transformations,
@@ -149,10 +148,10 @@ class Trainer<SOMLayout, DataLayout, T, true> : public TrainerBase<SOMLayout, Da
 public:
 
     Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
-        uint32_t number_of_rotations, bool use_flip, uint32_t spatial_transformed_image_dim, float max_update_distance,
+        uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, uint16_t block_size, bool use_multiple_gpus)
      : TrainerBase<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
-           use_flip, spatial_transformed_image_dim, max_update_distance, interpolation, som.get_som_layout()),
+           use_flip, max_update_distance, interpolation, som.get_som_layout()),
        som(som),
        block_size(block_size),
        use_multiple_gpus(use_multiple_gpus),
