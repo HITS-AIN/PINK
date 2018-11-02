@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
 #include <functional>
 #include <iostream>
@@ -96,7 +97,8 @@ public:
 
     void operator () (Data<DataLayout, T> const& data)
     {
-        int som_size = som.get_som_dimension()[0] * som.get_som_dimension()[1];
+        uint32_t som_size = som.get_som_dimension()[0] * som.get_som_dimension()[1];
+        uint32_t neuron_size = this->spatial_transformed_image_dim * this->spatial_transformed_image_dim;
 
         // Memory allocation
         std::vector<T> euclidean_distance_matrix(som_size);
@@ -105,25 +107,28 @@ public:
         auto&& list_of_spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
             this->use_flip, this->interpolation, this->spatial_transformed_image_dim);
 
-//        generate_euclidean_distance_matrix(&euclidean_distance_matrix[0], &best_rotation_matrix[0],
-//            som_size, som.get_data_pointer(), neuron_size, numberOfRotationsAndFlip, &rotated_images[0]);
-//
-//        uint32_t best_match = find_best_match(euclidean_distance_matrix[0], som_size);
-//
-//        auto&& current_neuron = som.get_data_pointer();
-//        for (int i = 0; i < som_size; ++i) {
-//            float distance = CartesianDistanceFunctor<2, false>(som.get_som_dimension()[0], som.get_som_dimension()[1])(best_match, i);
-//            if (this->max_update_distance <= 0 or distance < this->max_update_distance) {
-//                float factor = this->distribution_function(distance);
-//                float *current_image = &rotated_images[0] + best_rotation_matrix[i] * neuron_size;
-//                for (int j = 0; j < neuron_size; ++j) {
-//                    current_neuron[j] -= (current_neuron[j] - current_image[j]) * factor;
-//                }
-//            }
-//            current_neuron += neuron_size;
-//        }
-//
-//        ++this->update_info[best_match];
+        generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
+            som_size, som.get_data(), neuron_size, this->number_of_spatial_transformations,
+            list_of_spatial_transformed_images);
+
+        /// Find the best matching neuron, with the lowest euclidean distance
+        auto&& best_match = std::distance(euclidean_distance_matrix.begin(),
+            std::min_element(std::begin(euclidean_distance_matrix), std::end(euclidean_distance_matrix)));
+
+        auto&& current_neuron = som.get_data_pointer();
+        for (uint32_t i = 0; i < som_size; ++i) {
+            float distance = CartesianDistanceFunctor<2, false>(som.get_som_dimension()[0], som.get_som_dimension()[1])(best_match, i);
+            if (this->max_update_distance <= 0 or distance < this->max_update_distance) {
+                float factor = this->distribution_function(distance);
+                T *current_image = &list_of_spatial_transformed_images[best_rotation_matrix[i] * neuron_size];
+                for (uint32_t j = 0; j < neuron_size; ++j) {
+                    current_neuron[j] -= (current_neuron[j] - current_image[j]) * factor;
+                }
+            }
+            current_neuron += neuron_size;
+        }
+
+        ++this->update_info[best_match];
     }
 
 private:

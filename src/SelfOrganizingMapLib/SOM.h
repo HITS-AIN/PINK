@@ -79,6 +79,9 @@ public:
                data == other.data;
     }
 
+    auto get_data() { return data; }
+    auto get_data() const { return data; }
+
     auto get_data_pointer() { return &data[0]; }
     auto get_data_pointer() const { return &data[0]; }
 
