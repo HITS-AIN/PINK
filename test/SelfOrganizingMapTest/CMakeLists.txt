@@ -9,10 +9,12 @@ add_executable(
     main.cpp
     Cartesian.cpp
     Trainer.cpp
+    TrainerCompare.cpp
 )
     
 target_link_libraries(
     SelfOrganizingMapTest
+    SelfOrganizingMapLib
     ${GTEST_BOTH_LIBRARIES}
     ${CUDA_LIBRARIES}
 )

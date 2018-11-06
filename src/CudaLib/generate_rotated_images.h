@@ -30,7 +30,7 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, Data<La
 
     auto&& d_image = data.get_device_vector();
 
-    uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 0;
+    uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
     for (uint32_t i = 3; i != data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
     // Crop first image

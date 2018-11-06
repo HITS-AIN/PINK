@@ -6,6 +6,7 @@
  */
 
 #include <cmath>
+#include <limits>
 #include <omp.h>
 
 #include "SelfOrganizingMapLib/CartesianLayout.h"
@@ -14,6 +15,7 @@
 #include "SelfOrganizingMapLib/SOM.h"
 #include "SelfOrganizingMapLib/SOMIO.h"
 #include "SelfOrganizingMapLib/Trainer.h"
+#include "SelfOrganizingMapLib/Trainer_generic.h"
 #include "UtilitiesLib/DistributionFunctor.h"
 
 #include "gtest/gtest.h"
@@ -51,7 +53,7 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d_float)
     uint32_t neuron_dim = 2;
 
     DataType data({image_dim, image_dim}, {1, 2, 3, 4});
-    SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<float>(16, 1.0));
+    SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<float>(16, 0.0));
     //SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<float>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
 
     auto&& f = GaussianFunctor(1.1, 0.2);
@@ -60,25 +62,43 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d_float)
     trainer(data);
 
     std::cout << som << std::endl;
-    std::cout << som.get_neuron({0, 0}) << std::endl;
-    std::cout << som.get_neuron({1, 0}) << std::endl;
-    std::cout << som.get_neuron({0, 1}) << std::endl;
-    std::cout << som.get_neuron({1, 1}) << std::endl;
 }
 
-TEST(SelfOrganizingMapTest, trainer_cartesian_2d_uint8)
+TEST(SelfOrganizingMapTest, trainer_generic_cartesian_2d_float)
 {
-    typedef Data<CartesianLayout<2>, uint8_t> DataType;
-    typedef SOM<CartesianLayout<2>, CartesianLayout<2>, uint8_t> SOMType;
-    typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, uint8_t, false> MyTrainer;
+    typedef Data<CartesianLayout<2>, float> DataType;
+    typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> SOMType;
+    typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
     uint32_t som_dim = 2;
     uint32_t image_dim = 2;
     uint32_t neuron_dim = 2;
 
     DataType data({image_dim, image_dim}, {1, 2, 3, 4});
-    //SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<uint8_t>(16, 0));
-    SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
+    SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<float>(16, 0.0));
+    //SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<float>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
+
+    auto&& f = GaussianFunctor(1.1, 0.2);
+
+    MyTrainer trainer(som, f, 0, 1, false, 0.0, Interpolation::BILINEAR);
+    trainer(data);
+
+    std::cout << som << std::endl;
+}
+
+TEST(SelfOrganizingMapTest, trainer_generic_cartesian_2d_int)
+{
+    typedef Data<CartesianLayout<2>, int> DataType;
+    typedef SOM<CartesianLayout<2>, CartesianLayout<2>, int> SOMType;
+    typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, int, false> MyTrainer;
+
+    uint32_t som_dim = 2;
+    uint32_t image_dim = 2;
+    uint32_t neuron_dim = 2;
+
+    DataType data({image_dim, image_dim}, {1, 2, 3, std::numeric_limits<int>::max()});
+    SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<int>(16, 0));
+    //SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
 
     auto&& f = GaussianFunctor(1.1, 0.2);
 

@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <omp.h>
 #include <vector>
 
 #include "Data.h"
@@ -40,7 +41,7 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
     int num_real_rot = number_of_rotations / 4;
     T angle_step_radians = 2.0 * M_PI / number_of_rotations;
 
-    int spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 0;
+    int spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
     for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
     int offset1 = num_real_rot * spacing * neuron_size;
@@ -54,9 +55,11 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
         T const *current_image = &data[i * image_size];
         T *current_rotated_image = &rotated_images[i * neuron_size];
         resize(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim);
-        rotate_90_degrees(current_rotated_image, current_rotated_image + offset1, neuron_dim, neuron_dim);
-        rotate_90_degrees(current_rotated_image + offset1, current_rotated_image + offset2, neuron_dim, neuron_dim);
-        rotate_90_degrees(current_rotated_image + offset2, current_rotated_image + offset3, neuron_dim, neuron_dim);
+        if (number_of_rotations != 1) {
+        	rotate_90_degrees(current_rotated_image, current_rotated_image + offset1, neuron_dim, neuron_dim);
+            rotate_90_degrees(current_rotated_image + offset1, current_rotated_image + offset2, neuron_dim, neuron_dim);
+            rotate_90_degrees(current_rotated_image + offset2, current_rotated_image + offset3, neuron_dim, neuron_dim);
+        }
     }
 
     // Rotate images

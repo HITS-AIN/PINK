@@ -1,21 +1,24 @@
 /**
- * @file   SelfOrganizingMapLib/Trainer.h
+ * @file   SelfOrganizingMapLib/Trainer_generic.h
  * @date   Oct 11, 2018
  * @author Bernd Doser, HITS gGmbH
  */
 
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
 #include <functional>
 #include <iostream>
 #include <vector>
 
 #include "Data.h"
-#include "DataIO.h"
+#include "find_best_match.h"
+#include "generate_rotated_images.h"
+#include "generate_euclidean_distance_matrix.h"
 #include "ImageProcessingLib/Interpolation.h"
-#include "SelfOrganizingMap.h"
 #include "SOM.h"
+#include "UtilitiesLib/DistanceFunctor.h"
 #include "UtilitiesLib/pink_exception.h"
 
 #ifdef __CUDACC__
@@ -28,12 +31,12 @@
 namespace pink {
 
 template <typename SOMLayout, typename DataLayout, typename T>
-class TrainerBase
+class TrainerBase_generic
 {
 public:
 
-    TrainerBase(std::function<float(float)> distribution_function, int verbosity,
-        int number_of_rotations, bool use_flip, float max_update_distance,
+    TrainerBase_generic(std::function<float(float)> distribution_function, int verbosity,
+        uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, SOMLayout const& som_layout)
      : distribution_function(distribution_function),
        verbosity(verbosity),
@@ -44,7 +47,7 @@ public:
        interpolation(interpolation),
        update_info(som_layout)
     {
-        if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
+        if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
     }
 
@@ -69,61 +72,55 @@ protected:
 
 /// Primary template will never be instantiated
 template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
-class Trainer;
+class Trainer_generic;
 
 #ifndef __CUDACC__
 
 /// CPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Trainer<SOMLayout, DataLayout, T, false>  : public TrainerBase<SOMLayout, DataLayout, T>
+class Trainer_generic<SOMLayout, DataLayout, T, false> : public TrainerBase_generic<SOMLayout, DataLayout, T>
 {
     typedef SOM<SOMLayout, DataLayout, T> SOMType;
-    typedef typename TrainerBase<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
+    typedef typename TrainerBase_generic<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
 
 public:
 
-    Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity = 0,
-        int number_of_rotations = 360, bool use_flip = true, float max_update_distance = 0.0,
-        Interpolation interpolation = Interpolation::BILINEAR)
-     : TrainerBase<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
+    Trainer_generic(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
+        uint32_t number_of_rotations, bool use_flip, float max_update_distance,
+        Interpolation interpolation)
+     : TrainerBase_generic<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, som.get_som_layout()),
        som(som)
     {}
 
     void operator () (Data<DataLayout, T> const& data)
     {
-        int som_size = som.get_som_dimension()[0] * som.get_som_dimension()[1];
-        int neuron_size = som.get_neuron_dimension()[0] * som.get_neuron_dimension()[1];
-        int numberOfRotationsAndFlip = this->number_of_rotations;
-        if (this->use_flip) numberOfRotationsAndFlip *= 2;
-        int rotatedImagesSize = numberOfRotationsAndFlip * neuron_size;
-
-        if (this->verbosity) std::cout << "som_size = " << som_size << "\n"
-                                 << "neuron_size = " << neuron_size << "\n"
-                                 << "number_of_rotations = " << this->number_of_rotations << "\n"
-                                 << "numberOfRotationsAndFlip = " << numberOfRotationsAndFlip << "\n"
-                                 << "rotatedImagesSize = " << rotatedImagesSize << std::endl;
+        uint32_t som_size = som.get_som_dimension()[0] * som.get_som_dimension()[1];
+        uint32_t neuron_dim = som.get_neuron_dimension()[0];
+        uint32_t neuron_size = neuron_dim * neuron_dim;
 
         // Memory allocation
-        std::vector<T> rotatedImages(rotatedImagesSize);
-        std::vector<T> euclideanDistanceMatrix(som_size);
-        std::vector<uint32_t> bestRotationMatrix(som_size);
+        std::vector<T> euclidean_distance_matrix(som_size);
+        std::vector<uint32_t> best_rotation_matrix(som_size);
 
-        generateRotatedImages(&rotatedImages[0], const_cast<float*>(data.get_data_pointer()), this->number_of_rotations,
-            data.get_dimension()[0], som.get_neuron_dimension()[0], this->use_flip, this->interpolation, 1);
+        auto&& list_of_spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
+            this->use_flip, this->interpolation, neuron_dim);
 
-        generateEuclideanDistanceMatrix(&euclideanDistanceMatrix[0], &bestRotationMatrix[0],
-            som_size, som.get_data_pointer(), neuron_size, numberOfRotationsAndFlip, &rotatedImages[0]);
+        generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
+            som_size, som.get_data(), neuron_size, this->number_of_spatial_transformations,
+            list_of_spatial_transformed_images);
 
-        uint32_t best_match = findBestMatchingNeuron(&euclideanDistanceMatrix[0], som_size);
+        /// Find the best matching neuron, with the lowest euclidean distance
+        auto&& best_match = std::distance(euclidean_distance_matrix.begin(),
+            std::min_element(std::begin(euclidean_distance_matrix), std::end(euclidean_distance_matrix)));
 
-        float *current_neuron = som.get_data_pointer();
-        for (int i = 0; i < som_size; ++i) {
+        auto&& current_neuron = som.get_data_pointer();
+        for (uint32_t i = 0; i < som_size; ++i) {
             float distance = CartesianDistanceFunctor<2, false>(som.get_som_dimension()[0], som.get_som_dimension()[1])(best_match, i);
             if (this->max_update_distance <= 0 or distance < this->max_update_distance) {
                 float factor = this->distribution_function(distance);
-                float *current_image = &rotatedImages[0] + bestRotationMatrix[i] * neuron_size;
-                for (int j = 0; j < neuron_size; ++j) {
+                T *current_image = &list_of_spatial_transformed_images[best_rotation_matrix[i] * neuron_size];
+                for (uint32_t j = 0; j < neuron_size; ++j) {
                     current_neuron[j] -= (current_neuron[j] - current_image[j]) * factor;
                 }
             }
@@ -131,14 +128,6 @@ public:
         }
 
         ++this->update_info[best_match];
-
-    //		auto&& list_of_spatial_transformed_images = SpatialTransformer(Rotation<0,1>(number_of_rotations), use_flip)(image);
-    //		auto&& [euclidean_distance] generate_euclidean_distance_matrix(som, list_of_spatial_transformed_images);
-    //
-    //		auto&& best_match = find_best_match();
-    //
-    //		update_info(best_match);
-    //		update_neurons(best_match);
     }
 
 private:
@@ -151,21 +140,19 @@ private:
 
 /// GPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Trainer<SOMLayout, DataLayout, T, true> : public TrainerBase<SOMLayout, DataLayout, T>
+class Trainer_generic<SOMLayout, DataLayout, T, true> : public TrainerBase_generic<SOMLayout, DataLayout, T>
 {
     typedef SOM<SOMLayout, DataLayout, T> SOMType;
-    typedef typename TrainerBase<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
+    typedef typename TrainerBase_generic<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
 
 public:
 
-    Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity = 0,
-        int number_of_rotations = 360, bool use_flip = true, float max_update_distance = 0.0,
-        Interpolation interpolation = Interpolation::BILINEAR, uint16_t block_size = 1,
-        bool use_multiple_gpus = true)
-     : TrainerBase<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
+    Trainer_generic(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
+        uint32_t number_of_rotations, bool use_flip, float max_update_distance,
+        Interpolation interpolation, uint16_t block_size, bool use_multiple_gpus)
+     : TrainerBase_generic<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, som.get_som_layout()),
        som(som),
-       number_of_channels(1),
        block_size(block_size),
        use_multiple_gpus(use_multiple_gpus),
        d_list_of_spatial_transformed_images(this->number_of_spatial_transformations * som.get_neuron_size()),
@@ -173,16 +160,11 @@ public:
        d_best_rotation_matrix(som.get_number_of_neurons()),
        d_best_match(1)
     {
-        if (som.get_neuron_layout().dimensionality > 2)
-        {
-            number_of_channels *= som.get_neuron_dimension()[2];
-        }
-
         std::vector<T> cos_alpha(number_of_rotations - 1);
         std::vector<T> sin_alpha(number_of_rotations - 1);
 
         float angle_step_radians = 0.5 * M_PI / number_of_rotations;
-        for (int i = 0; i < number_of_rotations - 1; ++i) {
+        for (uint32_t i = 0; i < number_of_rotations - 1; ++i) {
             float angle = (i+1) * angle_step_radians;
             cos_alpha[i] = std::cos(angle);
             sin_alpha[i] = std::sin(angle);
@@ -195,13 +177,11 @@ public:
     /// Training the SOM by a single data point
     void operator () (Data<DataLayout, T> const& data)
     {
-        thrust::device_vector<T> d_image(data.get_data());
+        auto&& image_dim = data.get_dimension()[0];
+        auto&& neuron_dim = som.get_neuron_dimension()[0];
 
-        auto image_dim = data.get_dimension()[0];
-        auto neuron_dim = som.get_neuron_dimension()[0];
-
-        generate_rotated_images(d_list_of_spatial_transformed_images, d_image, this->number_of_rotations,
-            image_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha, number_of_channels);
+        generate_rotated_images(d_list_of_spatial_transformed_images, data, this->number_of_rotations,
+            image_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha);
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             som.get_number_of_neurons(), som.get_neuron_size(), som.get_device_vector(), this->number_of_spatial_transformations,
@@ -214,7 +194,7 @@ public:
 //			inputData.sigma, inputData.damping, max_update_distance,
 //			inputData.usePBC, inputData.dimensionality);
 
-        int best_match;
+        uint32_t best_match;
         thrust::copy(d_best_match.begin(), d_best_match.end(), &best_match);
         ++this->update_info[best_match];
     }
@@ -223,8 +203,6 @@ private:
 
     /// A reference to the SOM will be trained
     SOMType& som;
-
-    uint32_t number_of_channels;
 
     uint16_t block_size;
 

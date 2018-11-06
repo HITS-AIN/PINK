@@ -12,7 +12,7 @@
 #include "SelfOrganizingMapLib/DataIO.h"
 #include "SelfOrganizingMapLib/FileIO.h"
 #include "SOM.h"
-#include "Trainer.h"
+#include "Trainer_generic.h"
 #include "UtilitiesLib/DistributionFunction.h"
 #include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/InputData.h"
@@ -29,7 +29,7 @@ void main_generic(InputData const & input_data)
 
     if (input_data.executionPath == ExecutionPath::TRAIN)
     {
-        Trainer<SOMLayout, DataLayout, T, UseGPU> trainer(
+        Trainer_generic<SOMLayout, DataLayout, T, UseGPU> trainer(
             som
             ,distribution_function
             ,input_data.verbose
