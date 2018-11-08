@@ -25,7 +25,7 @@ using namespace pink;
 
 struct TrainerCompareTestData
 {
-	TrainerCompareTestData(int num_rot)
+    TrainerCompareTestData(int num_rot)
      : num_rot(num_rot)
     {}
 

@@ -56,7 +56,7 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
         T *current_rotated_image = &rotated_images[i * neuron_size];
         resize(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim);
         if (number_of_rotations != 1) {
-        	rotate_90_degrees(current_rotated_image, current_rotated_image + offset1, neuron_dim, neuron_dim);
+            rotate_90_degrees(current_rotated_image, current_rotated_image + offset1, neuron_dim, neuron_dim);
             rotate_90_degrees(current_rotated_image + offset1, current_rotated_image + offset2, neuron_dim, neuron_dim);
             rotate_90_degrees(current_rotated_image + offset2, current_rotated_image + offset3, neuron_dim, neuron_dim);
         }

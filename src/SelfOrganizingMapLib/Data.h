@@ -26,6 +26,7 @@ public:
     typedef T ValueType;
     typedef Data<Layout, T> SelfType;
     typedef Layout LayoutType;
+    typedef typename LayoutType::DimensionType DimensionType;
 
     /// Default construction
     Data()
@@ -62,8 +63,12 @@ public:
                data == other.data;
     }
 
+    /// Return the element
     auto operator [] (uint32_t position) -> T& { return data[position]; }
     auto operator [] (uint32_t position) const -> T const& { return data[position]; }
+
+    auto operator [] (DimensionType const& position) -> T& { return data[layout.get_position(position)]; }
+    auto operator [] (DimensionType const& position) const -> T const& { return data[layout.get_position(position)]; }
 
 //    auto get_data() { return data; }
 //    auto get_data() const { return data; }
@@ -74,8 +79,8 @@ public:
     auto get_layout() -> LayoutType { return layout; }
     auto get_layout() const -> LayoutType const { return layout; }
 
-    auto get_dimension() -> typename LayoutType::DimensionType { return layout.dimension; }
-    auto get_dimension() const -> typename LayoutType::DimensionType const { return layout.dimension; }
+    auto get_dimension() -> DimensionType { return layout.dimension; }
+    auto get_dimension() const -> DimensionType const { return layout.dimension; }
 
 #ifdef __CUDACC__
     /// Return SOM device vector

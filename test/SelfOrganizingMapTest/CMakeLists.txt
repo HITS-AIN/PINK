@@ -7,7 +7,7 @@ include_directories(
 add_executable(
     SelfOrganizingMapTest
     main.cpp
-    Cartesian.cpp
+    Data.cpp
     Trainer.cpp
     TrainerCompare.cpp
 )
