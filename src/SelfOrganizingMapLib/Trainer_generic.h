@@ -18,7 +18,6 @@
 #include "generate_euclidean_distance_matrix.h"
 #include "ImageProcessingLib/Interpolation.h"
 #include "SOM.h"
-#include "UtilitiesLib/DistanceFunctor.h"
 #include "UtilitiesLib/pink_exception.h"
 
 #ifdef __CUDACC__
@@ -115,7 +114,7 @@ public:
 
         auto&& current_neuron = som.get_data_pointer();
         for (uint32_t i = 0; i < som_size; ++i) {
-            float distance = CartesianDistanceFunctor<2, false>(som.get_som_dimension()[0], som.get_som_dimension()[1])(best_match, i);
+            float distance = som.get_som_layout().get_distance(best_match, i);
             if (this->max_update_distance <= 0 or distance < this->max_update_distance) {
                 float factor = this->distribution_function(distance);
                 T *current_image = &list_of_spatial_transformed_images[best_rotation_matrix[i] * neuron_size];

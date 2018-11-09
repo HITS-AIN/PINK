@@ -10,7 +10,7 @@ cuda_add_executable(
     mixed_precision.cpp
     #EuclideanDistanceTest.cpp
     #RotationTest.cpp
-    TrainerCompare.cu
+    #TrainerCompare.cu
     #UpdateNeuronsTest.cpp
 )
     
