@@ -4,6 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#pragma once
+
 #include <cuda_runtime.h>
 #include <thrust/device_ptr.h>
 

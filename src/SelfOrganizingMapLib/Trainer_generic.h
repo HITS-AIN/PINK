@@ -74,7 +74,6 @@ protected:
 template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
 class Trainer_generic;
 
-#ifndef __CUDACC__
 
 /// CPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
@@ -136,7 +135,8 @@ private:
     SOMType& som;
 };
 
-#else // __CUDACC__
+
+#ifdef __CUDACC__
 
 /// GPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>

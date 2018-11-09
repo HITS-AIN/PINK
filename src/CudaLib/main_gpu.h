@@ -5,6 +5,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#pragma once
+
 #include "UtilitiesLib/InputData.h"
 
 namespace pink {

@@ -4,12 +4,13 @@ include_directories(
     ${GTEST_INCLUDE_DIR}
 )
 
-add_executable(
+cuda_add_executable(
     CudaTest
     main.cpp
     mixed_precision.cpp
-    EuclideanDistanceTest.cpp
-    RotationTest.cpp
+    #EuclideanDistanceTest.cpp
+    #RotationTest.cpp
+    TrainerCompare.cu
     #UpdateNeuronsTest.cpp
 )
     

@@ -4,6 +4,8 @@
  * @author Bernd Doser <bernd.doser@h-its.org>
  */
 
+#pragma once
+
 #include <cstddef>
 
 namespace pink {

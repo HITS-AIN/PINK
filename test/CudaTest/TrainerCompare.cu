@@ -41,8 +41,8 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
 {
     typedef Data<CartesianLayout<2>, float> DataType;
     typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> SOMType;
-    typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
-    typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer_generic;
+    typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer_cpu;
+    typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true> MyTrainer_gpu;
 
     uint32_t som_dim = 2;
     uint32_t image_dim = 2;
@@ -54,10 +54,10 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
 
     auto&& f = GaussianFunctor(1.1, 0.2);
 
-    MyTrainer trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR);
+    MyTrainer_cpu trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR);
     trainer1(data);
 
-    MyTrainer_generic trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR);
+    MyTrainer_gpu trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, 256, true);
     trainer2(data);
 
     EXPECT_EQ(som1.get_data().size(), som2.get_data().size());

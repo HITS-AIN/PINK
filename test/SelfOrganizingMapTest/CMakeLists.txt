@@ -1,5 +1,4 @@
 include_directories(
-    ${CUDA_INCLUDE_DIRS}
     ${GTEST_INCLUDE_DIR}
     ${PROJECT_SOURCE_DIR}/src
 )
@@ -16,7 +15,6 @@ target_link_libraries(
     SelfOrganizingMapTest
     SelfOrganizingMapLib
     ${GTEST_BOTH_LIBRARIES}
-    ${CUDA_LIBRARIES}
 )
 
 ADD_TEST(
