@@ -10,11 +10,13 @@
 #include <cstddef>
 #include <numeric>
 
+#include "Dimension.h"
+
 namespace pink {
 
 struct HexagonalLayout
 {
-    static const size_t dimensionality = 2;
+    static const uint8_t dimensionality = 2;
     static constexpr const char* type = "HexagonalLayout";
 
     typedef uint32_t IndexType;

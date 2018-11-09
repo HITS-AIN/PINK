@@ -31,9 +31,9 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
     // Images must be quadratic
     if (data.get_dimension()[0] != data.get_dimension()[1]) pink::exception("Images must be quadratic.");
 
-    auto&& image_dim = data.get_dimension()[0];
-    auto&& image_size = data.get_dimension()[0] * data.get_dimension()[1];
-    auto&& neuron_size = neuron_dim * neuron_dim;
+    auto image_dim = data.get_dimension()[0];
+    auto image_size = data.get_dimension()[0] * data.get_dimension()[1];
+    auto neuron_size = neuron_dim * neuron_dim;
 
     uint32_t number_of_spatial_transformations = number_of_rotations * (use_flip ? 2 : 1);
     std::vector<T> rotated_images(number_of_spatial_transformations * neuron_size);

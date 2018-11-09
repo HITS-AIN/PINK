@@ -6,17 +6,18 @@
 
 #pragma once
 
-#include <stddef.h>
 #include <array>
-#include <cstdint>
+#include <cstddef>
 #include <numeric>
+
+#include "Dimension.h"
 
 namespace pink {
 
-template <size_t dim>
+template <uint8_t dim>
 struct CartesianLayout
 {
-    static const size_t dimensionality = dim;
+    static const uint8_t dimensionality = dim;
     static constexpr const char* type = "CartesianLayout";
 
     typedef uint32_t IndexType;
