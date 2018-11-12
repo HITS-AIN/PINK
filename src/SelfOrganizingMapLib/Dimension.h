@@ -12,10 +12,19 @@
 
 namespace pink {
 
+inline std::ostream& operator << (std::ostream& os, std::array<uint32_t, 1> const& d)
+{
+    return os << d[0];
+}
+
 inline std::ostream& operator << (std::ostream& os, std::array<uint32_t, 2> const& d)
 {
-    for (uint8_t i = 0; i < 1; ++i) os << d[i] << "x";
-    return os << d[1];
+    return os << d[0] << "x" << d[1];
+}
+
+inline std::ostream& operator << (std::ostream& os, std::array<uint32_t, 3> const& d)
+{
+    return os << d[0] << "x" << d[1] << "x" << d[2];
 }
 
 } // namespace pink

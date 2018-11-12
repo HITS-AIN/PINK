@@ -9,6 +9,7 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
+#include <iostream>
 #include <numeric>
 
 #include "Dimension.h"
@@ -30,16 +31,7 @@ struct CartesianLayout
     }
 
     /// Returns the array index of a layout position
-    auto get_position(DimensionType const& p) const
-    {
-    	IndexType i = p[0];
-    	IndexType m = dimension[0];
-        for (uint8_t i = 1; i < dimensionality; ++i) {
-            i += p[i] * m;
-            m *= dimension[i];
-        }
-        return i;
-    }
+    auto get_position(DimensionType const& p) const;
 
     /// Returns the layout position of an array index
     auto get_position(IndexType i) const;
@@ -49,7 +41,7 @@ struct CartesianLayout
     {
     	float distance = 0.0;
     	for (uint8_t i = 0; i < dimensionality; ++i) {
-    		distance += std::pow(p1[i] - p2[i], 2);
+    		distance += std::pow(static_cast<float>(p1[i]) - p2[i], 2);
     	}
         return std::sqrt(distance);
     }
@@ -65,21 +57,44 @@ struct CartesianLayout
 };
 
 template <>
+inline auto CartesianLayout<1>::get_position(DimensionType const& p) const
+{
+    return p[0];
+}
+
+template <>
+inline auto CartesianLayout<2>::get_position(DimensionType const& p) const
+{
+    return p[0] + p[1] * dimension[0];
+}
+
+template <>
+inline auto CartesianLayout<3>::get_position(DimensionType const& p) const
+{
+    return p[0] + p[1] * dimension[0] + p[2] * dimension[0] * dimension[1];
+}
+
+template <>
 inline auto CartesianLayout<1>::get_position(IndexType i) const
 {
-    return DimensionType();
+    return DimensionType({i});
 }
 
 template <>
 inline auto CartesianLayout<2>::get_position(IndexType i) const
 {
-    return DimensionType();
+	IndexType y = i / dimension[1];
+	IndexType x = i % dimension[1];
+    return DimensionType({x, y});
 }
 
 template <>
 inline auto CartesianLayout<3>::get_position(IndexType i) const
 {
-    return DimensionType();
+	IndexType z = i / dimension[0] / dimension[1];
+	IndexType y = (i - z * dimension[0] * dimension[1]) / dimension[1];
+	IndexType x = i % dimension[1];
+    return DimensionType({x, y, z});
 }
 
 } // namespace pink

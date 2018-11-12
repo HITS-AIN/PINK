@@ -28,7 +28,7 @@ struct HexagonalLayout
         return dim_square * dim_square - dimension[0] * (dimension[0] + 1);
     }
 
-    auto get_distance(IndexType p1, IndexType p2) const
+    auto get_distance([[maybe_unused]] IndexType p1, [[maybe_unused]] IndexType p2) const
     {
     	float distance = 0.0;
         return distance;

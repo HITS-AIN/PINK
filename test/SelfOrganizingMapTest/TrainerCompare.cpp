@@ -25,12 +25,19 @@ using namespace pink;
 
 struct TrainerCompareTestData
 {
-    TrainerCompareTestData(int num_rot, bool use_flip)
-     : num_rot(num_rot),
+    TrainerCompareTestData(uint32_t som_dim, uint32_t image_dim, uint32_t neuron_dim, int num_rot, bool use_flip)
+	 : som_dim(som_dim),
+	   image_dim(image_dim),
+	   neuron_dim(neuron_dim),
+       num_rot(num_rot),
        use_flip(use_flip)
     {}
 
-    int num_rot;
+    uint32_t som_dim;
+    uint32_t image_dim;
+    uint32_t neuron_dim;
+
+    uint32_t num_rot;
     bool use_flip;
 };
 
@@ -44,13 +51,9 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
     typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
     typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer_generic;
 
-    uint32_t som_dim = 2;
-    uint32_t image_dim = 2;
-    uint32_t neuron_dim = 2;
-
-    DataType data({image_dim, image_dim}, {1, 2, 3, 4});
-    SOMType som1({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<float>(16, 0.0));
-    SOMType som2({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<float>(16, 0.0));
+    DataType data({GetParam().image_dim, GetParam().image_dim}, {1, 2, 3, 4});
+    SOMType som1({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
+    SOMType som2({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
 
     auto&& f = GaussianFunctor(1.1, 0.2);
 
@@ -66,10 +69,10 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
 
 INSTANTIATE_TEST_CASE_P(TrainerCompareTest_all, TrainerCompareTest,
     ::testing::Values(
-        TrainerCompareTestData(1, false)
-        ,TrainerCompareTestData(4, false)
-        //,TrainerCompareTestData(8, false)
-        ,TrainerCompareTestData(1, true)
-        ,TrainerCompareTestData(4, true)
-        //,TrainerCompareTestData(8, true)
+        TrainerCompareTestData(2, 2, 2, 1, false)
+       ,TrainerCompareTestData(2, 2, 2, 4, false)
+       //,TrainerCompareTestData(2, 2, 2, 8, false)
+       ,TrainerCompareTestData(2, 2, 2, 1, true)
+       ,TrainerCompareTestData(2, 2, 2, 4, true)
+       //,TrainerCompareTestData(2, 2, 2, 8, true)
 ));
