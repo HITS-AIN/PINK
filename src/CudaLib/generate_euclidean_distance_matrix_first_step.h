@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <stdio.h>
 #include <thrust/device_ptr.h>
 #include <thrust/device_vector.h>
 
@@ -36,7 +35,7 @@ void warp_reduce(volatile T *data, int tid)
  */
 template <uint16_t block_size, typename T>
 __global__
-void euclidean_distance_kernel(thrust::device_ptr<const T> som, thrust::device_ptr<const T> rotatedImages,
+void euclidean_distance_kernel(thrust::device_ptr<const T> som, thrust::device_ptr<const T> rotated_images,
     thrust::device_ptr<T> firstStep, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
@@ -47,7 +46,7 @@ void euclidean_distance_kernel(thrust::device_ptr<const T> som, thrust::device_p
 
     for (uint32_t i = tid; i < neuron_size; i += block_size)
     {
-        diff = som[blockIdx.y * neuron_size] - rotatedImages[blockIdx.x * neuron_size];
+        diff = som[blockIdx.y * neuron_size] - rotated_images[blockIdx.x * neuron_size];
         sum += diff * diff;
     }
 
@@ -71,7 +70,7 @@ void euclidean_distance_kernel(thrust::device_ptr<const T> som, thrust::device_p
  */
 template <typename T>
 void generate_euclidean_distance_matrix_first_step(thrust::device_vector<T> const& d_som,
-    thrust::device_vector<T> const& d_rotatedImages, thrust::device_vector<T>& d_firstStep,
+    thrust::device_vector<T> const& d_rotated_images, thrust::device_vector<T>& d_first_step,
     uint32_t number_of_spatial_transformations, uint32_t number_of_neurons, uint32_t neuron_size, uint16_t block_size)
 {
     // Setup execution parameters
@@ -81,13 +80,13 @@ void generate_euclidean_distance_matrix_first_step(thrust::device_vector<T> cons
     // Start kernel
     switch (block_size)
     {
-        case 1024: euclidean_distance_kernel<1024><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotatedImages[0], &d_firstStep[0], neuron_size); break;
-        case  512: euclidean_distance_kernel< 512><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotatedImages[0], &d_firstStep[0], neuron_size); break;
-        case  256: euclidean_distance_kernel< 256><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotatedImages[0], &d_firstStep[0], neuron_size); break;
-        case  128: euclidean_distance_kernel< 128><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotatedImages[0], &d_firstStep[0], neuron_size); break;
-        case   64: euclidean_distance_kernel<  64><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotatedImages[0], &d_firstStep[0], neuron_size); break;
-        case   32: euclidean_distance_kernel<  32><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotatedImages[0], &d_firstStep[0], neuron_size); break;
-        case   16: euclidean_distance_kernel<  16><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotatedImages[0], &d_firstStep[0], neuron_size); break;
+        case 1024: euclidean_distance_kernel<1024><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case  512: euclidean_distance_kernel< 512><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case  256: euclidean_distance_kernel< 256><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case  128: euclidean_distance_kernel< 128><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case   64: euclidean_distance_kernel<  64><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case   32: euclidean_distance_kernel<  32><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case   16: euclidean_distance_kernel<  16><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
         default:
         {
             fprintf(stderr, "cuda_generateEuclideanDistanceMatrix_firstStep: block size (%i) not supported.", block_size);

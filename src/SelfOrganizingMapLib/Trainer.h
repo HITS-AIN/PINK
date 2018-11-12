@@ -16,6 +16,7 @@
 #include "ImageProcessingLib/Interpolation.h"
 #include "SelfOrganizingMap.h"
 #include "SOM.h"
+#include "UtilitiesLib/DistanceFunctor.h"
 #include "UtilitiesLib/pink_exception.h"
 
 #ifdef __CUDACC__

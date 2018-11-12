@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "ImageProcessingLib/ImageProcessing.h"
-#include "UtilitiesLib/DistanceFunctor.h"
 #include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Point.h"
