@@ -79,11 +79,23 @@ public:
                data == other.data;
     }
 
-    auto get_data() { return data; }
-    auto get_data() const { return data; }
+    auto size() const { return data.size(); }
 
     auto get_data_pointer() { return &data[0]; }
     auto get_data_pointer() const { return &data[0]; }
+
+#ifdef __CUDACC__
+    /// Return device vector
+    auto get_device_vector() { return d_data; }
+    auto get_device_vector() const { return d_data; }
+
+    /// Return device pointer
+    auto get_device_pointer() { return &d_data[0]; }
+    auto get_device_pointer() const { return &d_data[0]; }
+
+    void update_host() { data = d_data; }
+    void update_device() { d_data = data; }
+#endif
 
     auto get_neuron(SOMLayoutType const& position) {
         auto&& beg = data.begin() + (position.dimension[0] * som_layout.dimension[1] + position.dimension[1]) * neuron_layout.get_size();
@@ -104,12 +116,6 @@ public:
     auto get_neuron_dimension() -> typename NeuronLayoutType::DimensionType { return neuron_layout.dimension; }
     auto get_neuron_dimension() const -> typename NeuronLayoutType::DimensionType const { return neuron_layout.dimension; }
 
-#ifdef __CUDACC__
-    /// Return SOM device vector
-    auto get_device_vector() -> thrust::device_vector<T>& { return d_data; }
-    auto get_device_vector() const -> thrust::device_vector<T> const& { return d_data; }
-#endif
-
 private:
 
     template <typename A, typename B, typename C>
@@ -119,14 +125,16 @@ private:
 
     NeuronLayoutType neuron_layout;
 
-    std::vector<T> data;
-
     // Header of initialization SOM, will be copied to resulting SOM
     std::string header;
 
 #ifdef __CUDACC__
     thrust::device_vector<T> d_data;
+    thrust::host_vector<T> data;
+#else
+    std::vector<T> data;
 #endif
+
 };
 
 } // namespace pink

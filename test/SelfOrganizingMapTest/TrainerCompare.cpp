@@ -19,6 +19,7 @@
 #include "SelfOrganizingMapLib/Trainer_generic.h"
 #include "UtilitiesLib/EqualFloatArrays.h"
 #include "UtilitiesLib/DistributionFunctor.h"
+#include "UtilitiesLib/Filler.h"
 
 
 using namespace pink;
@@ -26,9 +27,9 @@ using namespace pink;
 struct TrainerCompareTestData
 {
     TrainerCompareTestData(uint32_t som_dim, uint32_t image_dim, uint32_t neuron_dim, int num_rot, bool use_flip)
-	 : som_dim(som_dim),
-	   image_dim(image_dim),
-	   neuron_dim(neuron_dim),
+     : som_dim(som_dim),
+       image_dim(image_dim),
+       neuron_dim(neuron_dim),
        num_rot(num_rot),
        use_flip(use_flip)
     {}
@@ -51,7 +52,9 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
     typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
     typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer_generic;
 
-    DataType data({GetParam().image_dim, GetParam().image_dim}, {1, 2, 3, 4});
+    DataType data({GetParam().image_dim, GetParam().image_dim});
+    fillWithRandomNumbers(data.get_data_pointer(), data.size());
+
     SOMType som1({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
     SOMType som2({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
 
@@ -63,8 +66,8 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
     MyTrainer_generic trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR);
     trainer2(data);
 
-    EXPECT_EQ(som1.get_data().size(), som2.get_data().size());
-    EXPECT_TRUE(EqualFloatArrays(som1.get_data_pointer(), som2.get_data_pointer(), som1.get_data().size(), 1e-4));
+    EXPECT_EQ(som1.size(), som2.size());
+    EXPECT_TRUE(EqualFloatArrays(som1.get_data_pointer(), som2.get_data_pointer(), som1.size(), 1e-4));
 }
 
 INSTANTIATE_TEST_CASE_P(TrainerCompareTest_all, TrainerCompareTest,

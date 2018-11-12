@@ -63,15 +63,14 @@ public:
                data == other.data;
     }
 
+    auto size() const { return data.size(); }
+
     /// Return the element
     auto operator [] (uint32_t position) -> T& { return data[position]; }
     auto operator [] (uint32_t position) const -> T const& { return data[position]; }
 
     auto operator [] (DimensionType const& position) -> T& { return data[layout.get_position(position)]; }
     auto operator [] (DimensionType const& position) const -> T const& { return data[layout.get_position(position)]; }
-
-//    auto get_data() { return data; }
-//    auto get_data() const { return data; }
 
     auto get_data_pointer() { return &data[0]; }
     auto get_data_pointer() const { return &data[0]; }
@@ -83,9 +82,16 @@ public:
     auto get_dimension() const -> DimensionType const { return layout.dimension; }
 
 #ifdef __CUDACC__
-    /// Return SOM device vector
-    auto get_device_vector() -> thrust::device_vector<T>& { return d_data; }
-    auto get_device_vector() const -> thrust::device_vector<T> const& { return d_data; }
+    /// Return device vector
+    auto get_device_vector() { return d_data; }
+    auto get_device_vector() const { return d_data; }
+
+    /// Return device pointer
+    auto get_device_pointer() { return &d_data[0]; }
+    auto get_device_pointer() const { return &d_data[0]; }
+
+    void update_host() { data = d_data; }
+    void update_device() { d_data = data; }
 #endif
 
 private:
@@ -95,11 +101,13 @@ private:
 
     LayoutType layout;
 
-    std::vector<T> data;
-
 #ifdef __CUDACC__
     thrust::device_vector<T> d_data;
+    thrust::host_vector<T> data;
+#else
+    std::vector<T> data;
 #endif
+
 };
 
 } // namespace pink

@@ -105,7 +105,7 @@ public:
             this->use_flip, this->interpolation, neuron_dim);
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
-            som_size, som.get_data(), neuron_size, this->number_of_spatial_transformations,
+            som_size, som.get_data_pointer(), neuron_size, this->number_of_spatial_transformations,
             list_of_spatial_transformed_images);
 
         /// Find the best matching neuron, with the lowest euclidean distance
@@ -176,10 +176,12 @@ public:
     /// Training the SOM by a single data point
     void operator () (Data<DataLayout, T> const& data)
     {
-        auto&& image_dim = data.get_dimension()[0];
-        auto&& neuron_dim = som.get_neuron_dimension()[0];
+        uint32_t image_dim = data.get_dimension()[0];
+        uint32_t neuron_dim = som.get_neuron_dimension()[0];
+        uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
+        for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
-        generate_rotated_images(d_list_of_spatial_transformed_images, data, this->number_of_rotations,
+        generate_rotated_images(d_list_of_spatial_transformed_images, data.get_device_vector(), spacing, this->number_of_rotations,
             image_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha);
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,

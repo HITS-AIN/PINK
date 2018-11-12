@@ -21,19 +21,14 @@ namespace pink {
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
-template <typename LayoutType, typename T>
-void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, Data<LayoutType, T> const& data,
+template <typename T>
+void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust::device_vector<T> const& d_image, uint32_t spacing,
     uint32_t num_rot, uint32_t image_dim, uint32_t neuron_dim, bool useFlip, Interpolation interpolation,
     thrust::device_vector<T> const& d_cosAlpha, thrust::device_vector<T> const& d_sinAlpha)
 {
     const uint16_t block_size = 32;
     uint32_t neuron_size = neuron_dim * neuron_dim;
     uint32_t image_size = image_dim * image_dim;
-
-    auto&& d_image = data.get_device_vector();
-
-    uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
-    for (uint32_t i = 3; i != data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
     // Crop first image
     {

@@ -21,9 +21,12 @@
 namespace pink {
 
 template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
-void main_generic(InputData const & input_data)
+void main_generic(InputData const& input_data)
 {
     SOM<SOMLayout, DataLayout, T> som(input_data);
+#ifdef __CUDACC__
+    som.update_device();
+#endif
 
     auto&& distribution_function = GaussianFunctor(input_data.sigma, input_data.damping);
 
@@ -49,8 +52,16 @@ void main_generic(InputData const & input_data)
             auto&& beg = iter_image_cur->getPointerOfFirstPixel();
             auto&& end = beg + iter_image_cur->getSize();
             Data<DataLayout, T> data({input_data.image_dim, input_data.image_dim}, std::vector<T>(beg, end));
+
+#ifdef __CUDACC__
+            data.update_device();
+#endif
             trainer(data);
         }
+
+#ifdef __CUDACC__
+        som.update_host();
+#endif
 
         std::cout << "  Write final SOM to " << input_data.resultFilename << " ... " << std::flush;
         write(som, input_data.resultFilename);

@@ -21,9 +21,6 @@ namespace pink {
  */
 struct DistributionFunctorBase
 {
-#ifdef __CUDACC__
-    __device__
-#endif
     virtual float operator () (float distance) const = 0;
 
     virtual ~DistributionFunctorBase() {}
@@ -41,9 +38,6 @@ struct GaussianFunctor : public DistributionFunctorBase
        damping(damping)
     {}
 
-#ifdef __CUDACC__
-    __device__
-#endif
     float operator () (float distance) const
     {
         return damping / (sigma * sqrt(2.0 * M_PI)) * exp(-0.5 * pow((distance/sigma),2));
@@ -52,9 +46,7 @@ struct GaussianFunctor : public DistributionFunctorBase
 private:
 
     float sigma;
-
     float damping;
-
 };
 
 /**
@@ -71,9 +63,6 @@ struct MexicanHatFunctor : public DistributionFunctorBase
         if (sigma <= 0.0) throw std::runtime_error("MexicanHatFunctor: sigma <= 0 not defined.");
     }
 
-#ifdef __CUDACC__
-    __device__
-#endif
     float operator () (float distance) const
     {
         float distance2 = distance * distance;
@@ -84,9 +73,7 @@ struct MexicanHatFunctor : public DistributionFunctorBase
 private:
 
     float sigma;
-
     float damping;
-
 };
 
 } // namespace pink

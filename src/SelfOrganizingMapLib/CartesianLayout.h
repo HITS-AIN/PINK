@@ -39,10 +39,10 @@ struct CartesianLayout
     /// Returns the distance of two neurons given in layout position
     auto get_distance(DimensionType const& p1, DimensionType const& p2) const
     {
-    	float distance = 0.0;
-    	for (uint8_t i = 0; i < dimensionality; ++i) {
-    		distance += std::pow(static_cast<float>(p1[i]) - p2[i], 2);
-    	}
+        float distance = 0.0;
+        for (uint8_t i = 0; i < dimensionality; ++i) {
+            distance += std::pow(static_cast<float>(p1[i]) - p2[i], 2);
+        }
         return std::sqrt(distance);
     }
 
@@ -83,17 +83,17 @@ inline auto CartesianLayout<1>::get_position(IndexType i) const
 template <>
 inline auto CartesianLayout<2>::get_position(IndexType i) const
 {
-	IndexType y = i / dimension[1];
-	IndexType x = i % dimension[1];
+    IndexType y = i / dimension[1];
+    IndexType x = i % dimension[1];
     return DimensionType({x, y});
 }
 
 template <>
 inline auto CartesianLayout<3>::get_position(IndexType i) const
 {
-	IndexType z = i / dimension[0] / dimension[1];
-	IndexType y = (i - z * dimension[0] * dimension[1]) / dimension[1];
-	IndexType x = i % dimension[1];
+    IndexType z = i / dimension[0] / dimension[1];
+    IndexType y = (i - z * dimension[0] * dimension[1]) / dimension[1];
+    IndexType x = i % dimension[1];
     return DimensionType({x, y, z});
 }
 

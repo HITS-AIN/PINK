@@ -30,18 +30,18 @@ struct HexagonalLayout
 
     auto get_distance([[maybe_unused]] IndexType p1, [[maybe_unused]] IndexType p2) const
     {
-    	float distance = 0.0;
+        float distance = 0.0;
         return distance;
     }
 
     auto get_distance(DimensionType const& p1, DimensionType const& p2) const
     {
-    	float distance = 0.0;
-    	auto dx = static_cast<int32_t>(p1[0]) - static_cast<int32_t>(p2[0]);
-    	auto dy = static_cast<int32_t>(p1[1]) - static_cast<int32_t>(p2[1]);
+        float distance = 0.0;
+        auto dx = static_cast<int32_t>(p1[0]) - static_cast<int32_t>(p2[0]);
+        auto dy = static_cast<int32_t>(p1[1]) - static_cast<int32_t>(p2[1]);
 
         if ((dx >= 0) == (dy >= 0))
-        	distance = std::abs(dx + dy);
+            distance = std::abs(dx + dy);
         else
             distance = std::max(std::abs(dx), std::abs(dy));
 
