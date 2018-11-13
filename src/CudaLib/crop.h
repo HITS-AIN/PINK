@@ -7,7 +7,6 @@
 #pragma once
 
 #include <cuda_runtime.h>
-#include <thrust/device_ptr.h>
 
 namespace pink {
 
@@ -16,15 +15,15 @@ namespace pink {
  */
 template <typename T>
 __global__ void
-crop(thrust::device_ptr<T> dest, thrust::device_ptr<const T> source, int new_dim, int old_dim)
+crop(T *dst, T const *src, uint32_t new_dim, uint32_t old_dim)
 {
-    int x = blockIdx.x * blockDim.x + threadIdx.x;
-    int y = blockIdx.y * blockDim.y + threadIdx.y;
+	uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
+	uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (x >= new_dim or y >= new_dim) return;
 
-    int margin = (old_dim - new_dim) * 0.5;
-    dest[x*new_dim + y] = source[(x+margin)*old_dim + y+margin];
+    uint32_t margin = (old_dim - new_dim) * 0.5;
+    dst[x*new_dim + y] = src[(x+margin)*old_dim + y+margin];
 }
 
 } // namespace pink
