@@ -48,7 +48,7 @@ void write(SOM<SOMLayout, NeuronLayout, T> const& som, std::string const& filena
         int tmp = 1;
         os.write((char*)&tmp, sizeof(int));
     }
-    os.write((char*)som.get_data_pointer(), som_layout.get_size() * neuron_layout.get_size() * sizeof(T));
+    os.write((char*)som.get_data_pointer(), som_layout.size() * neuron_layout.size() * sizeof(T));
 }
 
 } // namespace pink

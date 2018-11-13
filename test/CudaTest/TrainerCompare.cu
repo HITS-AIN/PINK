@@ -69,6 +69,8 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
     trainer2(data);
 
     som2.update_host();
+    std::cout << "som1 = " << som1 << std::endl;
+    std::cout << "som2 = " << som2 << std::endl;
     EXPECT_EQ(som1.size(), som2.size());
     EXPECT_TRUE(EqualFloatArrays(som1.get_data_pointer(), som2.get_data_pointer(), som1.size(), 1e-4));
 }

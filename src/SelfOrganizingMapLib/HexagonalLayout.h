@@ -22,7 +22,7 @@ struct HexagonalLayout
     typedef uint32_t IndexType;
     typedef typename std::array<uint32_t, dimensionality> DimensionType;
 
-    auto get_size() const
+    auto size() const
     {
         auto dim_square = 2 * dimension[0] + 1;
         return dim_square * dim_square - dimension[0] * (dimension[0] + 1);

@@ -36,13 +36,13 @@ public:
     /// Construction without initialization
     Data(LayoutType const& layout)
      : layout(layout),
-       data(layout.get_size())
+       data(layout.size())
     {}
 
     /// Construction and initialize all elements to value
     Data(LayoutType const& layout, T value)
      : layout(layout),
-       data(layout.get_size(), value)
+       data(layout.size(), value)
     {}
 
     /// Construction and copy data

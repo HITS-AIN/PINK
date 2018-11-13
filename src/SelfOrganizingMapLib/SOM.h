@@ -46,14 +46,14 @@ public:
     SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout)
      : som_layout(som_layout),
        neuron_layout(neuron_layout),
-       data(som_layout.get_size() * neuron_layout.get_size())
+       data(som_layout.size() * neuron_layout.size())
     {}
 
     /// Construction and initialize all elements to value
     SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout, T value)
      : som_layout(som_layout),
        neuron_layout(neuron_layout),
-       data(som_layout.get_size() * neuron_layout.get_size(), value)
+       data(som_layout.size() * neuron_layout.size(), value)
     {}
 
     /// Construction and copy data
@@ -86,8 +86,8 @@ public:
 
 #ifdef __CUDACC__
     /// Return device vector
-    auto get_device_vector() { return d_data; }
-    auto get_device_vector() const { return d_data; }
+    auto get_device_vector() -> thrust::device_vector<T>& { return d_data; }
+    auto get_device_vector() const -> thrust::device_vector<T> const& { return d_data; }
 
     /// Return device pointer
     auto get_device_pointer() { return &d_data[0]; }
@@ -98,13 +98,13 @@ public:
 #endif
 
     auto get_neuron(SOMLayoutType const& position) {
-        auto&& beg = data.begin() + (position.dimension[0] * som_layout.dimension[1] + position.dimension[1]) * neuron_layout.get_size();
-        auto&& end = beg + neuron_layout.get_size();
+        auto&& beg = data.begin() + (position.dimension[0] * som_layout.dimension[1] + position.dimension[1]) * neuron_layout.size();
+        auto&& end = beg + neuron_layout.size();
         return NeuronType(neuron_layout, std::vector<T>(beg, end));
     }
 
-    auto get_number_of_neurons() -> uint32_t const { return som_layout.get_size(); }
-    auto get_neuron_size() -> uint32_t const { return neuron_layout.get_size(); }
+    auto get_number_of_neurons() -> uint32_t const { return som_layout.size(); }
+    auto get_neuron_size() -> uint32_t const { return neuron_layout.size(); }
 
     auto get_som_layout() -> SOMLayoutType { return som_layout; }
     auto get_som_layout() const -> SOMLayoutType const { return som_layout; }
@@ -120,6 +120,9 @@ private:
 
     template <typename A, typename B, typename C>
     friend void write(SOM<A, B, C> const& som, std::string const& filename);
+
+    template <typename A, typename B, typename C>
+    friend std::ostream& operator << (std::ostream& os, SOM<A, B, C> const& som);
 
     SOMLayoutType som_layout;
 

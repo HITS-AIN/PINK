@@ -25,7 +25,7 @@ struct CartesianLayout
     typedef uint32_t IndexType;
     typedef typename std::array<uint32_t, dimensionality> DimensionType;
 
-    auto get_size() const
+    auto size() const
     {
         return std::accumulate(dimension.begin(), dimension.end(), 1, std::multiplies<uint32_t>());
     }

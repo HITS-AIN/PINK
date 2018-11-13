@@ -24,7 +24,7 @@
     #include "CudaLib/CudaLib.h"
     #include "CudaLib/generate_euclidean_distance_matrix.h"
     #include "CudaLib/generate_rotated_images.h"
-    //#include "CudaLib/update_neurons.h"
+    #include "CudaLib/update_neurons.h"
 #endif
 
 namespace pink {
@@ -44,10 +44,21 @@ public:
        number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
        max_update_distance(max_update_distance),
        interpolation(interpolation),
-       update_info(som_layout)
+       update_info(som_layout),
+       som_size(som_layout.size()),
+       update_factors(som_size * som_size, 0.0)
     {
         if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
+
+        for (uint32_t i = 0; i < som_size; ++i) {
+            for (uint32_t j = 0; j < som_size; ++j) {
+            	float distance = som_layout.get_distance(i, j);
+                if (this->max_update_distance <= 0 or distance < this->max_update_distance) {
+                    update_factors[i * som_size + j] = distribution_function(distance);
+                }
+            }
+        }
     }
 
     auto get_update_info() const { return update_info; }
@@ -67,6 +78,12 @@ protected:
 
     /// Counting updates of each neuron
     UpdateInfoType update_info;
+
+    /// Number of neurons
+    uint32_t som_size;
+
+    /// Pre-calculation of updating factors
+    std::vector<float> update_factors;
 };
 
 /// Primary template will never be instantiated
@@ -171,29 +188,29 @@ public:
 
         d_cosAlpha = cos_alpha;
         d_sinAlpha = sin_alpha;
+
+        d_update_factors = this->update_factors;
     }
 
     /// Training the SOM by a single data point
     void operator () (Data<DataLayout, T> const& data)
     {
-        uint32_t image_dim = data.get_dimension()[0];
+        uint32_t som_size = som.get_som_dimension()[0] * som.get_som_dimension()[1];
         uint32_t neuron_dim = som.get_neuron_dimension()[0];
+        uint32_t neuron_size = neuron_dim * neuron_dim;
         uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
         for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
         generate_rotated_images(d_list_of_spatial_transformed_images, data.get_device_vector(), spacing, this->number_of_rotations,
-            image_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha);
+            data.size(), neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha);
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             som.get_number_of_neurons(), som.get_neuron_size(), som.get_device_vector(), this->number_of_spatial_transformations,
             d_list_of_spatial_transformed_images, block_size, use_multiple_gpus);
 
-//		update_neurons(som.get_device_vector(), d_list_of_spatial_transformed_images,
-//			d_best_rotation_matrix, d_euclidean_distance_matrix, d_best_match,
-//			som_width, inputData.som_height, inputData.som_depth, inputData.som_size,
-//			neuron_size, inputData.function, inputData.layout,
-//			inputData.sigma, inputData.damping, max_update_distance,
-//			inputData.usePBC, inputData.dimensionality);
+        update_neurons(som.get_device_vector(), d_list_of_spatial_transformed_images,
+            d_best_rotation_matrix, d_euclidean_distance_matrix, d_best_match, d_update_factors,
+            som_size, neuron_size);
 
         thrust::host_vector<uint32_t> best_match = d_best_match;
         ++this->update_info[best_match[0]];
@@ -215,6 +232,8 @@ private:
 
     thrust::device_vector<T> d_cosAlpha;
     thrust::device_vector<T> d_sinAlpha;
+
+    thrust::device_vector<float> d_update_factors;
 };
 
 #endif
