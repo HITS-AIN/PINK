@@ -195,9 +195,8 @@ public:
 //			inputData.sigma, inputData.damping, max_update_distance,
 //			inputData.usePBC, inputData.dimensionality);
 
-        uint32_t best_match;
-        thrust::copy(d_best_match.begin(), d_best_match.end(), &best_match);
-        ++this->update_info[best_match];
+        thrust::host_vector<uint32_t> best_match = d_best_match;
+        ++this->update_info[best_match[0]];
     }
 
 private:
