@@ -202,12 +202,7 @@ public:
         for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
         generate_rotated_images(d_list_of_spatial_transformed_images, data.get_device_vector(), spacing, this->number_of_rotations,
-            data.size(), neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha);
-
-        thrust::host_vector<T> list_of_spatial_transformed_images = d_list_of_spatial_transformed_images;
-
-        std::cout << data[0] << std::endl;
-        std::cout << list_of_spatial_transformed_images[0] << std::endl;
+            neuron_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha);
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             som.get_number_of_neurons(), som.get_neuron_size(), som.get_device_vector(), this->number_of_spatial_transformations,
