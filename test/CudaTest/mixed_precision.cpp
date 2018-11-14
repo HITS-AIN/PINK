@@ -4,16 +4,17 @@
  * @author Bernd Doser <bernd.doser@h-its.org>
  */
 
-#include <CudaLib/dot_dp4a.h>
-#include "gtest/gtest.h"
 #include <cmath>
+#include <gtest/gtest.h>
 #include <iostream>
 #include <vector>
 
 #include "CudaLib/CudaLib.h"
+#include "CudaLib/dot_dp4a.h"
 
 using namespace pink;
 
+#if __CUDA_ARCH__ >= 610
 TEST(mixed_precision, dp4a_uint8)
 {
     std::vector<uint8_t> in1{12, 127, 1, 128};
@@ -47,6 +48,7 @@ TEST(mixed_precision, dp4a_uint8)
 
     EXPECT_EQ(static_cast<uint32_t>(in1[0]*in2[0] + in1[1]*in2[1] + in1[2]*in2[2] + in1[3]*in2[3]), out);
 }
+#endif
 
 //TEST(mixed_precision, float)
 //{

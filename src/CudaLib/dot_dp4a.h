@@ -1,5 +1,5 @@
 /**
- * @file   CudaTest/euclidean_distance.h
+ * @file   CudaLib/dot_dp4a.h
  * @date   Apr 17, 2018
  * @author Bernd Doser <bernd.doser@h-its.org>
  */

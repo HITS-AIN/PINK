@@ -1,5 +1,5 @@
 /**
- * @file   CudaTest/mixed_precision.cpp
+ * @file   CudaLib/dot_dp4a.cu
  * @date   Apr 16, 2018
  * @author Bernd Doser <bernd.doser@h-its.org>
  */
@@ -13,9 +13,9 @@ typedef unsigned int uint;
 __global__
 void dot_dp4a_kernel(int *d_in1, int *d_in2, int *d_in3, int* d_out)
 {
+#if __CUDA_ARCH__ >= 610
     int tx = threadIdx.x;
 
-#if __CUDA_ARCH__ >= 610
     d_out[tx] = __dp4a(d_in1[tx], d_in2[tx], d_in3[tx]);
 #endif
 }
@@ -29,9 +29,9 @@ void dot_dp4a(int *d_in1, int *d_in2, int *d_in3, int *d_out, size_t /*size*/)
 __global__
 void dot_dp4a_kernel(uint *d_in1, uint *d_in2, uint *d_in3, uint* d_out)
 {
+#if __CUDA_ARCH__ >= 610
     int tx = threadIdx.x;
 
-#if __CUDA_ARCH__ >= 610
     d_out[tx] = __dp4a(d_in1[tx], d_in2[tx], d_in3[tx]);
 #endif
 }
