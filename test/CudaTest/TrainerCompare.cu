@@ -52,10 +52,10 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
     typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer_cpu;
     typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true> MyTrainer_gpu;
 
-    DataType data({GetParam().image_dim, GetParam().image_dim});
+    DataType data({GetParam().image_dim, GetParam().image_dim}, 0.0);
     fillWithRandomNumbers(data.get_data_pointer(), data.size());
 
-    SOMType som1({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim});
+    SOMType som1({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
     fillWithRandomNumbers(som1.get_data_pointer(), som1.size());
     SOMType som2 = som1;
 
