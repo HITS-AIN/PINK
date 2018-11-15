@@ -77,8 +77,6 @@ void generate_euclidean_distance_matrix_first_step(thrust::device_vector<T> cons
     dim3 dim_block(block_size);
     dim3 dim_grid(number_of_spatial_transformations, som_size);
 
-    std::cout << "block_size = " << block_size << std::endl;
-
     // Start kernel
     switch (block_size)
     {

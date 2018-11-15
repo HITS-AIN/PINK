@@ -39,11 +39,6 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
             d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
     }
 
-    std::cout << "first step = ";
-    thrust::device_vector<T> test = d_first_step;
-    for (auto e : test) std::cout << e << " ";
-    std::cout << std::endl;
-
     // Second step ...
     generate_euclidean_distance_matrix_second_step(d_euclidean_distance_matrix,
         d_best_rotation_matrix, d_first_step, number_of_spatial_transformations, som_size);

@@ -122,20 +122,9 @@ public:
         auto&& spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
             this->use_flip, this->interpolation, neuron_dim);
 
-        for (auto e : spatial_transformed_images) std::cout << e << " ";
-        std::cout << std::endl;
-
-        std::cout << "som = " << som << std::endl;
-
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             som_size, som.get_data_pointer(), neuron_size, this->number_of_spatial_transformations,
             spatial_transformed_images);
-
-        for (auto e : best_rotation_matrix) std::cout << e << " ";
-        std::cout << std::endl;
-
-        for (auto e : euclidean_distance_matrix) std::cout << e << " ";
-        std::cout << std::endl;
 
         /// Find the best matching neuron, with the lowest euclidean distance
         auto&& best_match = std::distance(euclidean_distance_matrix.begin(),
@@ -215,26 +204,9 @@ public:
         generate_rotated_images(d_spatial_transformed_images, data.get_device_vector(), spacing, this->number_of_rotations,
             neuron_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha);
 
-        thrust::device_vector<T> test = d_spatial_transformed_images;
-        for (auto e : test) std::cout << e << " ";
-        std::cout << std::endl;
-
-        thrust::device_vector<T> test4 = som.get_device_vector();
-        std::cout << "som = ";
-        for (auto e : test4) std::cout << e << " ";
-        std::cout << std::endl;
-
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             som_size, neuron_size, som.get_device_vector(), this->number_of_spatial_transformations,
             d_spatial_transformed_images, block_size, use_multiple_gpus);
-
-        thrust::device_vector<uint32_t> test2 = d_best_rotation_matrix;
-        for (auto e : test2) std::cout << e << " ";
-        std::cout << std::endl;
-
-        thrust::device_vector<T> test3 = d_euclidean_distance_matrix;
-        for (auto e : test3) std::cout << e << " ";
-        std::cout << std::endl;
 
         update_neurons(som.get_device_vector(), d_spatial_transformed_images,
             d_best_rotation_matrix, d_euclidean_distance_matrix, d_best_match, d_update_factors,
