@@ -11,7 +11,6 @@ cuda_add_library(
     cuda_print_properties.cu
     dot_dp4a.cu
     main_gpu.cu
-    trigonometricValues.cpp
 )
 
 target_link_libraries(

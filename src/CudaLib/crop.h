@@ -14,8 +14,8 @@ namespace pink {
  * CUDA Kernel Device code for cropping an image.
  */
 template <typename T>
-__global__ void
-crop(T *dst, T const *src, uint32_t new_dim, uint32_t old_dim)
+__global__
+void crop(T *dst, T const *src, uint32_t new_dim, uint32_t old_dim)
 {
 	uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
 	uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;

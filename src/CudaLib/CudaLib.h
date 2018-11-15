@@ -17,9 +17,6 @@ void cuda_print_properties();
 //! CUDA test routine for image rotation.
 void cuda_rotate(int height, int width, float *source, float *dest, float angle);
 
-//! Prepare trigonometric values
-void trigonometricValues(float **d_cosAlpha, float **d_sinAlpha, int num_rot);
-
 //! Basic allocation for device memory.
 float* cuda_alloc_float(int size);
 

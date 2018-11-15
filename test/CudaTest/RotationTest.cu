@@ -4,21 +4,26 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include <cmath>
+#include <gtest/gtest.h>
+#include <iostream>
+#include <thrust/device_vector.h>
+#include <thrust/host_vector.h>
+#include <vector>
+
 #include "CudaLib/CudaLib.h"
-#include "UtilitiesLib/EqualFloatArrays.h"
+#include "CudaLib/generate_rotated_images.h"
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMapLib/SelfOrganizingMap.h"
+#include "UtilitiesLib/EqualFloatArrays.h"
 #include "UtilitiesLib/Filler.h"
-#include "gtest/gtest.h"
-#include <cmath>
-#include <iostream>
-#include <vector>
 
 using namespace pink;
 
+#if 0
 //! Check CUDA image rotation with CPU function.
-TEST(RotationTest, DISABLED_45degree)
+TEST(RotationTest, rotate_45_degree)
 {
     Image<float> image(64, 64, 1.0);
     float angle = 45.0*M_PI/180.0;
@@ -33,7 +38,7 @@ TEST(RotationTest, DISABLED_45degree)
 }
 
 //! Check CUDA image flipping.
-TEST(FlipTest, 0)
+TEST(RotationTest, flip)
 {
     int dim = 2;
     int size = dim * dim;
@@ -82,47 +87,36 @@ TEST_P(FullRotationTest, generate_rotated_images)
     int mc_neuron_size = data.num_channels * neuron_size;
     int num_rot_using_flip = data.useFlip ? 2*data.num_rot : data.num_rot;
 
-    float *image = new float[mc_image_size];
-    float *cpu_rotatedImages = new float[num_rot_using_flip * mc_neuron_size];
+    std::vector<float> image(mc_image_size);
+    std::vector<float> cpu_rotatedImages(num_rot_using_flip * mc_neuron_size);
 
     fillWithRandomNumbers(image, mc_image_size, 0);
 
-    generateRotatedImages(cpu_rotatedImages, image, data.num_rot, data.image_dim, data.neuron_dim,
+    generateRotatedImages(&cpu_rotatedImages[0], &image[0], data.num_rot, data.image_dim, data.neuron_dim,
         data.useFlip, data.interpolation, data.num_channels);
 
-//    for (int i = 0; i < data.num_channels * num_rot_using_flip; ++i)
-//        printImage(cpu_rotatedImages + i*neuron_size, data.neuron_dim, data.neuron_dim);
-    //writeRotatedImages(cpu_rotatedImages, data.neuron_dim, data.num_rot, "cpu_rot.bin");
+    thrust::device_vector<float> d_image = image;
+    thrust::device_vector<float> d_rotatedImages(num_rot_using_flip * mc_neuron_size, 0.0);
 
-    float *d_image = cuda_alloc_float(mc_image_size);
-    float *d_rotatedImages = cuda_alloc_float(num_rot_using_flip * mc_neuron_size);
-    cuda_fill_zero(d_rotatedImages, num_rot_using_flip * mc_neuron_size);
+    std::vector<float> cos_alpha(data.num_rot - 1);
+    std::vector<float> sin_alpha(data.num_rot - 1);
 
-    cuda_copyHostToDevice_float(d_image, image, mc_image_size);
+    float angle_step_radians = 0.5 * M_PI / data.num_rot;
+    for (uint32_t i = 0; i < data.num_rot - 1; ++i) {
+        float angle = (i+1) * angle_step_radians;
+        cos_alpha[i] = std::cos(angle);
+        sin_alpha[i] = std::sin(angle);
+    }
 
-    // Prepare trigonometric values
-    float *d_cosAlpha = NULL, *d_sinAlpha = NULL;
-    trigonometricValues(&d_cosAlpha, &d_sinAlpha, data.num_rot/4);
+    thrust::device_vector<float> d_cos_alpha = cos_alpha;
+    thrust::device_vector<float> d_sin_alpha = sin_alpha;
 
-    generate_rotated_images_gpu(d_rotatedImages, d_image, data.num_rot, data.image_dim, data.neuron_dim,
-        data.useFlip, data.interpolation, d_cosAlpha, d_sinAlpha, data.num_channels);
+    generate_rotated_images(d_rotatedImages, d_image, data.num_rot, data.image_dim, data.neuron_dim,
+        data.useFlip, data.interpolation, d_cos_alpha, d_sin_alpha, data.num_channels);
 
-    float *gpu_rotatedImages = new float[num_rot_using_flip * mc_neuron_size];
-    cuda_copyDeviceToHost_float(gpu_rotatedImages, d_rotatedImages, num_rot_using_flip * mc_neuron_size);
-
-//    for (int i = 0; i < data.num_channels * num_rot_using_flip; ++i)
-//        printImage(gpu_rotatedImages + i*neuron_size, data.neuron_dim, data.neuron_dim);
-    //writeRotatedImages(gpu_rotatedImages, data.neuron_dim, data.num_rot, "gpu_rot.bin");
+    thrust::host_vector<float> gpu_rotatedImages = d_rotatedImages;
 
     EXPECT_TRUE(EqualFloatArrays(cpu_rotatedImages, gpu_rotatedImages, num_rot_using_flip * mc_neuron_size));
-
-    cuda_free(d_cosAlpha);
-    cuda_free(d_sinAlpha);
-    cuda_free(d_image);
-    cuda_free(d_rotatedImages);
-    delete [] image;
-    delete [] cpu_rotatedImages;
-    delete [] gpu_rotatedImages;
 }
 
 INSTANTIATE_TEST_CASE_P(FullRotationTest_all, FullRotationTest,
@@ -145,3 +139,4 @@ INSTANTIATE_TEST_CASE_P(FullRotationTest_all, FullRotationTest,
         FullRotationTestData( 4,  2,   8, true,  Interpolation::NEAREST_NEIGHBOR, 2),
         FullRotationTestData( 4,  2, 360, true,  Interpolation::NEAREST_NEIGHBOR, 2)
 ));
+#endif

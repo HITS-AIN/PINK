@@ -121,6 +121,9 @@ public:
         auto&& list_of_spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
             this->use_flip, this->interpolation, neuron_dim);
 
+        for (auto e : list_of_spatial_transformed_images) std::cout << e << " ";
+        std::cout << std::endl;
+
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             som_size, som.get_data_pointer(), neuron_size, this->number_of_spatial_transformations,
             list_of_spatial_transformed_images);
@@ -203,6 +206,10 @@ public:
 
         generate_rotated_images(d_list_of_spatial_transformed_images, data.get_device_vector(), spacing, this->number_of_rotations,
             neuron_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha);
+
+        thrust::device_vector<T> test = d_list_of_spatial_transformed_images;
+        for (auto e : test) std::cout << e << " ";
+        std::cout << std::endl;
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             som.get_number_of_neurons(), som.get_neuron_size(), som.get_device_vector(), this->number_of_spatial_transformations,

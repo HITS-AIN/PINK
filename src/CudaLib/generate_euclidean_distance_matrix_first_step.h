@@ -74,22 +74,22 @@ void generate_euclidean_distance_matrix_first_step(thrust::device_vector<T> cons
     uint32_t number_of_spatial_transformations, uint32_t number_of_neurons, uint32_t neuron_size, uint16_t block_size)
 {
     // Setup execution parameters
-    dim3 dimBlock(block_size);
-    dim3 dimGrid(number_of_spatial_transformations, number_of_neurons);
+    dim3 dim_block(block_size);
+    dim3 dim_grid(number_of_spatial_transformations, number_of_neurons);
 
     // Start kernel
     switch (block_size)
     {
-        case 1024: euclidean_distance_kernel<1024><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
-        case  512: euclidean_distance_kernel< 512><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
-        case  256: euclidean_distance_kernel< 256><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
-        case  128: euclidean_distance_kernel< 128><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
-        case   64: euclidean_distance_kernel<  64><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
-        case   32: euclidean_distance_kernel<  32><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
-        case   16: euclidean_distance_kernel<  16><<<dimGrid, dimBlock>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case 1024: euclidean_distance_kernel<1024><<<dim_grid, dim_block>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case  512: euclidean_distance_kernel< 512><<<dim_grid, dim_block>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case  256: euclidean_distance_kernel< 256><<<dim_grid, dim_block>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case  128: euclidean_distance_kernel< 128><<<dim_grid, dim_block>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case   64: euclidean_distance_kernel<  64><<<dim_grid, dim_block>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case   32: euclidean_distance_kernel<  32><<<dim_grid, dim_block>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
+        case   16: euclidean_distance_kernel<  16><<<dim_grid, dim_block>>>(&d_som[0], &d_rotated_images[0], &d_first_step[0], neuron_size); break;
         default:
         {
-            fprintf(stderr, "cuda_generateEuclideanDistanceMatrix_firstStep: block size (%i) not supported.", block_size);
+            fprintf(stderr, "generate_euclidean_distance_matrix_first_step: block size (%i) not supported.", block_size);
             exit(EXIT_FAILURE);
         }
     }
@@ -98,7 +98,7 @@ void generate_euclidean_distance_matrix_first_step(thrust::device_vector<T> cons
 
     if (error != cudaSuccess)
     {
-        fprintf(stderr, "Failed to launch CUDA kernel cuda_generateEuclideanDistanceMatrix_firstStep (error code %s)!\n", cudaGetErrorString(error));
+        fprintf(stderr, "Failed to launch CUDA kernel euclidean_distance_kernel (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
 }

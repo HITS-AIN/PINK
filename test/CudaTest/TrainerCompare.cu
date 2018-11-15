@@ -76,9 +76,9 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
 INSTANTIATE_TEST_CASE_P(TrainerCompareTest_all, TrainerCompareTest,
     ::testing::Values(
         TrainerCompareTestData(2, 2, 2, 1, false)
-       //,TrainerCompareTestData(2, 2, 2, 4, false)
+       ,TrainerCompareTestData(2, 2, 2, 4, false)
        //,TrainerCompareTestData(2, 2, 2, 8, false)
-       //,TrainerCompareTestData(2, 2, 2, 1, true)
-       //,TrainerCompareTestData(2, 2, 2, 4, true)
+       ,TrainerCompareTestData(2, 2, 2, 1, true)
+       ,TrainerCompareTestData(2, 2, 2, 4, true)
        //,TrainerCompareTestData(2, 2, 2, 8, true)
 ));

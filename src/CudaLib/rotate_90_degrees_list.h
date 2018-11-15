@@ -1,5 +1,5 @@
 /**
- * @file   CudaLib/rotate_90degrees_list.h
+ * @file   CudaLib/rotate_90_degrees_list.h
  * @date   Nov 4, 2014
  * @author Bernd Doser, HITS gGmbH
  */
@@ -7,7 +7,6 @@
 #pragma once
 
 #include <cuda_runtime.h>
-#include <thrust/device_ptr.h>
 
 namespace pink {
 
@@ -15,11 +14,11 @@ namespace pink {
  * CUDA Kernel Device code for special clockwise rotation of 90 degrees of a list of quadratic images.
  */
 template <typename T>
-__global__ void
-rotate_90degrees_list(thrust::device_ptr<T> images, int dim, int size, int offset)
+__global__
+void rotate_90_degrees_list(T *images, uint32_t dim, uint32_t size, uint32_t offset)
 {
-    int x = blockIdx.x * blockDim.x + threadIdx.x;
-    int y = blockIdx.y * blockDim.y + threadIdx.y;
+	uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
+	uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (x >= dim or y >= dim) return;
 

@@ -7,7 +7,6 @@
 #pragma once
 
 #include <cuda_runtime.h>
-#include <thrust/device_ptr.h>
 
 namespace pink {
 
@@ -16,14 +15,14 @@ namespace pink {
  */
 template <typename T>
 __global__
-void flip(thrust::device_ptr<T> dest, thrust::device_ptr<T> source, int dim, int size)
+void flip_kernel(T *dst, T const *src, uint32_t dim, uint32_t size)
 {
-    int x = blockIdx.x * blockDim.x + threadIdx.x;
-    int y = blockIdx.y * blockDim.y + threadIdx.y;
+	uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
+	uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (x >= dim or y >= dim) return;
 
-    dest[blockIdx.z*size + (dim-x-1)*dim + y] = source[blockIdx.z*size + x*dim + y];
+    dst[blockIdx.z*size + (dim-x-1)*dim + y] = src[blockIdx.z*size + x*dim + y];
 }
 
 } // namespace pink
