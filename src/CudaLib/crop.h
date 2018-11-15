@@ -17,8 +17,8 @@ template <typename T>
 __global__
 void crop(T *dst, T const *src, uint32_t new_dim, uint32_t old_dim)
 {
-	uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
-	uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
+    uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
+    uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (x >= new_dim or y >= new_dim) return;
 

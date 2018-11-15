@@ -55,70 +55,70 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
 
     if (num_rot != 1)
     {
-		// Rotate images between 0 and 90 degrees
-		{
-			// Setup execution parameters
-			int grid_size = ceil((float)neuron_dim/block_size);
-			int num_real_rot = num_rot/4-1;
+        // Rotate images between 0 and 90 degrees
+        {
+            // Setup execution parameters
+            int grid_size = ceil((float)neuron_dim/block_size);
+            int num_real_rot = num_rot/4-1;
 
-			if (num_real_rot) {
-				dim3 dim_block(block_size, block_size);
-				dim3 dim_grid(grid_size, grid_size, num_real_rot);
+            if (num_real_rot) {
+                dim3 dim_block(block_size, block_size);
+                dim3 dim_grid(grid_size, grid_size, num_real_rot);
 
-				// Start kernel
-				for (uint32_t c = 0; c < spacing; ++c)
-				{
-					if (interpolation == Interpolation::NEAREST_NEIGHBOR)
-						rotate_and_crop_nearest_neighbor<<<dim_grid, dim_block>>>(&d_rotated_images[(c + spacing) * neuron_size],
-							&d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], spacing);
-					else if (interpolation == Interpolation::BILINEAR)
-						rotate_and_crop_bilinear<<<dim_grid, dim_block>>>(&d_rotated_images[(c + spacing) * neuron_size],
-							&d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], spacing);
-					else {
-						fprintf(stderr, "generate_rotated_images_gpu: unknown interpolation type!\n");
-						exit(EXIT_FAILURE);
-					}
+                // Start kernel
+                for (uint32_t c = 0; c < spacing; ++c)
+                {
+                    if (interpolation == Interpolation::NEAREST_NEIGHBOR)
+                        rotate_and_crop_nearest_neighbor<<<dim_grid, dim_block>>>(&d_rotated_images[(c + spacing) * neuron_size],
+                            &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], spacing);
+                    else if (interpolation == Interpolation::BILINEAR)
+                        rotate_and_crop_bilinear<<<dim_grid, dim_block>>>(&d_rotated_images[(c + spacing) * neuron_size],
+                            &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], spacing);
+                    else {
+                        fprintf(stderr, "generate_rotated_images_gpu: unknown interpolation type!\n");
+                        exit(EXIT_FAILURE);
+                    }
 
-					cudaError_t error = cudaGetLastError();
+                    cudaError_t error = cudaGetLastError();
 
-					if (error != cudaSuccess)
-					{
-						fprintf(stderr, "Failed to launch CUDA kernel rotateAndCrop (error code %s)!\n", cudaGetErrorString(error));
-						exit(EXIT_FAILURE);
-					}
-				}
-			}
-		}
+                    if (error != cudaSuccess)
+                    {
+                        fprintf(stderr, "Failed to launch CUDA kernel rotateAndCrop (error code %s)!\n", cudaGetErrorString(error));
+                        exit(EXIT_FAILURE);
+                    }
+                }
+            }
+        }
 
-		// Special 90 degree rotation for remaining rotations between 90 and 360 degrees
-		{
-			// Setup execution parameters
-			int grid_size = ceil((float)neuron_dim/block_size);
-			dim3 dim_block(block_size, block_size);
-			dim3 dim_grid(grid_size, grid_size, num_rot/4);
+        // Special 90 degree rotation for remaining rotations between 90 and 360 degrees
+        {
+            // Setup execution parameters
+            int grid_size = ceil((float)neuron_dim/block_size);
+            dim3 dim_block(block_size, block_size);
+            dim3 dim_grid(grid_size, grid_size, num_rot/4);
 
-			uint32_t offset = num_rot/4 * spacing * neuron_size;
-			uint32_t mc_neuron_size = spacing * neuron_size;
+            uint32_t offset = num_rot/4 * spacing * neuron_size;
+            uint32_t mc_neuron_size = spacing * neuron_size;
 
-			// Start kernel
-			for (uint32_t c = 0; c < spacing; ++c)
-			{
-				rotate_90_degrees_list<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size]),
-					neuron_dim, mc_neuron_size, offset);
-				rotate_90_degrees_list<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size + offset]),
-					neuron_dim, mc_neuron_size, offset);
-				rotate_90_degrees_list<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size + 2 * offset]),
-					neuron_dim, mc_neuron_size, offset);
+            // Start kernel
+            for (uint32_t c = 0; c < spacing; ++c)
+            {
+                rotate_90_degrees_list<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size]),
+                    neuron_dim, mc_neuron_size, offset);
+                rotate_90_degrees_list<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size + offset]),
+                    neuron_dim, mc_neuron_size, offset);
+                rotate_90_degrees_list<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size + 2 * offset]),
+                    neuron_dim, mc_neuron_size, offset);
 
-				cudaError_t error = cudaGetLastError();
+                cudaError_t error = cudaGetLastError();
 
-				if (error != cudaSuccess)
-				{
-					fprintf(stderr, "Failed to launch CUDA kernel rotate_90_degrees_list (error code %s)!\n", cudaGetErrorString(error));
-					exit(EXIT_FAILURE);
-				}
-			}
-		}
+                if (error != cudaSuccess)
+                {
+                    fprintf(stderr, "Failed to launch CUDA kernel rotate_90_degrees_list (error code %s)!\n", cudaGetErrorString(error));
+                    exit(EXIT_FAILURE);
+                }
+            }
+        }
     }
 
     if (useFlip)
@@ -129,16 +129,16 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
         dim3 dim_grid(grid_size, grid_size, num_rot * spacing);
 
         // Start kernel
-		flip_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[num_rot * spacing * neuron_size]),
-			thrust::raw_pointer_cast(&d_rotated_images[0]), neuron_dim, neuron_size);
+        flip_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[num_rot * spacing * neuron_size]),
+            thrust::raw_pointer_cast(&d_rotated_images[0]), neuron_dim, neuron_size);
 
-		cudaError_t error = cudaGetLastError();
+        cudaError_t error = cudaGetLastError();
 
-		if (error != cudaSuccess)
-		{
-			fprintf(stderr, "Failed to launch CUDA kernel flip (error code %s)!\n", cudaGetErrorString(error));
-			exit(EXIT_FAILURE);
-		}
+        if (error != cudaSuccess)
+        {
+            fprintf(stderr, "Failed to launch CUDA kernel flip (error code %s)!\n", cudaGetErrorString(error));
+            exit(EXIT_FAILURE);
+        }
     }
 }
 

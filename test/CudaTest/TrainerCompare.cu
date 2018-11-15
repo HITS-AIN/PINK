@@ -52,13 +52,18 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
     typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer_cpu;
     typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true> MyTrainer_gpu;
 
-    DataType data({GetParam().image_dim, GetParam().image_dim});
-    fillWithRandomNumbers(data.get_data_pointer(), data.size());
+    DataType data({GetParam().image_dim, GetParam().image_dim}, std::vector<float>{1,2,3,4});
+    //fillWithRandomNumbers(data.get_data_pointer(), data.size());
 
-    SOMType som1({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
-    SOMType som2({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
+    SOMType som1({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, std::vector<float>{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16});
+    //fillWithRandomNumbers(som1.get_data_pointer(), som1.size());
+    SOMType som2 = som1;
+
+    std::cout << "som1 = " << som1 << std::endl;
+    std::cout << "som2 = " << som2 << std::endl;
 
     auto&& f = GaussianFunctor(1.1, 0.2);
+    //auto&& f = StepFunctor(0.1);
 
     MyTrainer_cpu trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR);
     trainer1(data);
@@ -75,10 +80,10 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
 
 INSTANTIATE_TEST_CASE_P(TrainerCompareTest_all, TrainerCompareTest,
     ::testing::Values(
-        TrainerCompareTestData(2, 2, 2, 1, false)
-       ,TrainerCompareTestData(2, 2, 2, 4, false)
+       // TrainerCompareTestData(2, 2, 2, 1, false)
+       TrainerCompareTestData(2, 2, 2, 4, false)
        //,TrainerCompareTestData(2, 2, 2, 8, false)
-       ,TrainerCompareTestData(2, 2, 2, 1, true)
-       ,TrainerCompareTestData(2, 2, 2, 4, true)
+       //,TrainerCompareTestData(2, 2, 2, 1, true)
+       //,TrainerCompareTestData(2, 2, 2, 4, true)
        //,TrainerCompareTestData(2, 2, 2, 8, true)
 ));

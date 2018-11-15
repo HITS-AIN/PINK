@@ -23,6 +23,28 @@ struct DistributionFunctorBase
 };
 
 /**
+ * @brief Functor for step function
+ *
+ * return 1.0 if distance <= value, else 0.0
+ */
+struct StepFunctor : public DistributionFunctorBase
+{
+    StepFunctor(float value)
+     : value(value)
+    {}
+
+    float operator () (float distance) const
+    {
+        if (distance <= value) return 1.0;
+        return 0.0;
+    }
+
+private:
+
+    float value;
+};
+
+/**
  * @brief Functor for gaussian
  *
  * 1.0 / (sigma * math.sqrt(2.0 * math.pi)) * math.exp(-1.0/2.0 * (x / sigma)**2 )

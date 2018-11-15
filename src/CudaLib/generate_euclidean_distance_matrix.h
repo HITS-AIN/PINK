@@ -22,12 +22,12 @@ namespace pink {
  */
 template <typename T>
 void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_distance_matrix,
-    thrust::device_vector<uint32_t>& d_best_rotation_matrix, uint32_t number_of_neurons, uint32_t neuron_size,
+    thrust::device_vector<uint32_t>& d_best_rotation_matrix, uint32_t som_size, uint32_t neuron_size,
     thrust::device_vector<T> const& d_som, uint32_t number_of_spatial_transformations,
-    thrust::device_vector<T> const& d_rotated_images, uint16_t block_size,
+    thrust::device_vector<T> const& d_spatial_transformed_images, uint16_t block_size,
     bool use_multiple_gpus)
 {
-    thrust::device_vector<T> d_first_step(number_of_neurons * number_of_spatial_transformations);
+    thrust::device_vector<T> d_first_step(som_size * number_of_spatial_transformations);
 
     // First step ...
     if (use_multiple_gpus and cuda_getNumberOfGPUs() > 1) {
@@ -35,13 +35,18 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         //generate_euclidean_distance_matrix_first_step_multi_gpu(d_som, d_rotated_images,
         //    d_first_step, number_of_spatial_transformations, block_size);
     } else {
-        generate_euclidean_distance_matrix_first_step(d_som, d_rotated_images,
-            d_first_step, number_of_spatial_transformations, number_of_neurons, neuron_size, block_size);
+        generate_euclidean_distance_matrix_first_step(d_som, d_spatial_transformed_images,
+            d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
     }
+
+    std::cout << "first step = ";
+    thrust::device_vector<T> test = d_first_step;
+    for (auto e : test) std::cout << e << " ";
+    std::cout << std::endl;
 
     // Second step ...
     generate_euclidean_distance_matrix_second_step(d_euclidean_distance_matrix,
-        d_best_rotation_matrix, d_first_step, number_of_spatial_transformations, number_of_neurons);
+        d_best_rotation_matrix, d_first_step, number_of_spatial_transformations, som_size);
 }
 
 } // namespace pink

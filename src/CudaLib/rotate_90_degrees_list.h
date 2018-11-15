@@ -17,8 +17,8 @@ template <typename T>
 __global__
 void rotate_90_degrees_list(T *images, uint32_t dim, uint32_t size, uint32_t offset)
 {
-	uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
-	uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
+    uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
+    uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (x >= dim or y >= dim) return;
 

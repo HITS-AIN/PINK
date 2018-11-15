@@ -31,9 +31,8 @@ void find_best_matching_neuron_kernel(T const *euclidean_distance_matrix,
 /// CUDA Kernel Device code updating quadratic self organizing map using gaussian function.
 template <unsigned int block_size, typename T>
 __global__
-void update_neurons_kernel(T *som, T const *rotated_images,
-    uint32_t const *best_rotation_matrix, uint32_t best_match,
-    float const *update_factors, uint32_t som_size, uint32_t neuron_size)
+void update_neurons_kernel(T *som, T const *rotated_images, uint32_t const *best_rotation_matrix,
+    uint32_t best_match, float const *update_factors, uint32_t som_size, uint32_t neuron_size)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i >= neuron_size) return;

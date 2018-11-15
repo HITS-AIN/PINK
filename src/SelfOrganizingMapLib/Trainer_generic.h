@@ -18,6 +18,7 @@
 #include "generate_euclidean_distance_matrix.h"
 #include "ImageProcessingLib/Interpolation.h"
 #include "SOM.h"
+#include "SOMIO.h"
 #include "UtilitiesLib/pink_exception.h"
 
 #ifdef __CUDACC__
@@ -53,7 +54,7 @@ public:
 
         for (uint32_t i = 0; i < som_size; ++i) {
             for (uint32_t j = 0; j < som_size; ++j) {
-            	float distance = som_layout.get_distance(i, j);
+                float distance = som_layout.get_distance(i, j);
                 if (this->max_update_distance <= 0 or distance < this->max_update_distance) {
                     update_factors[i * som_size + j] = distribution_function(distance);
                 }
@@ -118,15 +119,23 @@ public:
         std::vector<T> euclidean_distance_matrix(som_size);
         std::vector<uint32_t> best_rotation_matrix(som_size);
 
-        auto&& list_of_spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
+        auto&& spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
             this->use_flip, this->interpolation, neuron_dim);
 
-        for (auto e : list_of_spatial_transformed_images) std::cout << e << " ";
+        for (auto e : spatial_transformed_images) std::cout << e << " ";
         std::cout << std::endl;
+
+        std::cout << "som = " << som << std::endl;
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             som_size, som.get_data_pointer(), neuron_size, this->number_of_spatial_transformations,
-            list_of_spatial_transformed_images);
+            spatial_transformed_images);
+
+        for (auto e : best_rotation_matrix) std::cout << e << " ";
+        std::cout << std::endl;
+
+        for (auto e : euclidean_distance_matrix) std::cout << e << " ";
+        std::cout << std::endl;
 
         /// Find the best matching neuron, with the lowest euclidean distance
         auto&& best_match = std::distance(euclidean_distance_matrix.begin(),
@@ -134,10 +143,9 @@ public:
 
         auto&& current_neuron = som.get_data_pointer();
         for (uint32_t i = 0; i < som_size; ++i) {
-            float distance = som.get_som_layout().get_distance(best_match, i);
-            if (this->max_update_distance <= 0 or distance < this->max_update_distance) {
-                float factor = this->distribution_function(distance);
-                T *current_image = &list_of_spatial_transformed_images[best_rotation_matrix[i] * neuron_size];
+            float factor = this->update_factors[best_match * som_size + i];
+            if (factor != 0.0) {
+                T *current_image = &spatial_transformed_images[best_rotation_matrix[i] * neuron_size];
                 for (uint32_t j = 0; j < neuron_size; ++j) {
                     current_neuron[j] -= (current_neuron[j] - current_image[j]) * factor;
                 }
@@ -174,7 +182,7 @@ public:
        som(som),
        block_size(block_size),
        use_multiple_gpus(use_multiple_gpus),
-       d_list_of_spatial_transformed_images(this->number_of_spatial_transformations * som.get_neuron_size()),
+       d_spatial_transformed_images(this->number_of_spatial_transformations * som.get_neuron_size()),
        d_euclidean_distance_matrix(som.get_number_of_neurons()),
        d_best_rotation_matrix(som.get_number_of_neurons()),
        d_best_match(1)
@@ -204,18 +212,31 @@ public:
         uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
         for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
-        generate_rotated_images(d_list_of_spatial_transformed_images, data.get_device_vector(), spacing, this->number_of_rotations,
+        generate_rotated_images(d_spatial_transformed_images, data.get_device_vector(), spacing, this->number_of_rotations,
             neuron_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha);
 
-        thrust::device_vector<T> test = d_list_of_spatial_transformed_images;
+        thrust::device_vector<T> test = d_spatial_transformed_images;
         for (auto e : test) std::cout << e << " ";
         std::cout << std::endl;
 
-        generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
-            som.get_number_of_neurons(), som.get_neuron_size(), som.get_device_vector(), this->number_of_spatial_transformations,
-            d_list_of_spatial_transformed_images, block_size, use_multiple_gpus);
+        thrust::device_vector<T> test4 = som.get_device_vector();
+        std::cout << "som = ";
+        for (auto e : test4) std::cout << e << " ";
+        std::cout << std::endl;
 
-        update_neurons(som.get_device_vector(), d_list_of_spatial_transformed_images,
+        generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
+            som_size, neuron_size, som.get_device_vector(), this->number_of_spatial_transformations,
+            d_spatial_transformed_images, block_size, use_multiple_gpus);
+
+        thrust::device_vector<uint32_t> test2 = d_best_rotation_matrix;
+        for (auto e : test2) std::cout << e << " ";
+        std::cout << std::endl;
+
+        thrust::device_vector<T> test3 = d_euclidean_distance_matrix;
+        for (auto e : test3) std::cout << e << " ";
+        std::cout << std::endl;
+
+        update_neurons(som.get_device_vector(), d_spatial_transformed_images,
             d_best_rotation_matrix, d_euclidean_distance_matrix, d_best_match, d_update_factors,
             som_size, neuron_size);
 
@@ -232,7 +253,7 @@ private:
 
     bool use_multiple_gpus;
 
-    thrust::device_vector<T> d_list_of_spatial_transformed_images;
+    thrust::device_vector<T> d_spatial_transformed_images;
     thrust::device_vector<T> d_euclidean_distance_matrix;
     thrust::device_vector<uint32_t> d_best_rotation_matrix;
     thrust::device_vector<uint32_t> d_best_match;
