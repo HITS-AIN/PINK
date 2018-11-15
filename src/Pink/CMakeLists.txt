@@ -1,6 +1,5 @@
 include_directories(
     ..
-    ${CUDA_INCLUDE_DIRS}
 )
 
 add_executable(
