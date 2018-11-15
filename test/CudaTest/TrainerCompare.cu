@@ -83,4 +83,9 @@ INSTANTIATE_TEST_CASE_P(TrainerCompareTest_all, TrainerCompareTest,
        ,TrainerCompareTestData(2, 2, 2, 1, true)
        ,TrainerCompareTestData(2, 2, 2, 4, true)
        //,TrainerCompareTestData(2, 2, 2, 8, true)
+
+       ,TrainerCompareTestData(2, 4, 4, 1, false)
+       //,TrainerCompareTestData(2, 2, 4, 1, false)
+
+       //,TrainerCompareTestData(2, 64, 45, 8, true)
 ));
