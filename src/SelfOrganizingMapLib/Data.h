@@ -11,10 +11,6 @@
 #include <functional>
 #include <vector>
 
-#ifdef __CUDACC__
-    #include <thrust/device_vector.h>
-#endif
-
 namespace pink {
 
 //! Primary template for generic Data
@@ -65,6 +61,9 @@ public:
 
     auto size() const { return data.size(); }
 
+    auto get_data() { return data; }
+    auto get_data() const { return data; }
+
     /// Return the element
     auto operator [] (uint32_t position) -> T& { return data[position]; }
     auto operator [] (uint32_t position) const -> T const& { return data[position]; }
@@ -81,19 +80,6 @@ public:
     auto get_dimension() -> DimensionType { return layout.dimension; }
     auto get_dimension() const -> DimensionType const { return layout.dimension; }
 
-#ifdef __CUDACC__
-    /// Return device vector
-    auto get_device_vector() { return d_data; }
-    auto get_device_vector() const { return d_data; }
-
-    /// Return device pointer
-    auto get_device_pointer() { return &d_data[0]; }
-    auto get_device_pointer() const { return &d_data[0]; }
-
-    void update_host() { data = d_data; }
-    void update_device() { d_data = data; }
-#endif
-
 private:
 
     template <typename A, typename B>
@@ -101,12 +87,7 @@ private:
 
     LayoutType layout;
 
-#ifdef __CUDACC__
-    thrust::device_vector<T> d_data;
-    thrust::host_vector<T> data;
-#else
     std::vector<T> data;
-#endif
 
 };
 

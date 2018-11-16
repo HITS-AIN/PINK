@@ -122,8 +122,8 @@ public:
         auto&& spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
             this->use_flip, this->interpolation, neuron_dim);
 
-        for (auto&& e : spatial_transformed_images) std::cout << e << " ";
-        std::cout << std::endl;
+//        for (auto&& e : spatial_transformed_images) std::cout << e << " ";
+//        std::cout << std::endl;
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             som_size, som.get_data_pointer(), neuron_size, this->number_of_spatial_transformations,
@@ -172,6 +172,7 @@ public:
      : TrainerBase_generic<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, som.get_som_layout()),
        som(som),
+	   d_som(som.get_data()),
        block_size(block_size),
        use_multiple_gpus(use_multiple_gpus),
        d_spatial_transformed_images(this->number_of_spatial_transformations * som.get_neuron_size()),
@@ -198,35 +199,45 @@ public:
     /// Training the SOM by a single data point
     void operator () (Data<DataLayout, T> const& data)
     {
+        /// Device memory for data
+        thrust::device_vector<T> d_data = data.get_data();
+
         uint32_t som_size = som.get_som_dimension()[0] * som.get_som_dimension()[1];
         uint32_t neuron_dim = som.get_neuron_dimension()[0];
         uint32_t neuron_size = neuron_dim * neuron_dim;
         uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
         for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
-        generate_rotated_images(d_spatial_transformed_images, data.get_device_vector(), spacing, this->number_of_rotations,
+        generate_rotated_images(d_spatial_transformed_images, d_data, spacing, this->number_of_rotations,
             data.get_dimension()[0], neuron_dim, this->use_flip, this->interpolation, d_cos_alpha, d_sin_alpha);
 
-        thrust::host_vector<T> spatial_transformed_images = d_spatial_transformed_images;
-        for (auto&& e : spatial_transformed_images) std::cout << e << " ";
-        std::cout << std::endl;
+//        thrust::host_vector<T> spatial_transformed_images = d_spatial_transformed_images;
+//        for (auto&& e : spatial_transformed_images) std::cout << e << " ";
+//        std::cout << std::endl;
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
-            som_size, neuron_size, som.get_device_vector(), this->number_of_spatial_transformations,
+            som_size, neuron_size, d_som, this->number_of_spatial_transformations,
             d_spatial_transformed_images, block_size, use_multiple_gpus);
 
-        update_neurons(som.get_device_vector(), d_spatial_transformed_images,
-            d_best_rotation_matrix, d_euclidean_distance_matrix, d_best_match, d_update_factors,
-            som_size, neuron_size);
+        update_neurons(d_som, d_spatial_transformed_images, d_best_rotation_matrix, d_euclidean_distance_matrix,
+        	d_best_match, d_update_factors, som_size, neuron_size);
 
         thrust::host_vector<uint32_t> best_match = d_best_match;
         ++this->update_info[best_match[0]];
+    }
+
+    void update_som()
+    {
+    	thrust::copy(d_som.begin(), d_som.end(), som.get_data_pointer());
     }
 
 private:
 
     /// A reference to the SOM will be trained
     SOMType& som;
+
+    /// Device memory for SOM
+    thrust::device_vector<T> d_som;
 
     uint16_t block_size;
 

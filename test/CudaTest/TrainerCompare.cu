@@ -65,12 +65,10 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
     MyTrainer_cpu trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR);
     trainer1(data);
 
-    som2.update_device();
     MyTrainer_gpu trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, 256, false);
-    data.update_device();
     trainer2(data);
+    trainer2.update_som();
 
-    som2.update_host();
     EXPECT_EQ(som1.size(), som2.size());
     EXPECT_TRUE(EqualFloatArrays(som1.get_data_pointer(), som2.get_data_pointer(), som1.size(), 1e-4));
 }
