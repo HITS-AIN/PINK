@@ -100,7 +100,7 @@ endif()
 
 set(PYBIND11_PYTHON_VERSION 3)
 find_package(pybind11)
-if(PYBIND11_FOUND)
+if(pybind11_FOUND)
     add_subdirectory(src/PythonBinding)
 endif()
 
