@@ -1,5 +1,5 @@
 /**
- * @file   CudaLib/flip.h
+ * @file   CudaLib/flip_kernel.h
  * @date   Nov 13, 2014
  * @author Bernd Doser, HITS gGmbH
  */

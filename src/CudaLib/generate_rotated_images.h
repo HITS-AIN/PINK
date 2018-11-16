@@ -10,11 +10,11 @@
 #include <thrust/device_vector.h>
 
 #include "crop.h"
-#include "flip.h"
+#include "flip_kernel.h"
 #include "ImageProcessingLib/Interpolation.h"
 #include "rotate_90_degrees_list.h"
-#include "rotate_and_crop_nearest_neighbor.h"
-#include "rotate_and_crop_bilinear.h"
+#include "rotate_and_crop_bilinear_kernel.h"
+#include "rotate_and_crop_nearest_neighbor_kernel.h"
 
 namespace pink {
 
@@ -69,13 +69,13 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
                 for (uint32_t c = 0; c < spacing; ++c)
                 {
                     if (interpolation == Interpolation::NEAREST_NEIGHBOR)
-                        rotate_and_crop_nearest_neighbor<<<dim_grid, dim_block>>>(&d_rotated_images[(c + spacing) * neuron_size],
+                        rotate_and_crop_nearest_neighbor_kernel<<<dim_grid, dim_block>>>(&d_rotated_images[(c + spacing) * neuron_size],
                             &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], spacing);
                     else if (interpolation == Interpolation::BILINEAR)
-                        rotate_and_crop_bilinear<<<dim_grid, dim_block>>>(&d_rotated_images[(c + spacing) * neuron_size],
+                        rotate_and_crop_bilinear_kernel<<<dim_grid, dim_block>>>(&d_rotated_images[(c + spacing) * neuron_size],
                             &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], spacing);
                     else {
-                        fprintf(stderr, "generate_rotated_images_gpu: unknown interpolation type!\n");
+                        fprintf(stderr, "generate_rotated_images: unknown interpolation type!\n");
                         exit(EXIT_FAILURE);
                     }
 

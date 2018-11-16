@@ -19,13 +19,6 @@
 #include "UtilitiesLib/DistanceFunctor.h"
 #include "UtilitiesLib/pink_exception.h"
 
-#ifdef __CUDACC__
-    #include "CudaLib/CudaLib.h"
-    #include "CudaLib/generate_euclidean_distance_matrix.h"
-    #include "CudaLib/generate_rotated_images.h"
-    //#include "CudaLib/update_neurons.h"
-#endif
-
 namespace pink {
 
 template <typename SOMLayout, typename DataLayout, typename T>
@@ -72,7 +65,10 @@ protected:
 template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
 class Trainer;
 
-#ifndef __CUDACC__
+/// GPU version of training
+template <typename SOMLayout, typename DataLayout, typename T>
+class Trainer<SOMLayout, DataLayout, T, true>  : public TrainerBase<SOMLayout, DataLayout, T>
+{};
 
 /// CPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
@@ -132,14 +128,6 @@ public:
         }
 
         ++this->update_info[best_match];
-
-    //		auto&& list_of_spatial_transformed_images = SpatialTransformer(Rotation<0,1>(number_of_rotations), use_flip)(image);
-    //		auto&& [euclidean_distance] generate_euclidean_distance_matrix(som, list_of_spatial_transformed_images);
-    //
-    //		auto&& best_match = find_best_match();
-    //
-    //		update_info(best_match);
-    //		update_neurons(best_match);
     }
 
 private:
@@ -147,99 +135,5 @@ private:
     /// A reference to the SOM will be trained
     SOMType& som;
 };
-
-#else // __CUDACC__
-
-/// GPU version of training
-template <typename SOMLayout, typename DataLayout, typename T>
-class Trainer<SOMLayout, DataLayout, T, true> : public TrainerBase<SOMLayout, DataLayout, T>
-{
-    typedef SOM<SOMLayout, DataLayout, T> SOMType;
-    typedef typename TrainerBase<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
-
-public:
-
-    Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity = 0,
-        int number_of_rotations = 360, bool use_flip = true, float max_update_distance = 0.0,
-        Interpolation interpolation = Interpolation::BILINEAR, uint16_t block_size = 1,
-        bool use_multiple_gpus = true)
-     : TrainerBase<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
-           use_flip, max_update_distance, interpolation, som.get_som_layout()),
-       som(som),
-       number_of_channels(1),
-       block_size(block_size),
-       use_multiple_gpus(use_multiple_gpus),
-       d_list_of_spatial_transformed_images(this->number_of_spatial_transformations * som.get_neuron_size()),
-       d_euclidean_distance_matrix(som.get_number_of_neurons()),
-       d_best_rotation_matrix(som.get_number_of_neurons()),
-       d_best_match(1)
-    {
-        if (som.get_neuron_layout().dimensionality > 2)
-        {
-            number_of_channels *= som.get_neuron_dimension()[2];
-        }
-
-        std::vector<T> cos_alpha(number_of_rotations - 1);
-        std::vector<T> sin_alpha(number_of_rotations - 1);
-
-        float angle_step_radians = 0.5 * M_PI / number_of_rotations;
-        for (int i = 0; i < number_of_rotations - 1; ++i) {
-            float angle = (i+1) * angle_step_radians;
-            cos_alpha[i] = std::cos(angle);
-            sin_alpha[i] = std::sin(angle);
-        }
-
-        d_cosAlpha = cos_alpha;
-        d_sinAlpha = sin_alpha;
-    }
-
-    /// Training the SOM by a single data point
-    void operator () (Data<DataLayout, T> const& data)
-    {
-        thrust::device_vector<T> d_image(data.get_data());
-
-        auto image_dim = data.get_dimension()[0];
-        auto neuron_dim = som.get_neuron_dimension()[0];
-
-        generate_rotated_images(d_list_of_spatial_transformed_images, d_image, this->number_of_rotations,
-            image_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha, number_of_channels);
-
-        generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
-            som.get_number_of_neurons(), som.get_neuron_size(), som.get_device_vector(), this->number_of_spatial_transformations,
-            d_list_of_spatial_transformed_images, block_size, use_multiple_gpus);
-
-//		update_neurons(som.get_device_vector(), d_list_of_spatial_transformed_images,
-//			d_best_rotation_matrix, d_euclidean_distance_matrix, d_best_match,
-//			som_width, inputData.som_height, inputData.som_depth, inputData.som_size,
-//			neuron_size, inputData.function, inputData.layout,
-//			inputData.sigma, inputData.damping, max_update_distance,
-//			inputData.usePBC, inputData.dimensionality);
-
-        int best_match;
-        thrust::copy(d_best_match.begin(), d_best_match.end(), &best_match);
-        ++this->update_info[best_match];
-    }
-
-private:
-
-    /// A reference to the SOM will be trained
-    SOMType& som;
-
-    uint32_t number_of_channels;
-
-    uint16_t block_size;
-
-    bool use_multiple_gpus;
-
-    thrust::device_vector<T> d_list_of_spatial_transformed_images;
-    thrust::device_vector<T> d_euclidean_distance_matrix;
-    thrust::device_vector<uint32_t> d_best_rotation_matrix;
-    thrust::device_vector<uint32_t> d_best_match;
-
-    thrust::device_vector<T> d_cosAlpha;
-    thrust::device_vector<T> d_sinAlpha;
-};
-
-#endif
 
 } // namespace pink

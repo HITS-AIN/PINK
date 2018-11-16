@@ -7,12 +7,8 @@
 
 #pragma once
 
-#ifdef __CUDACC__
-  #include <cuda_runtime.h>
-#else
-  #include <cmath>
-  #include "Error.h"
-#endif
+#include <cmath>
+#include "Error.h"
 
 namespace pink {
 
@@ -21,9 +17,6 @@ namespace pink {
  */
 struct DistanceFunctorBase
 {
-#ifdef __CUDACC__
-    __device__
-#endif
     virtual float operator () (int p1, int p2) const = 0;
 
     virtual ~DistanceFunctorBase() {}
@@ -43,9 +36,6 @@ struct CartesianDistanceFunctor<1, false> : public DistanceFunctorBase
      : width_(width)
     {}
 
-#ifdef __CUDACC__
-    __device__
-#endif
     float operator () (int p1, int p2) const
     {
         return abs(p1 - p2);
@@ -67,9 +57,6 @@ struct CartesianDistanceFunctor<1, true> : public DistanceFunctorBase
      : width_(width)
     {}
 
-#ifdef __CUDACC__
-    __device__
-#endif
     float operator () (int p1, int p2) const
     {
         int dx = abs(p1 - p2);
@@ -93,9 +80,6 @@ struct CartesianDistanceFunctor<2, false> : public DistanceFunctorBase
      : width_(width), height_(height)
     {}
 
-#ifdef __CUDACC__
-    __device__
-#endif
     float operator () (int p1, int p2) const
     {
         int y1 = p1 / height_;
@@ -122,9 +106,6 @@ struct CartesianDistanceFunctor<2, true> : public DistanceFunctorBase
      : width_(width), height_(height)
     {}
 
-#ifdef __CUDACC__
-    __device__
-#endif
     float operator () (int p1, int p2) const
     {
         int y1 = p1 / height_;
@@ -158,9 +139,6 @@ struct CartesianDistanceFunctor<3, false> : public DistanceFunctorBase
      : width_(width), height_(height), depth_(depth)
     {}
 
-#ifdef __CUDACC__
-    __device__
-#endif
     float operator () (int p1, int p2) const
     {
         int offset = height_ * width_;
@@ -191,9 +169,6 @@ struct CartesianDistanceFunctor<3, true> : public DistanceFunctorBase
      : width_(width), height_(height), depth_(depth)
     {}
 
-#ifdef __CUDACC__
-    __device__
-#endif
     float operator () (int p1, int p2) const
     {
         int offset = height_ * width_;
@@ -229,9 +204,6 @@ struct HexagonalDistanceFunctor : public DistanceFunctorBase
         : dim_(dim)
        {}
 
-#ifdef __CUDACC__
-    __device__
-#endif
     float operator () (int p1, int p2) const
     {
         int x1, y1, x2, y2;
@@ -242,45 +214,24 @@ struct HexagonalDistanceFunctor : public DistanceFunctorBase
         int dy = y1 - y2;
 
         if (isPositive(dx) == isPositive(dy))
-#ifdef __CUDACC__
-            return abs(dx + dy);
-#else
             return std::abs(dx + dy);
-#endif
         else
-#ifdef __CUDACC__
-            return max(abs(dx), abs(dy));
-#else
             return std::max(std::abs(dx), std::abs(dy));
-#endif
     }
 
 private:
 
-#ifdef __CUDACC__
-    __device__
-#endif
     bool isPositive(int n) const { return n >= 0; }
 
-#ifdef __CUDACC__
-    __device__
-#endif
     void getHexagonalIndices(int p, int &x, int &y) const
     {
         int radius = (dim_ - 1)/2;
         int pos = 0;
         for (x = -radius; x <= radius; ++x) {
-#ifdef __CUDACC__
-            for (y = -radius - min(0,x); y <= radius - max(0,x); ++y, ++pos) {
-#else
             for (y = -radius - std::min(0,x); y <= radius - std::max(0,x); ++y, ++pos) {
-#endif
                 if (pos == p) return;
             }
         }
-#ifndef __CUDACC__
-        fatalError("Error in hexagonal indices.");
-#endif
     }
 
     int dim_;
