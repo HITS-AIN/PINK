@@ -172,7 +172,7 @@ public:
      : TrainerBase_generic<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, som.get_som_layout()),
        som(som),
-	   d_som(som.get_data()),
+       d_som(som.get_data()),
        block_size(block_size),
        use_multiple_gpus(use_multiple_gpus),
        d_spatial_transformed_images(this->number_of_spatial_transformations * som.get_neuron_size()),
@@ -220,7 +220,7 @@ public:
             d_spatial_transformed_images, block_size, use_multiple_gpus);
 
         update_neurons(d_som, d_spatial_transformed_images, d_best_rotation_matrix, d_euclidean_distance_matrix,
-        	d_best_match, d_update_factors, som_size, neuron_size);
+            d_best_match, d_update_factors, som_size, neuron_size);
 
         thrust::host_vector<uint32_t> best_match = d_best_match;
         ++this->update_info[best_match[0]];
@@ -228,7 +228,7 @@ public:
 
     void update_som()
     {
-    	thrust::copy(d_som.begin(), d_som.end(), som.get_data_pointer());
+        thrust::copy(d_som.begin(), d_som.end(), som.get_data_pointer());
     }
 
 private:

@@ -16,8 +16,8 @@ __global__
 void rotate_and_crop_bilinear_kernel(T *rotated_images, T const *image, uint32_t neuron_size,
     uint32_t neuron_dim, uint32_t image_dim, float const *cos_alpha, float const *sin_alpha, uint32_t spacing)
 {
-	uint32_t x2 = blockIdx.x * blockDim.x + threadIdx.x;
-	uint32_t y2 = blockIdx.y * blockDim.y + threadIdx.y;
+    uint32_t x2 = blockIdx.x * blockDim.x + threadIdx.x;
+    uint32_t y2 = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (x2 >= neuron_dim or y2 >= neuron_dim) return;
 

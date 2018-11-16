@@ -24,9 +24,9 @@ template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
 void main_generic(InputData const& input_data)
 {
     if (input_data.verbose) {
-	    std::cout << "SOM layout:  " << SOMLayout::type << "<" << static_cast<int>(SOMLayout::dimensionality) << ">" << std::endl;
-	    std::cout << "Data layout: " << DataLayout::type << "<" << static_cast<int>(DataLayout::dimensionality) << ">" << std::endl;
-	    std::cout << "GPU usage:   " << UseGPU << std::endl;
+        std::cout << "SOM layout:  " << SOMLayout::type << "<" << static_cast<int>(SOMLayout::dimensionality) << ">" << std::endl;
+        std::cout << "Data layout: " << DataLayout::type << "<" << static_cast<int>(DataLayout::dimensionality) << ">" << std::endl;
+        std::cout << "GPU usage:   " << UseGPU << std::endl;
     }
 
     SOM<SOMLayout, DataLayout, T> som(input_data);

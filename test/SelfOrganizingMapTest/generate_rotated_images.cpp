@@ -15,7 +15,7 @@ using namespace pink;
 
 TEST(RotationTest, generate_rotated_images)
 {
-	Data<CartesianLayout<2>, float> data({2, 2}, std::vector<float>{1,2,3,4});
+    Data<CartesianLayout<2>, float> data({2, 2}, std::vector<float>{1,2,3,4});
 
     auto&& spatial_transformed_images = generate_rotated_images(data, 8, false, Interpolation::BILINEAR, 2);
 

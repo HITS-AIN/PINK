@@ -369,7 +369,7 @@ InputData::InputData(int argc, char **argv)
         else neuron_dim = image_dim * sqrt(2.0) / 2.0;
         //else neuron_dim = static_cast<uint32_t>(2 * image_dim / std::sqrt(2.0)) + 1;
     } else {
-    	neuron_dim = neuron_dim_in;
+        neuron_dim = neuron_dim_in;
     }
 
     neuron_size = neuron_dim * neuron_dim;
