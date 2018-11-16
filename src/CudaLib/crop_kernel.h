@@ -1,5 +1,5 @@
 /**
- * @file   CudaLib/crop.h
+ * @file   CudaLib/crop_kernel.h
  * @date   Nov 13, 2014
  * @author Bernd Doser, HITS gGmbH
  */
@@ -15,7 +15,7 @@ namespace pink {
  */
 template <typename T>
 __global__
-void crop(T *dst, T const *src, uint32_t new_dim, uint32_t old_dim)
+void crop_kernel(T *dst, T const *src, uint32_t new_dim, uint32_t old_dim)
 {
     uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
     uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;

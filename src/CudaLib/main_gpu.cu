@@ -5,16 +5,6 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include <cmath>
-#include <chrono>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-
-#ifndef NDEBUG
-    #include <fenv.h>
-#endif
-
 #include "main_gpu.h"
 #include "SelfOrganizingMapLib/main_generic.h"
 #include "UtilitiesLib/InputData.h"

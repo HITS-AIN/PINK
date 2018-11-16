@@ -122,6 +122,9 @@ public:
         auto&& spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
             this->use_flip, this->interpolation, neuron_dim);
 
+        for (auto&& e : spatial_transformed_images) std::cout << e << " ";
+        std::cout << std::endl;
+
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             som_size, som.get_data_pointer(), neuron_size, this->number_of_spatial_transformations,
             spatial_transformed_images);
@@ -176,8 +179,8 @@ public:
        d_best_rotation_matrix(som.get_number_of_neurons()),
        d_best_match(1)
     {
-        std::vector<T> cos_alpha(number_of_rotations - 1);
-        std::vector<T> sin_alpha(number_of_rotations - 1);
+        std::vector<float> cos_alpha(number_of_rotations - 1);
+        std::vector<float> sin_alpha(number_of_rotations - 1);
 
         float angle_step_radians = 0.5 * M_PI / number_of_rotations;
         for (uint32_t i = 0; i < number_of_rotations - 1; ++i) {
@@ -186,8 +189,8 @@ public:
             sin_alpha[i] = std::sin(angle);
         }
 
-        d_cosAlpha = cos_alpha;
-        d_sinAlpha = sin_alpha;
+        d_cos_alpha = cos_alpha;
+        d_sin_alpha = sin_alpha;
 
         d_update_factors = this->update_factors;
     }
@@ -202,7 +205,11 @@ public:
         for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
         generate_rotated_images(d_spatial_transformed_images, data.get_device_vector(), spacing, this->number_of_rotations,
-            neuron_dim, neuron_dim, this->use_flip, this->interpolation, d_cosAlpha, d_sinAlpha);
+            data.get_dimension()[0], neuron_dim, this->use_flip, this->interpolation, d_cos_alpha, d_sin_alpha);
+
+        thrust::host_vector<T> spatial_transformed_images = d_spatial_transformed_images;
+        for (auto&& e : spatial_transformed_images) std::cout << e << " ";
+        std::cout << std::endl;
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             som_size, neuron_size, som.get_device_vector(), this->number_of_spatial_transformations,
@@ -230,9 +237,8 @@ private:
     thrust::device_vector<uint32_t> d_best_rotation_matrix;
     thrust::device_vector<uint32_t> d_best_match;
 
-    thrust::device_vector<T> d_cosAlpha;
-    thrust::device_vector<T> d_sinAlpha;
-
+    thrust::device_vector<float> d_cos_alpha;
+    thrust::device_vector<float> d_sin_alpha;
     thrust::device_vector<float> d_update_factors;
 };
 

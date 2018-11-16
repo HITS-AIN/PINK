@@ -9,12 +9,13 @@
 #include <cstdio>
 #include <thrust/device_vector.h>
 
-#include "crop.h"
+#include "crop_kernel.h"
 #include "flip_kernel.h"
 #include "ImageProcessingLib/Interpolation.h"
 #include "rotate_90_degrees_list.h"
 #include "rotate_and_crop_bilinear_kernel.h"
 #include "rotate_and_crop_nearest_neighbor_kernel.h"
+#include "UtilitiesLib/pink_exception.h"
 
 namespace pink {
 
@@ -24,7 +25,7 @@ namespace pink {
 template <typename T>
 void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust::device_vector<T> const& d_image, uint32_t spacing,
     uint32_t num_rot, uint32_t image_dim, uint32_t neuron_dim, bool useFlip, Interpolation interpolation,
-    thrust::device_vector<T> const& d_cosAlpha, thrust::device_vector<T> const& d_sinAlpha)
+    thrust::device_vector<float> const& d_cos_alpha, thrust::device_vector<float> const& d_sin_alpha)
 {
     const uint16_t block_size = 32;
     uint32_t neuron_size = neuron_dim * neuron_dim;
@@ -40,7 +41,7 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
         // Start kernel
         for (uint32_t c = 0; c < spacing; ++c)
         {
-            crop<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size]),
+            crop_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size]),
                 thrust::raw_pointer_cast(&d_image[c * image_size]), neuron_dim, image_dim);
 
             cudaError_t error = cudaGetLastError();
@@ -68,15 +69,16 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
                 // Start kernel
                 for (uint32_t c = 0; c < spacing; ++c)
                 {
-                    if (interpolation == Interpolation::NEAREST_NEIGHBOR)
+                    if (interpolation == Interpolation::NEAREST_NEIGHBOR) {
                         rotate_and_crop_nearest_neighbor_kernel<<<dim_grid, dim_block>>>(&d_rotated_images[(c + spacing) * neuron_size],
-                            &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], spacing);
-                    else if (interpolation == Interpolation::BILINEAR)
-                        rotate_and_crop_bilinear_kernel<<<dim_grid, dim_block>>>(&d_rotated_images[(c + spacing) * neuron_size],
-                            &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cosAlpha[0], &d_sinAlpha[0], spacing);
-                    else {
-                        fprintf(stderr, "generate_rotated_images: unknown interpolation type!\n");
-                        exit(EXIT_FAILURE);
+                            &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cos_alpha[0], &d_sin_alpha[0], spacing);
+                    } else if (interpolation == Interpolation::BILINEAR) {
+                    	std::cout << "hey" << std::endl;
+                        rotate_and_crop_bilinear_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[(c + spacing) * neuron_size]),
+                            thrust::raw_pointer_cast(&d_image[c * image_size]), neuron_size, neuron_dim, image_dim,
+                            thrust::raw_pointer_cast(&d_cos_alpha[0]), thrust::raw_pointer_cast(&d_sin_alpha[0]), spacing);
+                    } else {
+                        pink::exception("generate_rotated_images: unknown interpolation type");
                     }
 
                     cudaError_t error = cudaGetLastError();
