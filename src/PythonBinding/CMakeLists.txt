@@ -1,8 +1,13 @@
 include_directories(
-    ${CUDA_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/src
     ${PYTHON_INCLUDE_DIRS}
 )
+
+if(PINK_USE_CUDA)
+    include_directories(
+        ${CUDA_INCLUDE_DIRS}
+    )
+endif()
 
 pybind11_add_module(
     pink MODULE
