@@ -121,17 +121,12 @@ if(DOXYGEN_FOUND)
         ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doxygen/Doxyfile
             WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doxygen
             COMMENT "Generating API documentation with Doxygen" VERBATIM
-    )    
+    )
 endif()
 
-install(FILES
-    ${PROJECT_SOURCE_DIR}/scripts/jpg2binary.py
-    ${PROJECT_SOURCE_DIR}/scripts/jpg2binaryOnlyOneChannel.py
-    ${PROJECT_SOURCE_DIR}/scripts/numpy2binary.py
-    ${PROJECT_SOURCE_DIR}/scripts/showHeatmap.py
-    ${PROJECT_SOURCE_DIR}/scripts/showImages.py
-    ${PROJECT_SOURCE_DIR}/scripts/showSOM.py
+install(DIRECTORY scripts/
     DESTINATION scripts
+    FILES_MATCHING PATTERN "*.py"
 )
 
 if(UNIX)
