@@ -96,7 +96,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("number_of_rotations") = 360,
             py::arg("use_flip") = true,
             py::arg("max_update_distance") = 0.0,
-            py::arg("interpolation") = Interpolation::BILINEAR
+            py::arg("interpolation") = static_cast<std::underlying_type_t<Interpolation>>(Interpolation::BILINEAR)
         )
         .def("__call__", [](Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>& trainer, Data<CartesianLayout<2>, float> const& data)
         {
