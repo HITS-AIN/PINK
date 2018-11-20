@@ -9,19 +9,30 @@ if(PINK_USE_CUDA)
     )
 endif()
 
-pybind11_add_module(
-    pink MODULE
-    pink.cpp
+cuda_add_library(
+    pink
+    SHARED
+    pink.cu
 )
 
 target_link_libraries(
-    pink PRIVATE
+    pink
     ImageProcessingLib
+    pybind11::module
+    SelfOrganizingMapLib
+    UtilitiesLib
 )
 
 if(PINK_USE_CUDA)
     target_link_libraries(
-        pink PRIVATE
+        pink
         CudaLib
     )
 endif()
+
+set_target_properties(pink PROPERTIES PREFIX "")
+
+install( 
+    TARGETS pink
+    LIBRARY DESTINATION lib
+)

@@ -77,7 +77,7 @@ def main():
         plt.show()
 
     som = pink.som(np_som)
-    trainer = pink.trainer(som, GaussianFunctor(sigma=1.1, damping=1.0),
+    trainer = pink.trainer_gpu(som, GaussianFunctor(sigma=1.1, damping=1.0),
                            number_of_rotations=180, verbosity=0, interpolation=pink.interpolation.BILINEAR)
 
     for i in range(images.shape[0]):
@@ -88,6 +88,7 @@ def main():
         np_som = np.array(som, copy=False)
 
         if args.display and i % 100 == 0:
+            trainer.update_som()
             new_dim = np_som.shape[0] * np_som.shape[2]
             plt.matshow(np_som.swapaxes(1, 2).reshape((new_dim, new_dim)))
             plt.show()

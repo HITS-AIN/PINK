@@ -93,7 +93,7 @@ PYBIND11_MODULE(pink, m)
        .value("BILINEAR", Interpolation::BILINEAR)
        .export_values();
 
-    py::class_<Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "trainer")
+    py::class_<Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "trainer_cpu")
         .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, float, Interpolation>(),
             py::arg("som"),
             py::arg("distribution_function"),
@@ -107,4 +107,26 @@ PYBIND11_MODULE(pink, m)
         {
             return trainer(data);
         });
+
+    py::class_<Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m, "trainer_gpu")
+        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, float,
+        	Interpolation, uint16_t, bool>(),
+            py::arg("som"),
+            py::arg("distribution_function"),
+            py::arg("verbosity") = 0,
+            py::arg("number_of_rotations") = 360,
+            py::arg("use_flip") = true,
+            py::arg("max_update_distance") = 0.0,
+            py::arg("interpolation") = Interpolation::BILINEAR,
+            py::arg("block_size") = 256,
+            py::arg("use_multiple_gpus") = false
+        )
+        .def("__call__", [](Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>& trainer, Data<CartesianLayout<2>, float> const& data)
+        {
+            trainer(data);
+        })
+		.def("update_som", [](Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>& trainer)
+		{
+			trainer.update_som();
+		});
 }

@@ -15,6 +15,8 @@ cuda_add_library(
 
 target_link_libraries(
     CudaLib
+    SelfOrganizingMapLib
+    UtilitiesLib
     ${CUDA_LIBRARIES}
     ${CUDA_CUBLAS_LIBRARIES}
 )
