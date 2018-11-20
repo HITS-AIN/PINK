@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.2-devel-ubuntu18.04
+FROM nvidia/cuda:10.0-devel-ubuntu18.04
 
 LABEL maintainer="Bernd Doser <bernd.doser@h-its.org>"
 
@@ -33,7 +33,7 @@ RUN pip3 install --upgrade pip && \
     matplotlib \
     numpy \
     tensorflow \
-    tqdm==4.20.0
+    tqdm
 
 RUN conan remote add braintwister https://api.bintray.com/conan/braintwister/conan && \
     conan remote add conan-community https://api.bintray.com/conan/conan-community/conan && \
@@ -43,7 +43,9 @@ RUN git clone https://github.com/HITS-AIN/PINK.git && \
     cd PINK && git checkout redesign && \
     mkdir build && cd build && \
     cmake .. && \
-    make && \
+    make
+
+RUN cd PINK/build && \
     make test
 
 ENV PYTHONPATH /PINK/build/lib
