@@ -59,6 +59,9 @@ void main_generic(InputData const& input_data)
         }
 
         std::cout << "  Write final SOM to " << input_data.resultFilename << " ... " << std::flush;
+#ifdef __CUDACC__
+        trainer.update_som();
+#endif
         write(som, input_data.resultFilename);
         std::cout << "done." << std::endl;
 
@@ -70,7 +73,7 @@ void main_generic(InputData const& input_data)
     }
     else if (input_data.executionPath == ExecutionPath::MAP)
     {
-        //Mapper mapper;
+        pink::exception("Mapping not implemented yet");
     }
     else
     {

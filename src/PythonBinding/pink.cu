@@ -110,7 +110,7 @@ PYBIND11_MODULE(pink, m)
 
     py::class_<Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m, "trainer_gpu")
         .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, float,
-        	Interpolation, uint16_t, bool>(),
+            Interpolation, uint16_t, bool>(),
             py::arg("som"),
             py::arg("distribution_function"),
             py::arg("verbosity") = 0,
@@ -125,8 +125,8 @@ PYBIND11_MODULE(pink, m)
         {
             trainer(data);
         })
-		.def("update_som", [](Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>& trainer)
-		{
-			trainer.update_som();
-		});
+        .def("update_som", [](Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>& trainer)
+        {
+            trainer.update_som();
+        });
 }
