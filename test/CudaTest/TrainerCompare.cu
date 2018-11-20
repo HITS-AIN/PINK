@@ -52,8 +52,9 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
     typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer_cpu;
     typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true> MyTrainer_gpu;
 
-    DataType data({GetParam().image_dim, GetParam().image_dim}, 0.0);
-    fillWithRandomNumbers(data.get_data_pointer(), data.size());
+    DataType data({GetParam().image_dim, GetParam().image_dim}, std::vector<float>{1.0, 2.0, 3.0, 4.0});
+//    DataType data({GetParam().image_dim, GetParam().image_dim}, 0.0);
+//    fillWithRandomNumbers(data.get_data_pointer(), data.size());
 
     SOMType som1({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
     fillWithRandomNumbers(som1.get_data_pointer(), som1.size());
@@ -77,7 +78,7 @@ INSTANTIATE_TEST_CASE_P(TrainerCompareTest_all, TrainerCompareTest,
     ::testing::Values(
         TrainerCompareTestData(2, 2, 2, 1, false)
        ,TrainerCompareTestData(2, 2, 2, 4, false)
-       ,TrainerCompareTestData(2, 4, 2, 8, false)
+       ,TrainerCompareTestData(2, 2, 2, 8, false)
 //       ,TrainerCompareTestData(2, 2, 2, 1, true)
 //       ,TrainerCompareTestData(2, 2, 2, 4, true)
 //       ,TrainerCompareTestData(2, 2, 2, 8, true)

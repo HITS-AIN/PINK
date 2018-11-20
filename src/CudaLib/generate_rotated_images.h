@@ -84,7 +84,7 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
 
                     if (error != cudaSuccess)
                     {
-                        fprintf(stderr, "Failed to launch CUDA kernel rotateAndCrop (error code %s)!\n", cudaGetErrorString(error));
+                        fprintf(stderr, "Failed to launch CUDA kernel rotate_and_crop (error code %s)!\n", cudaGetErrorString(error));
                         exit(EXIT_FAILURE);
                     }
                 }

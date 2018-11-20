@@ -180,18 +180,21 @@ public:
        d_best_rotation_matrix(som.get_number_of_neurons()),
        d_best_match(1)
     {
-        std::vector<float> cos_alpha(number_of_rotations - 1);
-        std::vector<float> sin_alpha(number_of_rotations - 1);
+    	if (number_of_rotations >= 4) {
+			std::vector<float> cos_alpha(number_of_rotations - 1);
+			std::vector<float> sin_alpha(number_of_rotations - 1);
 
-        float angle_step_radians = 0.5 * M_PI / number_of_rotations;
-        for (uint32_t i = 0; i < number_of_rotations - 1; ++i) {
-            float angle = (i+1) * angle_step_radians;
-            cos_alpha[i] = std::cos(angle);
-            sin_alpha[i] = std::sin(angle);
-        }
+			uint32_t num_real_rot = number_of_rotations / 4;
+			float angle_step_radians = 0.5 * M_PI / num_real_rot;
+			for (uint32_t i = 0; i < num_real_rot - 1; ++i) {
+				float angle = (i+1) * angle_step_radians;
+				cos_alpha[i] = std::cos(angle);
+				sin_alpha[i] = std::sin(angle);
+			}
 
-        d_cos_alpha = cos_alpha;
-        d_sin_alpha = sin_alpha;
+			d_cos_alpha = cos_alpha;
+			d_sin_alpha = sin_alpha;
+    	}
 
         d_update_factors = this->update_factors;
     }

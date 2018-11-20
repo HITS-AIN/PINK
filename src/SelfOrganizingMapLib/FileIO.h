@@ -26,8 +26,9 @@ void write(SOM<SOMLayout, NeuronLayout, T> const& som, std::string const& filena
     auto&& neuron_layout = som.get_neuron_layout();
 
     os << "# " << som.header << std::endl;
-    os << "# " << som_layout.type << " ";
+    os << "# " << "SOM layout = " << som_layout.type << " ";
     for (int dim = 0; dim != som_layout.dimensionality; ++dim) os << som_layout.dimension[dim] << " ";
+    os << "# " << "Neuron layout = " << neuron_layout.type << " ";
     for (int dim = 0; dim != neuron_layout.dimensionality; ++dim) os << neuron_layout.dimension[dim] << " ";
     os << std::endl;
 
