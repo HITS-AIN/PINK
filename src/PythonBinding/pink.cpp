@@ -24,7 +24,7 @@ PYBIND11_MODULE(pink, m)
 
     py::class_<Data<CartesianLayout<2>, float>>(m, "data", py::buffer_protocol())
         .def(py::init())
-        .def("__init__", [](Data<CartesianLayout<2>, float> &m, py::buffer b)
+        .def(py::init([](py::buffer b)
         {
             py::buffer_info info = b.request();
 
@@ -34,8 +34,8 @@ PYBIND11_MODULE(pink, m)
             auto&& p = static_cast<float*>(info.ptr);
             auto&& dim0 = static_cast<uint32_t>(info.shape[0]);
             auto&& dim1 = static_cast<uint32_t>(info.shape[1]);
-            new (&m) Data<CartesianLayout<2>, float>({dim0, dim1}, std::vector<float>(p, p + dim0 * dim1));
-        })
+            return new Data<CartesianLayout<2>, float>({dim0, dim1}, std::vector<float>(p, p + dim0 * dim1));
+        }))
         .def_buffer([](Data<CartesianLayout<2>, float> &m) -> py::buffer_info {
 
              auto&& dimension = m.get_dimension();
@@ -54,7 +54,7 @@ PYBIND11_MODULE(pink, m)
 
     py::class_<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m, "som", py::buffer_protocol())
         .def(py::init())
-        .def("__init__", [](SOM<CartesianLayout<2>, CartesianLayout<2>, float> &m, py::buffer b)
+        .def(py::init([](py::buffer b)
         {
             py::buffer_info info = b.request();
 
@@ -65,8 +65,8 @@ PYBIND11_MODULE(pink, m)
             auto&& dim1 = static_cast<uint32_t>(info.shape[1]);
             auto&& dim2 = static_cast<uint32_t>(info.shape[2]);
             auto&& dim3 = static_cast<uint32_t>(info.shape[3]);
-            new (&m) SOM<CartesianLayout<2>, CartesianLayout<2>, float>({dim0, dim1}, {dim2, dim3}, std::vector<float>(p, p + dim0 * dim1 * dim2 * dim3));
-        })
+            return new SOM<CartesianLayout<2>, CartesianLayout<2>, float>({dim0, dim1}, {dim2, dim3}, std::vector<float>(p, p + dim0 * dim1 * dim2 * dim3));
+        }))
         .def_buffer([](SOM<CartesianLayout<2>, CartesianLayout<2>, float> &m) -> py::buffer_info {
 
              auto&& som_dimension = m.get_som_dimension();
@@ -88,6 +88,11 @@ PYBIND11_MODULE(pink, m)
              );
          });
 
+    py::enum_<Interpolation>(m, "interpolation")
+       .value("NEAREST_NEIGHBOR", Interpolation::NEAREST_NEIGHBOR)
+       .value("BILINEAR", Interpolation::BILINEAR)
+       .export_values();
+
     py::class_<Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "trainer")
         .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, float, Interpolation>(),
             py::arg("som"),
@@ -96,7 +101,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("number_of_rotations") = 360,
             py::arg("use_flip") = true,
             py::arg("max_update_distance") = 0.0,
-            py::arg("interpolation") = static_cast<std::underlying_type_t<Interpolation>>(Interpolation::BILINEAR)
+            py::arg("interpolation") = Interpolation::BILINEAR
         )
         .def("__call__", [](Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>& trainer, Data<CartesianLayout<2>, float> const& data)
         {

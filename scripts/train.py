@@ -77,13 +77,13 @@ def main():
         plt.show()
 
     som = pink.som(np_som)
-    trainer = pink.trainer(distribution_function=GaussianFunctor(sigma=1.1, damping=1.0),
-                           number_of_rotations=180, verbosity=0)
+    trainer = pink.trainer(som, GaussianFunctor(sigma=1.1, damping=1.0),
+                           number_of_rotations=180, verbosity=0, interpolation=pink.interpolation.BILINEAR)
 
     for i in range(images.shape[0]):
 
         data = pink.data(images[i])
-        trainer(som, data)
+        trainer(data)
 
         np_som = np.array(som, copy=False)
 
