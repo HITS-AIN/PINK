@@ -53,6 +53,19 @@ def main():
 
     image_dim = images.shape[1]
     neuron_dim = int(image_dim * math.sqrt(2.0) / 2.0)
+    
+    min_element = np.amin(images)
+    max_element = np.amax(images)
+    factor = 1 / (max_element - min_element)
+    
+    print('min value: ', min_element)
+    print('max value: ', max_element)
+    print('factor: ', factor)
+    
+    images = (images - min_element) * factor
+    
+    print('min value: ', np.amin(images))
+    print('max value: ', np.amax(images))
 
     # Randomize order of input images
     np.random.shuffle(images)
