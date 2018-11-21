@@ -34,7 +34,7 @@ RUN pip3 install --upgrade pip && \
 ENV PYTHONPATH /PINK/build/lib
 ENV JUPYTER_PATH /PINK/build/lib
 
-COPY notebooks /notebooks
+COPY notebooks-gpu /notebooks
 
 WORKDIR /notebooks
 EXPOSE 8888
