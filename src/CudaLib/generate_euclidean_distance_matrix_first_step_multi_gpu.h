@@ -44,7 +44,7 @@ struct Plan
  */
 template <typename T>
 void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_ptr<const T> d_som,
-    thrust::device_ptr<const T> d_rotatedImages, thrust::device_ptr<T> d_firstStep,
+    thrust::device_ptr<const T> d_rotatedImages, thrust::device_ptr<T> d_first_step,
     uint32_t num_rot, uint16_t block_size)
 {
     auto&& gpu_ids = cuda_get_gpu_ids();
@@ -64,7 +64,7 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_ptr<
     // Allocate device memory
     plan[0].d_som = d_som;
     plan[0].d_rotatedImages = d_rotatedImages;
-    plan[0].d_firstStep = d_firstStep;
+    plan[0].d_first_step = d_first_step;
 
     // Create streams for issuing GPU command asynchronously
     for (int i = 1; i < number_of_gpus; ++i)
@@ -81,7 +81,7 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_ptr<
         // Allocate device memory
         plan[i].d_som = cuda_alloc_float(plan[i].size * neuron_size);
         plan[i].d_rotatedImages = cuda_alloc_float(num_rot * neuron_size);
-        plan[i].d_firstStep = cuda_alloc_float(plan[i].size * num_rot);
+        plan[i].d_first_step = cuda_alloc_float(plan[i].size * num_rot);
 
         // Copy data
         cudaMemcpyPeerAsync(plan[i].d_som, i, plan[0].d_som + plan[i].offset * neuron_size, 0, plan[i].size * neuron_size * sizeof(float), plan[i].stream);
@@ -101,22 +101,22 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_ptr<
         switch (block_size)
         {
             case 1024: euclidean_distance_kernel<1024><<<dimGrid, dimBlock, 0, plan[i].stream>>>(
-                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_firstStep, neuron_size); break;
+                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_first_step, neuron_size); break;
             case  512: euclidean_distance_kernel< 512><<<dimGrid, dimBlock, 0, plan[i].stream>>>(
-                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_firstStep, neuron_size); break;
+                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_first_step, neuron_size); break;
             case  256: euclidean_distance_kernel< 256><<<dimGrid, dimBlock, 0, plan[i].stream>>>(
-                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_firstStep, neuron_size); break;
+                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_first_step, neuron_size); break;
             case  128: euclidean_distance_kernel< 128><<<dimGrid, dimBlock, 0, plan[i].stream>>>(
-                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_firstStep, neuron_size); break;
+                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_first_step, neuron_size); break;
             case   64: euclidean_distance_kernel<  64><<<dimGrid, dimBlock, 0, plan[i].stream>>>(
-                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_firstStep, neuron_size); break;
+                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_first_step, neuron_size); break;
             case   32: euclidean_distance_kernel<  32><<<dimGrid, dimBlock, 0, plan[i].stream>>>(
-                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_firstStep, neuron_size); break;
+                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_first_step, neuron_size); break;
             case   16: euclidean_distance_kernel<  16><<<dimGrid, dimBlock, 0, plan[i].stream>>>(
-                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_firstStep, neuron_size); break;
+                plan[i].d_som, plan[i].d_rotatedImages, plan[i].d_first_step, neuron_size); break;
             default:
             {
-                fprintf(stderr, "cuda_generateEuclideanDistanceMatrix_firstStep: block size (%i) not supported.", block_size);
+                fprintf(stderr, "cuda_generateEuclideanDistanceMatrix_first_step: block size (%i) not supported.", block_size);
                 exit(EXIT_FAILURE);
             }
         }
@@ -125,13 +125,13 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_ptr<
 
         if (error != cudaSuccess)
         {
-            fprintf(stderr, "Failed to launch CUDA kernel cuda_generateEuclideanDistanceMatrix_firstStep (error code %s)!\n", cudaGetErrorString(error));
+            fprintf(stderr, "Failed to launch CUDA kernel cuda_generateEuclideanDistanceMatrix_first_step (error code %s)!\n", cudaGetErrorString(error));
             exit(EXIT_FAILURE);
         }
 
         // Copy data
         if (i != 0)
-            cudaMemcpyPeerAsync(plan[0].d_firstStep + plan[i].offset * num_rot, 0, plan[i].d_firstStep, i, plan[i].size * num_rot * sizeof(float), plan[i].stream);
+            cudaMemcpyPeerAsync(plan[0].d_first_step + plan[i].offset * num_rot, 0, plan[i].d_first_step, i, plan[i].size * num_rot * sizeof(float), plan[i].stream);
 
         error = cudaGetLastError();
         if (error != cudaSuccess)

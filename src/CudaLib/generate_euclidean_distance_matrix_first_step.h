@@ -34,7 +34,7 @@ void warp_reduce(volatile T *data, int tid)
  */
 template <uint16_t block_size, typename T>
 __global__
-void euclidean_distance_kernel(T const *som, T const *rotated_images, T *firstStep, uint32_t neuron_size)
+void euclidean_distance_kernel(T const *som, T const *rotated_images, T *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     T diff;
@@ -42,7 +42,7 @@ void euclidean_distance_kernel(T const *som, T const *rotated_images, T *firstSt
     T const *psom = som + blockIdx.y * neuron_size;
     T const *prot = rotated_images + blockIdx.x * neuron_size;
 
-    __shared__ T firstStep_local[block_size];
+    __shared__ T first_step_local[block_size];
 
     for (uint32_t i = tid; i < neuron_size; i += block_size)
     {
@@ -50,19 +50,19 @@ void euclidean_distance_kernel(T const *som, T const *rotated_images, T *firstSt
         sum += diff * diff;
     }
 
-    firstStep_local[tid] = sum;
+    first_step_local[tid] = sum;
     __syncthreads();
 
     // Parallel reduction
-    if (block_size >= 512) { if (tid < 256) { firstStep_local[tid] += firstStep_local[tid + 256]; } __syncthreads(); }
-    if (block_size >= 256) { if (tid < 128) { firstStep_local[tid] += firstStep_local[tid + 128]; } __syncthreads(); }
-    if (block_size >= 128) { if (tid <  64) { firstStep_local[tid] += firstStep_local[tid +  64]; } __syncthreads(); }
+    if (block_size >= 512) { if (tid < 256) { first_step_local[tid] += first_step_local[tid + 256]; } __syncthreads(); }
+    if (block_size >= 256) { if (tid < 128) { first_step_local[tid] += first_step_local[tid + 128]; } __syncthreads(); }
+    if (block_size >= 128) { if (tid <  64) { first_step_local[tid] += first_step_local[tid +  64]; } __syncthreads(); }
 
     // Static loop unrolling for the thread within one warp.
-    if (tid < 32) warp_reduce<block_size>(firstStep_local, tid);
+    if (tid < 32) warp_reduce<block_size>(first_step_local, tid);
 
-    // Copy accumulated local value to global array firstStep
-    if (tid == 0) firstStep[blockIdx.x + blockIdx.y * gridDim.x] = firstStep_local[0];
+    // Copy accumulated local value to global array first_step
+    if (tid == 0) first_step[blockIdx.x + blockIdx.y * gridDim.x] = first_step_local[0];
 }
 
 /**
