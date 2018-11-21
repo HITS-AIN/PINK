@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.0-devel-ubuntu18.04
+FROM nvidia/cuda:9.2-devel-ubuntu18.04
 
 LABEL maintainer="Bernd Doser <bernd.doser@h-its.org>"
 
@@ -45,8 +45,8 @@ RUN git clone https://github.com/HITS-AIN/PINK.git && \
     cmake .. && \
     make
 
-RUN cd PINK/build && \
-    make test
+#RUN cd PINK/build && \
+#    make test
 
 ENV PYTHONPATH /PINK/build/lib
 ENV JUPYTER_PATH /PINK/build/lib
