@@ -1,4 +1,5 @@
 [![Build Status](https://jenkins.h-its.org/buildStatus/icon?job=AIN/GitHub%20HITS-AIN/PINK/master)](https://jenkins.h-its.org/job/AIN/job/GitHub%20HITS-AIN/job/PINK/job/master/)
+[![Join the chat at https://gitter.im/HITS-AIN-PINK/Lobby](https://badges.gitter.im/HITS-AIN-PINK/Lobby.svg)](https://gitter.im/HITS-AIN-PINK/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Parallelized rotation and flipping INvariant Kohonen maps (PINK)
 
