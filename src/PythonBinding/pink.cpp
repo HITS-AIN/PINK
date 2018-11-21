@@ -1,5 +1,5 @@
 /**
- * @file   PythonBinding/pink.cu
+ * @file   PythonBinding/pink.cpp
  * @date   Nov 21, 2018
  * @author Bernd Doser, HITS gGmbH
  */
