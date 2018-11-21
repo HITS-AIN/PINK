@@ -39,10 +39,10 @@ void rotate_and_crop_nearest_neighbor_kernel(T *rotated_images, T const *image,
 		uint32_t ix1 = x1;
 		uint32_t iy1 = y1;
 
-        rotated_images[blockIdx.z * spacing * neuron_size] = image[ix1 * image_dim + iy1];
+        rotated_images[blockIdx.z * spacing * neuron_size + x2 * neuron_dim + y2] = image[ix1 * image_dim + iy1];
 	}
 	else
 	{
-		rotated_images[blockIdx.z * spacing * neuron_size] = 0;
+		rotated_images[blockIdx.z * spacing * neuron_size + x2 * neuron_dim + y2] = 0;
 	}
 }

@@ -46,13 +46,14 @@ void rotate_and_crop_bilinear_kernel(T *rotated_images, T const *image,
 		float cx1 = 1.0f - rx1;
 		float cy1 = 1.0f - ry1;
 
-		rotated_images[blockIdx.z * spacing * neuron_size] = cx1 * cy1 * image[ix1  * image_dim + iy1 ]
-				    									   + cx1 * ry1 * image[ix1  * image_dim + iy1b]
-														   + rx1 * cy1 * image[ix1b * image_dim + iy1 ]
-														   + rx1 * ry1 * image[ix1b * image_dim + iy1b];
+		rotated_images[blockIdx.z * spacing * neuron_size + x2 * neuron_dim + y2] =
+			  cx1 * cy1 * image[ix1  * image_dim + iy1 ]
+			+ cx1 * ry1 * image[ix1  * image_dim + iy1b]
+			+ rx1 * cy1 * image[ix1b * image_dim + iy1 ]
+			+ rx1 * ry1 * image[ix1b * image_dim + iy1b];
     }
     else
     {
-    	rotated_images[blockIdx.z * spacing * neuron_size] = 0;
+    	rotated_images[blockIdx.z * spacing * neuron_size + x2 * neuron_dim + y2] = 0;
     }
 }
