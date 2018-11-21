@@ -70,8 +70,9 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
                 for (uint32_t c = 0; c < spacing; ++c)
                 {
                     if (interpolation == Interpolation::NEAREST_NEIGHBOR) {
-                        rotate_and_crop_nearest_neighbor_kernel<<<dim_grid, dim_block>>>(&d_rotated_images[(c + spacing) * neuron_size],
-                            &d_image[c * image_size], neuron_size, neuron_dim, image_dim, &d_cos_alpha[0], &d_sin_alpha[0], spacing);
+                        rotate_and_crop_nearest_neighbor_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[(c + spacing) * neuron_size]),
+                        	thrust::raw_pointer_cast(&d_image[c * image_size]), neuron_size, neuron_dim, image_dim,
+							thrust::raw_pointer_cast(&d_cos_alpha[0]), thrust::raw_pointer_cast(&d_sin_alpha[0]), spacing);
                     } else if (interpolation == Interpolation::BILINEAR) {
                         rotate_and_crop_bilinear_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[(c + spacing) * neuron_size]),
                             thrust::raw_pointer_cast(&d_image[c * image_size]), neuron_size, neuron_dim, image_dim,
