@@ -23,7 +23,7 @@ TEST(ImageProcessingTest, Rotation90)
     int width = 3;
     int size = height * width;
     std::vector<float> image(size), image2(size), image3(size);
-    fillWithRandomNumbers(&image[0], size);
+    fill_random_uniform(&image[0], size);
 
     // 4 times rotating by 90 degrees should result in original image
     rotate_90degrees(height, width, &image[0], &image2[0]);
@@ -40,7 +40,7 @@ TEST(ImageProcessingTest, CompareRotation90WithRotation)
     int width = 13;
     int size = height * width;
     std::vector<float> image(size), image2(size), image3(size);
-    fillWithRandomNumbers(&image[0], size);
+    fill_random_uniform(&image[0], size);
 
     rotate_90degrees(height, width, &image[0], &image2[0]);
     rotate(height, width, &image[0], &image3[0], 0.5*M_PI, Interpolation::NEAREST_NEIGHBOR);
@@ -54,7 +54,7 @@ TEST(ImageProcessingTest, BilinearInterpolation)
     int width = 12;
     int size = height * width;
     std::vector<float> image(size), image2(size), image3(size);
-    fillWithRandomNumbers(&image[0], size);
+    fill_random_uniform(&image[0], size);
 
     rotate_90degrees(height, width, &image[0], &image2[0]);
     //printImage(&image2[0], width, height);
@@ -122,7 +122,7 @@ TEST(ImageProcessingTest, Crop)
 
     std::vector<float> va(size);
     float *a = &va[0];
-    fillWithRandomNumbers(a,size);
+    fill_random_uniform(a,size);
 
     std::vector<float> vb(crop_size);
     float *b = &vb[0];
@@ -143,7 +143,7 @@ TEST(ImageProcessingTest, FlipAndCrop)
 
     std::vector<float> va(size);
     float *a = &va[0];
-    fillWithRandomNumbers(a,size);
+    fill_random_uniform(a,size);
 
     std::vector<float> vb(crop_size);
     float *b = &vb[0];
@@ -168,7 +168,7 @@ TEST(ImageProcessingTest, RotateAndCrop)
 
     std::vector<float> va(size);
     float *a = &va[0];
-    fillWithRandomNumbers(a,size);
+    fill_random_uniform(a,size);
 
     std::vector<float> vb(crop_size);
     float *b = &vb[0];

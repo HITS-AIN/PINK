@@ -14,7 +14,6 @@
 
 using namespace pink;
 
-#if __CUDA_ARCH__ >= 610
 TEST(mixed_precision, dp4a_uint8)
 {
     std::vector<uint8_t> in1{12, 127, 1, 128};
@@ -22,20 +21,23 @@ TEST(mixed_precision, dp4a_uint8)
 //	std::vector<uint8_t> in1{255, 255, 255, 255};
 //	std::vector<uint8_t> in2{255, 255, 255, 255};
 
-    const int i2p8 = std::pow(2, 8);
-    const int i2p16 = std::pow(2, 16);
-    const int i2p24 = std::pow(2, 24);
+    uint32_t c_in1 = in1[3];
+             c_in1 = (c_in1 << 8) | in1[2];
+             c_in1 = (c_in1 << 8) | in1[1];
+             c_in1 = (c_in1 << 8) | in1[0];
 
-    uint c_in1 = in1[0] + in1[1] * i2p8 + in1[2] * i2p16 + in1[3] * i2p24;
-    uint c_in2 = in2[0] + in2[1] * i2p8 + in2[2] * i2p16 + in2[3] * i2p24;
+	uint32_t c_in2 = in2[3];
+	         c_in2 = (c_in2 << 8) | in2[2];
+	         c_in2 = (c_in2 << 8) | in2[1];
+	         c_in2 = (c_in2 << 8) | in2[0];
 
-    uint in3 = 0;
-    uint out = 0;
+    uint32_t in3 = 0;
+    uint32_t out = 0;
 
-    uint *d_in1 = cuda_alloc_uint(1);
-    uint *d_in2 = cuda_alloc_uint(1);
-    uint *d_in3 = cuda_alloc_uint(1);
-    uint *d_out = cuda_alloc_uint(1);
+    uint32_t *d_in1 = cuda_alloc_uint(1);
+    uint32_t *d_in2 = cuda_alloc_uint(1);
+    uint32_t *d_in3 = cuda_alloc_uint(1);
+    uint32_t *d_out = cuda_alloc_uint(1);
 
     cuda_copyHostToDevice_uint(d_in1, &c_in1, 1);
     cuda_copyHostToDevice_uint(d_in2, &c_in2, 1);
@@ -48,7 +50,6 @@ TEST(mixed_precision, dp4a_uint8)
 
     EXPECT_EQ(static_cast<uint32_t>(in1[0]*in2[0] + in1[1]*in2[1] + in1[2]*in2[2] + in1[3]*in2[3]), out);
 }
-#endif
 
 //TEST(mixed_precision, float)
 //{

@@ -38,6 +38,7 @@ def main():
                         help='Dimension of SOM if initialized from scratch')
     parser.add_argument('-d', '--display', action='store_true', help='Display SOM during training')
     parser.add_argument('-v', '--verbose', action='store_true', help='Be talkative')
+    parser.add_argument('-s', '--scale', action='store_true', help='Scale the input images to be within the range [0, 1]')
 
     args = parser.parse_args()
     if args.verbose:
@@ -54,15 +55,16 @@ def main():
     image_dim = images.shape[1]
     neuron_dim = int(image_dim * math.sqrt(2.0) / 2.0)
     
-    min_element = np.amin(images)
-    max_element = np.amax(images)
-    factor = 1 / (max_element - min_element)
-    
-    print('min value: ', min_element)
-    print('max value: ', max_element)
-    print('factor: ', factor)
-    
-    images = (images - min_element) * factor
+    if args.scale:
+        min_element = np.amin(images)
+        max_element = np.amax(images)
+        factor = 1 / (max_element - min_element)
+        
+        print('min value: ', min_element)
+        print('max value: ', max_element)
+        print('factor: ', factor)
+        
+        images = (images - min_element) * factor
     
     print('min value: ', np.amin(images))
     print('max value: ', np.amax(images))
