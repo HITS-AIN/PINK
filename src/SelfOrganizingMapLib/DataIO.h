@@ -44,7 +44,7 @@ template <typename T>
 std::ostream& operator << (std::ostream& os, Data<CartesianLayout<3>, T> const& data)
 {
     for (uint32_t i = 0, p = 0; i != data.get_dimension()[0]; ++i) {
-        for (uint32_t j = 0; j != data.get_dimension()[1]; ++j, ++p) {
+        for (uint32_t j = 0; j != data.get_dimension()[1]; ++j) {
             for (uint32_t k = 0; k != data.get_dimension()[2]; ++k, ++p) {
                 os << std::setw(6) << data[p] << " ";
             }

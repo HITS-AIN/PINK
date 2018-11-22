@@ -21,7 +21,6 @@
 #include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/Filler.h"
 
-
 using namespace pink;
 
 struct TrainerCompareTestData

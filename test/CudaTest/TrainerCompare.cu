@@ -21,7 +21,6 @@
 #include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/Filler.h"
 
-
 using namespace pink;
 
 struct TrainerCompareTestData
@@ -81,6 +80,8 @@ TEST_P(TrainerCompareTest, cartesian_2d_uint8)
 
     DataType data({GetParam().image_dim, GetParam().image_dim}, 0UL);
     fill_random_uniform(data.get_data_pointer(), data.size());
+
+    //std::cout << Data<CartesianLayout<2>, float>(data) << std::endl;
 
     SOMType som1({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0UL);
     fill_random_uniform(som1.get_data_pointer(), som1.size());

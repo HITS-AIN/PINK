@@ -53,6 +53,13 @@ public:
        data(data)
     {}
 
+    /// Copy construction
+    template <typename T2>
+    Data(Data<Layout, T2> const& other)
+     : layout(other.layout),
+       data(other.data.begin(), other.data.end())
+    {}
+
     auto operator == (SelfType const& other) const
     {
         return layout == other.layout and
@@ -81,6 +88,9 @@ public:
     auto get_dimension() const -> DimensionType const { return layout.dimension; }
 
 private:
+
+    template <typename, typename>
+    friend class Data;
 
     template <typename A, typename B>
     friend void write(Data<A, B> const& data, std::string const& filename);
