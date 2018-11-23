@@ -10,7 +10,8 @@
 #include <thrust/device_vector.h>
 
 #include "CudaLib.h"
-#include "generate_euclidean_distance_matrix_first_step.h"
+//#include "generate_euclidean_distance_matrix_first_step.h"
+#include "generate_euclidean_distance_matrix_first_step_mixed_precision.h"
 //#include "generate_euclidean_distance_matrix_first_step_multi_gpu.h"
 #include "generate_euclidean_distance_matrix_second_step.h"
 #include "UtilitiesLib/pink_exception.h"
@@ -35,7 +36,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         //generate_euclidean_distance_matrix_first_step_multi_gpu(d_som, d_rotated_images,
         //    d_first_step, number_of_spatial_transformations, block_size);
     } else {
-        generate_euclidean_distance_matrix_first_step(d_som, d_spatial_transformed_images,
+        generate_euclidean_distance_matrix_first_step_mixed_precision(d_som, d_spatial_transformed_images,
             d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
     }
 

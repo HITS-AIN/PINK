@@ -129,6 +129,14 @@ public:
             som_size, som.get_data_pointer(), neuron_size, this->number_of_spatial_transformations,
             spatial_transformed_images);
 
+		std::cout << "euclidean_distance_matrix" << std::endl;
+		for (auto&& e : euclidean_distance_matrix) std::cout << e << " ";
+		std::cout << std::endl;
+
+		std::cout << "best_rotation_matrix" << std::endl;
+		for (auto&& e : best_rotation_matrix) std::cout << e << " ";
+		std::cout << std::endl;
+
         /// Find the best matching neuron, with the lowest euclidean distance
         auto&& best_match = std::distance(euclidean_distance_matrix.begin(),
             std::min_element(std::begin(euclidean_distance_matrix), std::end(euclidean_distance_matrix)));
@@ -221,6 +229,16 @@ public:
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             som_size, neuron_size, d_som, this->number_of_spatial_transformations,
             d_spatial_transformed_images, block_size, use_multiple_gpus);
+
+		std::cout << "euclidean_distance_matrix" << std::endl;
+        thrust::host_vector<T> euclidean_distance_matrix = d_euclidean_distance_matrix;
+        for (auto&& e : euclidean_distance_matrix) std::cout << e << " ";
+        std::cout << std::endl;
+
+		std::cout << "best_rotation_matrix" << std::endl;
+        thrust::host_vector<T> best_rotation_matrix = d_best_rotation_matrix;
+        for (auto&& e : best_rotation_matrix) std::cout << e << " ";
+        std::cout << std::endl;
 
         update_neurons(d_som, d_spatial_transformed_images, d_best_rotation_matrix, d_euclidean_distance_matrix,
             d_best_match, d_update_factors, som_size, neuron_size);
