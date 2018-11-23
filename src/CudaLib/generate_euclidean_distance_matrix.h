@@ -37,18 +37,18 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         //generate_euclidean_distance_matrix_first_step_multi_gpu(d_som, d_rotated_images,
         //    d_first_step, number_of_spatial_transformations, block_size);
     } else {
-		thrust::device_vector<uint8_t> d_som_uint8(d_som.size());
-		thrust::device_vector<uint8_t> d_spatial_transformed_images_uint8(d_spatial_transformed_images.size());
+        thrust::device_vector<uint8_t> d_som_uint8(d_som.size());
+        thrust::device_vector<uint8_t> d_spatial_transformed_images_uint8(d_spatial_transformed_images.size());
 
-		thrust::transform(d_som.begin(), d_som.end(), d_som.begin(), d_som_uint8.begin(),
-			[=] __host__ __device__ (T x, [[ maybe_unused ]] T y) { return x * 256; });
+        thrust::transform(d_som.begin(), d_som.end(), d_som.begin(), d_som_uint8.begin(),
+            [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) { return x * 256; });
 
-		thrust::transform(d_spatial_transformed_images.begin(), d_spatial_transformed_images.end(),
-			d_spatial_transformed_images.begin(), d_spatial_transformed_images_uint8.begin(),
-			[=] __host__ __device__ (T x, [[ maybe_unused ]] T y) { return x * 256; });
+        thrust::transform(d_spatial_transformed_images.begin(), d_spatial_transformed_images.end(),
+            d_spatial_transformed_images.begin(), d_spatial_transformed_images_uint8.begin(),
+            [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) { return x * 256; });
 
-		generate_euclidean_distance_matrix_first_step_mixed_precision(d_som_uint8, d_spatial_transformed_images_uint8,
-			d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
+        generate_euclidean_distance_matrix_first_step_mixed_precision(d_som_uint8, d_spatial_transformed_images_uint8,
+            d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
 
 //		generate_euclidean_distance_matrix_first_step_mixed_precision(d_som, d_spatial_transformed_images,
 //			d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);

@@ -26,10 +26,10 @@ TEST(mixed_precision, dp4a_uint8)
              c_in1 = (c_in1 << 8) | in1[1];
              c_in1 = (c_in1 << 8) | in1[0];
 
-	uint32_t c_in2 = in2[3];
-	         c_in2 = (c_in2 << 8) | in2[2];
-	         c_in2 = (c_in2 << 8) | in2[1];
-	         c_in2 = (c_in2 << 8) | in2[0];
+    uint32_t c_in2 = in2[3];
+             c_in2 = (c_in2 << 8) | in2[2];
+             c_in2 = (c_in2 << 8) | in2[1];
+             c_in2 = (c_in2 << 8) | in2[0];
 
     uint32_t in3 = 0;
     uint32_t out = 0;

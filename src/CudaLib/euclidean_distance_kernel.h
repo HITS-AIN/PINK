@@ -17,12 +17,12 @@ template <typename DataType>
 __device__
 void warp_reduce_64(volatile DataType *data, int tid)
 {
-	data[tid] += data[tid + 32];
-	data[tid] += data[tid + 16];
-	data[tid] += data[tid +  8];
-	data[tid] += data[tid +  4];
-	data[tid] += data[tid +  2];
-	data[tid] += data[tid +  1];
+    data[tid] += data[tid + 32];
+    data[tid] += data[tid + 16];
+    data[tid] += data[tid +  8];
+    data[tid] += data[tid +  4];
+    data[tid] += data[tid +  2];
+    data[tid] += data[tid +  1];
 }
 
 /// CUDA device kernel to computes the euclidean distance of two arrays
@@ -82,12 +82,12 @@ void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_i
 
     for (uint32_t i = tid; i < neuron_size; i += 256)
     {
-    	uint32_t diff = std::abs(psom[i] - prot[i]);
-    	uint32_t j;
-    	for (j = 0, i += 256; j < 3 && i < neuron_size; ++j, i += 256)
-    	{
-    	    (diff << 8) | std::abs(psom[i] - prot[i]);
-    	}
+        uint32_t diff = std::abs(psom[i] - prot[i]);
+        uint32_t j;
+        for (j = 0, i += 256; j < 3 && i < neuron_size; ++j, i += 256)
+        {
+            (diff << 8) | std::abs(psom[i] - prot[i]);
+        }
 
 #if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 610)
         sum += __dp4a(diff, diff, null);
