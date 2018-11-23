@@ -88,13 +88,15 @@ if(CUDA_FOUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
     # Set flags for CUDA compiler
     list(APPEND CUDA_NVCC_FLAGS "
+    --expt-extended-lambda
     -arch=sm_61
      -gencode=arch=compute_50,code=sm_50
      -gencode=arch=compute_52,code=sm_52
      -gencode=arch=compute_60,code=sm_60
      -gencode=arch=compute_61,code=sm_61
      -gencode=arch=compute_70,code=sm_70
-     -gencode=arch=compute_70,code=compute_70
+     -gencode=arch=compute_75,code=sm_75
+     -gencode=arch=compute_75,code=compute_75
     ")
 endif()
 
