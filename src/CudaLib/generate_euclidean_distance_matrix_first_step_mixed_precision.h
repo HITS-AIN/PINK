@@ -55,11 +55,6 @@ void generate_euclidean_distance_matrix_first_step_mixed_precision(thrust::devic
         fprintf(stderr, "Failed to launch CUDA kernel euclidean_distance_kernel (error code %s)!\n", cudaGetErrorString(error));
         exit(EXIT_FAILURE);
     }
-
-	std::cout << "first_step" << std::endl;
-    thrust::host_vector<DataType> first_step = d_first_step;
-    for (auto&& e : first_step) std::cout << e << " ";
-    std::cout << std::endl;
 }
 
 } // namespace pink

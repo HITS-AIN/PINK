@@ -64,15 +64,19 @@ void euclidean_distance_kernel<256>(float const *som, float const *rotated_image
     if (tid == 0) first_step[blockIdx.x + blockIdx.y * gridDim.x] = first_step_local[0];
 }
 
+
 template <>
 __global__
 void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_images, float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float sum = 0.0;
-    uint32_t null = 0;
     uint8_t const *psom = som + blockIdx.y * neuron_size;
     uint8_t const *prot = rotated_images + blockIdx.x * neuron_size;
+
+#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 610)
+    uint32_t null = 0;
+#endif
 
     __shared__ float first_step_local[256];
 
@@ -85,7 +89,9 @@ void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_i
     	    (diff << 8) | std::abs(psom[i] - prot[i]);
     	}
 
+#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 610)
         sum += __dp4a(diff, diff, null);
+#endif
     }
 
     first_step_local[tid] = sum;
@@ -101,5 +107,6 @@ void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_i
     // Copy accumulated local value to global array first_step
     if (tid == 0) first_step[blockIdx.x + blockIdx.y * gridDim.x] = first_step_local[0];
 }
+
 
 } // namespace pink
