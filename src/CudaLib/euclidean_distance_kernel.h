@@ -74,12 +74,10 @@ void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_i
     uint8_t const *psom = som + blockIdx.y * neuron_size;
     uint8_t const *prot = rotated_images + blockIdx.x * neuron_size;
 
-#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 610)
-    uint32_t null = 0;
-#endif
-
     __shared__ float first_step_local[256];
 
+#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 610)
+    uint32_t null = 0;
     for (uint32_t i = tid; i < neuron_size; i += 256)
     {
         uint32_t diff = std::abs(psom[i] - prot[i]);
@@ -89,10 +87,16 @@ void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_i
             (diff << 8) | std::abs(psom[i] - prot[i]);
         }
 
-#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 610)
         sum += __dp4a(diff, diff, null);
-#endif
     }
+#else
+    float diff;
+    for (uint32_t i = tid; i < neuron_size; i += 256)
+    {
+        diff = psom[i] - prot[i];
+        sum += diff * diff;
+    }
+#endif
 
     first_step_local[tid] = sum;
     __syncthreads();
