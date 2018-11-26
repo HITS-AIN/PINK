@@ -14,11 +14,7 @@ namespace pink {
 
 void main_gpu(InputData const & input_data)
 {
-#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ >= 610)
-    std::cout << "CUDA arch >= 610 found " << std::endl;
-#else
-    std::cout << "CUDA arch >= 610 not found" << std::endl;
-#endif
+	cuda_print_properties();
 
     if (input_data.layout == Layout::CARTESIAN)
         if (input_data.dimensionality == 1)
