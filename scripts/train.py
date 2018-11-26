@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
+
 """
 PINK Training of SOM
 """
+
+__author__ = "Bernd Doser"
+__email__ = "bernd.doser@h-its.org"
+__license__ = "GPLv3"
 
 import argparse
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pink
-
-__author__ = "Bernd Doser"
-__email__ = "bernd.doser@h-its.org"
-__license__ = "GPLv3"
+import tools
 
 class GaussianFunctor():
     """ Returns the value of an gaussian distribution """
@@ -27,8 +29,8 @@ class GaussianFunctor():
 
 def main():
     """ Main routine of PINK training """
-    
-    print(pink.__version__)
+
+    print('PINK version ', pink.__version__)
 
     parser = argparse.ArgumentParser(description='PINK SOM training')
     parser.add_argument('images', nargs='+', help='Input file of images')
@@ -71,6 +73,10 @@ def main():
 
     # Randomize order of input images
     np.random.shuffle(images)
+    
+    # Remove channels
+    if len(images.shape) == 4 and images.shape[3] == 1:
+        images = np.squeeze(images, axis=3)
 
     if args.verbose:
         print('Image shape: ', images.shape, ', dtype: ', images.dtype)
@@ -94,9 +100,9 @@ def main():
     som = pink.som(np_som)
     trainer = pink.trainer_gpu(som, GaussianFunctor(sigma=1.1, damping=1.0),
                            number_of_rotations=180, verbosity=0, interpolation=pink.interpolation.BILINEAR)
-
+    
     for i in range(images.shape[0]):
-
+        
         data = pink.data(images[i])
         trainer(data)
 

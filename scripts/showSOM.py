@@ -7,7 +7,7 @@ import matplotlib
 import math
 import getopt
 import sys
-import somTools
+import tools
 
 class MAPVisualizer():
     def __init__(self, fileName):
@@ -36,7 +36,7 @@ class MAPVisualizer():
     def readMap(self):
         #Unpacks the map parameters
         inputStream = open(self.__fileName, 'rb')
-        somTools.ignoreHeaderComments(inputStream)
+        tools.ignoreHeaderComments(inputStream)
 
         self.__somWidth, self.__somHeight, self.__somDepth, self.__neuronWidth, self.__neuronHeight, self.__numberOfChannels = struct.unpack('i' * 6, inputStream.read(4*6))
 
@@ -76,10 +76,10 @@ class MAPVisualizer():
         end=int(len(self.__neurons[0]) / self.__numberOfChannels * (channel+1))
         if self.isHexMap():
             print ("hexagonal map")
-            image = somTools.calculateMap(self.__somWidth, self.__somHeight, self.__neurons[:,start:end], self.__neuronWidth, self.__neuronHeight, shareIntensity=shareIntensity, border=borderWidth, shape="hex")
+            image = tools.calculateMap(self.__somWidth, self.__somHeight, self.__neurons[:,start:end], self.__neuronWidth, self.__neuronHeight, shareIntensity=shareIntensity, border=borderWidth, shape="hex")
         else:
             print ("quadratic map")
-            image = somTools.calculateMap(self.__somWidth, self.__somHeight, self.__neurons[:,start:end], self.__neuronWidth, self.__neuronHeight, shareIntensity=shareIntensity, border=borderWidth, shape="box")
+            image = tools.calculateMap(self.__somWidth, self.__somHeight, self.__neurons[:,start:end], self.__neuronWidth, self.__neuronHeight, shareIntensity=shareIntensity, border=borderWidth, shape="box")
 
         ax = pyplot.subplot()
         if somColor==0:
