@@ -14,7 +14,7 @@ namespace pink {
 
 void main_gpu(InputData const & input_data)
 {
-	cuda_print_properties();
+    cuda_print_properties();
 
     if (input_data.layout == Layout::CARTESIAN)
         if (input_data.dimensionality == 1)
