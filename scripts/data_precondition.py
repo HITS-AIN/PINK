@@ -53,9 +53,9 @@ def main():
         print('max value: ', np.amax(data))
 
     if args.output:
+        print('Output file written at', args.output) 
         if os.path.splitext(args.output)[1][1:] == "npy":
             np.save(args.output, data)
-            print('Output file written at', args.output) 
         elif os.path.splitext(args.output)[1][1:] == "bin":
             tools.save_data(args.output, data)
         else:

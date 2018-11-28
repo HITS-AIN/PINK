@@ -57,11 +57,11 @@ TEST(ImageProcessingTest, BilinearInterpolation)
     fill_random_uniform(&image[0], size);
 
     rotate_90degrees(height, width, &image[0], &image2[0]);
-    //printImage(&image2[0], width, height);
+    printImage(&image2[0], width, height);
     rotate(height, width, &image[0], &image3[0], 0.5*M_PI, Interpolation::BILINEAR);
-    //printImage(&image3[0], width, height);
+    printImage(&image3[0], width, height);
 
-    EXPECT_TRUE(EqualFloatArrays(&image2[0], &image3[0], size));
+    EXPECT_TRUE(EqualFloatArrays(&image2[0], &image3[0], size, 1e-4));
 }
 
 TEST(ImageProcessingTest, EuclideanSimilarity)

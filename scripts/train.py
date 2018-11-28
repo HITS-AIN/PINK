@@ -53,6 +53,10 @@ def main():
     images = np.load(args.images[0]).astype(np.float32)
     for image_file in args.images[1:]:
         images = np.append(images, np.load(image_file).astype(np.float32), axis=0)
+    
+    # Remove channels
+    if len(images.shape) == 4 and images.shape[1] == 1:
+        images = np.squeeze(images, axis=1)
 
     image_dim = images.shape[1]
     neuron_dim = int(image_dim * math.sqrt(2.0) / 2.0)
@@ -73,10 +77,6 @@ def main():
 
     # Randomize order of input images
     np.random.shuffle(images)
-    
-    # Remove channels
-    if len(images.shape) == 4 and images.shape[3] == 1:
-        images = np.squeeze(images, axis=3)
 
     if args.verbose:
         print('Image shape: ', images.shape, ', dtype: ', images.dtype)

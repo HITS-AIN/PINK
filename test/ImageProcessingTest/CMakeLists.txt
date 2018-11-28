@@ -9,6 +9,7 @@ add_executable(
     main.cpp
     ImageTest.cpp
     ImageProcessingTest.cpp
+    image_processing.cpp
 )
     
 target_link_libraries(
