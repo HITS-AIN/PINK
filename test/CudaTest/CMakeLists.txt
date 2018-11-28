@@ -7,13 +7,11 @@ include_directories(
 cuda_add_executable(
     CudaTest
     main.cpp
-    mixed_precision.cpp
-    #EuclideanDistanceTest.cpp
+    mixed_precision.cu
     RotationTest.cu
     rotate_90_degrees_list.cu
     TrainerCompare.cu
     update_neurons.cu
-    #UpdateNeuronsTest.cpp
 )
     
 target_link_libraries(

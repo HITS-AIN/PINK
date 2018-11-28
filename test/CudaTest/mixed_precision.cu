@@ -16,10 +16,19 @@ using namespace pink;
 
 TEST(mixed_precision, dp4a_uint8)
 {
+    cudaDeviceProp devProp;
+    cudaGetDeviceProperties(&devProp, 0);
+
+    if (!(devProp.major >= 6 and devProp.minor >= 1)) {
+        // Available after https://github.com/abseil/googletest/pull/1544
+        //::testing::GTEST_SKIP();
+    	// workaround:
+    	std::cout << "[  SKIPPED ] Feature __dp4a is not supported" << std::endl;
+    	return;
+    }
+
     std::vector<uint8_t> in1{12, 127, 1, 128};
     std::vector<uint8_t> in2{55, 10, 27, 2};
-//	std::vector<uint8_t> in1{255, 255, 255, 255};
-//	std::vector<uint8_t> in2{255, 255, 255, 255};
 
     uint32_t c_in1 = in1[3];
              c_in1 = (c_in1 << 8) | in1[2];
@@ -50,17 +59,3 @@ TEST(mixed_precision, dp4a_uint8)
 
     EXPECT_EQ(static_cast<uint32_t>(in1[0]*in2[0] + in1[1]*in2[1] + in1[2]*in2[2] + in1[3]*in2[3]), out);
 }
-
-//TEST(mixed_precision, float)
-//{
-//    std::vector<float> image{1.0, 2.7, 0.0, -0.8};
-//
-//    EXPECT_FLOAT_EQ(2.7, image[1]);
-//
-//    float *d_image = cuda_alloc_float(image.size());
-//    cuda_copyHostToDevice_float(d_image, &image[0], image.size());
-//
-//    auto&& d = euclidean_distance(d_image, d_image, image.size());
-//
-//    EXPECT_FLOAT_EQ(1.0, d);
-//}
