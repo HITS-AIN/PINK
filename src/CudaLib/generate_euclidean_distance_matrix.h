@@ -15,6 +15,7 @@
 #include "generate_euclidean_distance_matrix_first_step_mixed_precision.h"
 //#include "generate_euclidean_distance_matrix_first_step_multi_gpu.h"
 #include "generate_euclidean_distance_matrix_second_step.h"
+#include "UtilitiesLib/DataType.h"
 #include "UtilitiesLib/pink_exception.h"
 
 namespace pink {
@@ -27,7 +28,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
     thrust::device_vector<uint32_t>& d_best_rotation_matrix, uint32_t som_size, uint32_t neuron_size,
     thrust::device_vector<T> const& d_som, uint32_t number_of_spatial_transformations,
     thrust::device_vector<T> const& d_spatial_transformed_images, uint16_t block_size,
-    bool use_multiple_gpus)
+    bool use_multiple_gpus, DataType euclidean_distance_type = DataType::UINT8)
 {
     thrust::device_vector<T> d_first_step(som_size * number_of_spatial_transformations);
 
@@ -37,7 +38,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         //generate_euclidean_distance_matrix_first_step_multi_gpu(d_som, d_rotated_images,
         //    d_first_step, number_of_spatial_transformations, block_size);
     } else {
-        if (euclidean_distance_reduced_type == EUCLIDEAN_DISTANCE_REDUCED_TYPE::UINT8]) {
+        if (euclidean_distance_type == DataType::UINT8) {
             thrust::device_vector<uint8_t> d_som_uint8(d_som.size());
             thrust::device_vector<uint8_t> d_spatial_transformed_images_uint8(d_spatial_transformed_images.size());
 
