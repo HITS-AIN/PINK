@@ -14,10 +14,10 @@ namespace pink {
 
 //! Type for execution path
 enum class DataType {
-	FLOAT,
+    FLOAT,
     DOUBLE,
     HALF,
-	UINT16,
+    UINT16,
     UINT8
 };
 

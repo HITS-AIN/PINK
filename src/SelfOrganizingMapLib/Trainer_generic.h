@@ -183,7 +183,7 @@ public:
        d_som(som.get_data()),
        block_size(block_size),
        use_multiple_gpus(use_multiple_gpus),
-	   euclidean_distance_type(euclidean_distance_type),
+       euclidean_distance_type(euclidean_distance_type),
        d_spatial_transformed_images(this->number_of_spatial_transformations * som.get_neuron_size()),
        d_euclidean_distance_matrix(som.get_number_of_neurons()),
        d_best_rotation_matrix(som.get_number_of_neurons()),

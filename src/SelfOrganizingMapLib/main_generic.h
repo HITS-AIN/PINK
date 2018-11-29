@@ -46,7 +46,7 @@ void main_generic(InputData const& input_data)
 #ifdef __CUDACC__
             ,input_data.block_size_1
             ,input_data.useMultipleGPUs
-			,input_data.euclidean_distance_type
+            ,input_data.euclidean_distance_type
 #endif
         );
 

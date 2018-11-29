@@ -44,15 +44,15 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
 
             thrust::transform(d_som.begin(), d_som.end(), d_som.begin(), d_som_uint8.begin(),
                 [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) {
-            	assert(x >= 0.0 and x <= 1.0);
-            	return x * 256;
+                assert(x >= 0.0 and x <= 1.0);
+                return x * 256;
             });
 
             thrust::transform(d_spatial_transformed_images.begin(), d_spatial_transformed_images.end(),
                 d_spatial_transformed_images.begin(), d_spatial_transformed_images_uint8.begin(),
                 [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) {
-            	assert(x >= 0.0 and x <= 1.0);
-            	return x * 256;
+                assert(x >= 0.0 and x <= 1.0);
+                return x * 256;
             });
 
             generate_euclidean_distance_matrix_first_step_mixed_precision(d_som_uint8, d_spatial_transformed_images_uint8,

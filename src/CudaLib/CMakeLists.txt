@@ -9,6 +9,7 @@ cuda_add_library(
     cuda_functions.cu
     cuda_rotate.cu
     cuda_print_properties.cu
+    euclidean_distance_kernel.cu
     dot_dp4a.cu
     main_gpu.cu
 )

@@ -22,9 +22,9 @@ TEST(mixed_precision, dp4a_uint8)
     if (!(devProp.major >= 6 and devProp.minor >= 1)) {
         // Available after https://github.com/abseil/googletest/pull/1544
         //::testing::GTEST_SKIP();
-    	// workaround:
-    	std::cout << "[  SKIPPED ] Feature __dp4a is not supported" << std::endl;
-    	return;
+        // workaround:
+        std::cout << "[  SKIPPED ] Feature __dp4a is not supported" << std::endl;
+        return;
     }
 
     std::vector<uint8_t> in1{12, 127, 1, 128};
