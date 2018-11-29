@@ -12,6 +12,7 @@
 #include "ImageProcessingLib/Interpolation.h"
 #include "IntermediateStorageType.h"
 #include "SOMInitializationType.h"
+#include "UtilitiesLib/DataType.h"
 #include "UtilitiesLib/DistributionFunction.h"
 #include "UtilitiesLib/ExecutionPath.h"
 #include "UtilitiesLib/Layout.h"
@@ -78,6 +79,7 @@ struct InputData
     int usePBC;
     int dimensionality;
     bool write_rot_flip;
+    DataType euclidean_distance_type;
 };
 
 void stringToUpper(char* s);

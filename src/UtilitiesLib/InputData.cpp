@@ -53,7 +53,8 @@ InputData::InputData()
    useMultipleGPUs(true),
    usePBC(false),
    dimensionality(1),
-   write_rot_flip(false)
+   write_rot_flip(false),
+   euclidean_distance_type(DataType::UINT8)
 {}
 
 InputData::InputData(int argc, char **argv)

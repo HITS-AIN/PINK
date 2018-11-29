@@ -98,7 +98,7 @@ def main():
         plt.show()
 
     som = pink.som(np_som)
-    trainer = pink.trainer_gpu(som, GaussianFunctor(sigma=1.1, damping=1.0),
+    trainer = pink.trainer_gpu(som, GaussianFunctor(sigma=1.1, damping=0.2),
                            number_of_rotations=180, verbosity=0, interpolation=pink.interpolation.BILINEAR)
     
     for i in range(images.shape[0]):

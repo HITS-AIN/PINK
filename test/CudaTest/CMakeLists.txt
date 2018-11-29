@@ -10,7 +10,8 @@ cuda_add_executable(
     mixed_precision.cu
     RotationTest.cu
     rotate_90_degrees_list.cu
-    TrainerCompare.cu
+    compare_trainer_cpu.cu
+    compare_trainer_mixed.cu
     update_neurons.cu
 )
     

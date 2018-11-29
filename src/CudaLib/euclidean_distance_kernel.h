@@ -34,7 +34,7 @@ void euclidean_distance_kernel(EuclideanType const *som, EuclideanType const *ro
 
 template <>
 __global__
-void euclidean_distance_kernel<256>(float const *som, float const *rotated_images, float *first_step, uint32_t neuron_size)
+inline void euclidean_distance_kernel<256>(float const *som, float const *rotated_images, float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float diff;
@@ -67,7 +67,7 @@ void euclidean_distance_kernel<256>(float const *som, float const *rotated_image
 
 template <>
 __global__
-void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_images, float *first_step, uint32_t neuron_size)
+inline void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_images, float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float sum = 0.0;

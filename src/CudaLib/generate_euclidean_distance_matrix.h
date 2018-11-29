@@ -28,7 +28,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
     thrust::device_vector<uint32_t>& d_best_rotation_matrix, uint32_t som_size, uint32_t neuron_size,
     thrust::device_vector<T> const& d_som, uint32_t number_of_spatial_transformations,
     thrust::device_vector<T> const& d_spatial_transformed_images, uint16_t block_size,
-    bool use_multiple_gpus, DataType euclidean_distance_type = DataType::UINT8)
+    bool use_multiple_gpus, DataType euclidean_distance_type)
 {
     thrust::device_vector<T> d_first_step(som_size * number_of_spatial_transformations);
 
@@ -43,19 +43,37 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
             thrust::device_vector<uint8_t> d_spatial_transformed_images_uint8(d_spatial_transformed_images.size());
 
             thrust::transform(d_som.begin(), d_som.end(), d_som.begin(), d_som_uint8.begin(),
-                [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) { return x * 256; });
+                [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) {
+            	assert(x >= 0.0 and x <= 1.0);
+            	return x * 256;
+            });
 
             thrust::transform(d_spatial_transformed_images.begin(), d_spatial_transformed_images.end(),
                 d_spatial_transformed_images.begin(), d_spatial_transformed_images_uint8.begin(),
-                [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) { return x * 256; });
+                [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) {
+            	assert(x >= 0.0 and x <= 1.0);
+            	return x * 256;
+            });
 
             generate_euclidean_distance_matrix_first_step_mixed_precision(d_som_uint8, d_spatial_transformed_images_uint8,
                 d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
+
+//            thrust::transform(d_first_step.begin(), d_first_step.end(),
+//           		d_first_step.begin(), d_first_step.begin(),
+//                [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) {
+//            	return x / 256 / 256;
+//            });
+
         } else {
             generate_euclidean_distance_matrix_first_step_mixed_precision(d_som, d_spatial_transformed_images,
                 d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
         }
     }
+
+//	std::cout << "d_first_step" << std::endl;
+//    thrust::host_vector<T> first_step = d_first_step;
+//    for (auto&& e : first_step) std::cout << e << " ";
+//    std::cout << std::endl;
 
     // Second step ...
     generate_euclidean_distance_matrix_second_step(d_euclidean_distance_matrix,
