@@ -69,7 +69,6 @@ template <>
 __global__
 void euclidean_distance_kernel<256>(float const *som, float const *rotated_images, float *first_step, uint32_t neuron_size)
 {
-	printf("hey\n");
     int tid = threadIdx.x;
     float diff;
     float sum = 0.0;

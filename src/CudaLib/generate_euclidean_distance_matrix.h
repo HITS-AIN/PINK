@@ -58,15 +58,11 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
             generate_euclidean_distance_matrix_first_step_mixed_precision(d_som_uint8, d_spatial_transformed_images_uint8,
                 d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
 
-//            thrust::transform(d_first_step.begin(), d_first_step.end(),
-//           		d_first_step.begin(), d_first_step.begin(),
-//                [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) {
-//            	return x / 256 / 256;
-//            });
-
-        } else {
+        } else if (euclidean_distance_type == DataType::FLOAT) {
             generate_euclidean_distance_matrix_first_step_mixed_precision(d_som, d_spatial_transformed_images,
                 d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
+        } else {
+            pink::exception("Unknown euclidean_distance_type");
         }
     }
 

@@ -109,6 +109,13 @@ PYBIND11_MODULE(pink, m)
         });
 
 #ifdef __CUDACC__
+
+    py::enum_<DataType>(m, "data_type")
+       .value("FLOAT", DataType::FLOAT)
+       .value("UINT16", DataType::UINT16)
+       .value("UINT8", DataType::UINT8)
+       .export_values();
+
     py::class_<Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m, "trainer_gpu")
         .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, float,
             Interpolation, uint16_t, bool, DataType>(),
