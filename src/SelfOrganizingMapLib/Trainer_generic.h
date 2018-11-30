@@ -28,6 +28,8 @@
     #include "CudaLib/update_neurons.h"
 #endif
 
+//#define PRINT_DEBUG
+
 namespace pink {
 
 template <typename SOMLayout, typename DataLayout, typename T>
@@ -122,20 +124,24 @@ public:
         auto&& spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
             this->use_flip, this->interpolation, neuron_dim);
 
-//        for (auto&& e : spatial_transformed_images) std::cout << e << " ";
-//        std::cout << std::endl;
+#ifdef PRINT_DEBUG
+        for (auto&& e : spatial_transformed_images) std::cout << e << " ";
+        std::cout << std::endl;
+#endif
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             som_size, som.get_data_pointer(), neuron_size, this->number_of_spatial_transformations,
             spatial_transformed_images);
 
-//		std::cout << "euclidean_distance_matrix" << std::endl;
-//		for (auto&& e : euclidean_distance_matrix) std::cout << e << " ";
-//		std::cout << std::endl;
-//
-//		std::cout << "best_rotation_matrix" << std::endl;
-//		for (auto&& e : best_rotation_matrix) std::cout << e << " ";
-//		std::cout << std::endl;
+#ifdef PRINT_DEBUG
+        std::cout << "euclidean_distance_matrix" << std::endl;
+        for (auto&& e : euclidean_distance_matrix) std::cout << e << " ";
+        std::cout << std::endl;
+
+        std::cout << "best_rotation_matrix" << std::endl;
+        for (auto&& e : best_rotation_matrix) std::cout << e << " ";
+        std::cout << std::endl;
+#endif
 
         /// Find the best matching neuron, with the lowest euclidean distance
         auto&& best_match = std::distance(euclidean_distance_matrix.begin(),
@@ -223,23 +229,27 @@ public:
         generate_rotated_images(d_spatial_transformed_images, d_data, spacing, this->number_of_rotations,
             data.get_dimension()[0], neuron_dim, this->use_flip, this->interpolation, d_cos_alpha, d_sin_alpha);
 
-//        thrust::host_vector<T> spatial_transformed_images = d_spatial_transformed_images;
-//        for (auto&& e : spatial_transformed_images) std::cout << e << " ";
-//        std::cout << std::endl;
+#ifdef PRINT_DEBUG
+        thrust::host_vector<T> spatial_transformed_images = d_spatial_transformed_images;
+        for (auto&& e : spatial_transformed_images) std::cout << e << " ";
+        std::cout << std::endl;
+#endif
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             som_size, neuron_size, d_som, this->number_of_spatial_transformations,
             d_spatial_transformed_images, block_size, use_multiple_gpus, euclidean_distance_type);
 
-//		std::cout << "euclidean_distance_matrix" << std::endl;
-//        thrust::host_vector<T> euclidean_distance_matrix = d_euclidean_distance_matrix;
-//        for (auto&& e : euclidean_distance_matrix) std::cout << e << " ";
-//        std::cout << std::endl;
-//
-//		std::cout << "best_rotation_matrix" << std::endl;
-//        thrust::host_vector<T> best_rotation_matrix = d_best_rotation_matrix;
-//        for (auto&& e : best_rotation_matrix) std::cout << e << " ";
-//        std::cout << std::endl;
+#ifdef PRINT_DEBUG
+        std::cout << "euclidean_distance_matrix" << std::endl;
+        thrust::host_vector<T> euclidean_distance_matrix = d_euclidean_distance_matrix;
+        for (auto&& e : euclidean_distance_matrix) std::cout << e << " ";
+        std::cout << std::endl;
+
+        std::cout << "best_rotation_matrix" << std::endl;
+        thrust::host_vector<T> best_rotation_matrix = d_best_rotation_matrix;
+        for (auto&& e : best_rotation_matrix) std::cout << e << " ";
+        std::cout << std::endl;
+#endif
 
         update_neurons(d_som, d_spatial_transformed_images, d_best_rotation_matrix, d_euclidean_distance_matrix,
             d_best_match, d_update_factors, som_size, neuron_size);
