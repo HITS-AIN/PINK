@@ -4,6 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#pragma once
+
 namespace pink {
 
 /// row-major

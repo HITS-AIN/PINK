@@ -4,6 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#pragma once
+
 #define _USE_MATH_DEFINES
 
 #include <cmath>

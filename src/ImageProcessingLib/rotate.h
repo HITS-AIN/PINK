@@ -4,6 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#pragma once
+
 #include "ImageProcessingLib/Interpolation.h"
 #include "UtilitiesLib/pink_exception.h"
 
