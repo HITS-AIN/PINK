@@ -54,12 +54,26 @@ void main_generic(InputData const& input_data)
 
         auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename);
         ProgressBar progress_bar(iter_image_cur.getNumberOfImages(), 70, input_data.progressFactor);
+        uint32_t count = 0;
         for (auto&& iter_image_end = ImageIterator<T>(); iter_image_cur != iter_image_end; ++iter_image_cur, ++progress_bar)
         {
             auto&& beg = iter_image_cur->getPointerOfFirstPixel();
             auto&& end = beg + iter_image_cur->getSize();
             Data<DataLayout, T> data({input_data.image_dim, input_data.image_dim}, std::vector<T>(beg, end));
             trainer(data);
+
+            if (progress_bar.valid() and input_data.intermediate_storage != IntermediateStorageType::OFF) {
+                std::string interStoreFilename = input_data.resultFilename;
+                if (input_data.intermediate_storage == IntermediateStorageType::KEEP) {
+                    interStoreFilename.insert(interStoreFilename.find_last_of("."), "_" + std::to_string(count++));
+                }
+                if (input_data.verbose) std::cout << "  Write intermediate SOM to " << interStoreFilename << " ... " << std::flush;
+                #ifdef __CUDACC__
+                    trainer.update_som();
+                #endif
+                write(som, interStoreFilename);
+                if (input_data.verbose) std::cout << "done." << std::endl;
+            }
         }
 
         std::cout << "  Write final SOM to " << input_data.resultFilename << " ... " << std::flush;

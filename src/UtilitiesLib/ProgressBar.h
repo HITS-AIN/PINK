@@ -19,27 +19,32 @@ public:
 
     void operator ++ ()
     {
-    	++ticks;
-        if (ticks == total or ticks % update_ticks == 0)
+        ++ticks;
+        if (valid())
         {
             float progress = static_cast<float>(ticks) / total;
-			int pos = width * progress;
+            int pos = width * progress;
 
-			std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-			auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_time).count();
+            std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+            auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_time).count();
 
-			std::cout << "[";
+            std::cout << "[";
 
-			for (int i = 0; i < width; ++i) {
-				if (i < pos) std::cout << '=';
-				else if (i == pos) std::cout << ">";
-				else std::cout << ' ';
-			}
-			std::cout << "] " << static_cast<int>(progress * 100.0) << " % " << time_elapsed / 1000.0 << " s\r";
+            for (int i = 0; i < width; ++i) {
+                if (i < pos) std::cout << '=';
+                else if (i == pos) std::cout << ">";
+                else std::cout << ' ';
+            }
+            std::cout << "] " << static_cast<int>(progress * 100.0) << " % " << time_elapsed / 1000.0 << " s\r";
 
-			if (ticks == total) std::cout << std::endl;
-			else std::cout << std::flush;
+            if (ticks == total) std::cout << std::endl;
+            else std::cout << std::flush;
         }
+    }
+
+    bool valid () const
+    {
+        return ticks % update_ticks == 0;
     }
 
 private:
