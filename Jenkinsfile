@@ -35,28 +35,28 @@ pipeline {
             }
           }
         }
-        stage('clang-6') {
-          agent {
-            docker {
-              reuseNode true
-              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.12-clang-6-conan-1.8'
-              args '--runtime=nvidia'
-            }
-          }
-          steps {
-            sh './build.sh clang-6 Release'
-          }
-          post {
-            always {
-              step([
-                $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
-                defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
-                parserConfigurations: [[parserName: 'Clang (LLVM based)', pattern: 'build-clang-6/make.out']],
-                unHealthy: ''
-              ])
-            }
-          }
-        }
+//        stage('clang-6') {
+//          agent {
+//            docker {
+//              reuseNode true
+//              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.12-clang-6-conan-1.8'
+//              args '--runtime=nvidia'
+//            }
+//          }
+//          steps {
+//            sh './build.sh clang-6 Release'
+//          }
+//          post {
+//            always {
+//              step([
+//                $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
+//                defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
+//                parserConfigurations: [[parserName: 'Clang (LLVM based)', pattern: 'build-clang-6/make.out']],
+//                unHealthy: ''
+//              ])
+//            }
+//          }
+//        }
       }
     }
     stage('Test') {
@@ -82,27 +82,27 @@ pipeline {
             }
           }
         }
-        stage('clang-6') {
-          agent {
-            docker {
-              reuseNode true
-              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.12-clang-6-conan-1.8'
-              args '--runtime=nvidia'
-            }
-          }
-          steps {
-            sh 'cd build-clang-6 && make test'
-          }
-          post {
-            always {
-              step([
-                $class: 'XUnitBuilder',
-                thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-                tools: [[$class: 'GoogleTestType', pattern: 'build-clang-6/Testing/*.xml']]
-              ])
-            }
-          }
-        }
+//        stage('clang-6') {
+//          agent {
+//            docker {
+//              reuseNode true
+//              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.12-clang-6-conan-1.8'
+//              args '--runtime=nvidia'
+//            }
+//          }
+//          steps {
+//            sh 'cd build-clang-6 && make test'
+//          }
+//          post {
+//            always {
+//              step([
+//                $class: 'XUnitBuilder',
+//                thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
+//                tools: [[$class: 'GoogleTestType', pattern: 'build-clang-6/Testing/*.xml']]
+//              ])
+//            }
+//          }
+//        }
       }
     }
     stage('Doxygen') {
