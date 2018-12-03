@@ -91,13 +91,23 @@ void main_generic(InputData const& input_data)
     }
     else if (input_data.executionPath == ExecutionPath::MAP)
     {
+        // File for euclidean distances
+        std::ofstream result_file(input_data.resultFilename);
+        if (!result_file) throw pink::exception("Error opening " + input_data.resultFilename);
+        som.write_file_header(result_file, input_data.number_of_images);
+
+        // File for spatial_transformations (optional)
+        std::ofstream spatial_transformation_file;
+        if (input_data.write_rot_flip) {
+        	spatial_transformation_file.open(input_data.rot_flip_filename);
+        	som.write_file_header(spatial_transformation_file, input_data.number_of_images);
+        }
+
         Mapper_generic<SOMLayout, DataLayout, T, UseGPU> mapper(
             som
-            ,distribution_function
             ,input_data.verbose
             ,input_data.numberOfRotations
             ,input_data.use_flip
-            ,input_data.max_update_distance
             ,input_data.interpolation
 #ifdef __CUDACC__
             ,input_data.block_size_1
@@ -113,7 +123,22 @@ void main_generic(InputData const& input_data)
             auto&& beg = iter_image_cur->getPointerOfFirstPixel();
             auto&& end = beg + iter_image_cur->getSize();
             Data<DataLayout, T> data({input_data.image_dim, input_data.image_dim}, std::vector<T>(beg, end));
-            mapper(data);
+
+            auto result = mapper(data);
+            // corresponds to structured binding with C++17:
+            //auto& [euclidean_distance_matrix, best_rotation_matrix] = mapper(data);
+
+        	result_file.write((char*)&std::get<0>(result)[0], som.get_number_of_neurons() * sizeof(float));
+
+    		if (input_data.write_rot_flip) {
+    			float angle_step_radians = 0.5 * M_PI / input_data.numberOfRotations / 4;
+    			for (uint32_t i = 0; i != som.get_number_of_neurons(); ++i) {
+    				char flip = std::get<1>(result)[i] / input_data.numberOfRotations;
+    				float angle = (std::get<1>(result)[i] % input_data.numberOfRotations) * angle_step_radians;
+    				spatial_transformation_file.write(&flip, sizeof(char));
+    				spatial_transformation_file.write((char*)&angle, sizeof(float));
+    			}
+    		}
         }
     }
     else

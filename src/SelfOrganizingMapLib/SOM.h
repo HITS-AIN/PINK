@@ -7,6 +7,7 @@
 #pragma once
 
 #include <array>
+#include <fstream>
 #include <functional>
 #include <vector>
 
@@ -89,8 +90,8 @@ public:
         return NeuronType(neuron_layout, std::vector<T>(beg, end));
     }
 
-    auto get_number_of_neurons() -> uint32_t const { return som_layout.size(); }
-    auto get_neuron_size() -> uint32_t const { return neuron_layout.size(); }
+    auto get_number_of_neurons() const -> uint32_t const { return som_layout.size(); }
+    auto get_neuron_size() const -> uint32_t const { return neuron_layout.size(); }
 
     auto get_som_layout() -> SOMLayoutType { return som_layout; }
     auto get_som_layout() const -> SOMLayoutType const { return som_layout; }
@@ -101,6 +102,8 @@ public:
     auto get_som_dimension() const -> typename SOMLayoutType::DimensionType const { return som_layout.dimension; }
     auto get_neuron_dimension() -> typename NeuronLayoutType::DimensionType { return neuron_layout.dimension; }
     auto get_neuron_dimension() const -> typename NeuronLayoutType::DimensionType const { return neuron_layout.dimension; }
+
+    void write_file_header(std::ofstream& ofs, uint32_t number_of_images) const;
 
 private:
 
@@ -120,5 +123,44 @@ private:
     std::vector<T> data;
 
 };
+
+template <typename NeuronLayout, typename T>
+void SOM<CartesianLayout<1>, NeuronLayout, T>::write_file_header(std::ofstream& ofs, uint32_t number_of_images) const
+{
+    int one = 1;
+    ofs.write((char*)&number_of_images, sizeof(int));
+    ofs.write((char*)&dimension[0], sizeof(int));
+    ofs.write((char*)&one, sizeof(int));
+    ofs.write((char*)&one, sizeof(int));
+}
+
+template <typename NeuronLayout, typename T>
+void SOM<CartesianLayout<2>, NeuronLayout, T>::write_file_header(std::ofstream& ofs, uint32_t number_of_images) const
+{
+    int one = 1;
+    ofs.write((char*)&number_of_images, sizeof(int));
+    ofs.write((char*)&dimension[0], sizeof(int));
+    ofs.write((char*)&dimension[1], sizeof(int));
+    ofs.write((char*)&one, sizeof(int));
+}
+
+template <typename NeuronLayout, typename T>
+void SOM<CartesianLayout<3>, NeuronLayout, T>::write_file_header(std::ofstream& ofs, uint32_t number_of_images) const
+{
+    ofs.write((char*)&number_of_images, sizeof(int));
+    ofs.write((char*)&dimension[0], sizeof(int));
+    ofs.write((char*)&dimension[1], sizeof(int));
+    ofs.write((char*)&dimension[2], sizeof(int));
+}
+
+template <typename NeuronLayout, typename T>
+void SOM<HexagonalLayout, NeuronLayout, T>::write_file_header(std::ofstream& ofs, uint32_t number_of_images) const
+{
+    int one = 1;
+    ofs.write((char*)&number_of_images, sizeof(int));
+    ofs.write((char*)&dimension[0], sizeof(int));
+    ofs.write((char*)&dimension[1], sizeof(int));
+    ofs.write((char*)&one, sizeof(int));
+}
 
 } // namespace pink

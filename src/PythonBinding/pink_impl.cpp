@@ -8,8 +8,9 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
-#include "SelfOrganizingMapLib/Trainer_generic.h"
 #include "ImageProcessingLib/Interpolation.h"
+#include "SelfOrganizingMapLib/Mapper_generic.h"
+#include "SelfOrganizingMapLib/Trainer_generic.h"
 #include "SelfOrganizingMapLib/Data.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "UtilitiesLib/Version.h"
@@ -106,6 +107,19 @@ PYBIND11_MODULE(pink, m)
         .def("__call__", [](Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>& trainer, Data<CartesianLayout<2>, float> const& data)
         {
             return trainer(data);
+        });
+
+    py::class_<Mapper_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "mapper_cpu")
+        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, int, uint32_t, bool, Interpolation>(),
+            py::arg("som"),
+            py::arg("verbosity") = 0,
+            py::arg("number_of_rotations") = 360,
+            py::arg("use_flip") = true,
+            py::arg("interpolation") = Interpolation::BILINEAR
+        )
+        .def("__call__", [](Mapper_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>& mapper, Data<CartesianLayout<2>, float> const& data)
+        {
+            return mapper(data);
         });
 
 #ifdef __CUDACC__
