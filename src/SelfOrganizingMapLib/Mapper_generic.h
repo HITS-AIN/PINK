@@ -40,7 +40,7 @@ public:
     MapperBase_generic(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations,
         bool use_flip, Interpolation interpolation)
      : som(som),
-	   verbosity(verbosity),
+       verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
        number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),

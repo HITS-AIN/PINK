@@ -16,7 +16,7 @@ import pink
 import tools
 
 class GaussianFunctor():
-    """ Returns the value of an gaussian distribution """
+    """ Returns the value of a Gaussian distribution """
 
     def __init__(self, sigma=1.1, damping=0.2):
         self.sigma = sigma
