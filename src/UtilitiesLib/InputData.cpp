@@ -16,6 +16,7 @@
 #include "ImageProcessingLib/ImageIterator.h"
 #include "InputData.h"
 #include "pink_exception.h"
+#include "SelfOrganizingMapLib/HexagonalLayout.h"
 
 namespace pink {
 
@@ -354,8 +355,7 @@ InputData::InputData(int argc, char **argv)
         if ((som_width - 1) % 2) pink::exception("For hexagonal layout only odd dimension supported.");
         if (som_width != som_height) pink::exception("For hexagonal layout som-width must be equal to som-height.");
         if (som_depth != 1) pink::exception("For hexagonal layout som-depth must be equal to 1.");
-        int radius = (som_width - 1)/2;
-        som_size = som_width * som_height - radius * (radius + 1);
+        som_size = HexagonalLayout({som_width, som_height}).size();
     }
     else som_size = som_width * som_height * som_depth;
 

@@ -24,8 +24,9 @@ struct HexagonalLayout
 
     auto size() const
     {
-        auto dim_square = 2 * dimension[0] + 1;
-        return dim_square * dim_square - dimension[0] * (dimension[0] + 1);
+        auto dim = 2 * dimension[0] - 1;
+        auto radius = (dim - 1)/2;
+        return dim * dim - radius * (radius + 1);
     }
 
     auto get_distance([[maybe_unused]] IndexType p1, [[maybe_unused]] IndexType p2) const

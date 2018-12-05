@@ -31,7 +31,7 @@ SOM<CartesianLayout<3>, CartesianLayout<2>, float>::SOM(InputData const& input_d
 
 template <>
 SOM<HexagonalLayout, CartesianLayout<2>, float>::SOM(InputData const& input_data)
- : som_layout{{input_data.som_width}},
+ : som_layout{{input_data.som_width, input_data.som_height}},
    neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
    data(som_layout.size() * neuron_layout.size())
 {}
