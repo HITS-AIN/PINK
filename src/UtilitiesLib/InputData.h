@@ -56,7 +56,7 @@ struct InputData
     int numberOfThreads;
     SOMInitialization init;
     int numIter;
-    float progressFactor;
+    int number_of_progress_prints;
     bool use_flip;
     bool use_gpu;
     uint32_t number_of_images;

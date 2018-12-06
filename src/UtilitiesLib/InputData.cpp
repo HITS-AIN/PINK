@@ -32,7 +32,7 @@ InputData::InputData()
    numberOfThreads(-1),
    init(SOMInitialization::ZERO),
    numIter(1),
-   progressFactor(0.1),
+   number_of_progress_prints(10),
    use_flip(true),
    use_gpu(true),
    number_of_images(0),
@@ -149,7 +149,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 'p':
             {
-                progressFactor = atof(optarg);
+                number_of_progress_prints = atof(optarg);
                 break;
             }
             case 'n':
@@ -444,7 +444,7 @@ void InputData::print_parameters() const
               << "  SOM size = " << som_size << "\n"
               << "  Number of iterations = " << numIter << "\n"
               << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
-              << "  Progress = " << progressFactor << "\n"
+              << "  Number of progress information prints = " << number_of_progress_prints << "\n"
               << "  Intermediate storage of SOM = " << intermediate_storage << "\n"
               << "  Layout = " << layout << "\n"
               << "  Initialization type = " << init << "\n"
@@ -496,8 +496,7 @@ void InputData::print_usage() const
                  "    --num-iter <int>                Number of iterations (default = 1).\n"
                  "    --multi-GPU-off                 Switch off usage of multiple GPUs.\n"
                  "    --pbc                           Use periodic boundary conditions for SOM.\n"
-                 "    --progress, -p <float>          Print level of progress (default = 0.1).\n"
-                 "                                    If < 1 relative progress, else number of images.\n"
+                 "    --progress, -p <int>            Number of progress information prints (default = 10).\n"
                  "    --seed, -s <int>                Seed for random number generator (default = 1234).\n"
                  "    --store-rot-flip <string>       Store the rotation and flip information of the best match of mapping.\n"
                  "    --som-width <int>               Width dimension of SOM (default = 10).\n"

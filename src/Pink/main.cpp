@@ -53,8 +53,9 @@ int main(int argc, char **argv)
         std::cout << "\n  Total time (hh:mm:ss): "
              << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::hours>(duration).count() << ":"
              << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::minutes>(duration % std::chrono::hours(1)).count() << ":"
-             << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::seconds>(duration % std::chrono::minutes(1)).count()
-             << "     (= " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << "s)" << std::endl;
+             << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::seconds>(duration % std::chrono::minutes(1)).count() << "."
+             << std::setfill('0') << std::setw(3) << std::chrono::duration_cast<std::chrono::milliseconds>(duration % std::chrono::seconds(1)).count()
+             << "     (" << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << " s)" << std::endl;
 
     } catch ( pink::exception const& e ) {
         std::cout << "PINK exception: " << e.what() << std::endl;

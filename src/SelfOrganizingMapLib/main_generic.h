@@ -53,7 +53,7 @@ void main_generic(InputData const& input_data)
         );
 
         auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename);
-        ProgressBar progress_bar(iter_image_cur.getNumberOfImages(), 70, input_data.progressFactor);
+        ProgressBar progress_bar(iter_image_cur.getNumberOfImages(), 70, input_data.number_of_progress_prints);
         uint32_t count = 0;
         for (auto&& iter_image_end = ImageIterator<T>(); iter_image_cur != iter_image_end; ++iter_image_cur, ++progress_bar)
         {
@@ -119,7 +119,7 @@ void main_generic(InputData const& input_data)
         );
 
         auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename);
-        ProgressBar progress_bar(iter_image_cur.getNumberOfImages(), 70, input_data.progressFactor);
+        ProgressBar progress_bar(iter_image_cur.getNumberOfImages(), 70, input_data.number_of_progress_prints);
         for (auto&& iter_image_end = ImageIterator<T>(); iter_image_cur != iter_image_end; ++iter_image_cur, ++progress_bar)
         {
             auto&& beg = iter_image_cur->getPointerOfFirstPixel();
