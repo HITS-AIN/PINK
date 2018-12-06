@@ -35,7 +35,7 @@ public:
                 else if (i == pos) std::cout << ">";
                 else std::cout << ' ';
             }
-            std::cout << "] " << static_cast<int>(progress * 100.0) << " % " << time_elapsed / 1000.0 << " s\r";
+            std::cout << "] " << static_cast<int>(progress * 100.0) << " % " << time_elapsed / 1000.0 << " s" << std::endl;
 
             if (ticks == total) std::cout << std::endl;
             else std::cout << std::flush;
