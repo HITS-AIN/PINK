@@ -75,8 +75,8 @@ public:
     auto operator [] (uint32_t position) -> T& { return data[position]; }
     auto operator [] (uint32_t position) const -> T const& { return data[position]; }
 
-    auto operator [] (DimensionType const& position) -> T& { return data[layout.get_position(position)]; }
-    auto operator [] (DimensionType const& position) const -> T const& { return data[layout.get_position(position)]; }
+    auto operator [] (DimensionType const& position) -> T& { return data[layout.get_index(position)]; }
+    auto operator [] (DimensionType const& position) const -> T const& { return data[layout.get_index(position)]; }
 
     auto get_data_pointer() { return &data[0]; }
     auto get_data_pointer() const { return &data[0]; }

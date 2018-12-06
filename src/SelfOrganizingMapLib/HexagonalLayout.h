@@ -29,12 +29,33 @@ struct HexagonalLayout
         return dim * dim - radius * (radius + 1);
     }
 
-    auto get_distance([[maybe_unused]] IndexType p1, [[maybe_unused]] IndexType p2) const
+    /// Returns the array index of a layout position
+    auto get_index(DimensionType const& position) const
     {
-        float distance = 0.0;
-        return distance;
+    	// proof
+        uint32_t index = position[0];
+        uint32_t multiplier = dimension[0];
+        for (uint8_t i = 1; i < dimensionality; ++i) {
+        	index += position[i] * multiplier;
+            multiplier *= dimension[i];
+        }
+        return index;
     }
 
+    /// Returns the layout position of an array index
+    auto get_position(IndexType i) const
+    {
+    	// proof
+        int radius = (dimension[0] - 1) / 2;
+        int pos = 0;
+        for (int x = -radius; x <= radius; ++x) {
+            for (int y = -radius - std::min(0, x); y <= radius - std::max(0, x); ++y, ++pos) {
+                if (pos == i) return DimensionType({x, y});
+            }
+        }
+    }
+
+    /// Returns the distance of two neurons given in layout position
     auto get_distance(DimensionType const& p1, DimensionType const& p2) const
     {
         float distance = 0.0;
@@ -49,15 +70,10 @@ struct HexagonalLayout
         return distance;
     }
 
-    auto get_position(DimensionType const& position) const
+    /// Returns the distance of two neurons given in array indices
+    auto get_distance(IndexType i1, IndexType i2) const
     {
-        uint32_t linear_position = position[0];
-        uint32_t multiplier = dimension[0];
-        for (uint8_t i = 1; i < dimensionality; ++i) {
-            linear_position += position[i] * multiplier;
-            multiplier *= dimension[i];
-        }
-        return linear_position;
+        return get_distance(get_position(i1), get_position(i2));
     }
 
     DimensionType dimension;

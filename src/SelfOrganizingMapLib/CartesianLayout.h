@@ -31,7 +31,7 @@ struct CartesianLayout
     }
 
     /// Returns the array index of a layout position
-    auto get_position(DimensionType const& p) const;
+    auto get_index(DimensionType const& p) const;
 
     /// Returns the layout position of an array index
     auto get_position(IndexType i) const;
@@ -57,19 +57,19 @@ struct CartesianLayout
 };
 
 template <>
-inline auto CartesianLayout<1>::get_position(DimensionType const& p) const
+inline auto CartesianLayout<1>::get_index(DimensionType const& p) const
 {
     return p[0];
 }
 
 template <>
-inline auto CartesianLayout<2>::get_position(DimensionType const& p) const
+inline auto CartesianLayout<2>::get_index(DimensionType const& p) const
 {
     return p[0] + p[1] * dimension[0];
 }
 
 template <>
-inline auto CartesianLayout<3>::get_position(DimensionType const& p) const
+inline auto CartesianLayout<3>::get_index(DimensionType const& p) const
 {
     return p[0] + p[1] * dimension[0] + p[2] * dimension[0] * dimension[1];
 }
