@@ -84,7 +84,7 @@ TEST(SelfOrganizingMapTest, hexagonal_layout)
 {
     HexagonalLayout h({3, 3});
 
-    EXPECT_EQ(37UL, h.size());
+    EXPECT_EQ(19UL, h.size());
 }
 
 TEST(SelfOrganizingMapTest, data_hexagonal)

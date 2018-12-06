@@ -173,14 +173,11 @@ void euclidean_distance_kernel<512>(uint8_t const *som, uint8_t const *rotated_i
     {
         uint32_t diff = std::abs(psom[i] - prot[i]);
         i += 512;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 256;
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
         i += 512;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 65536;
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
         i += 512;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 16777216;
-
-        // Unclear: right shift doesn't work here
-        //(diff >> 8) | std::max(psom[i], prot[i]) - std::min(psom[i], prot[i]);
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
 
         sum += __dp4a(diff, diff, null);
     }
@@ -225,14 +222,11 @@ void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_i
     {
         uint32_t diff = std::abs(psom[i] - prot[i]);
         i += 256;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 256;
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
         i += 256;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 65536;
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
         i += 256;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 16777216;
-
-        // Unclear: right shift doesn't work here
-        //(diff >> 8) | std::max(psom[i], prot[i]) - std::min(psom[i], prot[i]);
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
 
         sum += __dp4a(diff, diff, null);
     }
@@ -276,14 +270,11 @@ void euclidean_distance_kernel<128>(uint8_t const *som, uint8_t const *rotated_i
     {
         uint32_t diff = std::abs(psom[i] - prot[i]);
         i += 128;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 256;
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
         i += 128;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 65536;
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
         i += 128;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 16777216;
-
-        // Unclear: right shift doesn't work here
-        //(diff >> 8) | std::max(psom[i], prot[i]) - std::min(psom[i], prot[i]);
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
 
         sum += __dp4a(diff, diff, null);
     }
@@ -326,14 +317,11 @@ void euclidean_distance_kernel<64>(uint8_t const *som, uint8_t const *rotated_im
     {
         uint32_t diff = std::abs(psom[i] - prot[i]);
         i += 64;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 256;
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
         i += 64;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 65536;
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
         i += 64;
-        if (i < neuron_size) diff += std::abs(psom[i] - prot[i]) * 16777216;
-
-        // Unclear: right shift doesn't work here
-        //(diff >> 8) | std::max(psom[i], prot[i]) - std::min(psom[i], prot[i]);
+        if (i < neuron_size) diff = diff << 8 | std::abs(psom[i] - prot[i]);
 
         sum += __dp4a(diff, diff, null);
     }

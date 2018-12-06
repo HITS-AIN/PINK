@@ -62,32 +62,33 @@ InputData::InputData(int argc, char **argv)
  : InputData()
 {
     static struct option long_options[] = {
-        {"neuron-dimension",    1, 0, 'd'},
-        {"layout",              1, 0, 'l'},
-        {"seed",                1, 0, 's'},
-        {"numrot",              1, 0, 'n'},
-        {"numthreads",          1, 0, 't'},
-        {"init",                1, 0, 'x'},
-        {"progress",            1, 0, 'p'},
-        {"version",             0, 0, 'v'},
-        {"help",                0, 0, 'h'},
-        {"dist-func",           1, 0, 'f'},
-        {"som-width",           1, 0, 0},
-        {"num-iter",            1, 0, 1},
-        {"flip-off",            0, 0, 2},
-        {"cuda-off",            0, 0, 3},
-        {"verbose",             0, 0, 4},
-        {"interpolation",       1, 0, 5},
-        {"train",               1, 0, 6},
-        {"map",                 1, 0, 7},
-        {"inter-store",         1, 0, 8},
-        {"b1",                  1, 0, 9},
-        {"max-update-distance", 1, 0, 10},
-        {"multi-GPU-off",       0, 0, 11},
-        {"som-height",          1, 0, 12},
-        {"som-depth",           1, 0, 13},
-        {"pbc",                 0, 0, 14},
-        {"store-rot-flip",      1, 0, 15},
+        {"neuron-dimension",        1, 0, 'd'},
+        {"layout",                  1, 0, 'l'},
+        {"seed",                    1, 0, 's'},
+        {"numrot",                  1, 0, 'n'},
+        {"numthreads",              1, 0, 't'},
+        {"init",                    1, 0, 'x'},
+        {"progress",                1, 0, 'p'},
+        {"version",                 0, 0, 'v'},
+        {"help",                    0, 0, 'h'},
+        {"dist-func",               1, 0, 'f'},
+        {"som-width",               1, 0, 0},
+        {"num-iter",                1, 0, 1},
+        {"flip-off",                0, 0, 2},
+        {"cuda-off",                0, 0, 3},
+        {"verbose",                 0, 0, 4},
+        {"interpolation",           1, 0, 5},
+        {"train",                   1, 0, 6},
+        {"map",                     1, 0, 7},
+        {"inter-store",             1, 0, 8},
+        {"b1",                      1, 0, 9},
+        {"max-update-distance",     1, 0, 10},
+        {"multi-GPU-off",           0, 0, 11},
+        {"som-height",              1, 0, 12},
+        {"som-depth",               1, 0, 13},
+        {"pbc",                     0, 0, 14},
+        {"store-rot-flip",          1, 0, 15},
+        {"euclidean-distance-type", 1, 0, 16},
         {NULL, 0, NULL, 0}
     };
 
@@ -278,6 +279,20 @@ InputData::InputData(int argc, char **argv)
             {
                 write_rot_flip = true;
                 rot_flip_filename = optarg;
+                break;
+            }
+            case 16:
+            {
+                stringToUpper(optarg);
+                if (strcmp(optarg, "FLOAT") == 0) euclidean_distance_type = DataType::FLOAT;
+                else if (strcmp(optarg, "UINT16") == 0) euclidean_distance_type = DataType::UINT16;
+                else if (strcmp(optarg, "UINT8") == 0) euclidean_distance_type = DataType::UINT8;
+                else {
+                    printf ("optarg = %s\n", optarg);
+                    printf ("Unkown option %o\n", c);
+                    print_usage();
+                    exit(EXIT_FAILURE);
+                }
                 break;
             }
             case 'v':
