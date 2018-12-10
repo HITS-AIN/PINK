@@ -60,10 +60,14 @@ struct HexagonalLayout
         return index;
     }
 
-    /// Returns the layout position (q,r) of an array index
+    /// Returns the layout position (q, r) of an array index
     auto get_position(IndexType i) const
     {
-        return DimensionType({i, i});
+    	uint32_t r = 0;
+    	for (;r < dimension[0]; ++r) if (i < row_offset[r+1]) break;
+    	uint32_t q = i - row_offset[r];
+    	if (radius > r) q += radius - r;
+        return DimensionType({q, r});
     }
 
     /// Returns the distance of two neurons given in layout position
