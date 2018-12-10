@@ -1,5 +1,5 @@
 /**
- * @file   ImageProcessing.h
+ * @file   ImageProcessingLib/ImageProcessing.h
  * @brief  Plain-C functions for image processing.
  * @date   Oct 7, 2014
  * @author Bernd Doser, HITS gGmbH

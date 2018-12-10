@@ -145,7 +145,7 @@ void main_generic(InputData const& input_data)
     }
     else
     {
-        pink::exception("Unknown execution path");
+        throw pink::exception("Unknown execution path");
     }
 }
 

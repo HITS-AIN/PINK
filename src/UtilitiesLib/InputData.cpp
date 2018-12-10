@@ -217,9 +217,9 @@ InputData::InputData(int argc, char **argv)
             {
                 executionPath = ExecutionPath::TRAIN;
                 int index = optind - 1;
-                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --train option.");
+                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --train option.");
                 imagesFilename = strdup(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --train option.");
+                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --train option.");
                 resultFilename = strdup(argv[index++]);
                 optind = index - 1;
                 break;
@@ -228,11 +228,11 @@ InputData::InputData(int argc, char **argv)
             {
                 executionPath = ExecutionPath::MAP;
                 int index = optind - 1;
-                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --map option.");
+                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --map option.");
                 imagesFilename = strdup(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --map option.");
+                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --map option.");
                 resultFilename = strdup(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --map option.");
+                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --map option.");
                 somFilename = strdup(argv[index++]);
                 optind = index - 1;
                 break;
@@ -261,7 +261,7 @@ InputData::InputData(int argc, char **argv)
                 max_update_distance = atof(optarg);
                 if (max_update_distance <= 0.0) {
                     print_usage();
-                    pink::exception("max-update-distance must be positive.");
+                    throw pink::exception("max-update-distance must be positive.");
                 }
                 break;
             }
@@ -322,9 +322,9 @@ InputData::InputData(int argc, char **argv)
                     exit(EXIT_FAILURE);
                 }
                 int index = optind;
-                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --dist-func option.");
+                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --dist-func option.");
                 sigma = atof(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') pink::exception("Missing arguments for --dist-func option.");
+                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --dist-func option.");
                 damping = atof(argv[index++]);
                 optind = index;
                 break;
@@ -348,14 +348,14 @@ InputData::InputData(int argc, char **argv)
         init = SOMInitialization::FILEINIT;
     } else if (executionPath == ExecutionPath::UNDEFINED) {
         print_usage();
-        pink::exception("Unkown execution path.");
+        throw pink::exception("Unkown execution path.");
     }
 
     ImageIterator<float> iterImage(imagesFilename);
 
     if (iterImage->getWidth() != iterImage->getHeight()) {
         print_usage();
-        pink::exception("Only quadratic images are supported.");
+        throw pink::exception("Only quadratic images are supported.");
     }
 
     number_of_images = iterImage.getNumberOfImages();
@@ -366,17 +366,17 @@ InputData::InputData(int argc, char **argv)
     image_size = image_dim * image_dim;
 
     if (layout == Layout::HEXAGONAL) {
-        if (usePBC) pink::exception("Periodic boundary conditions are not supported for hexagonal layout.");
-        if ((som_width - 1) % 2) pink::exception("For hexagonal layout only odd dimension supported.");
-        if (som_width != som_height) pink::exception("For hexagonal layout som-width must be equal to som-height.");
-        if (som_depth != 1) pink::exception("For hexagonal layout som-depth must be equal to 1.");
+        if (usePBC) throw pink::exception("Periodic boundary conditions are not supported for hexagonal layout.");
+        if ((som_width - 1) % 2) throw pink::exception("For hexagonal layout only odd dimension supported.");
+        if (som_width != som_height) throw pink::exception("For hexagonal layout som-width must be equal to som-height.");
+        if (som_depth != 1) throw pink::exception("For hexagonal layout som-depth must be equal to 1.");
         som_size = HexagonalLayout({som_width, som_height}).size();
     }
     else som_size = som_width * som_height * som_depth;
 
-    if (som_width < 2) pink::exception("som-width must be > 1.");
-    if (som_height < 1) pink::exception("som-height must be > 0.");
-    if (som_depth < 1) pink::exception("som-depth must be > 0.");
+    if (som_width < 2) throw pink::exception("som-width must be > 1.");
+    if (som_height < 1) throw pink::exception("som-height must be > 0.");
+    if (som_depth < 1) throw pink::exception("som-depth must be > 0.");
     if (som_height > 1) ++dimensionality;
     if (som_depth > 1) ++dimensionality;
 

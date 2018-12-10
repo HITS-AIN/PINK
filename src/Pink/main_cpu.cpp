@@ -32,11 +32,11 @@ void main_cpu(InputData const & input_data)
         else if (input_data.dimensionality == 3)
             main_generic<CartesianLayout<3>, CartesianLayout<2>, float, false>(input_data);
         else
-            pink::exception("Unsupported dimensionality of " + input_data.dimensionality);
+            throw pink::exception("Unsupported dimensionality of " + input_data.dimensionality);
     else if (input_data.layout == Layout::HEXAGONAL)
         main_generic<HexagonalLayout, CartesianLayout<2>, float, false>(input_data);
     else
-        pink::exception("Unknown layout");
+        throw pink::exception("Unknown layout");
 }
 
 } // namespace pink

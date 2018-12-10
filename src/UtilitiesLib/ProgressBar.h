@@ -15,9 +15,9 @@ public:
 
     ProgressBar(int total, int width, int number_of_progress_prints = 10)
      : total(total),
-	   width(width),
-	   number_of_progress_prints(number_of_progress_prints),
-	   next_progress_print(total / number_of_progress_prints)
+       width(width),
+       number_of_progress_prints(number_of_progress_prints),
+       next_progress_print(total / number_of_progress_prints)
     {}
 
     void operator ++ ()
@@ -26,7 +26,7 @@ public:
         if (valid())
         {
             ++progress;
-     	    next_progress_print = (progress+1) * total / number_of_progress_prints;
+            next_progress_print = (progress+1) * total / number_of_progress_prints;
             int pos = width * progress / number_of_progress_prints;
 
             std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();

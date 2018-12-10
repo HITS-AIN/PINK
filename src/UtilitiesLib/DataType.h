@@ -25,7 +25,7 @@ inline std::ostream& operator << (std::ostream& os, DataType type)
     if (type == DataType::FLOAT) os << "float";
     else if (type == DataType::UINT16) os << "uint16";
     else if (type == DataType::UINT8) os << "uint8";
-    else pink::exception("Undefined DataType");
+    else throw pink::exception("Undefined DataType");
     return os;
 }
 

@@ -26,7 +26,7 @@ public:
 
     /// Default construction
     Data()
-     : layout{0}
+     : layout()
     {}
 
     /// Construction without initialization

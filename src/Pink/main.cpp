@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 #if PINK_USE_CUDA
             main_gpu(input_data);
 #else
-            pink::exception("PINK was not compiled with CUDA support");
+            throw pink::exception("PINK was not compiled with CUDA support");
 #endif
         else
             main_cpu(input_data);

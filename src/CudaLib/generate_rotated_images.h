@@ -78,7 +78,7 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
                             thrust::raw_pointer_cast(&d_image[c * image_size]), neuron_size, neuron_dim, image_dim,
                             thrust::raw_pointer_cast(&d_cos_alpha[0]), thrust::raw_pointer_cast(&d_sin_alpha[0]), spacing);
                     } else {
-                        pink::exception("generate_rotated_images: unknown interpolation type");
+                        throw pink::exception("generate_rotated_images: unknown interpolation type");
                     }
 
                     cudaError_t error = cudaGetLastError();

@@ -34,7 +34,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
 
     // First step ...
     if (use_multiple_gpus and cuda_getNumberOfGPUs() > 1) {
-        pink::exception("Multi GPUs are not supported.");
+        throw pink::exception("Multi GPUs are not supported.");
         //generate_euclidean_distance_matrix_first_step_multi_gpu(d_som, d_rotated_images,
         //    d_first_step, number_of_spatial_transformations, block_size);
     } else {
@@ -62,7 +62,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
             generate_euclidean_distance_matrix_first_step_mixed_precision(d_som, d_spatial_transformed_images,
                 d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
         } else {
-            pink::exception("Unknown euclidean_distance_type");
+            throw pink::exception("Unknown euclidean_distance_type");
         }
     }
 

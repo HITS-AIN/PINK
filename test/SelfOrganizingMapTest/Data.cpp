@@ -82,27 +82,34 @@ TEST(SelfOrganizingMapTest, data_cartesian_3d)
 
 TEST(SelfOrganizingMapTest, hexagonal_layout)
 {
-    HexagonalLayout h({3, 3});
+    HexagonalLayout h1({1, 1});
+    EXPECT_EQ(1UL, h1.size());
 
-    EXPECT_EQ(19UL, h.size());
+    HexagonalLayout h3({3, 3});
+    EXPECT_EQ(7UL, h3.size());
+
+    HexagonalLayout h5({5, 5});
+    EXPECT_EQ(19UL, h5.size());
+
+    EXPECT_THROW(HexagonalLayout({0, 0}), pink::exception);
+    EXPECT_THROW(HexagonalLayout({1, 0}), pink::exception);
+    EXPECT_THROW(HexagonalLayout({2, 2}), pink::exception);
 }
 
 TEST(SelfOrganizingMapTest, data_hexagonal)
 {
     Data<HexagonalLayout, float> c;
-    EXPECT_EQ((std::array<uint32_t, 2>{0, 0}), c.get_dimension());
 
-    Data<HexagonalLayout, float> c2({2, 2}, std::vector<float>({1, 2}));
+    EXPECT_EQ((std::array<uint32_t, 2>{1, 1}), c.get_dimension());
 
-    // Check dimension
-    EXPECT_EQ((std::array<uint32_t, 2>{2, 2}), c2.get_dimension());
-
-    // Check linear position
-    for (int i = 0; i < 4; ++i) EXPECT_EQ(i+1, c2[i]);
+    Data<HexagonalLayout, float> c2({{3, 3}}, std::vector<float>({1, 2, 3, 4, 5, 6, 7}));
 
     // Check layout position
-    EXPECT_EQ(1, (c2[{0, 0}]));
-    EXPECT_EQ(2, (c2[{1, 0}]));
+    EXPECT_EQ(1, (c2[{1, 0}]));
+    EXPECT_EQ(2, (c2[{2, 0}]));
     EXPECT_EQ(3, (c2[{0, 1}]));
     EXPECT_EQ(4, (c2[{1, 1}]));
+    EXPECT_EQ(5, (c2[{2, 1}]));
+    EXPECT_EQ(6, (c2[{0, 2}]));
+    EXPECT_EQ(7, (c2[{1, 2}]));
 }

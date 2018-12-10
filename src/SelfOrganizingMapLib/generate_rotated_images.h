@@ -31,9 +31,9 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
     uint32_t number_of_rotations, bool use_flip, Interpolation interpolation, uint32_t neuron_dim)
 {
     // Images must have at least two dimensions
-    if (data.get_layout().dimensionality < 2) pink::exception("Date must have at least two dimensions for image rotation.");
+    if (data.get_layout().dimensionality < 2) throw pink::exception("Date must have at least two dimensions for image rotation.");
     // Images must be quadratic
-    if (data.get_dimension()[0] != data.get_dimension()[1]) pink::exception("Images must be quadratic.");
+    if (data.get_dimension()[0] != data.get_dimension()[1]) throw pink::exception("Images must be quadratic.");
 
     auto image_dim = data.get_dimension()[0];
     auto image_size = data.get_dimension()[0] * data.get_dimension()[1];

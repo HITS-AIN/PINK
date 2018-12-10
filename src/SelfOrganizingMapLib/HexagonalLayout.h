@@ -11,6 +11,7 @@
 #include <numeric>
 
 #include "Dimension.h"
+#include "UtilitiesLib/pink_exception.h"
 
 namespace pink {
 
@@ -22,37 +23,47 @@ struct HexagonalLayout
     typedef uint32_t IndexType;
     typedef typename std::array<uint32_t, dimensionality> DimensionType;
 
+    HexagonalLayout(DimensionType const& dimension = {1, 1})
+     : dimension(dimension),
+       radius((dimension[0] - 1) / 2),
+       row_size(dimension[0]),
+       row_offset(dimension[0])
+    {
+        if (dimension[0] % 2 == 0) throw pink::exception("Only odd dimensions are allowed for hexagonal layout");
+        if (dimension[0] != dimension[1]) throw pink::exception("dimension[0] must be identical to dimension[1]");
+
+        row_size[radius] = dimension[0];
+        for (uint32_t i = 1; i < radius + 1; ++i) {
+            row_size[radius + i] = dimension[0] - i;
+            row_size[radius - i] = dimension[0] - i;
+        }
+
+        row_offset[0] = 0;
+        for (size_t i = 0; i < dimension[0] - 1; ++i) {
+            row_offset[i + 1] = row_offset[i] + row_size[i];
+        }
+    }
+
+    /// Returns the number of elements for a hexagonal grid
     auto size() const
     {
-        auto dim = 2 * dimension[0] - 1;
-        auto radius = (dim - 1)/2;
-        return dim * dim - radius * (radius + 1);
+        return dimension[0] * dimension[0] - radius * (radius + 1);
     }
 
     /// Returns the array index of a layout position
+    /// position[0] -> q (column index)
+    /// position[1] -> r (row index)
     auto get_index(DimensionType const& position) const
     {
-    	// proof
-        uint32_t index = position[0];
-        uint32_t multiplier = dimension[0];
-        for (uint8_t i = 1; i < dimensionality; ++i) {
-        	index += position[i] * multiplier;
-            multiplier *= dimension[i];
-        }
+    	auto index = row_offset[position[1]] + position[0];
+    	if (radius > position[1]) index -= radius - position[1];
         return index;
     }
 
-    /// Returns the layout position of an array index
+    /// Returns the layout position (q,r) of an array index
     auto get_position(IndexType i) const
     {
-    	// proof
-        int radius = (dimension[0] - 1) / 2;
-        int pos = 0;
-        for (int x = -radius; x <= radius; ++x) {
-            for (int y = -radius - std::min(0, x); y <= radius - std::max(0, x); ++y, ++pos) {
-                if (pos == i) return DimensionType({x, y});
-            }
-        }
+        return DimensionType({i, i});
     }
 
     /// Returns the distance of two neurons given in layout position
@@ -76,7 +87,17 @@ struct HexagonalLayout
         return get_distance(get_position(i1), get_position(i2));
     }
 
+    /// Number of rows and columns must be equal and stored in the first element
     DimensionType dimension;
+
+    ///
+    uint32_t radius;
+
+    /// Number of elements in a row
+    std::vector<uint32_t> row_size;
+
+    /// Starting index of a row
+    std::vector<uint32_t> row_offset;
 };
 
 } // namespace pink
