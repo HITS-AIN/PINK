@@ -3,41 +3,19 @@
 
 # Parallelized rotation and flipping INvariant Kohonen maps (PINK)
 
-![SOM of radio-synthesis data taken from the Radio Galaxy Zoo](doxygen/galaxies_som.png)
-
-## Requirements
-
-  - CMake (Version >= 3.0, http://www.cmake.org)
-  - CUDA (recommended)
-  - gtest (optional)
-  - doxygen (optional)
+![SOM of radio-synthesis data taken from the Radio Galaxy Zoo](doxygen/galaxies_som_hex.jpg)
 
 
 ## Installation
 
-  1) Make build directory and change into it:
-  
-     mkdir build && cd build
+We provide deb- and rpm-packages at https://github.com/HITS-AIN/PINK/releases
 
-  2) Generate Makefile using cmake:
+or you can install PINK from the sources:
 
-     cmake -DCMAKE_INSTALL_PREFIX=<INSTALL_PATH> ..
-
-  3) Compile:
-
-     make -j <number of cores>
-
-  4) Execute the Tests
-
-     make test
-
-  5) Generate API documentation (if doxygen is available)
-
-     make doc
-
-  6) Install
-
-     make install
+```bash
+cmake -DCMAKE_INSTALL_PREFIX=<INSTALL_PATH> .
+make install
+```
 
 
 ## Usage
