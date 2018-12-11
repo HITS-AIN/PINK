@@ -6,8 +6,6 @@
 
 #include "CudaLib/CudaLib.h"
 #include "UtilitiesLib/EqualFloatArrays.h"
-#include "ImageProcessingLib/ImageProcessing.h"
-#include "SelfOrganizingMapLib/SelfOrganizingMap.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Filler.h"
@@ -90,7 +88,7 @@ TEST_P(FullUpdateNeuronsTest, UpdateNeurons)
     // Calculate GPU result
     update_neurons(d_som, d_rotatedImages, d_bestRotationMatrix, d_euclideanDistanceMatrix, d_bestMatch,
         data.som_dim, data.som_dim, 1, data.som_size, data.num_channels * data.neuron_size,
-		DistributionFunction::GAUSSIAN, Layout::CARTESIAN, DEFAULT_SIGMA, DEFAULT_DAMPING, inputData.maxUpdateDistance,
+        DistributionFunction::GAUSSIAN, Layout::CARTESIAN, DEFAULT_SIGMA, DEFAULT_DAMPING, inputData.max_update_distance,
         inputData.usePBC, inputData.dimensionality);
 
     cuda_copyDeviceToHost_float(&gpu_som[0], d_som, data.som_total_size);

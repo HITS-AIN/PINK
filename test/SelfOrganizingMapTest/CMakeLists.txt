@@ -1,12 +1,15 @@
 include_directories(
-    ${PROJECT_SOURCE_DIR}/src
     ${GTEST_INCLUDE_DIR}
+    ${PROJECT_SOURCE_DIR}/src
 )
 
 add_executable(
     SelfOrganizingMapTest
     main.cpp
-    training.cpp
+    Data.cpp
+    generate_rotated_images.cpp
+    Trainer.cpp
+    TrainerCompare.cpp
 )
     
 target_link_libraries(

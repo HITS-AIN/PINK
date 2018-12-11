@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import getopt
 import numpy
@@ -8,7 +8,7 @@ import struct
 import sys
 import os.path
 import math
-import somTools
+import tools
 
 class HeatmapVisualizer():
     def __init__(self, fileName):
@@ -38,7 +38,7 @@ class HeatmapVisualizer():
     def readMap(self):
         #Unpacks the map parameters
         inputStream = open(self.__fileName, 'rb')
-        somTools.ignoreHeaderComments(inputStream) # find end of header
+        tools.ignoreHeaderComments(inputStream) # find end of header
 
         self.__numberOfImages = struct.unpack("i", inputStream.read(4))[0]
         self.__somWidth = struct.unpack("i", inputStream.read(4))[0]
@@ -93,10 +93,10 @@ class HeatmapVisualizer():
 
         if self.isHexMap():
             print ("hexagonal map")
-            image = somTools.calculateMap(self.__somWidth, self.__somHeight, self.__maps[imageNumber], neuronSize, neuronSize, shareIntensity=shareIntensity, border=borderWidth, shape="hex")
+            image = tools.calculateMap(self.__somWidth, self.__somHeight, self.__maps[imageNumber], neuronSize, neuronSize, shareIntensity=shareIntensity, border=borderWidth, shape="hex")
         else:
             print ("quadratic map")
-            image = somTools.calculateMap(self.__somWidth, self.__somHeight, self.__maps[imageNumber], neuronSize, neuronSize, shareIntensity=shareIntensity, border=borderWidth, shape="box")
+            image = tools.calculateMap(self.__somWidth, self.__somHeight, self.__maps[imageNumber], neuronSize, neuronSize, shareIntensity=shareIntensity, border=borderWidth, shape="box")
 
         ax = pyplot.subplot()
         cmap = matplotlib.cm.get_cmap("jet")

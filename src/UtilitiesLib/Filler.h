@@ -6,32 +6,41 @@
 
 #pragma once
 
+#include <cstddef>
 #include <random>
+#include <type_traits>
 
 namespace pink {
 
-/**
- * @brief Fill array with random numbers.
- */
-template <class T>
-void fillWithRandomNumbers(T *a, int length, int seed = 1234)
+/// Fill array with random numbers
+template <class T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
+void fill_random_uniform(T *a, std::size_t length, std::uint32_t seed = std::mt19937::default_seed)
 {
-    typedef std::mt19937 MyRNG;
-    MyRNG rng(seed);
-    std::normal_distribution<T> normal_dist(0.0, 0.1);
+    std::mt19937 rng(seed);
+    std::uniform_real_distribution<T> normal_dist(0.0);
 
-    for (int i = 0; i < length; ++i) {
+    for (std::size_t i = 0; i < length; ++i) {
         a[i] = normal_dist(rng);
     }
 }
 
-/**
- * @brief Fill array with value.
- */
-template <class T>
-void fillWithValue(T *a, int length, T value = 0)
+/// Fill array with random numbers
+template <class T, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
+void fill_random_uniform(T *a, std::size_t length, std::uint32_t seed = std::mt19937::default_seed)
 {
-    for (int i = 0; i < length; ++i) {
+    std::mt19937 rng(seed);
+    std::uniform_int_distribution<T> normal_dist(0);
+
+    for (std::size_t i = 0; i < length; ++i) {
+        a[i] = normal_dist(rng);
+    }
+}
+
+/// Fill array with a single value
+template <class T>
+void fill_value(T *a, std::size_t length, T value = 0)
+{
+    for (std::size_t i = 0; i < length; ++i) {
         a[i] = value;
     }
 }

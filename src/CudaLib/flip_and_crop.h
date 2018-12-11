@@ -4,6 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#pragma once
+
 #include <cuda_runtime.h>
 
 namespace pink {

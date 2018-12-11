@@ -3,7 +3,7 @@ from conans import ConanFile, CMake
 class RecordConan(ConanFile):
     
     name = "pink"
-    version = "1.0"
+    version = "2.0"
     license = "GPLv3"
     description = "Parallelized rotation and flipping INvariant Kohonen maps"
     homepage = "https://github.com/HITS-AIN/PINK"
@@ -14,7 +14,8 @@ class RecordConan(ConanFile):
     
     settings = "os", "compiler", "build_type", "arch"
     requires = \
-        "gtest/1.8.0@bincrafters/stable"
+        "gtest/1.8.1@bincrafters/stable", \
+        "pybind11/2.2.2@conan/stable"
     generators = "cmake"
     default_options = "Boost:header_only=True"
 

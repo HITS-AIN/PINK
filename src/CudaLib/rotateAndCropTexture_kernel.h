@@ -4,6 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#pragma once
+
 namespace pink {
 
 texture<float, 2, cudaReadModeElementType> image_texture;

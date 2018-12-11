@@ -1,15 +1,18 @@
 include_directories(
+    ${CUDA_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/src
     ${GTEST_INCLUDE_DIR}
 )
 
-add_executable(
+cuda_add_executable(
     CudaTest
     main.cpp
-    mixed_precision.cpp
-    EuclideanDistanceTest.cpp
-    RotationTest.cpp
-    UpdateNeuronsTest.cpp
+    mixed_precision.cu
+    RotationTest.cu
+    rotate_90_degrees_list.cu
+    compare_trainer_cpu.cu
+    compare_trainer_mixed.cu
+    update_neurons.cu
 )
     
 target_link_libraries(

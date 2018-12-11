@@ -12,6 +12,7 @@
 #include "ImageProcessingLib/Interpolation.h"
 #include "IntermediateStorageType.h"
 #include "SOMInitializationType.h"
+#include "UtilitiesLib/DataType.h"
 #include "UtilitiesLib/DistributionFunction.h"
 #include "UtilitiesLib/ExecutionPath.h"
 #include "UtilitiesLib/Layout.h"
@@ -45,22 +46,22 @@ struct InputData
     std::string rot_flip_filename;
 
     bool verbose;
-    int som_width;
-    int som_height;
-    int som_depth;
-    int neuron_dim;
+    uint32_t som_width;
+    uint32_t som_height;
+    uint32_t som_depth;
+    uint32_t neuron_dim;
     Layout layout;
     int seed;
     int numberOfRotations;
     int numberOfThreads;
     SOMInitialization init;
     int numIter;
-    float progressFactor;
-    bool useFlip;
-    bool useCuda;
-    int numberOfImages;
-    int numberOfChannels;
-    int image_dim;
+    int number_of_progress_prints;
+    bool use_flip;
+    bool use_gpu;
+    uint32_t number_of_images;
+    uint32_t number_of_channels;
+    uint32_t image_dim;
     int image_size;
     int som_size;
     int neuron_size;
@@ -73,11 +74,12 @@ struct InputData
     float sigma;
     float damping;
     int block_size_1;
-    int maxUpdateDistance;
+    float max_update_distance;
     int useMultipleGPUs;
     int usePBC;
     int dimensionality;
     bool write_rot_flip;
+    DataType euclidean_distance_type;
 };
 
 void stringToUpper(char* s);

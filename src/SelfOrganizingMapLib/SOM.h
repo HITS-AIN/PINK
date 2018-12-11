@@ -1,81 +1,131 @@
 /**
  * @file   SelfOrganizingMapLib/SOM.h
- * @brief  Self organizing Kohonen-map.
- * @date   Nov 25, 2014
+ * @date   Sep 25, 2018
  * @author Bernd Doser, HITS gGmbH
  */
 
 #pragma once
 
-#include <chrono>
-#include <memory>
+#include <array>
+#include <fstream>
+#include <functional>
 #include <vector>
 
-#include "UtilitiesLib/DistanceFunctor.h"
-#include "UtilitiesLib/DistributionFunctor.h"
+#include "CartesianLayout.h"
+#include "Data.h"
+#include "HexagonalLayout.h"
 #include "UtilitiesLib/InputData.h"
-
-using myclock = std::chrono::steady_clock;
 
 namespace pink {
 
-/**
- * @brief Main class for self organizing matrix.
- */
+/// Generic SOM
+template <typename SOMLayout, typename NeuronLayout, typename T>
 class SOM
 {
 public:
 
-    SOM(InputData const& inputData);
+    typedef T ValueType;
+    typedef SOMLayout SOMLayoutType;
+    typedef NeuronLayout NeuronLayoutType;
+    typedef SOM<SOMLayout, NeuronLayout, T> SelfType;
+    typedef Data<NeuronLayout, T> NeuronType;
 
-    void write(std::string const& filename) const;
+    /// Default construction
+    SOM()
+     : som_layout{0},
+       neuron_layout{0}
+    {}
 
-    int getSize() const { return som_.size(); }
+    /// Construction by input data
+    SOM(InputData const& input_data);
 
-    int getSizeInBytes() const { return som_.size() * sizeof(float); }
+    /// Construction without initialization
+    SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout)
+     : som_layout(som_layout),
+       neuron_layout(neuron_layout),
+       data(som_layout.size() * neuron_layout.size())
+    {}
 
-    std::vector<float> getData() { return som_; }
+    /// Construction and initialize all elements to value
+    SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout, T value)
+     : som_layout(som_layout),
+       neuron_layout(neuron_layout),
+       data(som_layout.size() * neuron_layout.size(), value)
+    {}
 
-    const std::vector<float> getData() const { return som_; }
+    /// Construction and copy data
+    SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout,
+        std::vector<T> const& data)
+     : som_layout(som_layout),
+       neuron_layout(neuron_layout),
+       data(data)
+    {}
 
-    float* getDataPointer() { return &som_[0]; }
+    /// Construction and move data
+    SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout,
+        std::vector<T>&& data)
+     : som_layout(som_layout),
+       neuron_layout(neuron_layout),
+       data(data)
+    {}
 
-    float const* getDataPointer() const { return &som_[0]; }
+    auto operator == (SelfType const& other) const
+    {
+        return som_layout == other.som_layout and
+               neuron_layout == other.neuron_layout and
+               data == other.data;
+    }
 
-    //! Main CPU based routine for SOM training.
-    void training();
+    auto size() const { return data.size(); }
 
-    //! Main CPU based routine for SOM mapping.
-    void mapping();
+    auto get_data() { return data; }
+    auto get_data() const { return data; }
 
-    //! Updating self organizing map.
-    void updateNeurons(float *rotatedImages, int bestMatch, int *bestRotationMatrix);
+    auto get_data_pointer() { return &data[0]; }
+    auto get_data_pointer() const { return &data[0]; }
 
-    //! Save position of current SOM update.
-    void updateCounter(int bestMatch) { ++updateCounterMatrix_[bestMatch]; }
+    auto get_neuron(SOMLayoutType const& position) {
+        auto&& beg = data.begin() + (position.dimension[0] * som_layout.dimension[1] + position.dimension[1]) * neuron_layout.size();
+        auto&& end = beg + neuron_layout.size();
+        return NeuronType(neuron_layout, std::vector<T>(beg, end));
+    }
 
-    //! Print matrix of SOM updates.
-    void printUpdateCounter() const;
+    auto get_number_of_neurons() const -> uint32_t const { return som_layout.size(); }
+    auto get_neuron_size() const -> uint32_t const { return neuron_layout.size(); }
+
+    auto get_som_layout() -> SOMLayoutType { return som_layout; }
+    auto get_som_layout() const -> SOMLayoutType const { return som_layout; }
+    auto get_neuron_layout() -> NeuronLayoutType { return neuron_layout; }
+    auto get_neuron_layout() const -> NeuronLayoutType const { return neuron_layout; }
+
+    auto get_som_dimension() -> typename SOMLayoutType::DimensionType { return som_layout.dimension; }
+    auto get_som_dimension() const -> typename SOMLayoutType::DimensionType const { return som_layout.dimension; }
+    auto get_neuron_dimension() -> typename NeuronLayoutType::DimensionType { return neuron_layout.dimension; }
+    auto get_neuron_dimension() const -> typename NeuronLayoutType::DimensionType const { return neuron_layout.dimension; }
+
+    void write_file_header(std::ofstream& ofs) const
+    {
+        int one = 1;
+        for (uint8_t i = 0; i < som_layout.dimension.size(); ++i) ofs.write((char*)&som_layout.dimension[i], sizeof(int));
+        for (uint8_t i = som_layout.dimension.size(); i < 3; ++i) ofs.write((char*)&one, sizeof(int));
+    }
 
 private:
 
-    //! Updating one single neuron.
-    void updateSingleNeuron(float *neuron, float *image, float factor);
+    template <typename A, typename B, typename C>
+    friend void write(SOM<A, B, C> const& som, std::string const& filename);
 
-    InputData const& inputData_;
+    template <typename A, typename B, typename C>
+    friend std::ostream& operator << (std::ostream& os, SOM<A, B, C> const& som);
 
-    //! The real self organizing matrix.
-    std::vector<float> som_;
+    SOMLayoutType som_layout;
 
-    std::shared_ptr<DistributionFunctorBase> ptrDistributionFunctor_;
-
-    std::shared_ptr<DistanceFunctorBase> ptrDistanceFunctor_;
-
-    // Counting updates of each neuron
-    std::vector<int> updateCounterMatrix_;
+    NeuronLayoutType neuron_layout;
 
     // Header of initialization SOM, will be copied to resulting SOM
-    std::string header_;
+    std::string header;
+
+    std::vector<T> data;
 
 };
 

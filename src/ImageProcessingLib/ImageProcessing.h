@@ -1,5 +1,5 @@
 /**
- * @file   ImageProcessing.h
+ * @file   ImageProcessingLib/ImageProcessing.h
  * @brief  Plain-C functions for image processing.
  * @date   Oct 7, 2014
  * @author Bernd Doser, HITS gGmbH
@@ -7,15 +7,13 @@
 
 #pragma once
 
+#include <cmath>
 #include <string>
 #include <vector>
 
 #include "Interpolation.h"
 
 namespace pink {
-
-//! Pretty printing of interpolation type.
-std::ostream& operator << (std::ostream& os, Interpolation interpolation);
 
 /**
  * @brief Plain-C function for image rotation.
@@ -40,12 +38,12 @@ void rotate_90degrees(int height, int width, float *source, float *dest);
 /**
  * @brief Plain-C function for image mirroring.
  */
-void flip(int height, int width, float * source, float *dest);
+void flip(int height, int width, float *source, float *dest);
 
 /**
  * @brief Plain-C function for cropping an image.
  */
-void crop(int height, int width, int height_new, int width_new, float * source, float *dest);
+void crop(int height, int width, int height_new, int width_new, float *source, float *dest);
 
 /**
  * @brief Plain-C function for flipping and cropping an image.
@@ -62,19 +60,37 @@ void flipAndCrop(int height, int width, int height_new, int width_new, float *so
 void rotateAndCrop(int height, int width, int height_new, int width_new, float *source,
     float *dest, float alpha, Interpolation interpolation = Interpolation::BILINEAR);
 
-/**
- * @brief Euclidean distance of two float arrays.
- *
- * Return sqrt(sum((a[i] - b[i])^2))
- */
-float calculateEuclideanDistance(float *a, float *b, int length);
+template <typename T>
+T dot(std::vector<T> const& v)
+{
+    T dot = 0;
+    for (auto&& e : v) dot += e * e;
+    return dot;
+}
 
 /**
  * @brief Same as @calculateEuclideanDistance but without square root to speed up.
  *
  * Return sum((a[i] - b[i])^2)
  */
-float calculateEuclideanDistanceWithoutSquareRoot(float *a, float *b, int length);
+template <typename T>
+T euclidean_distance_square(T const *a, T const *b, int length)
+{
+    std::vector<T> diff(length);
+    for (int i = 0; i < length; ++i) diff[i] = a[i] - b[i];
+    return dot(diff);
+}
+
+/**
+ * @brief Euclidean distance of two float arrays.
+ *
+ * Return sqrt(sum((a[i] - b[i])^2))
+ */
+template <typename T>
+T euclidean_distance(T const *a, T const *b, int length)
+{
+    return std::sqrt(euclidean_distance_square(a, b, length));
+}
 
 /**
  * @brief Normalize image values.

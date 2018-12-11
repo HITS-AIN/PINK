@@ -1,0 +1,24 @@
+FROM braintwister/ubuntu-18.04-cuda-10.0-cmake-3.12-gcc-7-conan-1.9-docker-18.09-eclipse-cpp-2018-09
+
+MAINTAINER Bernd Doser <bernd.doser@h-its.org>
+
+ENV TZ 'Europe/Berlin'
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN echo $TZ > /etc/timezone && \
+  apt-get update && apt-get install -y tzdata && \
+  rm /etc/localtime && \
+  ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+  dpkg-reconfigure -f noninteractive tzdata && \
+  apt-get clean
+
+RUN apt-get update \
+ && apt-get install -y \
+    moreutils \
+    python3-tk \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install -I \
+    matplotlib \
+    numpy 

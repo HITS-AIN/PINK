@@ -5,9 +5,11 @@ include_directories(
 
 add_executable(
     ImageProcessingTest
+    GenericImageProcessingTest.cpp
     main.cpp
     ImageTest.cpp
     ImageProcessingTest.cpp
+    image_processing.cpp
 )
     
 target_link_libraries(

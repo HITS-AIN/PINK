@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import struct
 import numpy
@@ -7,7 +7,7 @@ import matplotlib
 import math
 import getopt
 import sys
-import somTools
+import tools
 from showHeatmap import HeatmapVisualizer as HV
 
 class Rotations():
@@ -54,7 +54,7 @@ class Rotations():
     def readRotations(self):
         #Unpacks the map parameters
         inputStream = open(self.__fileName, 'rb')
-        somTools.ignoreHeaderComments(inputStream)
+        tools.ignoreHeaderComments(inputStream)
 
         self.__numberOfImages = struct.unpack("i", inputStream.read(4))[0]
         self.__somWidth = struct.unpack("i", inputStream.read(4))[0]

@@ -1,5 +1,5 @@
 /**
- * @file   UtilitiesLib/DistributionFunctors.h
+ * @file   UtilitiesLib/DistributionFunctor.h
  * @brief  Virtual functors for distribution functions used by updating SOM.
  * @date   Dec 4, 2014
  * @author Bernd Doser, HITS gGmbH
@@ -18,27 +18,53 @@ namespace pink {
 struct DistributionFunctorBase
 {
     virtual float operator () (float distance) const = 0;
+
     virtual ~DistributionFunctorBase() {}
 };
 
 /**
- * @brief Functor for mexican hat.
+ * @brief Functor for step function
+ *
+ * return 1.0 if distance <= value, else 0.0
+ */
+struct StepFunctor : public DistributionFunctorBase
+{
+    StepFunctor(float value)
+     : value(value)
+    {}
+
+    float operator () (float distance) const
+    {
+        if (distance <= value) return 1.0;
+        return 0.0;
+    }
+
+private:
+
+    float value;
+};
+
+/**
+ * @brief Functor for gaussian
  *
  * 1.0 / (sigma * math.sqrt(2.0 * math.pi)) * math.exp(-1.0/2.0 * (x / sigma)**2 )
  */
 struct GaussianFunctor : public DistributionFunctorBase
 {
-    GaussianFunctor(float sigma) : sigma(sigma) {}
+    GaussianFunctor(float sigma, float damping)
+     : sigma(sigma),
+       damping(damping)
+    {}
 
     float operator () (float distance) const
     {
-        return 1.0 / (sigma * sqrt(2.0 * M_PI)) * exp(-0.5 * pow((distance/sigma),2));
+        return damping / (sigma * sqrt(2.0 * M_PI)) * exp(-0.5 * pow((distance/sigma),2));
     }
 
 private:
 
     float sigma;
-
+    float damping;
 };
 
 /**
@@ -48,25 +74,24 @@ private:
  */
 struct MexicanHatFunctor : public DistributionFunctorBase
 {
-    MexicanHatFunctor(float sigma) : sigma(sigma), sigma2(sigma*sigma)
+    MexicanHatFunctor(float sigma, float damping)
+     : sigma(sigma),
+       damping(damping)
     {
-        if (sigma <= 0) throw std::runtime_error("MexicanHatFunctor: sigma <= 0 not defined.");
+        if (sigma <= 0.0) throw std::runtime_error("MexicanHatFunctor: sigma <= 0 not defined.");
     }
 
     float operator () (float distance) const
     {
         float distance2 = distance * distance;
-             //2.0 / (sqrt(3.0 * GetParam().sigma * sqrt(M_PI))) * (1.0 - 1.0 / sigma2) * exp(-1.0 / (2.0 * sigma2))
-        return 2.0 / (sqrt(3.0 * sigma) * pow(M_PI, 0.25)) * (1.0 - distance2/sigma2) * exp(-distance2 / (2.0 * sigma2));
+        float sigma2 = sigma * sigma;
+        return 2.0 * damping / (sqrt(3.0 * sigma) * pow(M_PI, 0.25)) * (1.0 - distance2/sigma2) * exp(-distance2 / (2.0 * sigma2));
     }
 
 private:
 
     float sigma;
-
-    // Avoid multiple calculations.
-    float sigma2;
-
+    float damping;
 };
 
 } // namespace pink

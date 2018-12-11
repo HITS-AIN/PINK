@@ -5,17 +5,15 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <omp.h>
+
 #include "ImageProcessingLib/Image.h"
 #include "ImageProcessingLib/ImageProcessing.h"
 #include "SelfOrganizingMap.h"
-#include <cmath>
-#include <ctype.h>
-#include <float.h>
-#include <iomanip>
-#include <iostream>
-#include <omp.h>
-#include <stdlib.h>
-#include <string.h>
 
 namespace pink {
 
@@ -38,9 +36,11 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
         float *currentImage = image + c*image_size;
         float *currentRotatedImages = rotatedImages + c*neuron_size;
         crop(image_dim, image_dim, neuron_dim, neuron_dim, currentImage, currentRotatedImages);
-        rotate_90degrees(neuron_dim, neuron_dim, currentRotatedImages, currentRotatedImages + offset1);
-        rotate_90degrees(neuron_dim, neuron_dim, currentRotatedImages + offset1, currentRotatedImages + offset2);
-        rotate_90degrees(neuron_dim, neuron_dim, currentRotatedImages + offset2, currentRotatedImages + offset3);
+        if (num_rot != 1) {
+            rotate_90degrees(neuron_dim, neuron_dim, currentRotatedImages, currentRotatedImages + offset1);
+            rotate_90degrees(neuron_dim, neuron_dim, currentRotatedImages + offset1, currentRotatedImages + offset2);
+            rotate_90degrees(neuron_dim, neuron_dim, currentRotatedImages + offset2, currentRotatedImages + offset3);
+        }
     }
 
     // Rotate images
@@ -71,21 +71,21 @@ void generateRotatedImages(float *rotatedImages, float *image, int num_rot, int 
     }
 }
 
-void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, int *bestRotationMatrix,
+void generateEuclideanDistanceMatrix(float *euclideanDistanceMatrix, uint32_t *bestRotationMatrix,
     int som_size, float* som, int image_size, int num_rot, float* rotatedImages)
 {
     float tmp;
     float* pdist = euclideanDistanceMatrix;
-    int* prot = bestRotationMatrix;
+    uint32_t* prot = bestRotationMatrix;
     float *psom = NULL;
 
-    for (int i = 0; i < som_size; ++i) euclideanDistanceMatrix[i] = FLT_MAX;
+    for (int i = 0; i < som_size; ++i) euclideanDistanceMatrix[i] = std::numeric_limits<float>::max();
 
     for (int i = 0; i < som_size; ++i, ++pdist, ++prot) {
         psom = som + i*image_size;
         #pragma omp parallel for private(tmp)
         for (int j = 0; j < num_rot; ++j) {
-            tmp = calculateEuclideanDistanceWithoutSquareRoot(psom, rotatedImages + j*image_size, image_size);
+            tmp = euclidean_distance_square(psom, rotatedImages + j*image_size, image_size);
             #pragma omp critical
             if (tmp < *pdist) {
                 *pdist = tmp;

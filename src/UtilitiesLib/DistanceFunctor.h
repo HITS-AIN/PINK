@@ -7,10 +7,8 @@
 
 #pragma once
 
-#include "Error.h"
-#include <algorithm>
 #include <cmath>
-#include <iostream>
+#include "Error.h"
 
 namespace pink {
 
@@ -20,6 +18,7 @@ namespace pink {
 struct DistanceFunctorBase
 {
     virtual float operator () (int p1, int p2) const = 0;
+
     virtual ~DistanceFunctorBase() {}
 };
 
@@ -233,7 +232,6 @@ private:
                 if (pos == p) return;
             }
         }
-        fatalError("Error in hexagonal indices.");
     }
 
     int dim_;

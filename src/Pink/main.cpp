@@ -1,5 +1,5 @@
 /**
- * @file   Pink/main.cpp
+ * @file   Pink/main2.cpp
  * @brief  Main routine of PINK.
  * @date   Oct 20, 2014
  * @author Bernd Doser, HITS gGmbH
@@ -15,59 +15,61 @@
     #include <fenv.h>
 #endif
 
-#include "SelfOrganizingMapLib/SOM.h"
-#include "UtilitiesLib/Error.h"
+#include "main_cpu.h"
 #include "UtilitiesLib/InputData.h"
+#include "UtilitiesLib/pink_exception.h"
 
 #if PINK_USE_CUDA
-    #include "CudaLib/CudaLib.h"
+    #include "CudaLib/main_gpu.h"
 #endif
 
+using myclock = std::chrono::steady_clock;
 using namespace pink;
 
 int main(int argc, char **argv)
 {
-    #ifndef NDEBUG
-        feenableexcept(FE_INVALID | FE_OVERFLOW);
-    #endif
+    try {
+        #ifndef NDEBUG
+            feenableexcept(FE_INVALID | FE_OVERFLOW);
+        #endif
 
-    // Start timer
-    auto&& startTime = myclock::now();
+        // Start timer
+        auto&& startTime = myclock::now();
 
-    InputData inputData(argc, argv);
-    SOM som(inputData);
+        InputData input_data(argc, argv);
 
-    #if PINK_USE_CUDA
-        if (inputData.useCuda)
-        {
-            if (inputData.useMultipleGPUs and cuda_getNumberOfGPUs() > 1)
-                std::cout << "  Use multiple GPU code with " << cuda_getNumberOfGPUs() << " GPUs." << std::endl;
-            else
-                std::cout << "  Use single GPU code." << std::endl;
-
-            if (inputData.executionPath == ExecutionPath::TRAIN)
-                cuda_trainSelfOrganizingMap(inputData);
-            else if (inputData.executionPath == ExecutionPath::MAP)
-                cuda_mapping(inputData);
-            else
-                fatalError("Unknown execution path.");
-        } else
-    #endif
-        if (inputData.executionPath == ExecutionPath::TRAIN)
-            som.training();
-        else if (inputData.executionPath == ExecutionPath::MAP)
-            som.mapping();
+        if (input_data.use_gpu)
+#if PINK_USE_CUDA
+            main_gpu(input_data);
+#else
+            throw pink::exception("PINK was not compiled with CUDA support");
+#endif
         else
-            fatalError("Unknown execution path.");
+            main_cpu(input_data);
 
-    // Stop and print timer
-    auto&& stopTime = myclock::now();
-    auto&& duration = stopTime - startTime;
-    std::cout << "\n  Total time (hh:mm:ss): "
-         << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::hours>(duration).count() << ":"
-         << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::minutes>(duration % std::chrono::hours(1)).count() << ":"
-         << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::seconds>(duration % std::chrono::minutes(1)).count()
-         << "     (= " << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << "s)" << std::endl;
+        // Stop and print timer
+        auto&& stopTime = myclock::now();
+        auto&& duration = stopTime - startTime;
+        std::cout << "\n  Total time (hh:mm:ss): "
+             << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::hours>(duration).count() << ":"
+             << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::minutes>(duration % std::chrono::hours(1)).count() << ":"
+             << std::setfill('0') << std::setw(2) << std::chrono::duration_cast<std::chrono::seconds>(duration % std::chrono::minutes(1)).count() << "."
+             << std::setfill('0') << std::setw(3) << std::chrono::duration_cast<std::chrono::milliseconds>(duration % std::chrono::seconds(1)).count()
+             << "     (" << std::chrono::duration_cast<std::chrono::seconds>(duration).count() << " s)" << std::endl;
+
+    } catch ( pink::exception const& e ) {
+        std::cout << "PINK exception: " << e.what() << std::endl;
+        std::cout << "Program was aborted." << std::endl;
+        return 1;
+    } catch ( std::exception const& e ) {
+        std::cout << "Standard exception: " << e.what() << std::endl;
+        std::cout << "Program was aborted." << std::endl;
+        return 1;
+    } catch ( ... ) {
+        std::cout << "Unknown exception." << std::endl;
+        std::cout << "Program was aborted." << std::endl;
+        return 1;
+    }
 
     std::cout << "\n  Successfully finished. Have a nice day.\n" << std::endl;
     return 0;

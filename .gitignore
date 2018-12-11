@@ -5,4 +5,6 @@
 /.project
 /.pydevproject
 /.settings
-/data/
+/.vscode
+/data
+*__pycache__
