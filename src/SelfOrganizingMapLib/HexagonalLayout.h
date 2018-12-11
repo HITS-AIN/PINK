@@ -94,7 +94,7 @@ struct HexagonalLayout
     /// Number of rows and columns must be equal and stored in the first element
     DimensionType dimension;
 
-    ///
+    /// Auxiliary quantity
     uint32_t radius;
 
     /// Number of elements in a row
