@@ -1,12 +1,15 @@
 /**
- * @file   CudaLib/cuda_print_properties.cu
- * @brief  Print device properties of GPU cards.
- * @date   Oct 21, 2014
+ * @file   CudaLib/CudaLib.cu
+ * @brief  Basic CUDA functions
+ * @date   Nov 4, 2014
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include <cstdlib>
+#include <cuda_runtime.h>
+#include <iostream>
+
 #include "CudaLib.h"
-#include <stdio.h>
 
 namespace pink {
 
@@ -46,6 +49,15 @@ void cuda_print_properties()
         printf("  Kernel execution timeout:      %s\n",  (devProp.kernelExecTimeoutEnabled ?"Yes" : "No"));
         printf("\n");
     }
+}
+
+std::vector<int> cuda_get_gpu_ids()
+{
+    std::vector<int> gpu_ids;
+
+    std::cout << "CUDA_VISIBLE_DEVICES: " << std::getenv("CUDA_VISIBLE_DEVICES") << std::endl;
+
+    return gpu_ids;
 }
 
 } // namespace pink

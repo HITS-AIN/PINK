@@ -6,9 +6,7 @@ include_directories(
 cuda_add_library(
     CudaLib
     SHARED
-    cuda_functions.cu
-    cuda_rotate.cu
-    cuda_print_properties.cu
+    CudaLib.cu
     dot_dp4a.cu
     main_gpu.cu
 )

@@ -11,9 +11,8 @@
 #include <thrust/transform.h>
 
 #include "CudaLib.h"
-//#include "generate_euclidean_distance_matrix_first_step.h"
-#include "generate_euclidean_distance_matrix_first_step_mixed_precision.h"
-//#include "generate_euclidean_distance_matrix_first_step_multi_gpu.h"
+#include "generate_euclidean_distance_matrix_first_step.h"
+#include "generate_euclidean_distance_matrix_first_step_multi_gpu.h"
 #include "generate_euclidean_distance_matrix_second_step.h"
 #include "UtilitiesLib/DataType.h"
 #include "UtilitiesLib/pink_exception.h"
@@ -33,43 +32,41 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
     thrust::device_vector<T> d_first_step(som_size * number_of_spatial_transformations);
 
     // First step ...
-    if (use_multiple_gpus and cuda_getNumberOfGPUs() > 1) {
-        throw pink::exception("Multi GPUs are not supported.");
-        //generate_euclidean_distance_matrix_first_step_multi_gpu(d_som, d_rotated_images,
-        //    d_first_step, number_of_spatial_transformations, block_size);
-    } else {
-        if (euclidean_distance_type == DataType::UINT8) {
-            thrust::device_vector<uint8_t> d_som_uint8(d_som.size());
-            thrust::device_vector<uint8_t> d_spatial_transformed_images_uint8(d_spatial_transformed_images.size());
+    if (euclidean_distance_type == DataType::UINT8) {
+        thrust::device_vector<uint8_t> d_som_uint8(d_som.size());
+        thrust::device_vector<uint8_t> d_spatial_transformed_images_uint8(d_spatial_transformed_images.size());
 
-            thrust::transform(d_som.begin(), d_som.end(), d_som.begin(), d_som_uint8.begin(),
-                [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) {
-                assert(x >= 0.0 and x <= 1.0);
-                return x * 256;
-            });
+        thrust::transform(d_som.begin(), d_som.end(), d_som.begin(), d_som_uint8.begin(),
+            [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) {
+            assert(x >= 0.0 and x <= 1.0);
+            return x * 256;
+        });
 
-            thrust::transform(d_spatial_transformed_images.begin(), d_spatial_transformed_images.end(),
-                d_spatial_transformed_images.begin(), d_spatial_transformed_images_uint8.begin(),
-                [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) {
-                assert(x >= 0.0 and x <= 1.0);
-                return x * 256;
-            });
+        thrust::transform(d_spatial_transformed_images.begin(), d_spatial_transformed_images.end(),
+            d_spatial_transformed_images.begin(), d_spatial_transformed_images_uint8.begin(),
+            [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) {
+            assert(x >= 0.0 and x <= 1.0);
+            return x * 256;
+        });
 
-            generate_euclidean_distance_matrix_first_step_mixed_precision(d_som_uint8, d_spatial_transformed_images_uint8,
-                d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
-
-        } else if (euclidean_distance_type == DataType::FLOAT) {
-            generate_euclidean_distance_matrix_first_step_mixed_precision(d_som, d_spatial_transformed_images,
+        if (use_multiple_gpus and cuda_get_gpu_ids().size() > 1) {
+            generate_euclidean_distance_matrix_first_step_multi_gpu(d_som_uint8, d_spatial_transformed_images_uint8,
                 d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
         } else {
-            throw pink::exception("Unknown euclidean_distance_type");
+            generate_euclidean_distance_matrix_first_step(d_som_uint8, d_spatial_transformed_images_uint8,
+                d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
         }
+    } else if (euclidean_distance_type == DataType::FLOAT) {
+        if (use_multiple_gpus and cuda_get_gpu_ids().size() > 1) {
+            generate_euclidean_distance_matrix_first_step_multi_gpu(d_som, d_spatial_transformed_images,
+                d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
+        } else {
+            generate_euclidean_distance_matrix_first_step(d_som, d_spatial_transformed_images,
+                d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
+        }
+    } else {
+        throw pink::exception("Unknown euclidean_distance_type");
     }
-
-//	std::cout << "d_first_step" << std::endl;
-//    thrust::host_vector<T> first_step = d_first_step;
-//    for (auto&& e : first_step) std::cout << e << " ";
-//    std::cout << std::endl;
 
     // Second step ...
     generate_euclidean_distance_matrix_second_step(d_euclidean_distance_matrix,

@@ -7,14 +7,15 @@
 #include <cmath>
 #include <gtest/gtest.h>
 #include <iostream>
+#include <thrust/device_malloc.h>
+#include <thrust/device_ptr.h>
 #include <vector>
 
-#include "CudaLib/CudaLib.h"
 #include "CudaLib/dot_dp4a.h"
 
 using namespace pink;
 
-TEST(mixed_precision, dp4a_uint8)
+TEST(mixed_precision, DISABLED_dp4a_uint8)
 {
     cudaDeviceProp devProp;
     cudaGetDeviceProperties(&devProp, 0);
@@ -41,21 +42,13 @@ TEST(mixed_precision, dp4a_uint8)
              c_in2 = c_in2 << 8 | in2[0];
 
     uint32_t in3 = 0;
-    uint32_t out = 0;
 
-    uint32_t *d_in1 = cuda_alloc_uint(1);
-    uint32_t *d_in2 = cuda_alloc_uint(1);
-    uint32_t *d_in3 = cuda_alloc_uint(1);
-    uint32_t *d_out = cuda_alloc_uint(1);
+    thrust::device_ptr<uint32_t> d_in1(&c_in1);
+    thrust::device_ptr<uint32_t> d_in2(&c_in2);
+    thrust::device_ptr<uint32_t> d_in3(&in3);
+    thrust::device_ptr<uint32_t> d_out = thrust::device_malloc<uint32_t>(1);
 
-    cuda_copyHostToDevice_uint(d_in1, &c_in1, 1);
-    cuda_copyHostToDevice_uint(d_in2, &c_in2, 1);
-    cuda_copyHostToDevice_uint(d_in3, &in3, 1);
-    cuda_copyHostToDevice_uint(d_out, &out, 1);
+    dot_dp4a(thrust::raw_pointer_cast(d_in1), thrust::raw_pointer_cast(d_in2), thrust::raw_pointer_cast(d_in3), thrust::raw_pointer_cast(d_out));
 
-    dot_dp4a(d_in1, d_in2, d_in3, d_out, 1);
-
-    cuda_copyDeviceToHost_uint(&out, d_out, 1);
-
-    EXPECT_EQ(static_cast<uint32_t>(in1[0]*in2[0] + in1[1]*in2[1] + in1[2]*in2[2] + in1[3]*in2[3]), out);
+    EXPECT_EQ(static_cast<uint32_t>(in1[0]*in2[0] + in1[1]*in2[1] + in1[2]*in2[2] + in1[3]*in2[3]), *d_out.get());
 }

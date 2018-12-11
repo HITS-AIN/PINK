@@ -20,7 +20,7 @@ void dot_dp4a_kernel(int *d_in1, int *d_in2, int *d_in3, int* d_out)
 #endif
 }
 
-void dot_dp4a(int *d_in1, int *d_in2, int *d_in3, int *d_out, size_t /*size*/)
+void dot_dp4a(int *d_in1, int *d_in2, int *d_in3, int *d_out)
 {
     dot_dp4a_kernel<<<1, 1>>>(d_in1, d_in2, d_in3, d_out);
     cudaDeviceSynchronize();
@@ -36,7 +36,7 @@ void dot_dp4a_kernel(uint *d_in1, uint *d_in2, uint *d_in3, uint* d_out)
 #endif
 }
 
-void dot_dp4a(uint *d_in1, uint *d_in2, uint *d_in3, uint *d_out, size_t /*size*/)
+void dot_dp4a(uint *d_in1, uint *d_in2, uint *d_in3, uint *d_out)
 {
     dot_dp4a_kernel<<<1, 1>>>(d_in1, d_in2, d_in3, d_out);
     cudaDeviceSynchronize();
