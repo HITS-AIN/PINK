@@ -55,18 +55,18 @@ struct HexagonalLayout
     /// position[1] -> r (row index)
     auto get_index(DimensionType const& position) const
     {
-    	auto index = row_offset[position[1]] + position[0];
-    	if (radius > position[1]) index -= radius - position[1];
+        auto index = row_offset[position[1]] + position[0];
+        if (radius > position[1]) index -= radius - position[1];
         return index;
     }
 
     /// Returns the layout position (q, r) of an array index
     auto get_position(IndexType i) const
     {
-    	uint32_t r = 0;
-    	for (;r < dimension[0]; ++r) if (i < row_offset[r+1]) break;
-    	uint32_t q = i - row_offset[r];
-    	if (radius > r) q += radius - r;
+        uint32_t r = 0;
+        for (;r < dimension[0]; ++r) if (i < row_offset[r+1]) break;
+        uint32_t q = i - row_offset[r];
+        if (radius > r) q += radius - r;
         return DimensionType({q, r});
     }
 
