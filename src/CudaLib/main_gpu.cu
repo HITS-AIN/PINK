@@ -6,7 +6,7 @@
  */
 
 #include "main_gpu.h"
-#include "SelfOrganizingMapLib/main_generic.h"
+#include "Pink/main_generic.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/pink_exception.h"
 
