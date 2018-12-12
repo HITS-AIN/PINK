@@ -13,7 +13,7 @@
 
 namespace pink {
 
-//! Primary template for generic Data
+/// Primary template for generic Data
 template <typename Layout, typename T>
 class Data
 {
