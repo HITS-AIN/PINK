@@ -8,13 +8,13 @@
 
 # Requirements
 
-  - C++ with ISO 14 standard (GCC 6.1 and above)
+  - C++ with ISO 14 standard (GCC 6.1 and above)
   - [CMake](https://cmake.org/) >= 3.0
-  - CUDA >= 9.1 (highly recommended because of the speed-up)
+  - CUDA >= 9.1 (highly recommended because of the speed-up)
   - [conan.io](https://conan.io/) (optional for C++ dependencies) or
     - [PyBind11](https://github.com/pybind/pybind11) (optional for Python interface)
-    - [google-test](https://github.com/google/googletest) 1.8.1 (optional for unit tests)
-  - doxygen 1.8.13 (optional for developer documentation)
+    - [google-test](https://github.com/google/googletest) 1.8.1 (optional for unit tests)
+  - doxygen 1.8.13 (optional for developer documentation)
 
 Conan.io will install automatically the C++ dependencies (PyBind11 and google-test). Otherwise you can also install these libraries yourself.
 
