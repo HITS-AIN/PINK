@@ -7,9 +7,9 @@
 
 #include <iostream>
 
-#include "ImageProcessingLib/ImageIterator.h"
 #include "SelfOrganizingMapLib/Data.h"
 #include "SelfOrganizingMapLib/DataIO.h"
+#include "SelfOrganizingMapLib/DataIterator.h"
 #include "SelfOrganizingMapLib/FileIO.h"
 #include "SelfOrganizingMapLib/Mapper_generic.h"
 #include "SelfOrganizingMapLib/SOM.h"
@@ -35,6 +35,12 @@ void main_generic(InputData const& input_data)
 
     auto&& distribution_function = GaussianFunctor(input_data.sigma, input_data.damping);
 
+    std::ifstream ifs(input_data.imagesFilename);
+    if (!ifs) throw std::runtime_error("Error opening " + input_data.imagesFilename);
+
+    auto&& iter_data_cur = DataIterator<DataLayout, T>(ifs);
+    auto&& iter_data_end = DataIterator<DataLayout, T>(ifs, true);
+
     if (input_data.executionPath == ExecutionPath::TRAIN)
     {
         Trainer_generic<SOMLayout, DataLayout, T, UseGPU> trainer(
@@ -52,15 +58,11 @@ void main_generic(InputData const& input_data)
 #endif
         );
 
-        auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename);
-        ProgressBar progress_bar(iter_image_cur.getNumberOfImages(), 70, input_data.number_of_progress_prints);
+        ProgressBar progress_bar(iter_data_cur.get_number_of_entries(), 70, input_data.number_of_progress_prints);
         uint32_t count = 0;
-        for (auto&& iter_image_end = ImageIterator<T>(); iter_image_cur != iter_image_end; ++iter_image_cur, ++progress_bar)
+        for (; iter_data_cur != iter_data_end; ++iter_data_cur, ++progress_bar)
         {
-            auto&& beg = iter_image_cur->getPointerOfFirstPixel();
-            auto&& end = beg + iter_image_cur->getSize();
-            Data<DataLayout, T> data({input_data.image_dim, input_data.image_dim}, std::vector<T>(beg, end));
-            trainer(data);
+            trainer(*iter_data_cur);
 
             if (progress_bar.valid() and input_data.intermediate_storage != IntermediateStorageType::OFF) {
                 std::string interStoreFilename = input_data.resultFilename;
@@ -118,15 +120,10 @@ void main_generic(InputData const& input_data)
 #endif
         );
 
-        auto&& iter_image_cur = ImageIterator<T>(input_data.imagesFilename);
-        ProgressBar progress_bar(iter_image_cur.getNumberOfImages(), 70, input_data.number_of_progress_prints);
-        for (auto&& iter_image_end = ImageIterator<T>(); iter_image_cur != iter_image_end; ++iter_image_cur, ++progress_bar)
+        ProgressBar progress_bar(iter_data_cur.get_number_of_entries(), 70, input_data.number_of_progress_prints);
+        for (; iter_data_cur != iter_data_end; ++iter_data_cur, ++progress_bar)
         {
-            auto&& beg = iter_image_cur->getPointerOfFirstPixel();
-            auto&& end = beg + iter_image_cur->getSize();
-            Data<DataLayout, T> data({input_data.image_dim, input_data.image_dim}, std::vector<T>(beg, end));
-
-            auto result = mapper(data);
+            auto result = mapper(*iter_data_cur);
             // corresponds to structured binding with C++17:
             //auto& [euclidean_distance_matrix, best_rotation_matrix] = mapper(data);
 
