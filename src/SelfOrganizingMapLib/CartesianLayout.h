@@ -23,7 +23,13 @@ struct CartesianLayout
     static constexpr const char* type = "CartesianLayout";
 
     typedef uint32_t IndexType;
+    typedef CartesianLayout<dim> SelfType;
     typedef typename std::array<uint32_t, dimensionality> DimensionType;
+
+    bool operator == (SelfType const& other) const
+    {
+        return dimension == other.dimension;
+    }
 
     auto size() const
     {

@@ -21,6 +21,7 @@ struct HexagonalLayout
     static constexpr const char* type = "HexagonalLayout";
 
     typedef uint32_t IndexType;
+    typedef HexagonalLayout SelfType;
     typedef typename std::array<uint32_t, dimensionality> DimensionType;
 
     HexagonalLayout(DimensionType const& dimension = {1, 1})
@@ -42,6 +43,11 @@ struct HexagonalLayout
         for (size_t i = 0; i < dimension[0] - 1; ++i) {
             row_offset[i + 1] = row_offset[i] + row_size[i];
         }
+    }
+
+    bool operator == (SelfType const& other) const
+    {
+        return dimension == other.dimension;
     }
 
     /// Returns the number of elements for a hexagonal grid
