@@ -38,7 +38,7 @@ class HeatmapVisualizer():
     def readMap(self):
         #Unpacks the map parameters
         inputStream = open(self.__fileName, 'rb')
-        tools.ignoreHeaderComments(inputStream) # find end of header
+        tools.ignore_header_comments(inputStream) # find end of header
 
         self.__numberOfImages = struct.unpack("i", inputStream.read(4))[0]
         self.__somWidth = struct.unpack("i", inputStream.read(4))[0]
@@ -93,10 +93,10 @@ class HeatmapVisualizer():
 
         if self.isHexMap():
             print ("hexagonal map")
-            image = tools.calculateMap(self.__somWidth, self.__somHeight, self.__maps[imageNumber], neuronSize, neuronSize, shareIntensity=shareIntensity, border=borderWidth, shape="hex")
+            image = tools.calculate_map(self.__somWidth, self.__somHeight, self.__maps[imageNumber], neuronSize, neuronSize, shareIntensity=shareIntensity, border=borderWidth, shape="hex")
         else:
             print ("quadratic map")
-            image = tools.calculateMap(self.__somWidth, self.__somHeight, self.__maps[imageNumber], neuronSize, neuronSize, shareIntensity=shareIntensity, border=borderWidth, shape="box")
+            image = tools.calculate_map(self.__somWidth, self.__somHeight, self.__maps[imageNumber], neuronSize, neuronSize, shareIntensity=shareIntensity, border=borderWidth, shape="box")
 
         ax = pyplot.subplot()
         cmap = matplotlib.cm.get_cmap("jet")

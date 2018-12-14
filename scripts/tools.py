@@ -27,7 +27,7 @@ def load_data(filename):
     """ Load data from binary file """
     
     file = open(filename, 'rb')
-    ignoreHeaderComments(file)
+    ignore_header_comments(file)
     
     numberOfImages, numberOfChannels, width, height = struct.unpack('i' * 4, file.read(4 * 4))
 
@@ -62,7 +62,7 @@ def save_data(filename, data):
     data.tofile(file)
 
 
-def ignoreHeaderComments(inputStream):
+def ignore_header_comments(inputStream):
     """ Omit header information with hash as quote character """
     
     character = inputStream.read(1) 
@@ -71,9 +71,23 @@ def ignoreHeaderComments(inputStream):
         inputStream.readline() # ignore this line
         character = inputStream.read(1)
         inputStream.seek(-1,1)
+        
+        
+def get_header_comments(inputStream):
+    """ Return the header information """
+    
+    character = inputStream.read(1) 
+    inputStream.seek(-1,1)
+    header = b''
+    while (character == b'#'):
+        header = header + inputStream.readline()
+        character = inputStream.read(1)
+        inputStream.seek(-1,1)
+        
+    return header
 
 
-def calculateMap(somWidth, somHeight, neurons, neuronWidth, neuronHeight, shareIntensity = False, border = 0, shape="box"):
+def calculate_map(somWidth, somHeight, neurons, neuronWidth, neuronHeight, shareIntensity = False, border = 0, shape="box"):
     """ For quadratic map, it reads through the data and creates each neuron as a 1D array
         and then resizes it to the neuronSize print(neurons) """
 

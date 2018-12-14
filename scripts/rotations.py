@@ -3,12 +3,11 @@
 import struct
 import numpy
 import matplotlib
-#imports pyplot in code for control over backend
 import math
 import getopt
 import sys
 import tools
-from showHeatmap import HeatmapVisualizer as HV
+from show_heatmap import HeatmapVisualizer as HV
 
 class Rotations():
     def __init__(self, fileName):
@@ -54,7 +53,7 @@ class Rotations():
     def readRotations(self):
         #Unpacks the map parameters
         inputStream = open(self.__fileName, 'rb')
-        tools.ignoreHeaderComments(inputStream)
+        tools.ignore_header_comments(inputStream)
 
         self.__numberOfImages = struct.unpack("i", inputStream.read(4))[0]
         self.__somWidth = struct.unpack("i", inputStream.read(4))[0]

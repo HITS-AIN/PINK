@@ -83,7 +83,16 @@ if __name__ == "__main__":
         last_position = file.tell()
      
     file.seek(last_position, 0)
-    numberOfImages, numberOfChannels, width, height = struct.unpack('i' * 4, file.read(4 * 4))
+    version, file_type, data_type, numberOfImages, layout, dimensionality = struct.unpack('i' * 6, file.read(4 * 6))
+
+    width = 1
+    height = 1
+    numberOfChannels = 1
+
+    if dimensionality == 2:
+        width, height = struct.unpack('i' * 2, file.read(4 * 2))
+    elif dimensionality == 3:
+        width, height, numberOfChannels = struct.unpack('i' * 3, file.read(4 * 3))
 
     print ('Number of images = ', numberOfImages)
     print ('Number of channels = ', numberOfChannels)

@@ -51,22 +51,18 @@ Please use also the command `Pink -h` to get more informations about the usage a
 ## Python scripts
 
 For conversion and visualization of images and SOM some python scripts are available.
-
-  - numpy2binary.py: Conversion of the python numpy file format into binary input file format for images.
-
-  - jpg2binary.py:   Conversion of jpg images into binary input file format for images.
-                     Three channels are used for red, green, and blue (RGB) color channels.
                  
-  - showImages.py:   Visualize binary images file format.
+  - show_images.py:   Visualize binary images file format.
 
-  - showSOM.py:      Visualize binary SOM file format.
+  - show_som.py:      Visualize binary SOM file format.
 
-  - showHeatmap.py:  Visualize the mapping result.
+  - show_heatmap.py:  Visualize the mapping result.
 
 
 ## Publication
 
-Kai Lars Polsterer, Fabian Gieseke, Christian Igel, Bernd Doser, and Nikos Gianniotis. Parallelized rotation and flipping INvariant Kohonen maps (PINK) on GPUs.
+[Kai Lars Polsterer](https://github.com/kai-polsterer), Fabian Gieseke, Christian Igel,
+[Bernd Doser](https://github.com/BerndDoser), and Nikos Gianniotis. Parallelized rotation and flipping INvariant Kohonen maps (PINK) on GPUs.
 24th European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning (ESANN), pp. 405-410, 2016.
 [pdf](https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2016-116.pdf)
 
