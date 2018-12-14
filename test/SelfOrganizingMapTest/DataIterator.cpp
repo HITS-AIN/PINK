@@ -32,6 +32,9 @@ TEST(DataIteratorTest, cartesian_2d)
 
     DataIterator<CartesianLayout<2>, float> iter(ss);
 
+    EXPECT_EQ(2UL, iter->get_dimension()[0]);
+    EXPECT_EQ(2UL, iter->get_dimension()[1]);
+
     EXPECT_EQ((Data<CartesianLayout<2>, float>({2, 2}, pixels1)), *iter);
     ++iter;
     EXPECT_EQ((Data<CartesianLayout<2>, float>({2, 2}, pixels2)), *iter);

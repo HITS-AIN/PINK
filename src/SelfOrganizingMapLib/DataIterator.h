@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <istream>
 #include <memory>
+#include <numeric>
 #include <random>
 #include <string>
 #include <vector>

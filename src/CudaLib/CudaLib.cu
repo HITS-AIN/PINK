@@ -8,6 +8,8 @@
 #include <cstdlib>
 #include <cuda_runtime.h>
 #include <iostream>
+#include <numeric>
+#include <sstream>
 
 #include "CudaLib.h"
 
@@ -55,7 +57,19 @@ std::vector<int> cuda_get_gpu_ids()
 {
     std::vector<int> gpu_ids;
 
-    std::cout << "CUDA_VISIBLE_DEVICES: " << std::getenv("CUDA_VISIBLE_DEVICES") << std::endl;
+	int number_of_gpu_devices;
+	cudaGetDeviceCount(&number_of_gpu_devices);
+
+    std::string cuda_visible_devices = std::getenv("CUDA_VISIBLE_DEVICES");
+
+    if (cuda_visible_devices.empty()) {
+    	// Split comma separated string into vector
+    	std::string token;
+    	for(std::stringstream ss(cuda_visible_devices); std::getline(ss, token, ',');) gpu_ids.push_back(std::stoi(token));
+    } else {
+    	gpu_ids.resize(number_of_gpu_devices);
+        std::iota(std::begin(gpu_ids), std::end(gpu_ids), 0);
+    }
 
     return gpu_ids;
 }
