@@ -17,14 +17,24 @@ using namespace pink;
 
 TEST(DataIteratorTest, cartesian_2d)
 {
-    int width = 2;
-    int height = 2;
     std::vector<float> pixels1{1, 2, 3, 4};
     std::vector<float> pixels2{1, 2, 3, 4};
 
     std::stringstream ss;
-    int number_of_data = 2;
-    ss.write(reinterpret_cast<const char*>(&number_of_data), sizeof(int));
+    int version = 2;
+    int binary_file_type = 0;
+    int data_type = 0;
+    int number_of_data_entries = 2;
+    int layout = 0;
+    int dimensionality = 2;
+    int width = 2;
+    int height = 2;
+    ss.write(reinterpret_cast<const char*>(&version), sizeof(int));
+    ss.write(reinterpret_cast<const char*>(&binary_file_type), sizeof(int));
+    ss.write(reinterpret_cast<const char*>(&data_type), sizeof(int));
+    ss.write(reinterpret_cast<const char*>(&number_of_data_entries), sizeof(int));
+    ss.write(reinterpret_cast<const char*>(&layout), sizeof(int));
+    ss.write(reinterpret_cast<const char*>(&dimensionality), sizeof(int));
     ss.write(reinterpret_cast<const char*>(&width), sizeof(int));
     ss.write(reinterpret_cast<const char*>(&height), sizeof(int));
     ss.write(reinterpret_cast<const char*>(&pixels1[0]), width * height * sizeof(float));
