@@ -62,7 +62,7 @@ TEST_P(compare_trainer_cpu, cartesian_2d_float)
     MyTrainer_cpu trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR);
     trainer1(data);
 
-    MyTrainer_gpu trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, 256, false, DataType::FLOAT);
+    MyTrainer_gpu trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, 256, DataType::FLOAT);
     trainer2(data);
     trainer2.update_som();
 

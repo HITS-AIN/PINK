@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <functional>
+#include <memory>
 #include <string>
 
 #include "ImageProcessingLib/ImageProcessing.h"
@@ -14,6 +16,7 @@
 #include "SOMInitializationType.h"
 #include "UtilitiesLib/DataType.h"
 #include "UtilitiesLib/DistributionFunction.h"
+#include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/ExecutionPath.h"
 #include "UtilitiesLib/Layout.h"
 #include "Version.h"
@@ -25,24 +28,27 @@ namespace pink {
 
 struct InputData
 {
-    //! Default constructor.
+    /// Default constructor
     InputData();
 
-    //! Constructor reading input data from arguments.
+    /// Constructor reading input data from arguments
     InputData(int argc, char **argv);
 
-    //! Print program header.
+    /// Print program header
     void print_header() const;
 
-    //! Print input data.
+    /// Print input data
     void print_parameters() const;
 
-    //! Print usage output for input arguments.
+    /// Print usage output for input arguments
     void print_usage() const;
 
-    std::string imagesFilename;
-    std::string resultFilename;
-    std::string somFilename;
+    /// Return the distribution function
+    std::function<float(float)> get_distribution_function() const;
+
+    std::string data_filename;
+    std::string result_filename;
+    std::string som_filename;
     std::string rot_flip_filename;
 
     bool verbose;
@@ -59,10 +65,9 @@ struct InputData
     int number_of_progress_prints;
     bool use_flip;
     bool use_gpu;
-    uint32_t number_of_images;
-    uint32_t number_of_channels;
-    uint32_t image_dim;
-    int image_size;
+    uint32_t number_of_data_entries;
+    Layout data_layout;
+    std::vector<uint32_t> data_dimension;
     int som_size;
     int neuron_size;
     int som_total_size;
@@ -70,12 +75,11 @@ struct InputData
     Interpolation interpolation;
     ExecutionPath executionPath;
     IntermediateStorageType intermediate_storage;
-    DistributionFunction function;
+    DistributionFunction distribution_function;
     float sigma;
     float damping;
     int block_size_1;
     float max_update_distance;
-    int useMultipleGPUs;
     int usePBC;
     int dimensionality;
     bool write_rot_flip;

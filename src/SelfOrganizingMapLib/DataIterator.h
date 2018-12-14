@@ -49,8 +49,11 @@ public:
             last_position = is.tellg();
         }
 
-        is.seekg(last_position, is.beg);
+        // Ignore first three entries
+        is.seekg(last_position + 3 * sizeof(int), is.beg);
         is.read((char*)&number_of_entries, sizeof(int));
+        // Ignore layout and dimensionality
+        is.seekg(2 * sizeof(int), is.cur);
 
         for (int i = 0; i < layout.dimensionality; ++i) {
             is.read((char*)&layout.dimension[i], sizeof(int));

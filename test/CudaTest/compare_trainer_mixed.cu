@@ -59,11 +59,11 @@ TEST_P(compare_trainer_mixed, cartesian_2d_float)
 
     auto&& f = GaussianFunctor(1.1, 0.2);
 
-    MyTrainer_gpu trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, 256, false, DataType::FLOAT);
+    MyTrainer_gpu trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, 256, DataType::FLOAT);
     trainer1(data);
     trainer1.update_som();
 
-    MyTrainer_gpu trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, 256, false, DataType::UINT8);
+    MyTrainer_gpu trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, 256, DataType::UINT8);
     trainer2(data);
     trainer2.update_som();
 

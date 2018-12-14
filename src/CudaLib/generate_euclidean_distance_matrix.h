@@ -27,7 +27,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
     thrust::device_vector<uint32_t>& d_best_rotation_matrix, uint32_t som_size, uint32_t neuron_size,
     thrust::device_vector<T> const& d_som, uint32_t number_of_spatial_transformations,
     thrust::device_vector<T> const& d_spatial_transformed_images, uint16_t block_size,
-    bool use_multiple_gpus, DataType euclidean_distance_type)
+    DataType euclidean_distance_type)
 {
     thrust::device_vector<T> d_first_step(som_size * number_of_spatial_transformations);
 
@@ -49,7 +49,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
             return x * 256;
         });
 
-        if (use_multiple_gpus and cuda_get_gpu_ids().size() > 1) {
+        if (cuda_get_gpu_ids().size() > 1) {
             generate_euclidean_distance_matrix_first_step_multi_gpu(d_som_uint8, d_spatial_transformed_images_uint8,
                 d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
         } else {
@@ -57,7 +57,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
                 d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
         }
     } else if (euclidean_distance_type == DataType::FLOAT) {
-        if (use_multiple_gpus and cuda_get_gpu_ids().size() > 1) {
+        if (cuda_get_gpu_ids().size() > 1) {
             generate_euclidean_distance_matrix_first_step_multi_gpu(d_som, d_spatial_transformed_images,
                 d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
         } else {

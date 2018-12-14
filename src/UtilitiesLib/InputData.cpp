@@ -6,14 +6,13 @@
 
 #include <cmath>
 #include <getopt.h>
+#include <fstream>
 #include <iostream>
 #include <omp.h>
 #include <string.h>
 #include <sstream>
 #include <stdlib.h>
 
-#include "ImageProcessingLib/Image.h"
-#include "ImageProcessingLib/ImageIterator.h"
 #include "InputData.h"
 #include "pink_exception.h"
 #include "SelfOrganizingMapLib/HexagonalLayout.h"
@@ -35,10 +34,8 @@ InputData::InputData()
    number_of_progress_prints(10),
    use_flip(true),
    use_gpu(true),
-   number_of_images(0),
-   number_of_channels(0),
-   image_dim(0),
-   image_size(0),
+   number_of_data_entries(0),
+   data_layout(Layout::CARTESIAN),
    som_size(0),
    neuron_size(0),
    som_total_size(0),
@@ -46,12 +43,11 @@ InputData::InputData()
    interpolation(Interpolation::BILINEAR),
    executionPath(ExecutionPath::UNDEFINED),
    intermediate_storage(IntermediateStorageType::OFF),
-   function(DistributionFunction::GAUSSIAN),
+   distribution_function(DistributionFunction::GAUSSIAN),
    sigma(DEFAULT_SIGMA),
    damping(DEFAULT_DAMPING),
    block_size_1(256),
    max_update_distance(-1.0),
-   useMultipleGPUs(true),
    usePBC(false),
    dimensionality(1),
    write_rot_flip(false),
@@ -83,7 +79,6 @@ InputData::InputData(int argc, char **argv)
         {"inter-store",             1, 0, 8},
         {"b1",                      1, 0, 9},
         {"max-update-distance",     1, 0, 10},
-        {"multi-GPU-off",           0, 0, 11},
         {"som-height",              1, 0, 12},
         {"som-depth",               1, 0, 13},
         {"pbc",                     0, 0, 14},
@@ -181,7 +176,7 @@ InputData::InputData(int argc, char **argv)
                 else if (strcmp(upper_optarg, "RANDOM_WITH_PREFERRED_DIRECTION") == 0) init = SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION;
                 else {
                     init = SOMInitialization::FILEINIT;
-                    somFilename = optarg;
+                    som_filename = optarg;
                 }
                 break;
             }
@@ -218,9 +213,9 @@ InputData::InputData(int argc, char **argv)
                 executionPath = ExecutionPath::TRAIN;
                 int index = optind - 1;
                 if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --train option.");
-                imagesFilename = strdup(argv[index++]);
+                data_filename = strdup(argv[index++]);
                 if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --train option.");
-                resultFilename = strdup(argv[index++]);
+                result_filename = strdup(argv[index++]);
                 optind = index - 1;
                 break;
             }
@@ -229,11 +224,11 @@ InputData::InputData(int argc, char **argv)
                 executionPath = ExecutionPath::MAP;
                 int index = optind - 1;
                 if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --map option.");
-                imagesFilename = strdup(argv[index++]);
+                data_filename = strdup(argv[index++]);
                 if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --map option.");
-                resultFilename = strdup(argv[index++]);
+                result_filename = strdup(argv[index++]);
                 if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --map option.");
-                somFilename = strdup(argv[index++]);
+                som_filename = strdup(argv[index++]);
                 optind = index - 1;
                 break;
             }
@@ -263,11 +258,6 @@ InputData::InputData(int argc, char **argv)
                     print_usage();
                     throw pink::exception("max-update-distance must be positive.");
                 }
-                break;
-            }
-            case 11:
-            {
-                useMultipleGPUs = false;
                 break;
             }
             case 14:
@@ -310,10 +300,10 @@ InputData::InputData(int argc, char **argv)
             {
                 stringToUpper(optarg);
                 if (strcmp(optarg, "GAUSSIAN") == 0) {
-                    function = DistributionFunction::GAUSSIAN;
+                    distribution_function = DistributionFunction::GAUSSIAN;
                 }
                 else if (strcmp(optarg, "MEXICANHAT") == 0) {
-                    function = DistributionFunction::MEXICANHAT;
+                    distribution_function = DistributionFunction::MEXICANHAT;
                 }
                 else {
                     printf ("optarg = %s\n", optarg);
@@ -351,20 +341,6 @@ InputData::InputData(int argc, char **argv)
         throw pink::exception("Unkown execution path.");
     }
 
-    ImageIterator<float> iterImage(imagesFilename);
-
-    if (iterImage->getWidth() != iterImage->getHeight()) {
-        print_usage();
-        throw pink::exception("Only quadratic images are supported.");
-    }
-
-    number_of_images = iterImage.getNumberOfImages();
-    number_of_channels = iterImage.getNumberOfChannels();
-
-    // TODO: remove static_cast after new data read iterator
-    image_dim = static_cast<uint32_t>(iterImage->getWidth());
-    image_size = image_dim * image_dim;
-
     if (layout == Layout::HEXAGONAL) {
         if (usePBC) throw pink::exception("Periodic boundary conditions are not supported for hexagonal layout.");
         if ((som_width - 1) % 2) throw pink::exception("For hexagonal layout only odd dimension supported.");
@@ -380,10 +356,33 @@ InputData::InputData(int argc, char **argv)
     if (som_height > 1) ++dimensionality;
     if (som_depth > 1) ++dimensionality;
 
+    std::ifstream ifs(data_filename);
+    if (!ifs) throw std::runtime_error("Error opening " + data_filename);
+
+    // Skip header lines
+    std::string line;
+    int last_position = ifs.tellg();
+    while (std::getline(ifs, line)) {
+        if (line[0] != '#') break;
+        last_position = ifs.tellg();
+    }
+
+    int data_dimensionality;
+    // Ignore first three entries
+    ifs.seekg(last_position + 3 * sizeof(int), ifs.beg);
+    ifs.read((char*)&number_of_data_entries, sizeof(int));
+    ifs.read((char*)&data_layout, sizeof(int));
+    ifs.read((char*)&data_dimensionality, sizeof(int));
+    data_dimension.resize(data_dimensionality);
+
+    for (int i = 0; i < data_dimensionality; ++i) {
+        ifs.read((char*)&data_dimension[i], sizeof(int));
+    }
+
     if (neuron_dim_in == -1) {
-        if (numberOfRotations == 1) neuron_dim = image_dim;
-        else neuron_dim = image_dim * sqrt(2.0) / 2.0;
-        //else neuron_dim = static_cast<uint32_t>(2 * image_dim / std::sqrt(2.0)) + 1;
+        if (numberOfRotations == 1) neuron_dim = data_dimension[0];
+        else neuron_dim = data_dimension[0] * sqrt(2.0) / 2.0;
+        //else neuron_dim = static_cast<uint32_t>(2 * data_dimension[0] / std::sqrt(2.0)) + 1;
     } else {
         neuron_dim = neuron_dim_in;
     }
@@ -431,16 +430,19 @@ void InputData::print_header() const
 
 void InputData::print_parameters() const
 {
-    std::cout << "  Image file = " << imagesFilename << "\n"
-              << "  Result file = " << resultFilename << "\n";
+    std::cout << "  Data file = " << data_filename << "\n"
+              << "  Result file = " << result_filename << "\n";
 
     if (executionPath == ExecutionPath::MAP)
-        std::cout << "  SOM file = " << somFilename << "\n";
+        std::cout << "  SOM file = " << som_filename << "\n";
 
-    std::cout << "  Number of images = " << number_of_images << "\n"
-              << "  Number of channels = " << number_of_channels << "\n"
-              << "  Image dimension = " << image_dim << "x" << image_dim << "\n"
-              << "  SOM dimension (width x height x depth) = " << som_width << "x" << som_height << "x" << som_depth << "\n"
+    std::cout << "  Number of data entries = " << number_of_data_entries << "\n"
+              << "  Data dimension = " << data_dimension[0];
+
+    for (size_t i = 1; i < data_dimension.size(); ++i) std::cout << " x " << data_dimension[i];
+    std::cout << std::endl;
+
+    std::cout << "  SOM dimension (width x height x depth) = " << som_width << "x" << som_height << "x" << som_depth << "\n"
               << "  SOM size = " << som_size << "\n"
               << "  Number of iterations = " << numIter << "\n"
               << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
@@ -454,8 +456,7 @@ void InputData::print_parameters() const
               << "  Use mirrored image = " << use_flip << "\n"
               << "  Number of CPU threads = " << numberOfThreads << "\n"
               << "  Use CUDA = " << use_gpu << "\n"
-              << "  Use multiple GPUs = " << useMultipleGPUs << "\n"
-              << "  Distribution function for SOM update = " << function << "\n"
+              << "  Distribution function for SOM update = " << distribution_function << "\n"
               << "  Sigma = " << sigma << "\n"
               << "  Damping factor = " << damping << "\n"
               << "  Maximum distance for SOM update = " << max_update_distance << "\n"
@@ -494,7 +495,6 @@ void InputData::print_usage() const
                  "    --numrot, -n <int>              Number of rotations (1 or a multiple of 4, default = 360).\n"
                  "    --numthreads, -t <int>          Number of CPU threads (default = auto).\n"
                  "    --num-iter <int>                Number of iterations (default = 1).\n"
-                 "    --multi-GPU-off                 Switch off usage of multiple GPUs.\n"
                  "    --pbc                           Use periodic boundary conditions for SOM.\n"
                  "    --progress, -p <int>            Number of progress information prints (default = 10).\n"
                  "    --seed, -s <int>                Seed for random number generator (default = 1234).\n"
@@ -513,6 +513,18 @@ void InputData::print_usage() const
                  "    gaussian sigma damping-factor\n"
                  "    mexicanHat sigma damping-factor\n"
               << std::endl;
+}
+
+std::function<float(float)> InputData::get_distribution_function() const
+{
+    std::function<float(float)> result;
+    if (distribution_function == DistributionFunction::GAUSSIAN)
+        result = GaussianFunctor(sigma, damping);
+    else if (distribution_function == DistributionFunction::MEXICANHAT)
+        result = MexicanHatFunctor(sigma, damping);
+    else
+        pink::exception("Unknown distribution function");
+    return result;
 }
 
 void stringToUpper(char* s)

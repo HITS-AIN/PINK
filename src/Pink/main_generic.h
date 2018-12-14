@@ -33,10 +33,8 @@ void main_generic(InputData const& input_data)
 
     SOM<SOMLayout, DataLayout, T> som(input_data);
 
-    auto&& distribution_function = GaussianFunctor(input_data.sigma, input_data.damping);
-
-    std::ifstream ifs(input_data.imagesFilename);
-    if (!ifs) throw std::runtime_error("Error opening " + input_data.imagesFilename);
+    std::ifstream ifs(input_data.data_filename);
+    if (!ifs) throw std::runtime_error("Error opening " + input_data.data_filename);
 
     auto&& iter_data_cur = DataIterator<DataLayout, T>(ifs);
     auto&& iter_data_end = DataIterator<DataLayout, T>(ifs, true);
@@ -45,7 +43,7 @@ void main_generic(InputData const& input_data)
     {
         Trainer_generic<SOMLayout, DataLayout, T, UseGPU> trainer(
             som
-            ,distribution_function
+            ,input_data.get_distribution_function()
             ,input_data.verbose
             ,input_data.numberOfRotations
             ,input_data.use_flip
@@ -53,7 +51,6 @@ void main_generic(InputData const& input_data)
             ,input_data.interpolation
 #ifdef __CUDACC__
             ,input_data.block_size_1
-            ,input_data.useMultipleGPUs
             ,input_data.euclidean_distance_type
 #endif
         );
@@ -65,24 +62,24 @@ void main_generic(InputData const& input_data)
             trainer(*iter_data_cur);
 
             if (progress_bar.valid() and input_data.intermediate_storage != IntermediateStorageType::OFF) {
-                std::string interStoreFilename = input_data.resultFilename;
+                std::string interStore_filename = input_data.result_filename;
                 if (input_data.intermediate_storage == IntermediateStorageType::KEEP) {
-                    interStoreFilename.insert(interStoreFilename.find_last_of("."), "_" + std::to_string(count++));
+                    interStore_filename.insert(interStore_filename.find_last_of("."), "_" + std::to_string(count++));
                 }
-                if (input_data.verbose) std::cout << "  Write intermediate SOM to " << interStoreFilename << " ... " << std::flush;
+                if (input_data.verbose) std::cout << "  Write intermediate SOM to " << interStore_filename << " ... " << std::flush;
                 #ifdef __CUDACC__
                     trainer.update_som();
                 #endif
-                write(som, interStoreFilename);
+                write(som, interStore_filename);
                 if (input_data.verbose) std::cout << "done." << std::endl;
             }
         }
 
-        std::cout << "  Write final SOM to " << input_data.resultFilename << " ... " << std::flush;
+        std::cout << "  Write final SOM to " << input_data.result_filename << " ... " << std::flush;
 #ifdef __CUDACC__
         trainer.update_som();
 #endif
-        write(som, input_data.resultFilename);
+        write(som, input_data.result_filename);
         std::cout << "done." << std::endl;
 
         if (input_data.verbose) {
@@ -94,16 +91,16 @@ void main_generic(InputData const& input_data)
     else if (input_data.executionPath == ExecutionPath::MAP)
     {
         // File for euclidean distances
-        std::ofstream result_file(input_data.resultFilename);
-        if (!result_file) throw pink::exception("Error opening " + input_data.resultFilename);
-        result_file.write((char*)&input_data.number_of_images, sizeof(int));
+        std::ofstream result_file(input_data.result_filename);
+        if (!result_file) throw pink::exception("Error opening " + input_data.result_filename);
+        result_file.write((char*)&input_data.number_of_data_entries, sizeof(int));
         som.write_file_header(result_file);
 
         // File for spatial_transformations (optional)
         std::ofstream spatial_transformation_file;
         if (input_data.write_rot_flip) {
             spatial_transformation_file.open(input_data.rot_flip_filename);
-            spatial_transformation_file.write((char*)&input_data.number_of_images, sizeof(int));
+            spatial_transformation_file.write((char*)&input_data.number_of_data_entries, sizeof(int));
             som.write_file_header(spatial_transformation_file);
         }
 
@@ -115,7 +112,6 @@ void main_generic(InputData const& input_data)
             ,input_data.interpolation
 #ifdef __CUDACC__
             ,input_data.block_size_1
-            ,input_data.useMultipleGPUs
             ,input_data.euclidean_distance_type
 #endif
         );

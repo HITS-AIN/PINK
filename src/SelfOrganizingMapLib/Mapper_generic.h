@@ -109,11 +109,10 @@ class Mapper_generic<SOMLayout, DataLayout, T, true> : public MapperBase_generic
 public:
 
     Mapper_generic(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
-        Interpolation interpolation, uint16_t block_size, bool use_multiple_gpus, DataType euclidean_distance_type)
+        Interpolation interpolation, uint16_t block_size, DataType euclidean_distance_type)
      : MapperBase_generic<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation),
        d_som(som.get_data()),
        block_size(block_size),
-       use_multiple_gpus(use_multiple_gpus),
        euclidean_distance_type(euclidean_distance_type),
        d_spatial_transformed_images(this->number_of_spatial_transformations * som.get_neuron_size()),
        d_euclidean_distance_matrix(som.get_number_of_neurons()),
@@ -152,7 +151,7 @@ public:
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             this->som.get_number_of_neurons(), neuron_size, d_som, this->number_of_spatial_transformations,
-            d_spatial_transformed_images, block_size, use_multiple_gpus, euclidean_distance_type);
+            d_spatial_transformed_images, block_size, euclidean_distance_type);
 
         std::vector<T> euclidean_distance_matrix(this->som.get_number_of_neurons());
         std::vector<uint32_t> best_rotation_matrix(this->som.get_number_of_neurons());
@@ -169,8 +168,6 @@ private:
     thrust::device_vector<T> d_som;
 
     uint16_t block_size;
-
-    bool use_multiple_gpus;
 
     /// The data type for the euclidean distance
     DataType euclidean_distance_type;
