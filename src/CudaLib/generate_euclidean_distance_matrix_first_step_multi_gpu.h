@@ -27,11 +27,11 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
     int number_of_threads = omp_get_max_threads();
 
     if (number_of_threads < number_of_gpus) {
-    	std::cout << "Number of threads = " << number_of_threads << std::endl;
-    	std::cout << "Number of GPUs = " << number_of_gpus << std::endl;
-    	std::cout << "GPU IDs = ";
-    	for (auto id : cuda_get_gpu_ids()) std::cout << id << " ";
-    	std::cout << std::endl;
+        std::cout << "Number of threads = " << number_of_threads << std::endl;
+        std::cout << "Number of GPUs = " << number_of_gpus << std::endl;
+        std::cout << "GPU IDs = ";
+        for (auto id : cuda_get_gpu_ids()) std::cout << id << " ";
+        std::cout << std::endl;
         throw pink::exception("Number of CPU threads must not be smaller than the number of GPU devices");
     }
 
@@ -67,17 +67,17 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
 
             // Allocate local device memory
             if (i != 0) {
-				thrust::device_vector<EuclideanType> d_som_local(size[i] * neuron_size);
-				thrust::device_vector<EuclideanType> d_rotated_images_local(number_of_spatial_transformations * neuron_size);
-				thrust::device_vector<DataType> d_first_step_local(size[i] * number_of_spatial_transformations);
+                thrust::device_vector<EuclideanType> d_som_local(size[i] * neuron_size);
+                thrust::device_vector<EuclideanType> d_rotated_images_local(number_of_spatial_transformations * neuron_size);
+                thrust::device_vector<DataType> d_first_step_local(size[i] * number_of_spatial_transformations);
 
-				// Copy data
-				cudaMemcpyPeerAsync(thrust::raw_pointer_cast(d_som_local.data()), i,
-									thrust::raw_pointer_cast(d_som.data()) + offset[i] * neuron_size, 0,
-									size[i] * neuron_size * sizeof(EuclideanType), stream);
-				cudaMemcpyPeerAsync(thrust::raw_pointer_cast(d_rotated_images_local.data()), i,
-									thrust::raw_pointer_cast(d_rotated_images.data()), 0,
-									number_of_spatial_transformations * neuron_size * sizeof(EuclideanType), stream);
+                // Copy data
+                cudaMemcpyPeerAsync(thrust::raw_pointer_cast(d_som_local.data()), i,
+                                    thrust::raw_pointer_cast(d_som.data()) + offset[i] * neuron_size, 0,
+                                    size[i] * neuron_size * sizeof(EuclideanType), stream);
+                cudaMemcpyPeerAsync(thrust::raw_pointer_cast(d_rotated_images_local.data()), i,
+                                    thrust::raw_pointer_cast(d_rotated_images.data()), 0,
+                                    number_of_spatial_transformations * neuron_size * sizeof(EuclideanType), stream);
 
                 d_som_local_ptr = d_som_local.data();
                 d_rotated_images_local_ptr = d_rotated_images_local.data();

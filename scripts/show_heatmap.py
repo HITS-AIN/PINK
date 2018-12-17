@@ -37,12 +37,23 @@ class HeatmapVisualizer():
     def readMap(self):
         #Unpacks the map parameters
         inputStream = open(self.__fileName, 'rb')
-        tools.ignore_header_comments(inputStream) # find end of header
+        tools.ignore_header_comments(inputStream)
+        
+        # <file format version> 2 <data-type> <number of entries> <som layout> <data>
+        version, file_type, data_type, number_of_data_entries, som_layout, som_dimensionality = struct.unpack('i' * 6, inputStream.read(4 * 6))
+        print('version:', version)
+        print('file_type:', file_type)
+        print('data_type:', data_type)
+        print('number_of_data_entries:', number_of_data_entries)
+        print('som_layout:', som_layout)
+        print('som dimensionality:', som_dimensionality)
+        som_dimensions = struct.unpack('i' * som_dimensionality, inputStream.read(4 * som_dimensionality))
+        print('som dimensions:', som_dimensions)
 
-        self.__numberOfImages = struct.unpack("i", inputStream.read(4))[0]
-        self.__somWidth = struct.unpack("i", inputStream.read(4))[0]
-        self.__somHeight = struct.unpack("i", inputStream.read(4))[0]
-        self.__somDepth = struct.unpack("i", inputStream.read(4))[0]
+        self.__numberOfImages = number_of_data_entries
+        self.__somWidth = som_dimensions[0]
+        self.__somHeight = som_dimensions[1] if som_dimensionality > 1 else 1
+        self.__somDepth = som_dimensions[2] if som_dimensionality > 2 else 1
 
         print ("images: " + str(self.__numberOfImages))
         print ("width: " + str(self.__somWidth))

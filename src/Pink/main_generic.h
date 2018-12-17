@@ -28,7 +28,6 @@ void main_generic(InputData const& input_data)
     if (input_data.verbose)
         std::cout << "SOM layout:  " << SOMLayout::type  << "<" << static_cast<int>(SOMLayout::dimensionality)  << ">" << "\n"
                   << "Data layout: " << DataLayout::type << "<" << static_cast<int>(DataLayout::dimensionality) << ">" << "\n"
-                  << "GPU usage:   " << UseGPU << "\n"
                   << std::endl;
 
     SOM<SOMLayout, DataLayout, T> som(input_data);
@@ -93,15 +92,44 @@ void main_generic(InputData const& input_data)
         // File for euclidean distances
         std::ofstream result_file(input_data.result_filename);
         if (!result_file) throw pink::exception("Error opening " + input_data.result_filename);
-        result_file.write((char*)&input_data.number_of_data_entries, sizeof(int));
-        som.write_file_header(result_file);
+
+        // <file format version> 2 <data-type> <number of entries> <som layout> <data>
+        int version = 2;
+        int file_type = 2;
+        int data_type_idx = 0;
+        int som_layout_idx = 0;
+        int som_dimensionality = som.get_som_layout().dimensionality;
+        int number_of_data_entries = iter_data_cur.get_number_of_entries();
+
+        result_file.write((char*)&version, sizeof(int));
+        result_file.write((char*)&file_type, sizeof(int));
+        result_file.write((char*)&data_type_idx, sizeof(int));
+        result_file.write((char*)&number_of_data_entries, sizeof(int));
+        result_file.write((char*)&som_layout_idx, sizeof(int));
+        result_file.write((char*)&som_dimensionality, sizeof(int));
+        for (int dim = 0; dim != som_dimensionality; ++dim) {
+            int tmp = som.get_som_layout().dimension[dim];
+            result_file.write((char*)&tmp, sizeof(int));
+        }
 
         // File for spatial_transformations (optional)
         std::ofstream spatial_transformation_file;
         if (input_data.write_rot_flip) {
             spatial_transformation_file.open(input_data.rot_flip_filename);
-            spatial_transformation_file.write((char*)&input_data.number_of_data_entries, sizeof(int));
-            som.write_file_header(spatial_transformation_file);
+            if (!spatial_transformation_file) throw pink::exception("Error opening " + input_data.rot_flip_filename);
+
+            // <file format version> 3 <number of entries> <som layout> <data>
+            int file_type = 3;
+
+            spatial_transformation_file.write((char*)&version, sizeof(int));
+            spatial_transformation_file.write((char*)&file_type, sizeof(int));
+            spatial_transformation_file.write((char*)&number_of_data_entries, sizeof(int));
+            spatial_transformation_file.write((char*)&som_layout_idx, sizeof(int));
+            spatial_transformation_file.write((char*)&som_dimensionality, sizeof(int));
+            for (int dim = 0; dim != som_dimensionality; ++dim) {
+                int tmp = som.get_som_layout().dimension[dim];
+                spatial_transformation_file.write((char*)&tmp, sizeof(int));
+            }
         }
 
         Mapper_generic<SOMLayout, DataLayout, T, UseGPU> mapper(

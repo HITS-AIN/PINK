@@ -103,13 +103,6 @@ public:
     auto get_neuron_dimension() -> typename NeuronLayoutType::DimensionType { return neuron_layout.dimension; }
     auto get_neuron_dimension() const -> typename NeuronLayoutType::DimensionType const { return neuron_layout.dimension; }
 
-    void write_file_header(std::ofstream& ofs) const
-    {
-        int one = 1;
-        for (uint8_t i = 0; i < som_layout.dimension.size(); ++i) ofs.write((char*)&som_layout.dimension[i], sizeof(int));
-        for (uint8_t i = som_layout.dimension.size(); i < 3; ++i) ofs.write((char*)&one, sizeof(int));
-    }
-
 private:
 
     template <typename A, typename B, typename C>

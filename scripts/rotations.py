@@ -54,11 +54,21 @@ class Rotations():
         #Unpacks the map parameters
         inputStream = open(self.__fileName, 'rb')
         tools.ignore_header_comments(inputStream)
+        
+        # <file format version> 3 <number of entries> <som layout> <data>
+        version, file_type, number_of_data_entries, som_layout, som_dimensionality = struct.unpack('i' * 5, inputStream.read(4 * 5))
+        print('version:', version)
+        print('file_type:', file_type)
+        print('number_of_data_entries:', number_of_data_entries)
+        print('som_layout:', som_layout)
+        print('som dimensionality:', som_dimensionality)
+        som_dimensions = struct.unpack('i' * som_dimensionality, inputStream.read(4 * som_dimensionality))
+        print('som dimensions:', som_dimensions)
 
-        self.__numberOfImages = struct.unpack("i", inputStream.read(4))[0]
-        self.__somWidth = struct.unpack("i", inputStream.read(4))[0]
-        self.__somHeight = struct.unpack("i", inputStream.read(4))[0]
-        self.__somDepth = struct.unpack("i", inputStream.read(4))[0]
+        self.__numberOfImages = number_of_data_entries
+        self.__somWidth = som_dimensions[0]
+        self.__somHeight = som_dimensions[1] if som_dimensionality > 1 else 1
+        self.__somDepth = som_dimensions[2] if som_dimensionality > 2 else 1
 
         print ("images: " + str(self.__numberOfImages))
         print ("width: " + str(self.__somWidth))
@@ -107,11 +117,11 @@ if __name__ == "__main__":
         print_usage()
         sys.exit(1)
 
-    #Default parameters
-    image = -1
+    # Default parameters
+    image = 0
     mapping = ""
 
-    #Use inputted parameters
+    # Use input parameters
     for opt, arg in opts:
         if opt in ("-i", "--image"):
             image = int(arg)
