@@ -23,7 +23,7 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
 {
     auto&& gpu_ids = cuda_get_gpu_ids();
     int number_of_gpus = cuda_get_gpu_ids().size();
-    int number_of_threads = omp_get_num_procs();
+    int number_of_threads = omp_get_max_threads();
 
     if (number_of_threads < number_of_gpus) {
     	std::cout << "Number of threads = " << number_of_threads << std::endl;

@@ -386,7 +386,7 @@ InputData::InputData(int argc, char **argv)
     som_total_size = som_size * neuron_size;
     numberOfRotationsAndFlip = use_flip ? 2 * numberOfRotations : numberOfRotations;
 
-    if (number_of_threads == -1) number_of_threads = omp_get_num_procs();
+    if (number_of_threads == -1) number_of_threads = omp_get_max_threads();
     omp_set_num_threads(number_of_threads);
 
     print_header();
