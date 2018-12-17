@@ -29,12 +29,13 @@ def load_data(filename):
     file = open(filename, 'rb')
     ignore_header_comments(file)
     
-    numberOfImages, numberOfChannels, width, height = struct.unpack('i' * 4, file.read(4 * 4))
+    version, file_type, data_type, number_of_data_entries, layout, dimensionality = struct.unpack('i' * 6, file.read(4 * 6))
+    dimensions = struct.unpack('i' * dimensionality, file.read(4 * dimensionality))
 
-    size = numberOfImages * numberOfChannels * width * height
+    size = number_of_data_entries * dimensions
     array = np.array(struct.unpack('f' * size, file.read(size*4)))
 
-    return np.ndarray([numberOfImages, numberOfChannels, width, height], 'float', array)
+    return np.ndarray([number_of_data_entries, dimensions], 'float', array)
 
 
 def save_data(filename, data):
@@ -53,11 +54,11 @@ def save_data(filename, data):
     print('width', np.shape(data)[2])
     print('height', np.shape(data)[3])
     
-    file.write(struct.pack('i', np.shape(data)[0]))
+    file.write(struct.pack('i' * 3, version, file_type, data_type, np.shape(data)[0], layout, len(np.shape(data))-1))
     file.write(struct.pack('i', np.shape(data)[1]))
     file.write(struct.pack('i', np.shape(data)[2]))
     file.write(struct.pack('i', np.shape(data)[3]))
-    file.write(struct.pack('f' * np.shape(data)[0] * np.shape(data)[1] * np.shape(data)[2] * np.shape(data)[3], *data.flatten()))
+    file.write(struct.pack('f' * data.size, *data.flatten()))
 
     data.tofile(file)
 

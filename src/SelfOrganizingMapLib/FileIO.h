@@ -26,30 +26,32 @@ void write(SOM<SOMLayout, NeuronLayout, T> const& som, std::string const& filena
     auto&& neuron_layout = som.get_neuron_layout();
 
     os << "# " << som.header << std::endl;
-    os << "# " << "SOM layout = " << som_layout.type << " ";
-    for (int dim = 0; dim != som_layout.dimensionality; ++dim) os << som_layout.dimension[dim] << " ";
-    os << "# " << "Neuron layout = " << neuron_layout.type << " ";
-    for (int dim = 0; dim != neuron_layout.dimensionality; ++dim) os << neuron_layout.dimension[dim] << " ";
-    os << std::endl;
 
-    // binary part
+    // <file format version> 1 <data-type> <som layout> <neuron layout> <data>
+    int version = 2;
+    int file_type = 1;
+    int data_type_idx = 0;
+    int som_layout_idx = 0;
+    int neuron_layout_idx = 0;
+    int som_dimensionality = som_layout.dimensionality;
+    int neuron_dimensionality = neuron_layout.dimensionality;
+
+    os.write((char*)&version, sizeof(int));
+    os.write((char*)&file_type, sizeof(int));
+    os.write((char*)&data_type_idx, sizeof(int));
+    os.write((char*)&som_layout_idx, sizeof(int));
+    os.write((char*)&som_dimensionality, sizeof(int));
     for (int dim = 0; dim != som_layout.dimensionality; ++dim) {
         int tmp = som_layout.dimension[dim];
         os.write((char*)&tmp, sizeof(int));
     }
-    for (int dim = som_layout.dimensionality; dim != 3; ++dim) {
-        int tmp = 1;
-        os.write((char*)&tmp, sizeof(int));
-    }
+    os.write((char*)&neuron_layout_idx, sizeof(int));
+    os.write((char*)&neuron_dimensionality, sizeof(int));
     for (int dim = 0; dim != neuron_layout.dimensionality; ++dim) {
         int tmp = neuron_layout.dimension[dim];
         os.write((char*)&tmp, sizeof(int));
     }
-    for (int dim = neuron_layout.dimensionality; dim != 3; ++dim) {
-        int tmp = 1;
-        os.write((char*)&tmp, sizeof(int));
-    }
-    os.write((char*)som.get_data_pointer(), som_layout.size() * neuron_layout.size() * sizeof(T));
+    os.write((char*)som.get_data_pointer(), som.size() * sizeof(T));
 }
 
 } // namespace pink

@@ -51,13 +51,13 @@ Please use also the command `Pink -h` to get more informations about the usage a
 ## Python scripts
 
 For conversion and visualization of images and SOM some python scripts are available.
-                 
-  - show_images.py:   Visualize binary images file format.
 
-  - show_som.py:      Visualize binary SOM file format.
-
-  - show_heatmap.py:  Visualize the mapping result.
-
+  - convert_data_binary_file.py     Convert binary data file from PINK version 1 to 2
+  - data_precondition.py:           Convert numpy into binary files and scale data to be within the range [0.0, 1.0]
+  - show_heatmap.py:                Visualize the mapping result
+  - show_images.py:                 Visualize binary images file format
+  - show_som.py:                    Visualize binary SOM file format
+  - train.py:                       SOM training using the PINK Python interface
 
 ## Publication
 

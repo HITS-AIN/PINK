@@ -36,14 +36,28 @@ class MAPVisualizer():
         #Unpacks the map parameters
         inputStream = open(self.__fileName, 'rb')
         tools.ignore_header_comments(inputStream)
+        
+        # <file format version> 1 <data-type> <som layout> <neuron layout> <data>
+        version, file_type, data_type, som_layout, som_dimensionality = struct.unpack('i' * 5, inputStream.read(4 * 5))
+        print('version:', version)
+        print('file_type:', file_type)
+        print('data_type:', data_type)
+        print('som_layout:', som_layout)
+        print('som dimensionality:', som_dimensionality)
+        som_dimensions = struct.unpack('i' * som_dimensionality, inputStream.read(4 * som_dimensionality))
+        print('som dimensions:', som_dimensions)
+        neuron_layout, neuron_dimensionality = struct.unpack('i' * 2, inputStream.read(4 * 2))
+        print('neuron dimensionality:', som_dimensionality)
+        neuron_dimensions = struct.unpack('i' * neuron_dimensionality, inputStream.read(4 * neuron_dimensionality))
+        print('neuron dimensions:', neuron_dimensions)
 
-        self.__somWidth, self.__somHeight, self.__somDepth, self.__neuronWidth, self.__neuronHeight, self.__numberOfChannels = struct.unpack('i' * 6, inputStream.read(4*6))
+        self.__somWidth = som_dimensions[0]
+        self.__somHeight = som_dimensions[1] if som_dimensionality > 1 else 1
+        self.__somDepth = som_dimensions[2] if som_dimensionality > 2 else 1
+        self.__neuronWidth = neuron_dimensions[0]
+        self.__neuronHeight = neuron_dimensions[1] if neuron_dimensionality > 1 else 1
+        self.__numberOfChannels = neuron_dimensions[2] if neuron_dimensionality > 2 else 1
 
-        print ("channels: " + str(self.__numberOfChannels))
-        print ("width: " + str(self.__somWidth))
-        print ("height: " + str(self.__somHeight))
-        print ("depth: " + str(self.__somDepth))
-        print ("neurons: " + str(self.__neuronWidth) +"x" + str(self.__neuronHeight))
         #Unpacks data
         try:
             while True:

@@ -5,6 +5,7 @@ import numpy
 import matplotlib
 import struct
 import sys
+import tools
 
 def print_usage():
     print ('')
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 
     imageNumber = 0
     channelNumber = 0
-    save = ""
+    save = "./"
     name= "image"
     display = 0
 
@@ -74,24 +75,22 @@ if __name__ == "__main__":
     from matplotlib import pyplot
 
     file = open(inputfile, 'rb')
-        
-    last_position = file.tell()
-    for line in file:
-        if line[:1] != b'#':
-            break
-        last_position = file.tell()
-     
-    file.seek(last_position, 0)
+    tools.ignore_header_comments(file)
+    
+    # <file format version> 0 <data-type> <number of entries> <data layout> <data>
     version, file_type, data_type, numberOfImages, layout, dimensionality = struct.unpack('i' * 6, file.read(4 * 6))
-
-    width = 1
-    height = 1
-    numberOfChannels = 1
-
-    if dimensionality == 2:
-        width, height = struct.unpack('i' * 2, file.read(4 * 2))
-    elif dimensionality == 3:
-        width, height, numberOfChannels = struct.unpack('i' * 3, file.read(4 * 3))
+    print('version:', version)
+    print('file_type:', file_type)
+    print('data_type:', data_type)
+    print('numberOfImages:', numberOfImages)
+    print('layout:', layout)
+    print('dimensionality:', dimensionality)
+    dimensions = struct.unpack('i' * dimensionality, file.read(4 * dimensionality))
+    print('dimensions:', dimensions)
+    
+    width = dimensions[0]
+    height = dimensions[1] if dimensionality > 1 else 1
+    numberOfChannels = dimensions[2] if dimensionality > 2 else 1
 
     print ('Number of images = ', numberOfImages)
     print ('Number of channels = ', numberOfChannels)
