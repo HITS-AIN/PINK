@@ -28,7 +28,7 @@ InputData::InputData()
    layout(Layout::CARTESIAN),
    seed(1234),
    numberOfRotations(360),
-   numberOfThreads(-1),
+   number_of_threads(-1),
    init(SOMInitialization::ZERO),
    numIter(1),
    number_of_progress_prints(10),
@@ -159,12 +159,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 't':
             {
-                numberOfThreads = atoi(optarg);
-                if (use_gpu and numberOfThreads > 1) {
-                    print_usage();
-                    printf ("ERROR: Number of CPU threads must be 1 using CUDA.\n");
-                    exit(EXIT_FAILURE);
-                }
+                number_of_threads = atoi(optarg);
                 break;
             }
             case 'x':
@@ -391,11 +386,8 @@ InputData::InputData(int argc, char **argv)
     som_total_size = som_size * neuron_size;
     numberOfRotationsAndFlip = use_flip ? 2 * numberOfRotations : numberOfRotations;
 
-    if (numberOfThreads == -1) numberOfThreads = omp_get_num_procs();
-#if PINK_USE_CUDA
-    if (use_gpu) numberOfThreads = 1;
-#endif
-    omp_set_num_threads(numberOfThreads);
+    if (number_of_threads == -1) number_of_threads = omp_get_num_procs();
+    omp_set_num_threads(number_of_threads);
 
     print_header();
     print_parameters();
@@ -454,7 +446,7 @@ void InputData::print_parameters() const
               << "  Seed = " << seed << "\n"
               << "  Number of rotations = " << numberOfRotations << "\n"
               << "  Use mirrored image = " << use_flip << "\n"
-              << "  Number of CPU threads = " << numberOfThreads << "\n"
+              << "  Number of CPU threads = " << number_of_threads << "\n"
               << "  Use CUDA = " << use_gpu << "\n"
               << "  Distribution function for SOM update = " << distribution_function << "\n"
               << "  Sigma = " << sigma << "\n"

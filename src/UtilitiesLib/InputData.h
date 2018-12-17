@@ -59,7 +59,7 @@ struct InputData
     Layout layout;
     int seed;
     int numberOfRotations;
-    int numberOfThreads;
+    int number_of_threads;
     SOMInitialization init;
     int numIter;
     int number_of_progress_prints;
