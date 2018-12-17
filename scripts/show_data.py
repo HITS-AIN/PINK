@@ -16,8 +16,6 @@ import tools
 
 def main():
     """ Main routine of PINK Visualization of binary data files """
-    
-    print('PINK version ', pink.__version__)
 
     parser = argparse.ArgumentParser(description='PINK convert binary formats')
     parser.add_argument('data', help='Data input file (.bin)', action=tools.check_extension({'bin'}))

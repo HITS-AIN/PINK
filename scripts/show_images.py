@@ -3,7 +3,6 @@
 import getopt
 import numpy
 import matplotlib
-#imports pyplot in code for control over backend
 import struct
 import sys
 

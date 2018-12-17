@@ -10,14 +10,11 @@ __license__ = "GPLv3"
 
 import argparse
 import os
-import pink
 import struct
 import tools
 
 def main():
     """ Main routine of PINK convert data binary file """
-    
-    print('PINK version ', pink.__version__)
 
     parser = argparse.ArgumentParser(description='PINK convert binary formats')
     parser.add_argument('data', help='Data input file (.bin)', action=tools.check_extension({'bin'}))

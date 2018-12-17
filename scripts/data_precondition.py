@@ -11,13 +11,10 @@ __license__ = "GPLv3"
 import argparse
 import numpy as np
 import os
-import pink
 import tools
 
 def main():
     """ Main routine of PINK data preconditioning """
-    
-    print('PINK version ', pink.__version__)
 
     parser = argparse.ArgumentParser(description='PINK data preconditioning')
     parser.add_argument('data', help='Data input file (.npy or .bin)', action=tools.check_extension({'npy','bin'}))
