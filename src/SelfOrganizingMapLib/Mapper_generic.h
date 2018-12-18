@@ -12,11 +12,11 @@
 #include <iostream>
 #include <vector>
 
+#include "../UtilitiesLib/Interpolation.h"
 #include "Data.h"
 #include "find_best_match.h"
 #include "generate_rotated_images.h"
 #include "generate_euclidean_distance_matrix.h"
-#include "ImageProcessingLib/Interpolation.h"
 #include "SOM.h"
 #include "SOMIO.h"
 #include "UtilitiesLib/pink_exception.h"

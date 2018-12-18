@@ -14,7 +14,6 @@
 #include "SelfOrganizingMapLib/DataIO.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "SelfOrganizingMapLib/SOMIO.h"
-#include "SelfOrganizingMapLib/Trainer.h"
 #include "SelfOrganizingMapLib/Trainer_generic.h"
 #include "UtilitiesLib/DistributionFunctor.h"
 
@@ -25,7 +24,7 @@ using namespace pink;
 TEST(SelfOrganizingMapTest, trainer_num_rot)
 {
     typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> MySOM;
-    typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
+    typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
     uint32_t som_dim = 2;
     uint32_t neuron_dim = 2;

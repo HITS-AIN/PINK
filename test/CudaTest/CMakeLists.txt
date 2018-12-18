@@ -8,7 +8,6 @@ cuda_add_executable(
     CudaTest
     main.cpp
     mixed_precision.cu
-    RotationTest.cu
     rotate_90_degrees_list.cu
     compare_trainer_cpu.cu
     compare_trainer_mixed.cu
@@ -18,7 +17,6 @@ cuda_add_executable(
 target_link_libraries(
     CudaTest
     CudaLib
-    ImageProcessingLib
     SelfOrganizingMapLib
     ${GTEST_BOTH_LIBRARIES}
 )

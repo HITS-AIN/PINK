@@ -9,9 +9,9 @@
 #include <cstdio>
 #include <thrust/device_vector.h>
 
+#include "../UtilitiesLib/Interpolation.h"
 #include "crop_kernel.h"
 #include "flip_kernel.h"
-#include "ImageProcessingLib/Interpolation.h"
 #include "rotate_90_degrees_list.h"
 #include "rotate_and_crop_bilinear_kernel.h"
 #include "rotate_and_crop_nearest_neighbor_kernel.h"

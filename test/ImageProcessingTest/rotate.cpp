@@ -5,7 +5,7 @@
  */
 
 #include <cmath>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <vector>
 
 #include "ImageProcessingLib/rotate.h"

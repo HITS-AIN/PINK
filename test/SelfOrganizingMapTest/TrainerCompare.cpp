@@ -15,7 +15,6 @@
 #include "SelfOrganizingMapLib/DataIO.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "SelfOrganizingMapLib/SOMIO.h"
-#include "SelfOrganizingMapLib/Trainer.h"
 #include "SelfOrganizingMapLib/Trainer_generic.h"
 #include "UtilitiesLib/EqualFloatArrays.h"
 #include "UtilitiesLib/DistributionFunctor.h"
@@ -48,25 +47,17 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
 {
     typedef Data<CartesianLayout<2>, float> DataType;
     typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> SOMType;
-    typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
-    typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer_generic;
+    typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
     DataType data({GetParam().image_dim, GetParam().image_dim});
     fill_random_uniform(data.get_data_pointer(), data.size());
 
-    SOMType som1({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
-    SOMType som2({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
+    SOMType som({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
 
-    auto&& f = GaussianFunctor(1.1, 0.2);
+    MyTrainer trainer(som, GaussianFunctor(1.1, 0.2), 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR);
+    trainer(data);
 
-    MyTrainer trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR);
-    trainer1(data);
-
-    MyTrainer_generic trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR);
-    trainer2(data);
-
-    EXPECT_EQ(som1.size(), som2.size());
-    EXPECT_TRUE(EqualFloatArrays(som1.get_data_pointer(), som2.get_data_pointer(), som1.size(), 1e-4));
+    EXPECT_TRUE(EqualFloatArrays(som.get_data_pointer(), som.get_data_pointer(), som.size(), 1e-4));
 }
 
 INSTANTIATE_TEST_CASE_P(TrainerCompareTest_all, TrainerCompareTest,

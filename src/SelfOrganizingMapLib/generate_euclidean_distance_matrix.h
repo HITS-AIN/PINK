@@ -10,7 +10,7 @@
 #include <limits>
 #include <vector>
 
-#include "ImageProcessingLib/ImageProcessing.h"
+#include "ImageProcessingLib/euclidean_distance.h"
 
 namespace pink {
 

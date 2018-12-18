@@ -17,7 +17,6 @@ if(PINK_USE_CUDA)
     target_link_libraries(
         pink
         CudaLib
-        ImageProcessingLib
         pybind11::module
         SelfOrganizingMapLib
         UtilitiesLib
@@ -30,7 +29,6 @@ else()
     
     target_link_libraries(
         pink PRIVATE
-        ImageProcessingLib
         SelfOrganizingMapLib
         UtilitiesLib
     )

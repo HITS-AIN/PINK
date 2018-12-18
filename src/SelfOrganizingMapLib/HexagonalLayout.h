@@ -9,6 +9,7 @@
 #include <array>
 #include <cstddef>
 #include <numeric>
+#include <vector>
 
 #include "Dimension.h"
 #include "UtilitiesLib/pink_exception.h"

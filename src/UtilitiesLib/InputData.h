@@ -9,9 +9,8 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "ImageProcessingLib/ImageProcessing.h"
-#include "ImageProcessingLib/Interpolation.h"
 #include "IntermediateStorageType.h"
 #include "SOMInitializationType.h"
 #include "UtilitiesLib/DataType.h"
@@ -19,6 +18,7 @@
 #include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/ExecutionPath.h"
 #include "UtilitiesLib/Layout.h"
+#include "UtilitiesLib/Interpolation.h"
 #include "Version.h"
 
 namespace pink {

@@ -8,7 +8,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
-#include "ImageProcessingLib/Interpolation.h"
+#include "../UtilitiesLib/Interpolation.h"
 #include "SelfOrganizingMapLib/Mapper_generic.h"
 #include "SelfOrganizingMapLib/Trainer_generic.h"
 #include "SelfOrganizingMapLib/Data.h"

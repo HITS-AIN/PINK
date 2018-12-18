@@ -54,8 +54,6 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
     for (int i = 0; i < number_of_gpus; ++i) {
         workers.push_back(std::thread([&, i]()
         {
-            std::cout << "Worker " << i << " says hello, size = " << size[i] << ", offset = " << offset[i] << std::endl;
-
             // Start GPU device
             cudaSetDevice(gpu_ids[i]);
             cudaStream_t stream;
