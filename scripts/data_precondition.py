@@ -27,10 +27,13 @@ def main():
         data = np.load(args.data).astype(np.float32)
     elif os.path.splitext(args.data)[1][1:] == "bin":
         data = tools.load_data(args.data)
-    
-    print('shape:     ', np.shape(data))
-    print('min value: ', np.amin(data))
-    print('max value: ', np.amax(data))
+
+    print('shape:             ', np.shape(data))
+    print('size:              ', data.size)
+    print('min value:         ', np.amin(data))
+    print('max value:         ', np.amax(data))
+    print('non-zero elements: ', np.count_nonzero(data))
+    print('sparsity:          ', np.count_nonzero(data) / data.size)
 
     if args.scale:
 

@@ -32,10 +32,14 @@ def load_data(filename):
     version, file_type, data_type, number_of_data_entries, layout, dimensionality = struct.unpack('i' * 6, file.read(4 * 6))
     dimensions = struct.unpack('i' * dimensionality, file.read(4 * dimensionality))
 
-    size = number_of_data_entries * dimensions
-    array = np.array(struct.unpack('f' * size, file.read(size*4)))
-
-    return np.ndarray([number_of_data_entries, dimensions], 'float', array)
+    if len(dimensions) == 2:
+        size = number_of_data_entries * dimensions[0] * dimensions[1]
+        array = np.array(struct.unpack('f' * size, file.read(4 * size)))
+        return np.ndarray([number_of_data_entries, dimensions[0], dimensions[1]], 'float', array)
+    elif len(dimensions) == 3:
+        size = number_of_data_entries * dimensions[0] * dimensions[1] * dimensions[2]
+        array = np.array(struct.unpack('f' * size, file.read(4 * size)))
+        return np.ndarray([number_of_data_entries, dimensions[0], dimensions[1], dimensions[2]], 'float', array)
 
 
 def save_data(filename, data):
