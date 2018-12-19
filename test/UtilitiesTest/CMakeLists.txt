@@ -6,7 +6,6 @@ include_directories(
 add_executable(
     UtilitiesTest
     main.cpp
-    DistanceFunctorTest.cpp
     DistributionFunctorTest.cpp
 )
     
