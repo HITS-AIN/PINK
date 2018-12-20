@@ -36,14 +36,8 @@ void generate_euclidean_distance_matrix_first_step(thrust::device_vector<Euclide
         default:
             throw pink::exception("generate_euclidean_distance_matrix_first_step: block size not supported");
     }
-
-    cudaError_t error = cudaGetLastError();
-
-    if (error != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to launch CUDA kernel euclidean_distance_kernel (error code %s)!\n", cudaGetErrorString(error));
-        exit(EXIT_FAILURE);
-    }
+    gpuErrchk(cudaPeekAtLastError());
+    gpuErrchk(cudaDeviceSynchronize());
 }
 
 } // namespace pink

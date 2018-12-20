@@ -19,7 +19,7 @@ namespace pink {
 /// Calculate euclidean distance on multiple GPU devices
 template <typename DataType, typename EuclideanType>
 void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vector<EuclideanType> const& d_som,
-    thrust::device_vector<EuclideanType> const& d_rotated_images, thrust::device_vector<DataType> d_first_step,
+    thrust::device_vector<EuclideanType> const& d_rotated_images, thrust::device_vector<DataType>& d_first_step,
     uint32_t number_of_spatial_transformations, uint32_t som_size, uint32_t neuron_size, uint16_t block_size)
 {
     auto&& gpu_ids = cuda_get_gpu_ids();
@@ -87,21 +87,21 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
             }
 
             // Setup execution parameters
-            dim3 dimBlock(block_size);
-            dim3 dimGrid(number_of_spatial_transformations, size[i]);
+            dim3 dim_block(block_size);
+            dim3 dim_grid(number_of_spatial_transformations, size[i]);
 
             switch (block_size)
             {
-                case  512: euclidean_distance_kernel< 512><<<dimGrid, dimBlock, 0, stream>>>(
+                case  512: euclidean_distance_kernel< 512><<<dim_grid, dim_block, 0, stream>>>(
                     thrust::raw_pointer_cast(d_som_local_ptr), thrust::raw_pointer_cast(d_rotated_images_local_ptr),
                     thrust::raw_pointer_cast(d_first_step_local_ptr), neuron_size); break;
-                case  256: euclidean_distance_kernel< 256><<<dimGrid, dimBlock, 0, stream>>>(
+                case  256: euclidean_distance_kernel< 256><<<dim_grid, dim_block, 0, stream>>>(
                     thrust::raw_pointer_cast(d_som_local_ptr), thrust::raw_pointer_cast(d_rotated_images_local_ptr),
                     thrust::raw_pointer_cast(d_first_step_local_ptr), neuron_size); break;
-                case  128: euclidean_distance_kernel< 128><<<dimGrid, dimBlock, 0, stream>>>(
+                case  128: euclidean_distance_kernel< 128><<<dim_grid, dim_block, 0, stream>>>(
                     thrust::raw_pointer_cast(d_som_local_ptr), thrust::raw_pointer_cast(d_rotated_images_local_ptr),
                     thrust::raw_pointer_cast(d_first_step_local_ptr), neuron_size); break;
-                case   64: euclidean_distance_kernel<  64><<<dimGrid, dimBlock, 0, stream>>>(
+                case   64: euclidean_distance_kernel<  64><<<dim_grid, dim_block, 0, stream>>>(
                     thrust::raw_pointer_cast(d_som_local_ptr), thrust::raw_pointer_cast(d_rotated_images_local_ptr),
                     thrust::raw_pointer_cast(d_first_step_local_ptr), neuron_size); break;
                 default:
