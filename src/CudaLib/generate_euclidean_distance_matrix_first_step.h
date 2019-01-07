@@ -36,7 +36,6 @@ void generate_euclidean_distance_matrix_first_step(thrust::device_vector<Euclide
         default:
             throw pink::exception("generate_euclidean_distance_matrix_first_step: block size not supported");
     }
-    gpuErrchk(cudaPeekAtLastError());
     gpuErrchk(cudaDeviceSynchronize());
 }
 

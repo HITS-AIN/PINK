@@ -23,14 +23,14 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
     uint32_t number_of_spatial_transformations, uint32_t som_size, uint32_t neuron_size, uint16_t block_size)
 {
     auto&& gpu_ids = cuda_get_gpu_ids();
-    int number_of_gpus = cuda_get_gpu_ids().size();
+    int number_of_gpus = gpu_ids.size();
     int number_of_threads = omp_get_max_threads();
 
     if (number_of_threads < number_of_gpus) {
         std::cout << "Number of threads = " << number_of_threads << std::endl;
         std::cout << "Number of GPUs = " << number_of_gpus << std::endl;
         std::cout << "GPU IDs = ";
-        for (auto id : cuda_get_gpu_ids()) std::cout << id << " ";
+        for (auto id : gpu_ids) std::cout << id << " ";
         std::cout << std::endl;
         throw pink::exception("Number of CPU threads must not be smaller than the number of GPU devices");
     }
@@ -62,11 +62,15 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
             thrust::device_ptr<const EuclideanType> d_rotated_images_local_ptr;
             thrust::device_ptr<DataType> d_first_step_local_ptr;
 
-            // Allocate local device memory
+            thrust::device_vector<EuclideanType> d_som_local;
+            thrust::device_vector<EuclideanType> d_rotated_images_local;
+            thrust::device_vector<DataType> d_first_step_local;
+
             if (i != 0) {
-                thrust::device_vector<EuclideanType> d_som_local(size[i] * neuron_size);
-                thrust::device_vector<EuclideanType> d_rotated_images_local(number_of_spatial_transformations * neuron_size);
-                thrust::device_vector<DataType> d_first_step_local(size[i] * number_of_spatial_transformations);
+                // Allocate local device memory
+                d_som_local.resize(size[i] * neuron_size);
+                d_rotated_images_local.resize(number_of_spatial_transformations * neuron_size);
+                d_first_step_local.resize(size[i] * number_of_spatial_transformations);
 
                 // Copy data
                 gpuErrchk(cudaMemcpyPeer(thrust::raw_pointer_cast(d_som_local.data()), i,
@@ -106,16 +110,14 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
                 default:
                     throw pink::exception("generate_euclidean_distance_matrix_first_step: block size not supported");
             }
-            gpuErrchk(cudaPeekAtLastError());
             gpuErrchk(cudaDeviceSynchronize());
 
             // Copy data
             if (i != 0) {
                 gpuErrchk(cudaMemcpyPeer(thrust::raw_pointer_cast(d_first_step.data()) + offset[i] * number_of_spatial_transformations, 0,
                     thrust::raw_pointer_cast(d_first_step_local_ptr), i, size[i] * number_of_spatial_transformations * sizeof(DataType)));
+                gpuErrchk(cudaDeviceSynchronize());
             }
-
-            cudaDeviceSynchronize();
         }));
     }
 
