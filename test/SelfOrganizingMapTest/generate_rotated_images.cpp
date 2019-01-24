@@ -13,11 +13,19 @@
 
 using namespace pink;
 
-TEST(RotationTest, generate_rotated_images)
+TEST(RotationTest, rotate_and_crop)
 {
-    Data<CartesianLayout<2>, float> data({2, 2}, std::vector<float>{1,2,3,4});
+	int src_height = 1;
+	int src_width = 1;
+	int dst_height = 3;
+	int dst_width = 3;
+	float rad = 0.25 * M_PI;
 
-    auto&& spatial_transformed_images = generate_rotated_images(data, 8, false, Interpolation::BILINEAR, 2);
+    std::vector<float> src(src_height * src_width, 1.0);
+    std::vector<float> dst(dst_height * dst_width, 0.0);
 
-    //for (auto&& e : spatial_transformed_images) std::cout << e << " ";
+    rotate_and_crop_bilinear(&src[0], &dst[0], src_height, src_width, dst_height, dst_width, rad);
+
+    for (auto&& e : dst) std::cout << e << " ";
+
 }
