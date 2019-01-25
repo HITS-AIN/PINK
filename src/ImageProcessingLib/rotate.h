@@ -76,29 +76,8 @@ void rotate_bilinear(T const* src, T *dst, int src_height, int src_width, int ds
 			float cx = 1.0 - rx;
 			float cy = 1.0 - ry;
 
-			if (src_position_x < -1.0 or src_position_x >= src_width or src_position_y < -1.0 or src_position_y >= src_height) {
+			if (src_position_x < 0.0 or src_position_x >= src_width - 1 or src_position_y < 0.0 or src_position_y >= src_height - 1) {
 				dst[dst_x * dst_height + dst_y] = 0.0;
-			} else if (src_position_x < 0.0 and src_position_y < 0.0) {
-				rx = src_position_x + 1.0;
-				ry = src_position_y + 1.0;
-			    dst[dst_x * dst_height + dst_y] = rx * ry * src[0];
-			} else if (src_position_x < 0.0) {
-				rx = src_position_x + 1.0;
-			    dst[dst_x * dst_height + dst_y] = rx * ry * src[src_y_plus_1]
-										        + rx * cy * src[src_y];
-			} else if (src_position_y < 0.0) {
-				ry = src_position_y + 1.0;
-			    dst[dst_x * dst_height + dst_y] = rx * ry * src[src_x_plus_1 * src_height]
-												+ cx * ry * src[src_x * src_height];
-			} else if (src_position_x >= src_width - 1 or src_position_y >= src_height - 1) {
-				float value = cx * cy * src[src_x  * src_height + src_y];
-			    if (src_position_x < src_width - 1) {
-					value += rx * cy * src[src_x_plus_1 * src_height + src_y];
-			    }
-			    if (src_position_y < src_height - 1) {
-					value += cx * ry * src[src_x  * src_height + src_y_plus_1];
-			    }
-			    dst[dst_x * dst_height + dst_y] = value;
 			} else{
 				dst[dst_x * dst_height + dst_y] = cx * cy * src[src_x * src_height + src_y]
 												+ cx * ry * src[src_x * src_height + src_y_plus_1]

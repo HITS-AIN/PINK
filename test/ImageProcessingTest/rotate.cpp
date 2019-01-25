@@ -33,7 +33,7 @@ TEST(RotationTest, rotate)
 
     rotate_bilinear(&src[0], &dst[0], src_height, src_width, dst_height, dst_width, rad);
 
-    std::vector<float> est{0.0, 0.0857864, 0.0, 0.0857864, 1.0, 0.0857864, 0.0, 0.0857864, 0.0};
+    std::vector<float> est(dst_height * dst_width, 0.0);
     EXPECT_TRUE(EqualFloatArrays(est, dst, 1e-4));
 }
 
@@ -50,8 +50,9 @@ TEST(RotationTest, rotate2)
 
     rotate_bilinear(&src[0], &dst[0], src_height, src_width, dst_height, dst_width, rad);
 
-    std::cout << dst << std::endl;
+    //std::cout << dst << std::endl;
 
-    std::vector<float> est{0.0857865, 0.62868, 0.0857865, 0.62868, 1, 0.62868, 0.0857865, 0.62868, 0.0857865};
+    std::vector<float> est(dst_height * dst_width, 0.0);
+    est[4] = 1.0;
     EXPECT_TRUE(EqualFloatArrays(est, dst, 1e-4));
 }
