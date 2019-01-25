@@ -44,41 +44,67 @@ void rotate_nearest_neighbor(T const* src, T *dst, int src_height, int src_width
 template <typename T>
 void rotate_bilinear(T const* src, T *dst, int src_height, int src_width, int dst_height, int dst_width, float alpha)
 {
-    const int width_margin = (src_width - dst_width) * 0.5;
-    const int height_margin = (src_height - dst_height) * 0.5;
-
     const float cos_alpha = cos(alpha);
     const float sin_alpha = sin(alpha);
 
-    const float x0 = (src_width - 1) * 0.5;
-    const float y0 = (src_height - 1) * 0.5;
-    float x1, y1, rx1, ry1, cx1, cy1;
-    int ix1, iy1, ix1b, iy1b;
+    // Center of src image
+    const float src_center_x = (src_width - 1) * 0.5;
+    const float src_center_y = (src_height - 1) * 0.5;
 
-    for (int x2 = 0; x2 < dst_width; ++x2) {
-        for (int y2 = 0; y2 < dst_height; ++y2) {
-            x1 = ((float)x2 + width_margin - x0) * cos_alpha + ((float)y2 + height_margin - y0) * sin_alpha + x0;
-//            if (x1 < 0 or x1 >= src_width) {
-//                dst[x2*dst_height + y2] = 0.0f;
-//                continue;
-//            }
-            y1 = ((float)y2 + height_margin - y0) * cos_alpha - ((float)x2 + width_margin - x0) * sin_alpha + y0;
-//            if (y1 < 0 or y1 >= src_height) {
-//                dst[x2*dst_height + y2] = 0.0f;
-//                continue;
-//            }
-            ix1 = x1;
-            iy1 = y1;
-            ix1b = ix1 + 1;
-            iy1b = iy1 + 1;
-            rx1 = x1 - ix1;
-            ry1 = y1 - iy1;
-            cx1 = 1.0f - rx1;
-            cy1 = 1.0f - ry1;
-            dst[x2 * dst_height + y2] = cx1 * cy1 * src[ix1  * src_height + iy1 ]
-                                      + cx1 * ry1 * src[ix1  * src_height + iy1b]
-                                      + rx1 * cy1 * src[ix1b * src_height + iy1 ]
-                                      + rx1 * ry1 * src[ix1b * src_height + iy1b];
+    // Center of dst image
+    const float dst_center_x = (dst_width - 1) * 0.5;
+    const float dst_center_y = (dst_height - 1) * 0.5;
+
+    for (int dst_x = 0; dst_x < dst_width; ++dst_x) {
+        for (int dst_y = 0; dst_y < dst_height; ++dst_y) {
+
+        	float dst_position_x = static_cast<float>(dst_x) - dst_center_x;
+        	float dst_position_y = static_cast<float>(dst_y) - dst_center_y;
+
+            float src_position_x = dst_position_x * cos_alpha - dst_position_y * sin_alpha + src_center_x;
+            float src_position_y = dst_position_y * sin_alpha + dst_position_x * cos_alpha + src_center_y;
+
+			int src_x = src_position_x;
+			int src_y = src_position_y;
+
+			int src_x_plus_1 = src_x + 1;
+			int src_y_plus_1 = src_y + 1;
+
+			float rx = src_position_x - src_x;
+			float ry = src_position_y - src_y;
+
+			float cx = 1.0 - rx;
+			float cy = 1.0 - ry;
+
+			if (src_position_x < -1.0 or src_position_x >= src_width or src_position_y < -1.0 or src_position_y >= src_height) {
+				dst[dst_x * dst_height + dst_y] = 0.0;
+			} else if (src_position_x < 0.0 and src_position_y < 0.0) {
+				rx = src_position_x + 1.0;
+				ry = src_position_y + 1.0;
+			    dst[dst_x * dst_height + dst_y] = rx * ry * src[0];
+			} else if (src_position_x < 0.0) {
+				rx = src_position_x + 1.0;
+			    dst[dst_x * dst_height + dst_y] = rx * ry * src[src_y_plus_1]
+										        + rx * cy * src[src_y];
+			} else if (src_position_y < 0.0) {
+				ry = src_position_y + 1.0;
+			    dst[dst_x * dst_height + dst_y] = rx * ry * src[src_x_plus_1 * src_height]
+												+ cx * ry * src[src_x * src_height];
+			} else if (src_position_x >= src_width - 1 or src_position_y >= src_height - 1) {
+				float value = cx * cy * src[src_x  * src_height + src_y];
+			    if (src_position_x < src_width - 1) {
+					value += rx * cy * src[src_x_plus_1 * src_height + src_y];
+			    }
+			    if (src_position_y < src_height - 1) {
+					value += cx * ry * src[src_x  * src_height + src_y_plus_1];
+			    }
+			    dst[dst_x * dst_height + dst_y] = value;
+			} else{
+				dst[dst_x * dst_height + dst_y] = cx * cy * src[src_x * src_height + src_y]
+												+ cx * ry * src[src_x * src_height + src_y_plus_1]
+												+ rx * cy * src[src_x_plus_1 * src_height + src_y]
+												+ rx * ry * src[src_x_plus_1 * src_height + src_y_plus_1];
+			}
         }
     }
 }
