@@ -56,7 +56,7 @@ template <class T>
     std::vector<T> const& actual, float tolerance = defaultTolerance)
 {
     if (expected.size() != actual.size()) ::testing::AssertionFailure();
-	return EqualFloatArrays(&expected[0], &actual[0], actual.size(), tolerance);
+    return EqualFloatArrays(&expected[0], &actual[0], actual.size(), tolerance);
 }
 
 } // namespace pink

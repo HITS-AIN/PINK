@@ -58,8 +58,8 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
     {
         T const *current_image = &data[i * image_size];
         T *current_rotated_image = &rotated_images[i * neuron_size];
-        //resize(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim);
-        crop(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim);
+        resize(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim);
+        //crop(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim);
         if (number_of_rotations != 1) {
             rotate_90_degrees(current_rotated_image, current_rotated_image + offset1, neuron_dim, neuron_dim);
             rotate_90_degrees(current_rotated_image + offset1, current_rotated_image + offset2, neuron_dim, neuron_dim);
@@ -73,8 +73,8 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
         for (int j = 0; j < spacing; ++j) {
             T const *current_image = &data[j * image_size];
             T *current_rotated_image = &rotated_images[(i * spacing + j) * neuron_size];
-            //rotate(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim, i * angle_step_radians, interpolation);
-            rotate_and_crop(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim, i * angle_step_radians, interpolation);
+            rotate(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim, i * angle_step_radians, interpolation);
+            //rotate_and_crop(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim, i * angle_step_radians, interpolation);
             rotate_90_degrees(current_rotated_image, current_rotated_image + offset1, neuron_dim, neuron_dim);
             rotate_90_degrees(current_rotated_image + offset1, current_rotated_image + offset2, neuron_dim, neuron_dim);
             rotate_90_degrees(current_rotated_image + offset2, current_rotated_image + offset3, neuron_dim, neuron_dim);
