@@ -38,14 +38,15 @@ class MapperBase_generic
 public:
 
     MapperBase_generic(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations,
-        bool use_flip, Interpolation interpolation)
+        bool use_flip, Interpolation interpolation, int euclidean_distance_dim)
      : som(som),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
        number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
        angle_step_radians(0.5 * M_PI / number_of_rotations / 4),
-       interpolation(interpolation)
+       interpolation(interpolation),
+	   euclidean_distance_dim(euclidean_distance_dim)
     {
         if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
@@ -63,6 +64,9 @@ protected:
     float angle_step_radians;
 
     Interpolation interpolation;
+
+    /// Dimension for calculation of euclidean distance
+    int euclidean_distance_dim;
 };
 
 /// Primary template will never be instantiated
@@ -76,8 +80,8 @@ class Mapper_generic<SOMLayout, DataLayout, T, false> : public MapperBase_generi
 public:
 
     Mapper_generic(SOM<SOMLayout, DataLayout, T> const& som, int verbosity,
-        uint32_t number_of_rotations, bool use_flip, Interpolation interpolation)
-     : MapperBase_generic<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation)
+        uint32_t number_of_rotations, bool use_flip, Interpolation interpolation, int euclidean_distance_dim = -1)
+     : MapperBase_generic<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim)
     {}
 
     auto operator () (Data<DataLayout, T> const& data)
@@ -92,8 +96,8 @@ public:
         std::vector<uint32_t> best_rotation_matrix(this->som.get_number_of_neurons());
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
-            this->som.get_number_of_neurons(), this->som.get_data_pointer(), neuron_size, this->number_of_spatial_transformations,
-            spatial_transformed_images);
+            this->som.get_number_of_neurons(), this->som.get_data_pointer(), neuron_dim, this->number_of_spatial_transformations,
+            spatial_transformed_images, this->euclidean_distance_dim);
 
         return std::make_tuple(euclidean_distance_matrix, best_rotation_matrix);
     }
@@ -109,8 +113,9 @@ class Mapper_generic<SOMLayout, DataLayout, T, true> : public MapperBase_generic
 public:
 
     Mapper_generic(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
-        Interpolation interpolation, uint16_t block_size, DataType euclidean_distance_type)
-     : MapperBase_generic<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation),
+        Interpolation interpolation, int euclidean_distance_dim = -1,
+		uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
+     : MapperBase_generic<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim),
        d_som(som.get_data()),
        block_size(block_size),
        euclidean_distance_type(euclidean_distance_type),

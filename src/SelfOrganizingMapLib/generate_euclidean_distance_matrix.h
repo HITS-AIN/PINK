@@ -17,11 +17,14 @@ namespace pink {
 template <typename T>
 void generate_euclidean_distance_matrix(std::vector<T>& euclidean_distance_matrix,
     std::vector<uint32_t>& best_rotation_matrix, uint32_t som_size, T const *som,
-    uint32_t image_size, uint32_t num_rot, std::vector<T> const& rotated_images)
+    uint32_t image_dim, uint32_t num_rot, std::vector<T> const& rotated_images, uint32_t euclidean_distance_dim)
 {
     T tmp;
     T* pdist = &euclidean_distance_matrix[0];
     uint32_t* prot = &best_rotation_matrix[0];
+
+    uint32_t image_size = image_dim * image_dim;
+    uint32_t offset = (image_dim - euclidean_distance_dim) * 0.5;
 
     for (uint32_t i = 0; i < som_size; ++i) euclidean_distance_matrix[i] = std::numeric_limits<T>::max();
 

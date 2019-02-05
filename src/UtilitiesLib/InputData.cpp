@@ -25,6 +25,7 @@ InputData::InputData()
    som_height(10),
    som_depth(1),
    neuron_dim(0),
+   euclidean_distance_dim(0),
    layout(Layout::CARTESIAN),
    seed(1234),
    numberOfRotations(360),
@@ -58,38 +59,40 @@ InputData::InputData(int argc, char **argv)
  : InputData()
 {
     static struct option long_options[] = {
-        {"neuron-dimension",        1, 0, 'd'},
-        {"layout",                  1, 0, 'l'},
-        {"seed",                    1, 0, 's'},
-        {"numrot",                  1, 0, 'n'},
-        {"numthreads",              1, 0, 't'},
-        {"init",                    1, 0, 'x'},
-        {"progress",                1, 0, 'p'},
-        {"version",                 0, 0, 'v'},
-        {"help",                    0, 0, 'h'},
-        {"dist-func",               1, 0, 'f'},
-        {"som-width",               1, 0, 0},
-        {"num-iter",                1, 0, 1},
-        {"flip-off",                0, 0, 2},
-        {"cuda-off",                0, 0, 3},
-        {"verbose",                 0, 0, 4},
-        {"interpolation",           1, 0, 5},
-        {"train",                   1, 0, 6},
-        {"map",                     1, 0, 7},
-        {"inter-store",             1, 0, 8},
-        {"b1",                      1, 0, 9},
-        {"max-update-distance",     1, 0, 10},
-        {"som-height",              1, 0, 12},
-        {"som-depth",               1, 0, 13},
-        {"pbc",                     0, 0, 14},
-        {"store-rot-flip",          1, 0, 15},
-        {"euclidean-distance-type", 1, 0, 16},
+        {"neuron-dimension",             1, 0, 'd'},
+        {"euclidean-distance-dimension", 1, 0, 'e'},
+        {"layout",                       1, 0, 'l'},
+        {"seed",                         1, 0, 's'},
+        {"numrot",                       1, 0, 'n'},
+        {"numthreads",                   1, 0, 't'},
+        {"init",                         1, 0, 'x'},
+        {"progress",                     1, 0, 'p'},
+        {"version",                      0, 0, 'v'},
+        {"help",                         0, 0, 'h'},
+        {"dist-func",                    1, 0, 'f'},
+        {"som-width",                    1, 0, 0},
+        {"num-iter",                     1, 0, 1},
+        {"flip-off",                     0, 0, 2},
+        {"cuda-off",                     0, 0, 3},
+        {"verbose",                      0, 0, 4},
+        {"interpolation",                1, 0, 5},
+        {"train",                        1, 0, 6},
+        {"map",                          1, 0, 7},
+        {"inter-store",                  1, 0, 8},
+        {"b1",                           1, 0, 9},
+        {"max-update-distance",          1, 0, 10},
+        {"som-height",                   1, 0, 12},
+        {"som-depth",                    1, 0, 13},
+        {"pbc",                          0, 0, 14},
+        {"store-rot-flip",               1, 0, 15},
+        {"euclidean-distance-type",      1, 0, 16},
         {NULL, 0, NULL, 0}
     };
 
     int c = 0;
     int option_index = 0;
     int neuron_dim_in = -1;
+    int euclidean_distance_dim_in = -1;
     while ((c = getopt_long(argc, argv, "vd:l:s:n:t:x:p:a:hf:", long_options, &option_index)) != -1)
     {
         switch (c)
@@ -376,10 +379,16 @@ InputData::InputData(int argc, char **argv)
 
     if (neuron_dim_in == -1) {
         if (numberOfRotations == 1) neuron_dim = data_dimension[0];
-        else neuron_dim = data_dimension[0] * sqrt(2.0) / 2.0;
-        //else neuron_dim = static_cast<uint32_t>(2 * data_dimension[0] / std::sqrt(2.0)) + 1;
+        else neuron_dim = 2 * data_dimension[0] / std::sqrt(2.0) + 1;
     } else {
         neuron_dim = neuron_dim_in;
+    }
+
+    if (euclidean_distance_dim_in == -1) {
+        if (numberOfRotations == 1) euclidean_distance_dim = data_dimension[0];
+        else euclidean_distance_dim = data_dimension[0] * std::sqrt(2.0) / 2.0;
+    } else {
+    	euclidean_distance_dim = euclidean_distance_dim_in;
     }
 
     neuron_size = neuron_dim * neuron_dim;
@@ -438,6 +447,7 @@ void InputData::print_parameters() const
               << "  SOM size = " << som_size << "\n"
               << "  Number of iterations = " << numIter << "\n"
               << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
+              << "  Euclidean distance dimension = " << euclidean_distance_dim << "x" << euclidean_distance_dim << "\n"
               << "  Number of progress information prints = " << number_of_progress_prints << "\n"
               << "  Intermediate storage of SOM = " << intermediate_storage << "\n"
               << "  Layout = " << layout << "\n"

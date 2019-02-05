@@ -48,6 +48,7 @@ void main_generic(InputData const& input_data)
             ,input_data.use_flip
             ,input_data.max_update_distance
             ,input_data.interpolation
+            ,input_data.euclidean_distance_dim
 #ifdef __CUDACC__
             ,input_data.block_size_1
             ,input_data.euclidean_distance_type
@@ -138,6 +139,7 @@ void main_generic(InputData const& input_data)
             ,input_data.numberOfRotations
             ,input_data.use_flip
             ,input_data.interpolation
+            ,input_data.euclidean_distance_dim
 #ifdef __CUDACC__
             ,input_data.block_size_1
             ,input_data.euclidean_distance_type

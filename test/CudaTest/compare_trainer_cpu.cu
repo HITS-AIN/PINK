@@ -59,10 +59,10 @@ TEST_P(compare_trainer_cpu, cartesian_2d_float)
 
     auto&& f = GaussianFunctor(1.1, 0.2);
 
-    MyTrainer_cpu trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR);
+    MyTrainer_cpu trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, GetParam().neuron_dim);
     trainer1(data);
 
-    MyTrainer_gpu trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, 256, DataType::FLOAT);
+    MyTrainer_gpu trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, GetParam().neuron_dim, 256, DataType::FLOAT);
     trainer2(data);
     trainer2.update_som();
 

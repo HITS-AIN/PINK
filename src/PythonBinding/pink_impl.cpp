@@ -95,14 +95,15 @@ PYBIND11_MODULE(pink, m)
        .export_values();
 
     py::class_<Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "trainer_cpu")
-        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, float, Interpolation>(),
+        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, float, Interpolation, int>(),
             py::arg("som"),
             py::arg("distribution_function"),
             py::arg("verbosity") = 0,
             py::arg("number_of_rotations") = 360,
             py::arg("use_flip") = true,
             py::arg("max_update_distance") = -1.0,
-            py::arg("interpolation") = Interpolation::BILINEAR
+            py::arg("interpolation") = Interpolation::BILINEAR,
+			py::arg("euclidean_distance_dim") = -1
         )
         .def("__call__", [](Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>& trainer, Data<CartesianLayout<2>, float> const& data)
         {
@@ -110,12 +111,13 @@ PYBIND11_MODULE(pink, m)
         });
 
     py::class_<Mapper_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "mapper_cpu")
-        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, int, uint32_t, bool, Interpolation>(),
+        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, int, uint32_t, bool, Interpolation, int>(),
             py::arg("som"),
             py::arg("verbosity") = 0,
             py::arg("number_of_rotations") = 360,
             py::arg("use_flip") = true,
-            py::arg("interpolation") = Interpolation::BILINEAR
+            py::arg("interpolation") = Interpolation::BILINEAR,
+			py::arg("euclidean_distance_dim") = -1
         )
         .def("__call__", [](Mapper_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>& mapper, Data<CartesianLayout<2>, float> const& data)
         {
@@ -132,7 +134,7 @@ PYBIND11_MODULE(pink, m)
 
     py::class_<Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m, "trainer_gpu")
         .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, float,
-            Interpolation, uint16_t, DataType>(),
+            Interpolation, int, uint16_t, DataType>(),
             py::arg("som"),
             py::arg("distribution_function"),
             py::arg("verbosity") = 0,
@@ -140,6 +142,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("use_flip") = true,
             py::arg("max_update_distance") = -1.0,
             py::arg("interpolation") = Interpolation::BILINEAR,
+			py::arg("euclidean_distance_dim") = -1,
             py::arg("block_size") = 256,
             py::arg("euclidean_distance_type") = DataType::UINT8
         )
