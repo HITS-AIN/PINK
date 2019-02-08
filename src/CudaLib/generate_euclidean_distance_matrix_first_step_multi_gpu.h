@@ -50,13 +50,13 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
         offset[i] = offset[i-1] + size[i-1];
     }
 
-    std::vector<thrust::device_ptr<const EuclideanType>> d_som_local_ptr_list(number_of_gpus);
-    std::vector<thrust::device_ptr<const EuclideanType>> d_rotated_images_local_ptr_list(number_of_gpus);
-    std::vector<thrust::device_ptr<DataType>> d_first_step_local_ptr_list(number_of_gpus);
+    std::vector<thrust::device_ptr<const EuclideanType>> d_som_ptr_list(number_of_gpus);
+    std::vector<thrust::device_ptr<const EuclideanType>> d_rotated_images_ptr_list(number_of_gpus);
+    std::vector<thrust::device_ptr<DataType>> d_first_step_ptr_list(number_of_gpus);
 
-    d_som_local_ptr_list[0] = d_som.data();
-    d_rotated_images_local_ptr_list[0] = d_rotated_images.data();
-    d_first_step_local_ptr_list[0] = d_first_step.data();
+    d_som_ptr_list[0] = d_som.data();
+    d_rotated_images_ptr_list[0] = d_rotated_images.data();
+    d_first_step_ptr_list[0] = d_first_step.data();
 
     std::vector<thrust::device_vector<EuclideanType>> d_som_local(number_of_gpus - 1);
     std::vector<thrust::device_vector<EuclideanType>> d_rotated_images_local(number_of_gpus - 1);
@@ -69,10 +69,15 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
         d_rotated_images_local[i-1].resize(number_of_spatial_transformations * neuron_size);
         d_first_step_local[i-1].resize(size[i] * number_of_spatial_transformations);
 
+        d_som_ptr_list[i] = d_som_local[i-1].data();
+        d_rotated_images_ptr_list[i] = d_rotated_images_local[i-1].data();
+        d_first_step_ptr_list[i] = d_first_step_local[i-1].data();
+
         // Copy data
         gpuErrchk(cudaMemcpyPeer(thrust::raw_pointer_cast(d_som_local[i-1].data()), i,
                             thrust::raw_pointer_cast(d_som.data()) + offset[i] * neuron_size, 0,
                             size[i] * neuron_size * sizeof(EuclideanType)));
+
         gpuErrchk(cudaMemcpyPeer(thrust::raw_pointer_cast(d_rotated_images_local[i-1].data()), i,
                             thrust::raw_pointer_cast(d_rotated_images.data()), 0,
                             number_of_spatial_transformations * neuron_size * sizeof(EuclideanType)));
@@ -86,9 +91,9 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
             // Start GPU device
             cudaSetDevice(gpu_ids[i]);
 
-            auto d_som_local_ptr = d_som_local_ptr_list[i];
-            auto d_rotated_images_local_ptr = d_rotated_images_local_ptr_list[i];
-            auto d_first_step_local_ptr = d_first_step_local_ptr_list[i];
+            auto d_som_local_ptr = d_som_ptr_list[i];
+            auto d_rotated_images_local_ptr = d_rotated_images_ptr_list[i];
+            auto d_first_step_local_ptr = d_first_step_ptr_list[i];
 
             // Setup execution parameters
             dim3 dim_block(block_size);
