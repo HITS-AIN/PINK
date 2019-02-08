@@ -50,28 +50,19 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
         offset[i] = offset[i-1] + size[i-1];
     }
 
-    std::vector<thrust::device_ptr<const EuclideanType>> d_som_ptr_list(number_of_gpus);
-    std::vector<thrust::device_ptr<const EuclideanType>> d_rotated_images_ptr_list(number_of_gpus);
-    std::vector<thrust::device_ptr<DataType>> d_first_step_ptr_list(number_of_gpus);
-
-    d_som_ptr_list[0] = d_som.data();
-    d_rotated_images_ptr_list[0] = d_rotated_images.data();
-    d_first_step_ptr_list[0] = d_first_step.data();
-
-    std::vector<thrust::device_vector<EuclideanType>> d_som_local(number_of_gpus - 1);
-    std::vector<thrust::device_vector<EuclideanType>> d_rotated_images_local(number_of_gpus - 1);
-    std::vector<thrust::device_vector<DataType>> d_first_step_local(number_of_gpus - 1);
+    std::vector<thrust::device_vector<EuclideanType>> d_som_local;
+    std::vector<thrust::device_vector<EuclideanType>> d_rotated_images_local;
+    std::vector<thrust::device_vector<DataType>> d_first_step_local;
 
     for (int i = 1; i < number_of_gpus; ++i)
     {
-        // Allocate local device memory
-        d_som_local[i-1].resize(size[i] * neuron_size);
-        d_rotated_images_local[i-1].resize(number_of_spatial_transformations * neuron_size);
-        d_first_step_local[i-1].resize(size[i] * number_of_spatial_transformations);
+        // Set GPU device
+        cudaSetDevice(gpu_ids[i]);
 
-        d_som_ptr_list[i] = d_som_local[i-1].data();
-        d_rotated_images_ptr_list[i] = d_rotated_images_local[i-1].data();
-        d_first_step_ptr_list[i] = d_first_step_local[i-1].data();
+        // Allocate local device memory
+        d_som_local.push_back(thrust::device_vector<EuclideanType>(size[i] * neuron_size));
+        d_rotated_images_local.push_back(thrust::device_vector<EuclideanType>(number_of_spatial_transformations * neuron_size));
+        d_first_step_local.push_back(thrust::device_vector<DataType>(size[i] * number_of_spatial_transformations));
 
         // Copy data
         gpuErrchk(cudaMemcpyPeer(thrust::raw_pointer_cast(d_som_local[i-1].data()), i,
@@ -81,21 +72,17 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
         gpuErrchk(cudaMemcpyPeer(thrust::raw_pointer_cast(d_rotated_images_local[i-1].data()), i,
                             thrust::raw_pointer_cast(d_rotated_images.data()), 0,
                             number_of_spatial_transformations * neuron_size * sizeof(EuclideanType)));
+
+        gpuErrchk(cudaDeviceSynchronize());
     }
 
-    gpuErrchk(cudaDeviceSynchronize());
-
     std::vector<std::thread> workers;
-    for (int i = 0; i < number_of_gpus; ++i)
+    for (int i = 1; i < number_of_gpus; ++i)
     {
         workers.push_back(std::thread([&, i]()
         {
-            // Start GPU device
+            // Set GPU device
             cudaSetDevice(gpu_ids[i]);
-
-            auto d_som_local_ptr = d_som_ptr_list[i];
-            auto d_rotated_images_local_ptr = d_rotated_images_ptr_list[i];
-            auto d_first_step_local_ptr = d_first_step_ptr_list[i];
 
             // Setup execution parameters
             dim3 dim_block(block_size);
@@ -104,17 +91,17 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
             switch (block_size)
             {
                 case  512: euclidean_distance_kernel< 512><<<dim_grid, dim_block>>>(
-                    thrust::raw_pointer_cast(d_som_local_ptr), thrust::raw_pointer_cast(d_rotated_images_local_ptr),
-                    thrust::raw_pointer_cast(d_first_step_local_ptr), neuron_size); break;
+                    thrust::raw_pointer_cast(d_som_local[i-1].data()), thrust::raw_pointer_cast(d_rotated_images_local[i-1].data()),
+                    thrust::raw_pointer_cast(d_first_step_local[i-1].data()), neuron_size); break;
                 case  256: euclidean_distance_kernel< 256><<<dim_grid, dim_block>>>(
-                    thrust::raw_pointer_cast(d_som_local_ptr), thrust::raw_pointer_cast(d_rotated_images_local_ptr),
-                    thrust::raw_pointer_cast(d_first_step_local_ptr), neuron_size); break;
+                    thrust::raw_pointer_cast(d_som_local[i-1].data()), thrust::raw_pointer_cast(d_rotated_images_local[i-1].data()),
+                    thrust::raw_pointer_cast(d_first_step_local[i-1].data()), neuron_size); break;
                 case  128: euclidean_distance_kernel< 128><<<dim_grid, dim_block>>>(
-                    thrust::raw_pointer_cast(d_som_local_ptr), thrust::raw_pointer_cast(d_rotated_images_local_ptr),
-                    thrust::raw_pointer_cast(d_first_step_local_ptr), neuron_size); break;
+                    thrust::raw_pointer_cast(d_som_local[i-1].data()), thrust::raw_pointer_cast(d_rotated_images_local[i-1].data()),
+                    thrust::raw_pointer_cast(d_first_step_local[i-1].data()), neuron_size); break;
                 case   64: euclidean_distance_kernel<  64><<<dim_grid, dim_block>>>(
-                    thrust::raw_pointer_cast(d_som_local_ptr), thrust::raw_pointer_cast(d_rotated_images_local_ptr),
-                    thrust::raw_pointer_cast(d_first_step_local_ptr), neuron_size); break;
+                    thrust::raw_pointer_cast(d_som_local[i-1].data()), thrust::raw_pointer_cast(d_rotated_images_local[i-1].data()),
+                    thrust::raw_pointer_cast(d_first_step_local[i-1].data()), neuron_size); break;
                 default:
                     throw pink::exception("generate_euclidean_distance_matrix_first_step: block size not supported");
             }
@@ -122,6 +109,33 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
             gpuErrchk(cudaDeviceSynchronize());
         }));
     }
+
+    // Set GPU device to master
+    cudaSetDevice(gpu_ids[0]);
+
+    // Setup execution parameters
+    dim3 dim_block(block_size);
+    dim3 dim_grid(number_of_spatial_transformations, size[0]);
+
+    switch (block_size)
+    {
+        case  512: euclidean_distance_kernel< 512><<<dim_grid, dim_block>>>(
+            thrust::raw_pointer_cast(d_som.data()), thrust::raw_pointer_cast(d_rotated_images.data()),
+            thrust::raw_pointer_cast(d_first_step.data()), neuron_size); break;
+        case  256: euclidean_distance_kernel< 256><<<dim_grid, dim_block>>>(
+            thrust::raw_pointer_cast(d_som.data()), thrust::raw_pointer_cast(d_rotated_images.data()),
+            thrust::raw_pointer_cast(d_first_step.data()), neuron_size); break;
+        case  128: euclidean_distance_kernel< 128><<<dim_grid, dim_block>>>(
+            thrust::raw_pointer_cast(d_som.data()), thrust::raw_pointer_cast(d_rotated_images.data()),
+            thrust::raw_pointer_cast(d_first_step.data()), neuron_size); break;
+        case   64: euclidean_distance_kernel<  64><<<dim_grid, dim_block>>>(
+            thrust::raw_pointer_cast(d_som.data()), thrust::raw_pointer_cast(d_rotated_images.data()),
+            thrust::raw_pointer_cast(d_first_step.data()), neuron_size); break;
+        default:
+            throw pink::exception("generate_euclidean_distance_matrix_first_step: block size not supported");
+    }
+    gpuErrchk(cudaPeekAtLastError());
+    gpuErrchk(cudaDeviceSynchronize());
 
     // Wait for all workers
     for (auto&& w : workers) w.join();
