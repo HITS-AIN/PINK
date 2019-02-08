@@ -15,7 +15,7 @@
 #include "SelfOrganizingMapLib/DataIO.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "SelfOrganizingMapLib/SOMIO.h"
-#include "SelfOrganizingMapLib/Trainer_generic.h"
+#include "SelfOrganizingMapLib/Trainer.h"
 #include "UtilitiesLib/EqualFloatArrays.h"
 #include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/Filler.h"
@@ -47,7 +47,7 @@ TEST_P(TrainerCompareTest, cartesian_2d_float)
 {
     typedef Data<CartesianLayout<2>, float> DataType;
     typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> SOMType;
-    typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
+    typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
     DataType data({GetParam().image_dim, GetParam().image_dim});
     fill_random_uniform(data.get_data_pointer(), data.size());

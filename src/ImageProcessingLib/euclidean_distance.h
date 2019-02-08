@@ -26,6 +26,18 @@ T euclidean_distance_square(T const *a, T const *b, int length)
     return dot(diff);
 }
 
+/// Same as @euclidean_distance but without square root for speed (sum((a[i] - b[i])^2))
+template <typename T>
+T euclidean_distance_square_offset(T const *a, T const *b, int image_dim, int euclidean_distance_dim)
+{
+    uint32_t offset = (image_dim - euclidean_distance_dim) * 0.5;
+    std::vector<T> diff(euclidean_distance_dim * euclidean_distance_dim);
+    for (int i = 0; i < euclidean_distance_dim; ++i)
+      for (int j = 0; j < euclidean_distance_dim; ++j)
+        diff[i * euclidean_distance_dim + j] = a[(i + offset) * image_dim + j + offset] - b[(i + offset) * image_dim + j + offset];
+    return dot(diff);
+}
+
 /// Returns euclidean distance of two arrays (sqrt(sum((a[i] - b[i])^2))
 template <typename T>
 T euclidean_distance(T const *a, T const *b, int length)

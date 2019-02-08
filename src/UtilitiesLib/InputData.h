@@ -55,11 +55,11 @@ struct InputData
     uint32_t som_width;
     uint32_t som_height;
     uint32_t som_depth;
-    uint32_t neuron_dim;
-    uint32_t euclidean_distance_dim;
+    int neuron_dim;
+    int euclidean_distance_dim;
     Layout layout;
     int seed;
-    int numberOfRotations;
+    int number_of_rotations;
     int number_of_threads;
     SOMInitialization init;
     int numIter;
@@ -72,7 +72,7 @@ struct InputData
     int som_size;
     int neuron_size;
     int som_total_size;
-    int numberOfRotationsAndFlip;
+    int number_of_spatial_transformations;
     Interpolation interpolation;
     ExecutionPath executionPath;
     IntermediateStorageType intermediate_storage;

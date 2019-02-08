@@ -24,11 +24,11 @@ InputData::InputData()
    som_width(10),
    som_height(10),
    som_depth(1),
-   neuron_dim(0),
-   euclidean_distance_dim(0),
+   neuron_dim(-1),
+   euclidean_distance_dim(-1),
    layout(Layout::CARTESIAN),
    seed(1234),
-   numberOfRotations(360),
+   number_of_rotations(360),
    number_of_threads(-1),
    init(SOMInitialization::ZERO),
    numIter(1),
@@ -40,7 +40,7 @@ InputData::InputData()
    som_size(0),
    neuron_size(0),
    som_total_size(0),
-   numberOfRotationsAndFlip(0),
+   number_of_spatial_transformations(0),
    interpolation(Interpolation::BILINEAR),
    executionPath(ExecutionPath::UNDEFINED),
    intermediate_storage(IntermediateStorageType::OFF),
@@ -91,15 +91,18 @@ InputData::InputData(int argc, char **argv)
 
     int c = 0;
     int option_index = 0;
-    int neuron_dim_in = -1;
-    int euclidean_distance_dim_in = -1;
     while ((c = getopt_long(argc, argv, "vd:l:s:n:t:x:p:a:hf:", long_options, &option_index)) != -1)
     {
         switch (c)
         {
             case 'd':
             {
-                neuron_dim_in = atoi(optarg);
+                neuron_dim = atoi(optarg);
+                break;
+            }
+            case 'e':
+            {
+            	euclidean_distance_dim = atoi(optarg);
                 break;
             }
             case 0:
@@ -152,8 +155,8 @@ InputData::InputData(int argc, char **argv)
             }
             case 'n':
             {
-                numberOfRotations = atoi(optarg);
-                if (numberOfRotations <= 0 or (numberOfRotations != 1 and numberOfRotations % 4)) {
+                number_of_rotations = atoi(optarg);
+                if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4)) {
                     print_usage();
                     printf ("ERROR: Number of rotations must be 1 or a multiple of 4.\n");
                     exit(EXIT_FAILURE);
@@ -377,23 +380,19 @@ InputData::InputData(int argc, char **argv)
         ifs.read((char*)&data_dimension[i], sizeof(int));
     }
 
-    if (neuron_dim_in == -1) {
-        if (numberOfRotations == 1) neuron_dim = data_dimension[0];
-        else neuron_dim = 2 * data_dimension[0] / std::sqrt(2.0) + 1;
-    } else {
-        neuron_dim = neuron_dim_in;
+    if (neuron_dim == -1) {
+    	neuron_dim = data_dimension[0];
+        if (number_of_rotations != 1) neuron_dim = 2 * data_dimension[0] / std::sqrt(2.0) + 1;
     }
 
-    if (euclidean_distance_dim_in == -1) {
-        if (numberOfRotations == 1) euclidean_distance_dim = data_dimension[0];
-        else euclidean_distance_dim = data_dimension[0] * std::sqrt(2.0) / 2.0;
-    } else {
-    	euclidean_distance_dim = euclidean_distance_dim_in;
+    if (euclidean_distance_dim == -1) {
+        euclidean_distance_dim = data_dimension[0];
+        if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
     }
 
     neuron_size = neuron_dim * neuron_dim;
     som_total_size = som_size * neuron_size;
-    numberOfRotationsAndFlip = use_flip ? 2 * numberOfRotations : numberOfRotations;
+    number_of_spatial_transformations = use_flip ? 2 * number_of_rotations : number_of_rotations;
 
     if (number_of_threads == -1) number_of_threads = omp_get_max_threads();
     omp_set_num_threads(number_of_threads);
@@ -454,7 +453,7 @@ void InputData::print_parameters() const
               << "  Initialization type = " << init << "\n"
               << "  Interpolation type = " << interpolation << "\n"
               << "  Seed = " << seed << "\n"
-              << "  Number of rotations = " << numberOfRotations << "\n"
+              << "  Number of rotations = " << number_of_rotations << "\n"
               << "  Use mirrored image = " << use_flip << "\n"
               << "  Number of CPU threads = " << number_of_threads << "\n"
               << "  Use CUDA = " << use_gpu << "\n"

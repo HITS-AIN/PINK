@@ -24,14 +24,13 @@ void generate_euclidean_distance_matrix(std::vector<T>& euclidean_distance_matri
     uint32_t* prot = &best_rotation_matrix[0];
 
     uint32_t image_size = image_dim * image_dim;
-    uint32_t offset = (image_dim - euclidean_distance_dim) * 0.5;
 
     for (uint32_t i = 0; i < som_size; ++i) euclidean_distance_matrix[i] = std::numeric_limits<T>::max();
 
     for (uint32_t i = 0; i < som_size; ++i, ++pdist, ++prot) {
         #pragma omp parallel for private(tmp)
         for (uint32_t j = 0; j < num_rot; ++j) {
-            tmp = euclidean_distance_square(&som[i * image_size], &rotated_images[j * image_size], image_size);
+            tmp = euclidean_distance_square_offset(&som[i * image_size], &rotated_images[j * image_size], image_dim, euclidean_distance_dim);
             #pragma omp critical
             if (tmp < *pdist) {
                 *pdist = tmp;

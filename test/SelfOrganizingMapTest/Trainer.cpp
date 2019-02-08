@@ -14,7 +14,7 @@
 #include "SelfOrganizingMapLib/DataIO.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "SelfOrganizingMapLib/SOMIO.h"
-#include "SelfOrganizingMapLib/Trainer_generic.h"
+#include "SelfOrganizingMapLib/Trainer.h"
 #include "UtilitiesLib/DistributionFunctor.h"
 
 #include "gtest/gtest.h"
@@ -24,7 +24,7 @@ using namespace pink;
 TEST(SelfOrganizingMapTest, trainer_num_rot)
 {
     typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> MySOM;
-    typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
+    typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer;
 
     uint32_t som_dim = 2;
     uint32_t neuron_dim = 2;
@@ -41,11 +41,11 @@ TEST(SelfOrganizingMapTest, trainer_num_rot)
     EXPECT_NO_THROW(MyTrainer(som, f, 0, 720, false, 1.0, Interpolation::BILINEAR));
 }
 
-TEST(SelfOrganizingMapTest, trainer_generic_cartesian_2d_int)
+TEST(SelfOrganizingMapTest, trainer_cartesian_2d_int)
 {
     typedef Data<CartesianLayout<2>, int> DataType;
     typedef SOM<CartesianLayout<2>, CartesianLayout<2>, int> SOMType;
-    typedef Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, int, false> MyTrainer;
+    typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, int, false> MyTrainer;
 
     uint32_t som_dim = 2;
     uint32_t image_dim = 2;

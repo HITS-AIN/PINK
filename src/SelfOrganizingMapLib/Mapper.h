@@ -1,5 +1,5 @@
 /**
- * @file   SelfOrganizingMapLib/Mapper_generic.h
+ * @file   SelfOrganizingMapLib/Mapper.h
  * @date   Nov 30, 2018
  * @author Bernd Doser, HITS gGmbH
  */
@@ -12,13 +12,13 @@
 #include <iostream>
 #include <vector>
 
-#include "../UtilitiesLib/Interpolation.h"
 #include "Data.h"
 #include "find_best_match.h"
 #include "generate_rotated_images.h"
 #include "generate_euclidean_distance_matrix.h"
 #include "SOM.h"
 #include "SOMIO.h"
+#include "UtilitiesLib/Interpolation.h"
 #include "UtilitiesLib/pink_exception.h"
 
 #ifdef __CUDACC__
@@ -50,6 +50,11 @@ public:
     {
         if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
+
+        if (euclidean_distance_dim == -1) {
+            euclidean_distance_dim = som.get_neuron_dimension()[0];
+            if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
+        }
     }
 
 protected:
@@ -71,15 +76,15 @@ protected:
 
 /// Primary template will never be instantiated
 template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
-class Mapper_generic;
+class Mapper;
 
 /// CPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Mapper_generic<SOMLayout, DataLayout, T, false> : public MapperBase_generic<SOMLayout, DataLayout, T>
+class Mapper<SOMLayout, DataLayout, T, false> : public MapperBase_generic<SOMLayout, DataLayout, T>
 {
 public:
 
-    Mapper_generic(SOM<SOMLayout, DataLayout, T> const& som, int verbosity,
+    Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity,
         uint32_t number_of_rotations, bool use_flip, Interpolation interpolation, int euclidean_distance_dim = -1)
      : MapperBase_generic<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim)
     {}
@@ -87,7 +92,6 @@ public:
     auto operator () (Data<DataLayout, T> const& data)
     {
         uint32_t neuron_dim = this->som.get_neuron_dimension()[0];
-        uint32_t neuron_size = neuron_dim * neuron_dim;
 
         auto&& spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
             this->use_flip, this->interpolation, neuron_dim);
@@ -108,11 +112,11 @@ public:
 
 /// GPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Mapper_generic<SOMLayout, DataLayout, T, true> : public MapperBase_generic<SOMLayout, DataLayout, T>
+class Mapper<SOMLayout, DataLayout, T, true> : public MapperBase_generic<SOMLayout, DataLayout, T>
 {
 public:
 
-    Mapper_generic(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
+    Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
         Interpolation interpolation, int euclidean_distance_dim = -1,
 		uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
      : MapperBase_generic<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim),

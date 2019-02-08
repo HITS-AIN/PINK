@@ -1,5 +1,5 @@
 /**
- * @file   SelfOrganizingMapLib/Trainer_generic.h
+ * @file   SelfOrganizingMapLib/Trainer.h
  * @date   Oct 11, 2018
  * @author Bernd Doser, HITS gGmbH
  */
@@ -37,9 +37,9 @@ class TrainerBase_generic
 {
 public:
 
-    TrainerBase_generic(std::function<float(float)> distribution_function, int verbosity,
-        uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-        Interpolation interpolation, SOMLayout const& som_layout, int euclidean_distance_dim)
+    TrainerBase_generic(SOM<SOMLayout, DataLayout, T> const& som, std::function<float(float)> distribution_function,
+    	int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
+        Interpolation interpolation, int euclidean_distance_dim)
      : distribution_function(distribution_function),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
@@ -47,8 +47,8 @@ public:
        number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
        max_update_distance(max_update_distance),
        interpolation(interpolation),
-       update_info(som_layout),
-       som_size(som_layout.size()),
+       update_info(som.get_som_layout()),
+       som_size(som.get_som_layout().size()),
        update_factors(som_size * som_size, 0.0),
 	   euclidean_distance_dim(euclidean_distance_dim)
     {
@@ -57,11 +57,16 @@ public:
 
         for (uint32_t i = 0; i < som_size; ++i) {
             for (uint32_t j = 0; j < som_size; ++j) {
-                float distance = som_layout.get_distance(i, j);
+                float distance = som.get_som_layout().get_distance(i, j);
                 if (this->max_update_distance <= 0 or distance < this->max_update_distance) {
                     update_factors[i * som_size + j] = distribution_function(distance);
                 }
             }
+        }
+
+        if (euclidean_distance_dim == -1) {
+            euclidean_distance_dim = som.get_neuron_dimension()[0];
+            if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
         }
     }
 
@@ -95,23 +100,23 @@ protected:
 
 /// Primary template will never be instantiated
 template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
-class Trainer_generic;
+class Trainer;
 
 
 /// CPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Trainer_generic<SOMLayout, DataLayout, T, false> : public TrainerBase_generic<SOMLayout, DataLayout, T>
+class Trainer<SOMLayout, DataLayout, T, false> : public TrainerBase_generic<SOMLayout, DataLayout, T>
 {
     typedef SOM<SOMLayout, DataLayout, T> SOMType;
     typedef typename TrainerBase_generic<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
 
 public:
 
-    Trainer_generic(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
+    Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, int euclidean_distance_dim = -1)
-     : TrainerBase_generic<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
-           use_flip, max_update_distance, interpolation, som.get_som_layout(), euclidean_distance_dim),
+     : TrainerBase_generic<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
+           use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        som(som)
     {}
 
@@ -176,19 +181,19 @@ private:
 
 /// GPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Trainer_generic<SOMLayout, DataLayout, T, true> : public TrainerBase_generic<SOMLayout, DataLayout, T>
+class Trainer<SOMLayout, DataLayout, T, true> : public TrainerBase_generic<SOMLayout, DataLayout, T>
 {
     typedef SOM<SOMLayout, DataLayout, T> SOMType;
     typedef typename TrainerBase_generic<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
 
 public:
 
-    Trainer_generic(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
+    Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, int euclidean_distance_dim = -1,
 		uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
-     : TrainerBase_generic<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
-           use_flip, max_update_distance, interpolation, som.get_som_layout(), euclidean_distance_dim),
+     : TrainerBase_generic<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
+           use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        som(som),
        d_som(som.get_data()),
        block_size(block_size),

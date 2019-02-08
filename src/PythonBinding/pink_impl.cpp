@@ -9,8 +9,8 @@
 #include <pybind11/pybind11.h>
 
 #include "../UtilitiesLib/Interpolation.h"
-#include "SelfOrganizingMapLib/Mapper_generic.h"
-#include "SelfOrganizingMapLib/Trainer_generic.h"
+#include "SelfOrganizingMapLib/Mapper.h"
+#include "SelfOrganizingMapLib/Trainer.h"
 #include "SelfOrganizingMapLib/Data.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "UtilitiesLib/Version.h"
@@ -94,7 +94,7 @@ PYBIND11_MODULE(pink, m)
        .value("BILINEAR", Interpolation::BILINEAR)
        .export_values();
 
-    py::class_<Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "trainer_cpu")
+    py::class_<Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "trainer_cpu")
         .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, float, Interpolation, int>(),
             py::arg("som"),
             py::arg("distribution_function"),
@@ -105,12 +105,12 @@ PYBIND11_MODULE(pink, m)
             py::arg("interpolation") = Interpolation::BILINEAR,
 			py::arg("euclidean_distance_dim") = -1
         )
-        .def("__call__", [](Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>& trainer, Data<CartesianLayout<2>, float> const& data)
+        .def("__call__", [](Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>& trainer, Data<CartesianLayout<2>, float> const& data)
         {
             return trainer(data);
         });
 
-    py::class_<Mapper_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "mapper_cpu")
+    py::class_<Mapper<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "mapper_cpu")
         .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, int, uint32_t, bool, Interpolation, int>(),
             py::arg("som"),
             py::arg("verbosity") = 0,
@@ -119,7 +119,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("interpolation") = Interpolation::BILINEAR,
 			py::arg("euclidean_distance_dim") = -1
         )
-        .def("__call__", [](Mapper_generic<CartesianLayout<2>, CartesianLayout<2>, float, false>& mapper, Data<CartesianLayout<2>, float> const& data)
+        .def("__call__", [](Mapper<CartesianLayout<2>, CartesianLayout<2>, float, false>& mapper, Data<CartesianLayout<2>, float> const& data)
         {
             return mapper(data);
         });
@@ -132,7 +132,7 @@ PYBIND11_MODULE(pink, m)
        .value("UINT8", DataType::UINT8)
        .export_values();
 
-    py::class_<Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m, "trainer_gpu")
+    py::class_<Trainer<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m, "trainer_gpu")
         .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>, float>&, std::function<float(float)>, int, uint32_t, bool, float,
             Interpolation, int, uint16_t, DataType>(),
             py::arg("som"),
@@ -146,11 +146,11 @@ PYBIND11_MODULE(pink, m)
             py::arg("block_size") = 256,
             py::arg("euclidean_distance_type") = DataType::UINT8
         )
-        .def("__call__", [](Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>& trainer, Data<CartesianLayout<2>, float> const& data)
+        .def("__call__", [](Trainer<CartesianLayout<2>, CartesianLayout<2>, float, true>& trainer, Data<CartesianLayout<2>, float> const& data)
         {
             trainer(data);
         })
-        .def("update_som", [](Trainer_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>& trainer)
+        .def("update_som", [](Trainer<CartesianLayout<2>, CartesianLayout<2>, float, true>& trainer)
         {
             trainer.update_som();
         });
