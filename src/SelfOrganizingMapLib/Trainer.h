@@ -33,11 +33,11 @@
 namespace pink {
 
 template <typename SOMLayout, typename DataLayout, typename T>
-class TrainerBase_generic
+class TrainerBase
 {
 public:
 
-    TrainerBase_generic(SOM<SOMLayout, DataLayout, T> const& som, std::function<float(float)> distribution_function,
+    TrainerBase(SOM<SOMLayout, DataLayout, T> const& som, std::function<float(float)> distribution_function,
     	int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, int euclidean_distance_dim)
      : distribution_function(distribution_function),
@@ -105,17 +105,17 @@ class Trainer;
 
 /// CPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Trainer<SOMLayout, DataLayout, T, false> : public TrainerBase_generic<SOMLayout, DataLayout, T>
+class Trainer<SOMLayout, DataLayout, T, false> : public TrainerBase<SOMLayout, DataLayout, T>
 {
     typedef SOM<SOMLayout, DataLayout, T> SOMType;
-    typedef typename TrainerBase_generic<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
+    typedef typename TrainerBase<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
 
 public:
 
     Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, int euclidean_distance_dim = -1)
-     : TrainerBase_generic<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
+     : TrainerBase<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        som(som)
     {}
@@ -181,10 +181,10 @@ private:
 
 /// GPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Trainer<SOMLayout, DataLayout, T, true> : public TrainerBase_generic<SOMLayout, DataLayout, T>
+class Trainer<SOMLayout, DataLayout, T, true> : public TrainerBase<SOMLayout, DataLayout, T>
 {
     typedef SOM<SOMLayout, DataLayout, T> SOMType;
-    typedef typename TrainerBase_generic<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
+    typedef typename TrainerBase<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
 
 public:
 
@@ -192,7 +192,7 @@ public:
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, int euclidean_distance_dim = -1,
 		uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
-     : TrainerBase_generic<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
+     : TrainerBase<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        som(som),
        d_som(som.get_data()),

@@ -33,11 +33,11 @@
 namespace pink {
 
 template <typename SOMLayout, typename DataLayout, typename T>
-class MapperBase_generic
+class MapperBase
 {
 public:
 
-    MapperBase_generic(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations,
+    MapperBase(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations,
         bool use_flip, Interpolation interpolation, int euclidean_distance_dim)
      : som(som),
        verbosity(verbosity),
@@ -80,13 +80,13 @@ class Mapper;
 
 /// CPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Mapper<SOMLayout, DataLayout, T, false> : public MapperBase_generic<SOMLayout, DataLayout, T>
+class Mapper<SOMLayout, DataLayout, T, false> : public MapperBase<SOMLayout, DataLayout, T>
 {
 public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity,
         uint32_t number_of_rotations, bool use_flip, Interpolation interpolation, int euclidean_distance_dim = -1)
-     : MapperBase_generic<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim)
+     : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim)
     {}
 
     auto operator () (Data<DataLayout, T> const& data)
@@ -112,14 +112,14 @@ public:
 
 /// GPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Mapper<SOMLayout, DataLayout, T, true> : public MapperBase_generic<SOMLayout, DataLayout, T>
+class Mapper<SOMLayout, DataLayout, T, true> : public MapperBase<SOMLayout, DataLayout, T>
 {
 public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
         Interpolation interpolation, int euclidean_distance_dim = -1,
 		uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
-     : MapperBase_generic<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim),
+     : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim),
        d_som(som.get_data()),
        block_size(block_size),
        euclidean_distance_type(euclidean_distance_type),
