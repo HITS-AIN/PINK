@@ -86,6 +86,7 @@ if(CUDA_FOUND)
     list(APPEND CUDA_NVCC_FLAGS "
     --expt-extended-lambda
     --expt-relaxed-constexpr
+    --default-stream per-thread
     -arch=sm_61
      -gencode=arch=compute_50,code=sm_50
      -gencode=arch=compute_52,code=sm_52
