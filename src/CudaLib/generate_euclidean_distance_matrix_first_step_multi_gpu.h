@@ -83,6 +83,8 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
                             number_of_spatial_transformations * neuron_size * sizeof(EuclideanType)));
     }
 
+    gpuErrchk(cudaDeviceSynchronize());
+
     std::vector<std::thread> workers;
     for (int i = 0; i < number_of_gpus; ++i)
     {
