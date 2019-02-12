@@ -16,6 +16,31 @@
 
 namespace pink {
 
+/// Multiply all vector elements with scalar
+template <typename T>
+std::vector<T> operator * (std::vector<T> const& v, T scalar)
+{
+	std::vector<T> r(v);
+	for (auto& e : r) e *= scalar;
+	return r;
+}
+
+template <typename T>
+std::vector<thrust::device_vector<T>> allocate_local_memory(std::vector<int> const& sizes)
+{
+	std::vector<thrust::device_vector<T>> result(sizes.size());
+
+    auto&& gpu_ids = cuda_get_gpu_ids();
+    for (size_t i = 1; i < sizes.size(); ++i)
+    {
+        cudaSetDevice(gpu_ids[i]);
+        result[i].resize(sizes[i]);
+    }
+    cudaSetDevice(gpu_ids[0]);
+
+	return result;
+}
+
 /// Calculate euclidean distance on multiple GPU devices
 template <typename DataType, typename EuclideanType>
 void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vector<EuclideanType> const& d_som,
@@ -50,19 +75,14 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
         offset[i] = offset[i-1] + size[i-1];
     }
 
-    std::vector<thrust::device_vector<EuclideanType>> d_som_local;
-    std::vector<thrust::device_vector<EuclideanType>> d_rotated_images_local;
-    std::vector<thrust::device_vector<DataType>> d_first_step_local;
+    static auto d_som_local = allocate_local_memory<EuclideanType>(std::vector<int>(size.begin() + 1, size.end()) * static_cast<int>(neuron_size));
+    static auto d_rotated_images_local = allocate_local_memory<EuclideanType>(std::vector<int>(number_of_gpus - 1, number_of_spatial_transformations * neuron_size));
+    static auto d_first_step_local = allocate_local_memory<DataType>(std::vector<int>(size.begin() + 1, size.end()) * static_cast<int>(number_of_spatial_transformations));
 
     for (int i = 1; i < number_of_gpus; ++i)
     {
         // Set GPU device
         cudaSetDevice(gpu_ids[i]);
-
-        // Allocate local device memory
-        d_som_local.push_back(thrust::device_vector<EuclideanType>(size[i] * neuron_size));
-        d_rotated_images_local.push_back(thrust::device_vector<EuclideanType>(number_of_spatial_transformations * neuron_size));
-        d_first_step_local.push_back(thrust::device_vector<DataType>(size[i] * number_of_spatial_transformations));
 
         // Copy data
         gpuErrchk(cudaMemcpyPeer(thrust::raw_pointer_cast(d_som_local[i-1].data()), i,
