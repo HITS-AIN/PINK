@@ -30,11 +30,19 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
     DataType euclidean_distance_type)
 {
     static thrust::device_vector<T> d_first_step(som_size * number_of_spatial_transformations);
+    if (d_first_step.size() != som_size * number_of_spatial_transformations)
+    	d_first_step.resize(som_size * number_of_spatial_transformations);
 
     // First step ...
-    if (euclidean_distance_type == DataType::UINT8) {
+    if (euclidean_distance_type == DataType::UINT8)
+    {
     	static thrust::device_vector<uint8_t> d_som_uint8(d_som.size());
+    	if (d_som_uint8.size() != d_som.size())
+    		d_som_uint8.resize(d_som.size());
+
     	static thrust::device_vector<uint8_t> d_spatial_transformed_images_uint8(d_spatial_transformed_images.size());
+    	if (d_spatial_transformed_images_uint8.size() != d_spatial_transformed_images.size())
+    		d_spatial_transformed_images_uint8.resize(d_spatial_transformed_images.size());
 
         thrust::transform(d_som.begin(), d_som.end(), d_som.begin(), d_som_uint8.begin(),
             [=] __host__ __device__ (T x, [[ maybe_unused ]] T y) {
