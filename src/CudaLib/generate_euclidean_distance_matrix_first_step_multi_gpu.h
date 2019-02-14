@@ -31,9 +31,9 @@ std::vector<thrust::device_vector<T>> allocate_local_memory(std::vector<int> con
 	std::vector<thrust::device_vector<T>> result(sizes.size());
 
     auto&& gpu_ids = cuda_get_gpu_ids();
-    for (size_t i = 1; i < sizes.size(); ++i)
+    for (size_t i = 0; i < sizes.size(); ++i)
     {
-        cudaSetDevice(gpu_ids[i]);
+        cudaSetDevice(gpu_ids[i + 1]);
         result[i].resize(sizes[i]);
     }
     cudaSetDevice(gpu_ids[0]);
