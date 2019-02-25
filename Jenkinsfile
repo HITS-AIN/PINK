@@ -17,7 +17,7 @@ pipeline {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.12-gcc-7-conan-1.8'
+              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.13-gcc-7-conan-1.12'
               args '--runtime=nvidia'
             }
           }
@@ -39,7 +39,7 @@ pipeline {
 //          agent {
 //            docker {
 //              reuseNode true
-//              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.12-clang-6-conan-1.8'
+//              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.13-clang-6-conan-1.12'
 //              args '--runtime=nvidia'
 //            }
 //          }
@@ -65,7 +65,7 @@ pipeline {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.12-gcc-7-conan-1.8'
+              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.13-gcc-7-conan-1.12'
               args '--runtime=nvidia'
             }
           }
@@ -86,7 +86,7 @@ pipeline {
 //          agent {
 //            docker {
 //              reuseNode true
-//              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.12-clang-6-conan-1.8'
+//              image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.13-clang-6-conan-1.12'
 //              args '--runtime=nvidia'
 //            }
 //          }
@@ -109,7 +109,7 @@ pipeline {
       agent {
         docker {
           reuseNode true
-          image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.12-gcc-7-conan-1.8-doxygen-1.8.13'
+          image 'braintwister/ubuntu-18.04-cuda-10.0-cmake-3.13-gcc-7-conan-1.12-doxygen-1.8.13'
           args '--runtime=nvidia'
         }
       }
