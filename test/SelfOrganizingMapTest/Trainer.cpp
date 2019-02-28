@@ -1,6 +1,5 @@
 /**
  * @file   SelfOrganizingMapTest/Trainer.cpp
- * @brief  Unit tests for image processing.
  * @date   Sep 17, 2018
  * @author Bernd Doser, HITS gGmbH
  */

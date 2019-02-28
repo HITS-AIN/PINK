@@ -9,7 +9,6 @@ add_executable(
     Data.cpp
     DataIterator.cpp
     Trainer.cpp
-    TrainerCompare.cpp
 )
     
 target_link_libraries(
