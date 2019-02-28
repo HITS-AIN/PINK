@@ -1,4 +1,4 @@
-FROM braintwister/ubuntu-18.04-cuda-10.0-cmake-3.13-gcc-7-conan-1.11-docker-18.09-eclipse-cpp-2018-12
+FROM braintwister/ubuntu-18.04-cuda-10.0-cmake-3.13-gcc-7-conan-1.12-docker-18.09-eclipse-cpp-2018-12
 
 MAINTAINER Bernd Doser <bernd.doser@h-its.org>
 
