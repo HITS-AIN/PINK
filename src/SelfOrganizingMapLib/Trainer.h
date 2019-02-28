@@ -38,7 +38,7 @@ class TrainerBase
 public:
 
     TrainerBase(SOM<SOMLayout, DataLayout, T> const& som, std::function<float(float)> distribution_function,
-    	int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
+        int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, int euclidean_distance_dim)
      : distribution_function(distribution_function),
        verbosity(verbosity),
@@ -50,7 +50,7 @@ public:
        update_info(som.get_som_layout()),
        som_size(som.get_som_layout().size()),
        update_factors(som_size * som_size, 0.0),
-	   euclidean_distance_dim(euclidean_distance_dim)
+       euclidean_distance_dim(euclidean_distance_dim)
     {
         if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
@@ -68,6 +68,10 @@ public:
             euclidean_distance_dim = som.get_neuron_dimension()[0];
             if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
         }
+
+        if (verbosity)
+            std::cout << "Number of rotations = " << number_of_rotations << "\n"
+                      << "Dimension of euclidean distance calculation = " << euclidean_distance_dim << std::endl;
     }
 
     auto get_update_info() const { return update_info; }
@@ -191,7 +195,7 @@ public:
     Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, int euclidean_distance_dim = -1,
-		uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
+        uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
      : TrainerBase<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        som(som),
@@ -244,7 +248,7 @@ public:
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             this->som.get_number_of_neurons(), neuron_size, d_som, this->number_of_spatial_transformations,
-            d_spatial_transformed_images, block_size, euclidean_distance_type);
+            d_spatial_transformed_images, block_size, euclidean_distance_type, this->euclidean_distance_dim);
 
 #ifdef PRINT_DEBUG
         std::cout << "euclidean_distance_matrix" << std::endl;

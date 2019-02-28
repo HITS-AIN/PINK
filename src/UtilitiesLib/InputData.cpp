@@ -102,7 +102,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 'e':
             {
-            	euclidean_distance_dim = atoi(optarg);
+                euclidean_distance_dim = atoi(optarg);
                 break;
             }
             case 0:
@@ -381,7 +381,7 @@ InputData::InputData(int argc, char **argv)
     }
 
     if (neuron_dim == -1) {
-    	neuron_dim = data_dimension[0];
+        neuron_dim = data_dimension[0];
         if (number_of_rotations != 1) neuron_dim = 2 * data_dimension[0] / std::sqrt(2.0) + 1;
     }
 

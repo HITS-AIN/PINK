@@ -56,15 +56,8 @@ void generate_euclidean_distance_matrix_second_step(thrust::device_vector<T>& d_
         thrust::raw_pointer_cast(&d_best_rotation_matrix[0]), thrust::raw_pointer_cast(&d_first_step[0]),
         number_of_spatial_transformations, som_size);
 
-    cudaError_t error = cudaGetLastError();
-
-    if (error != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to launch CUDA second_step_kernel (error code %s)!\n", cudaGetErrorString(error));
-        exit(EXIT_FAILURE);
-    }
-
-    cudaDeviceSynchronize();
+    gpuErrchk(cudaPeekAtLastError());
+    gpuErrchk(cudaDeviceSynchronize());
 }
 
 } // namespace pink

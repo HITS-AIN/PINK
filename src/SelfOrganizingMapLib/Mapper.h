@@ -46,7 +46,7 @@ public:
        number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
        angle_step_radians(0.5 * M_PI / number_of_rotations / 4),
        interpolation(interpolation),
-	   euclidean_distance_dim(euclidean_distance_dim)
+       euclidean_distance_dim(euclidean_distance_dim)
     {
         if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
@@ -118,7 +118,7 @@ public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
         Interpolation interpolation, int euclidean_distance_dim = -1,
-		uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
+        uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
      : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim),
        d_som(som.get_data()),
        block_size(block_size),
@@ -160,7 +160,7 @@ public:
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             this->som.get_number_of_neurons(), neuron_size, d_som, this->number_of_spatial_transformations,
-            d_spatial_transformed_images, block_size, euclidean_distance_type);
+            d_spatial_transformed_images, block_size, euclidean_distance_type, this->euclidean_distance_dim);
 
         std::vector<T> euclidean_distance_matrix(this->som.get_number_of_neurons());
         std::vector<uint32_t> best_rotation_matrix(this->som.get_number_of_neurons());

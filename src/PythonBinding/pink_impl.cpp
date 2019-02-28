@@ -103,7 +103,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("use_flip") = true,
             py::arg("max_update_distance") = -1.0,
             py::arg("interpolation") = Interpolation::BILINEAR,
-			py::arg("euclidean_distance_dim") = -1
+            py::arg("euclidean_distance_dim") = -1
         )
         .def("__call__", [](Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>& trainer, Data<CartesianLayout<2>, float> const& data)
         {
@@ -117,7 +117,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("number_of_rotations") = 360,
             py::arg("use_flip") = true,
             py::arg("interpolation") = Interpolation::BILINEAR,
-			py::arg("euclidean_distance_dim") = -1
+            py::arg("euclidean_distance_dim") = -1
         )
         .def("__call__", [](Mapper<CartesianLayout<2>, CartesianLayout<2>, float, false>& mapper, Data<CartesianLayout<2>, float> const& data)
         {
@@ -142,7 +142,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("use_flip") = true,
             py::arg("max_update_distance") = -1.0,
             py::arg("interpolation") = Interpolation::BILINEAR,
-			py::arg("euclidean_distance_dim") = -1,
+            py::arg("euclidean_distance_dim") = -1,
             py::arg("block_size") = 256,
             py::arg("euclidean_distance_type") = DataType::UINT8
         )
