@@ -73,10 +73,10 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
 
         if (cuda_get_gpu_ids().size() > 1) {
             generate_euclidean_distance_matrix_first_step_multi_gpu(d_som_uint8, d_spatial_transformed_images_uint8,
-                d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
+                d_first_step, number_of_spatial_transformations, som_size, euclidean_distance_size, block_size);
         } else {
             generate_euclidean_distance_matrix_first_step(d_som_uint8, d_spatial_transformed_images_uint8,
-                d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
+                d_first_step, number_of_spatial_transformations, som_size, euclidean_distance_size, block_size);
         }
     }
     else if (euclidean_distance_type == DataType::UINT16)
@@ -111,10 +111,10 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
 
         if (cuda_get_gpu_ids().size() > 1) {
             generate_euclidean_distance_matrix_first_step_multi_gpu(d_som_uint16, d_spatial_transformed_images_uint16,
-                d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
+                d_first_step, number_of_spatial_transformations, som_size, euclidean_distance_size, block_size);
         } else {
             generate_euclidean_distance_matrix_first_step(d_som_uint16, d_spatial_transformed_images_uint16,
-                d_first_step, number_of_spatial_transformations, som_size, neuron_size, block_size);
+                d_first_step, number_of_spatial_transformations, som_size, euclidean_distance_size, block_size);
         }
     }
     else if (euclidean_distance_type == DataType::FLOAT)
