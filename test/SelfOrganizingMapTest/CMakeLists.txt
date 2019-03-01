@@ -8,9 +8,7 @@ add_executable(
     main.cpp
     Data.cpp
     DataIterator.cpp
-    generate_rotated_images.cpp
     Trainer.cpp
-    TrainerCompare.cpp
 )
     
 target_link_libraries(

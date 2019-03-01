@@ -20,15 +20,15 @@ namespace pink {
 template <typename T>
 std::vector<T> operator * (std::vector<T> const& v, T scalar)
 {
-	std::vector<T> r(v);
-	for (auto& e : r) e *= scalar;
-	return r;
+    std::vector<T> r(v);
+    for (auto& e : r) e *= scalar;
+    return r;
 }
 
 template <typename T>
 std::vector<thrust::device_vector<T>> allocate_local_memory(std::vector<int> const& sizes)
 {
-	std::vector<thrust::device_vector<T>> result(sizes.size());
+    std::vector<thrust::device_vector<T>> result(sizes.size());
 
     auto&& gpu_ids = cuda_get_gpu_ids();
     for (size_t i = 0; i < sizes.size(); ++i)
@@ -38,7 +38,7 @@ std::vector<thrust::device_vector<T>> allocate_local_memory(std::vector<int> con
     }
     cudaSetDevice(gpu_ids[0]);
 
-	return result;
+    return result;
 }
 
 /// Calculate euclidean distance on multiple GPU devices
@@ -163,9 +163,9 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
     for (int i = 1; i < number_of_gpus; ++i)
     {
         // Copy data
-		gpuErrchk(cudaMemcpyPeer(thrust::raw_pointer_cast(d_first_step.data()) + offset[i] * number_of_spatial_transformations, 0,
-			thrust::raw_pointer_cast(d_first_step_local[i-1].data()), i, size[i] * number_of_spatial_transformations * sizeof(DataType)));
-	}
+        gpuErrchk(cudaMemcpyPeer(thrust::raw_pointer_cast(d_first_step.data()) + offset[i] * number_of_spatial_transformations, 0,
+            thrust::raw_pointer_cast(d_first_step_local[i-1].data()), i, size[i] * number_of_spatial_transformations * sizeof(DataType)));
+    }
 
     gpuErrchk(cudaDeviceSynchronize());
 }

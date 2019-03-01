@@ -36,10 +36,11 @@ def main():
     parser.add_argument('images', nargs='+', help='Input file of images')
     parser.add_argument('-i', '--input-som', help='Input file of SOM initialization')
     parser.add_argument('-o', '--output-som', help='Output file of resulting SOM')
-    parser.add_argument('--som-dim', type=int, default=5,
-                        help='Dimension of SOM if initialized from scratch')
+    parser.add_argument('--som-dim', type=int, default=5, help='Dimension of SOM if initialized from scratch')
+    parser.add_argument('--neuron-dim', type=int, default=-1, help='Dimension of neurons')
     parser.add_argument('-d', '--display', action='store_true', help='Display SOM during training')
     parser.add_argument('-v', '--verbose', action='store_true', help='Be talkative')
+    parser.add_argument('-g', '--use-gpu', action='store_true', help='Acceleration by using GPU devices')
     parser.add_argument('-s', '--scale', action='store_true', help='Scale the input images to be within the range [0, 1]')
 
     args = parser.parse_args()
@@ -59,8 +60,10 @@ def main():
         images = np.squeeze(images, axis=1)
 
     image_dim = images.shape[1]
-    neuron_dim = int(image_dim * math.sqrt(2.0) / 2.0)
-    
+    neuron_dim = args.neuron_dim if args.neuron_dim != -1 else int(image_dim * math.sqrt(2.0) / 2.0)
+
+    print('Neuron dimension:', neuron_dim)
+
     if args.scale:
         min_element = np.amin(images)
         max_element = np.amax(images)
@@ -98,9 +101,13 @@ def main():
         plt.show()
 
     som = pink.som(np_som)
-    trainer = pink.trainer_gpu(som, GaussianFunctor(sigma=1.1, damping=1.0),
-                               number_of_rotations=180, verbosity=0, interpolation=pink.interpolation.BILINEAR,
-                               euclidean_distance_type=pink.data_type.UINT8)
+    if args.use_gpu:
+        trainer = pink.trainer_gpu(som, GaussianFunctor(sigma=1.1, damping=1.0),
+                                   number_of_rotations=180, verbosity=0, interpolation=pink.interpolation.BILINEAR,
+                                   euclidean_distance_type=pink.data_type.UINT8)
+    else:
+        trainer = pink.trainer_cpu(som, GaussianFunctor(sigma=1.1, damping=1.0),
+                                   number_of_rotations=180, verbosity=0, interpolation=pink.interpolation.BILINEAR)
     
     for i in range(images.shape[0]):
         
@@ -110,12 +117,13 @@ def main():
         np_som = np.array(som, copy=False)
 
         if args.display and i % 100 == 0:
-            trainer.update_som()
+            if args.use_gpu: trainer.update_som()
             new_dim = np_som.shape[0] * np_som.shape[2]
             plt.matshow(np_som.swapaxes(1, 2).reshape((new_dim, new_dim)))
             plt.show()
 
     if args.output_som:
+        if args.use_gpu: trainer.update_som()
         np.save(args.output_som, np_som)
 
     print('All done.')

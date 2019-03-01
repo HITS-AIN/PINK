@@ -1,5 +1,5 @@
 /**
- * @file   SelfOrganizingMapLib/Trainer_generic.h
+ * @file   SelfOrganizingMapLib/Trainer.h
  * @date   Oct 11, 2018
  * @author Bernd Doser, HITS gGmbH
  */
@@ -33,13 +33,13 @@
 namespace pink {
 
 template <typename SOMLayout, typename DataLayout, typename T>
-class TrainerBase_generic
+class TrainerBase
 {
 public:
 
-    TrainerBase_generic(std::function<float(float)> distribution_function, int verbosity,
-        uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-        Interpolation interpolation, SOMLayout const& som_layout)
+    TrainerBase(SOM<SOMLayout, DataLayout, T> const& som, std::function<float(float)> distribution_function,
+        int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
+        Interpolation interpolation, int euclidean_distance_dim)
      : distribution_function(distribution_function),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
@@ -47,21 +47,31 @@ public:
        number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
        max_update_distance(max_update_distance),
        interpolation(interpolation),
-       update_info(som_layout),
-       som_size(som_layout.size()),
-       update_factors(som_size * som_size, 0.0)
+       update_info(som.get_som_layout()),
+       som_size(som.get_som_layout().size()),
+       update_factors(som_size * som_size, 0.0),
+       euclidean_distance_dim(euclidean_distance_dim)
     {
         if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
 
         for (uint32_t i = 0; i < som_size; ++i) {
             for (uint32_t j = 0; j < som_size; ++j) {
-                float distance = som_layout.get_distance(i, j);
+                float distance = som.get_som_layout().get_distance(i, j);
                 if (this->max_update_distance <= 0 or distance < this->max_update_distance) {
                     update_factors[i * som_size + j] = distribution_function(distance);
                 }
             }
         }
+
+        if (euclidean_distance_dim == -1) {
+            euclidean_distance_dim = som.get_neuron_dimension()[0];
+            if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
+        }
+
+        if (verbosity)
+            std::cout << "Number of rotations = " << number_of_rotations << "\n"
+                      << "Dimension of euclidean distance calculation = " << euclidean_distance_dim << std::endl;
     }
 
     auto get_update_info() const { return update_info; }
@@ -87,27 +97,30 @@ protected:
 
     /// Pre-calculation of updating factors
     std::vector<float> update_factors;
+
+    /// Dimension for calculation of euclidean distance
+    int euclidean_distance_dim;
 };
 
 /// Primary template will never be instantiated
 template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
-class Trainer_generic;
+class Trainer;
 
 
 /// CPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Trainer_generic<SOMLayout, DataLayout, T, false> : public TrainerBase_generic<SOMLayout, DataLayout, T>
+class Trainer<SOMLayout, DataLayout, T, false> : public TrainerBase<SOMLayout, DataLayout, T>
 {
     typedef SOM<SOMLayout, DataLayout, T> SOMType;
-    typedef typename TrainerBase_generic<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
+    typedef typename TrainerBase<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
 
 public:
 
-    Trainer_generic(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
+    Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-        Interpolation interpolation)
-     : TrainerBase_generic<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
-           use_flip, max_update_distance, interpolation, som.get_som_layout()),
+        Interpolation interpolation, int euclidean_distance_dim = -1)
+     : TrainerBase<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
+           use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        som(som)
     {}
 
@@ -129,8 +142,8 @@ public:
 #endif
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
-            this->som.get_number_of_neurons(), som.get_data_pointer(), neuron_size, this->number_of_spatial_transformations,
-            spatial_transformed_images);
+            this->som.get_number_of_neurons(), som.get_data_pointer(), neuron_dim, this->number_of_spatial_transformations,
+            spatial_transformed_images, this->euclidean_distance_dim);
 
 #ifdef PRINT_DEBUG
         std::cout << "euclidean_distance_matrix" << std::endl;
@@ -172,18 +185,19 @@ private:
 
 /// GPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Trainer_generic<SOMLayout, DataLayout, T, true> : public TrainerBase_generic<SOMLayout, DataLayout, T>
+class Trainer<SOMLayout, DataLayout, T, true> : public TrainerBase<SOMLayout, DataLayout, T>
 {
     typedef SOM<SOMLayout, DataLayout, T> SOMType;
-    typedef typename TrainerBase_generic<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
+    typedef typename TrainerBase<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
 
 public:
 
-    Trainer_generic(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
+    Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-        Interpolation interpolation, uint16_t block_size, DataType euclidean_distance_type)
-     : TrainerBase_generic<SOMLayout, DataLayout, T>(distribution_function, verbosity, number_of_rotations,
-           use_flip, max_update_distance, interpolation, som.get_som_layout()),
+        Interpolation interpolation, int euclidean_distance_dim = -1,
+        uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
+     : TrainerBase<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
+           use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        som(som),
        d_som(som.get_data()),
        block_size(block_size),
@@ -234,7 +248,7 @@ public:
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
             this->som.get_number_of_neurons(), neuron_size, d_som, this->number_of_spatial_transformations,
-            d_spatial_transformed_images, block_size, euclidean_distance_type);
+            d_spatial_transformed_images, block_size, euclidean_distance_type, this->euclidean_distance_dim);
 
 #ifdef PRINT_DEBUG
         std::cout << "euclidean_distance_matrix" << std::endl;
