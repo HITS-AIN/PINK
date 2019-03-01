@@ -55,8 +55,8 @@ struct InputData
     uint32_t som_width;
     uint32_t som_height;
     uint32_t som_depth;
-    int neuron_dim;
-    int euclidean_distance_dim;
+    uint32_t neuron_dim;
+    uint32_t euclidean_distance_dim;
     Layout layout;
     int seed;
     int number_of_rotations;

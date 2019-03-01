@@ -24,8 +24,8 @@ InputData::InputData()
    som_width(10),
    som_height(10),
    som_depth(1),
-   neuron_dim(-1),
-   euclidean_distance_dim(-1),
+   neuron_dim(0),
+   euclidean_distance_dim(0),
    layout(Layout::CARTESIAN),
    seed(1234),
    number_of_rotations(360),
@@ -380,12 +380,12 @@ InputData::InputData(int argc, char **argv)
         ifs.read((char*)&data_dimension[i], sizeof(int));
     }
 
-    if (neuron_dim == -1) {
+    if (neuron_dim == 0) {
         neuron_dim = data_dimension[0];
         if (number_of_rotations != 1) neuron_dim = 2 * data_dimension[0] / std::sqrt(2.0) + 1;
     }
 
-    if (euclidean_distance_dim == -1) {
+    if (euclidean_distance_dim == 0) {
         euclidean_distance_dim = data_dimension[0];
         if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
     }
