@@ -100,6 +100,13 @@ public:
         return *this;
     }
 
+    /// Set to first position
+    void set_to_begin()
+    {
+        cur_random_list = std::begin(random_list);
+        end_flag = false;
+    }
+
     /// Dereference
     DataType& operator * () const
     {
