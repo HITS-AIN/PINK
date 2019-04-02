@@ -26,7 +26,7 @@ def main():
     header = tools.get_header_comments(input)
     
     nb_images, nb_channels, width, height = struct.unpack('i' * 4, input.read(4 * 4))
-    size = nb_images * nb_channels * width * height
+    size = nb_channels * width * height
     
     # <file format version> 0 <data-type> <number of entries> <data layout> <data>
     output = open(args.output, 'wb')
@@ -37,7 +37,8 @@ def main():
     else:
         output.write(struct.pack('i' * 9, 2, 0, 0, nb_images, 0, 3, width, height, nb_channels))
 
-    output.write(input.read(size*4))
+    for _ in range(nb_images):
+        output.write(input.read(size*4))
 
     print('All done.')
 
