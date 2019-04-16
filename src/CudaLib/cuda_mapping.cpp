@@ -114,12 +114,12 @@ void cuda_mapping(InputData const& inputData)
 
         if (inputData.write_rot_flip) {
             cuda_copyDeviceToHost_int(&bestRotationMatrix[0], d_bestRotationMatrix, inputData.som_size);
-        	for (int i = 0; i != inputData.som_size; ++i) {
-        		char flip = bestRotationMatrix[i] / inputData.numberOfRotations;
-        		float angle = (bestRotationMatrix[i] % inputData.numberOfRotations) * angleStepRadians;
-        	    write_rot_flip_file.write(&flip, sizeof(char));
-        	    write_rot_flip_file.write((char*)&angle, sizeof(float));
-        	}
+            for (int i = 0; i != inputData.som_size; ++i) {
+                char flip = bestRotationMatrix[i] / inputData.numberOfRotations;
+                float angle = (bestRotationMatrix[i] % inputData.numberOfRotations) * angleStepRadians;
+                write_rot_flip_file.write(&flip, sizeof(char));
+                write_rot_flip_file.write((char*)&angle, sizeof(float));
+            }
         }
     }
 

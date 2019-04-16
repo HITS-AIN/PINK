@@ -85,7 +85,7 @@ InputData::InputData(int argc, char **argv)
         {"som-height",          1, 0, 12},
         {"som-depth",           1, 0, 13},
         {"pbc",                 0, 0, 14},
-		{"store-rot-flip",      1, 0, 15},
+        {"store-rot-flip",      1, 0, 15},
         {NULL, 0, NULL, 0}
     };
     int c, option_index = 0;
@@ -271,8 +271,8 @@ InputData::InputData(int argc, char **argv)
             }
             case 15:
             {
-            	write_rot_flip = true;
-            	rot_flip_filename = optarg;
+                write_rot_flip = true;
+                rot_flip_filename = optarg;
                 break;
             }
             case 'v':

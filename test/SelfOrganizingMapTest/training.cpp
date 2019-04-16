@@ -16,6 +16,6 @@ using namespace pink;
 
 TEST(SelfOrganizingMapTest, quadratic)
 {
-	InputData input_data;
-	SOM som(input_data);
+    InputData input_data;
+    SOM som(input_data);
 }
