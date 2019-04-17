@@ -1,14 +1,17 @@
 import numpy
 import math
 
-def ignoreHeaderComments(inputStream):
-    # omit header information with hash as quote character
-    character = inputStream.read(1) 
-    inputStream.seek(-1,1)
-    while (character == b'#'):
-        inputStream.readline() # ignore this line
-        character = inputStream.read(1)
-        inputStream.seek(-1,1)
+def ignoreHeaderComments(file):
+    """ Jump after header """
+
+    file.seek(0)
+    binary_start_position = 0
+    for line in file:
+        if line == b'# END OF HEADER\n':
+            binary_start_position = file.tell()
+            break
+
+    file.seek(binary_start_position)
 
 def calculateMap(somWidth, somHeight, neurons, neuronWidth, neuronHeight, shareIntensity = False, border = 0, shape="box"):
     #For quadratic map, it reads through the data and creates each neuron as a 1D array and then resizes it to the neuronSize

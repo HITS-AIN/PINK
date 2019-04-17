@@ -39,13 +39,16 @@ public:
 
         // Skip all header lines starting with #
         std::string line;
-        int last_position = ptrStream_->tellg();
+        int binary_start_position = ptrStream_->tellg();
         while (std::getline(*ptrStream_, line)) {
-            if (line[0] != '#') break;
-            last_position = ptrStream_->tellg();
+			if (line == "# END OF HEADER") {
+				binary_start_position = ptrStream_->tellg();
+				break;
+			}
         }
 
-        ptrStream_->seekg(last_position, ptrStream_->beg);
+        ptrStream_->clear(); // Reset EOF flag
+        ptrStream_->seekg(binary_start_position, ptrStream_->beg);
         ptrStream_->read((char*)&numberOfImages_, sizeof(int));
         ptrStream_->read((char*)&numberOfChannels_, sizeof(int));
         ptrStream_->read((char*)&height_, sizeof(int));

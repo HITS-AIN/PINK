@@ -21,3 +21,6 @@ ADD_TEST(
     ${CMAKE_BINARY_DIR}/bin/ImageProcessingTest
     --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/ImageProcessingTest.xml
 )
+
+file(COPY ${PROJECT_SOURCE_DIR}/test/ImageProcessingTest
+     DESTINATION ${PROJECT_BINARY_DIR}/test)

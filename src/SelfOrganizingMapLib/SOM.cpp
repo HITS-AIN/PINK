@@ -37,16 +37,26 @@ SOM::SOM(InputData const& inputData)
         std::ifstream is(inputData.somFilename);
         if (!is) throw std::runtime_error("Error opening " + inputData.somFilename);
 
-        // Skip all header lines starting with #
+        // Skip header
         std::string line;
-        int last_position = is.tellg();
+        int binary_start_position = 0;
         while (std::getline(is, line)) {
-            if (line[0] != '#') break;
-            header_ += line + '\n';
-            last_position = is.tellg();
+			if (line == "# END OF HEADER") {
+				binary_start_position = is.tellg();
+				break;
+			}
         }
 
-        is.seekg(last_position, is.beg);
+        // Keep header
+        is.seekg(0, is.beg);
+        if (binary_start_position != 0) {
+			while (std::getline(is, line)) {
+				header_ += line + '\n';
+				if (line == "# END OF HEADER") break;
+			}
+        }
+
+        is.seekg(binary_start_position, is.beg);
         int tmp;
         is.read((char*)&tmp, sizeof(int));
         if (tmp != inputData.numberOfChannels) throw std::runtime_error("readSOM: wrong numberOfChannels.");

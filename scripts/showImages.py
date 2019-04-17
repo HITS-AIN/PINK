@@ -76,13 +76,13 @@ if __name__ == "__main__":
 
     file = open(inputfile, 'rb')
         
-    last_position = file.tell()
+    binary_start_position = file.tell()
     for line in file:
-        if line[:1] != b'#':
+        if line == b'# END OF HEADER\n':
+            binary_start_position = file.tell()
             break
-        last_position = file.tell()
-     
-    file.seek(last_position, 0)
+
+    file.seek(binary_start_position)
     numberOfImages, numberOfChannels, width, height = struct.unpack('i' * 4, file.read(4 * 4))
 
     print ('Number of images = ', numberOfImages)

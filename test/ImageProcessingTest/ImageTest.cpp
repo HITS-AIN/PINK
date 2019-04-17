@@ -28,3 +28,29 @@ TEST(ImageTest, ImageIterator)
     std::vector<float> data{1.1, 2.1, 3.1, 4.1, 5.1, 6.1};
     EXPECT_EQ(iterCur->getPixel(), data);
 }
+
+TEST(ImageTest, ImageIterator_without_header)
+{
+    const std::string filename("test/ImageProcessingTest/data/image.bin");
+
+    ImageIterator<float> iterCur(filename);
+
+    EXPECT_EQ(iterCur->getHeight(), 2);
+    EXPECT_EQ(iterCur->getWidth(), 3);
+
+    std::vector<float> data{1.1, 2.1, 3.1, 4.1, 5.1, 6.1};
+    EXPECT_EQ(iterCur->getPixel(), data);
+}
+
+TEST(ImageTest, ImageIterator_with_header)
+{
+    const std::string filename("test/ImageProcessingTest/data/image_with_header.bin");
+
+    ImageIterator<float> iterCur(filename);
+
+    EXPECT_EQ(iterCur->getHeight(), 2);
+    EXPECT_EQ(iterCur->getWidth(), 3);
+
+    std::vector<float> data{1.1, 2.1, 3.1, 4.1, 5.1, 6.1};
+    EXPECT_EQ(iterCur->getPixel(), data);
+}
