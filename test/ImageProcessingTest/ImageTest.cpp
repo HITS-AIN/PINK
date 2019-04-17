@@ -31,7 +31,7 @@ TEST(ImageTest, ImageIterator)
 
 TEST(ImageTest, ImageIterator_without_header)
 {
-    const std::string filename("test/ImageProcessingTest/data/image.bin");
+    const std::string filename("data/image.bin");
 
     ImageIterator<float> iterCur(filename);
 
@@ -44,7 +44,7 @@ TEST(ImageTest, ImageIterator_without_header)
 
 TEST(ImageTest, ImageIterator_with_header)
 {
-    const std::string filename("test/ImageProcessingTest/data/image_with_header.bin");
+    const std::string filename("data/image_with_header.bin");
 
     ImageIterator<float> iterCur(filename);
 
