@@ -25,7 +25,7 @@ void write(SOM<SOMLayout, NeuronLayout, T> const& som, std::string const& filena
     auto&& som_layout = som.get_som_layout();
     auto&& neuron_layout = som.get_neuron_layout();
 
-    os << "# " << som.header << std::endl;
+    os << som.header;
 
     // <file format version> 1 <data-type> <som layout> <neuron layout> <data>
     int version = 2;

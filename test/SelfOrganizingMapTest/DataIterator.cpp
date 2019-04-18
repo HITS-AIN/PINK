@@ -15,12 +15,8 @@
 
 using namespace pink;
 
-TEST(DataIteratorTest, cartesian_2d)
+void add_binary_section(std::stringstream& ss, std::vector<std::vector<float>> const& images)
 {
-    std::vector<float> pixels1{1, 2, 3, 4};
-    std::vector<float> pixels2{1, 2, 3, 4};
-
-    std::stringstream ss;
     int version = 2;
     int binary_file_type = 0;
     int data_type = 0;
@@ -29,6 +25,7 @@ TEST(DataIteratorTest, cartesian_2d)
     int dimensionality = 2;
     int width = 2;
     int height = 2;
+
     ss.write(reinterpret_cast<const char*>(&version), sizeof(int));
     ss.write(reinterpret_cast<const char*>(&binary_file_type), sizeof(int));
     ss.write(reinterpret_cast<const char*>(&data_type), sizeof(int));
@@ -37,17 +34,46 @@ TEST(DataIteratorTest, cartesian_2d)
     ss.write(reinterpret_cast<const char*>(&dimensionality), sizeof(int));
     ss.write(reinterpret_cast<const char*>(&width), sizeof(int));
     ss.write(reinterpret_cast<const char*>(&height), sizeof(int));
-    ss.write(reinterpret_cast<const char*>(&pixels1[0]), width * height * sizeof(float));
-    ss.write(reinterpret_cast<const char*>(&pixels2[0]), width * height * sizeof(float));
+    ss.write(reinterpret_cast<const char*>(&images[0][0]), width * height * sizeof(float));
+    ss.write(reinterpret_cast<const char*>(&images[1][0]), width * height * sizeof(float));
+}
 
-    DataIterator<CartesianLayout<2>, float> iter(ss);
+TEST(DataIteratorTest, cartesian_2d_without_header)
+{
+    std::vector<std::vector<float>> images{{1, 2, 3, 4}, {5, 6, 7, 8}};
+
+    std::stringstream ss;
+    add_binary_section(ss, images);
+
+    DataIterator<CartesianLayout<2>, float> iter(ss, 2ul);
 
     EXPECT_EQ(2UL, iter->get_dimension()[0]);
     EXPECT_EQ(2UL, iter->get_dimension()[1]);
 
-    EXPECT_EQ((Data<CartesianLayout<2>, float>({2, 2}, pixels1)), *iter);
+    EXPECT_EQ((Data<CartesianLayout<2>, float>({2, 2}, images[0])), *iter);
     ++iter;
-    EXPECT_EQ((Data<CartesianLayout<2>, float>({2, 2}, pixels2)), *iter);
+    EXPECT_EQ((Data<CartesianLayout<2>, float>({2, 2}, images[1])), *iter);
+    ++iter;
+    EXPECT_EQ((DataIterator<CartesianLayout<2>, float>(ss, true)), iter);
+}
+
+TEST(DataIteratorTest, cartesian_2d_with_header)
+{
+    std::vector<std::vector<float>> images{{1, 2, 3, 4}, {5, 6, 7, 8}};
+
+    std::stringstream ss;
+    ss << "# test header\n";
+    ss << "# END OF HEADER\n";
+    add_binary_section(ss, images);
+
+    DataIterator<CartesianLayout<2>, float> iter(ss, 2ul);
+
+    EXPECT_EQ(2UL, iter->get_dimension()[0]);
+    EXPECT_EQ(2UL, iter->get_dimension()[1]);
+
+    EXPECT_EQ((Data<CartesianLayout<2>, float>({2, 2}, images[0])), *iter);
+    ++iter;
+    EXPECT_EQ((Data<CartesianLayout<2>, float>({2, 2}, images[1])), *iter);
     ++iter;
     EXPECT_EQ((DataIterator<CartesianLayout<2>, float>(ss, true)), iter);
 }

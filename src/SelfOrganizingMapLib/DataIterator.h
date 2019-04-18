@@ -32,25 +32,34 @@ public:
     DataIterator(std::istream& is, bool end_flag)
      : number_of_entries(0),
        is(is),
-       end_flag(end_flag)
+       header_offset(0),
+       end_flag(end_flag),
+       seed(1234)
     {}
 
     /// Parameter constructor
-    DataIterator(std::istream& is)
+    DataIterator(std::istream& is, uint64_t seed = 1234)
      : number_of_entries(0),
        is(is),
-       end_flag(false)
+       header_offset(0),
+       end_flag(false),
+       seed(seed)
     {
-        // Skip header lines
+        // Skip all header lines starting with #
         std::string line;
-        int last_position = is.tellg();
+        int binary_start_position = 0;
         while (std::getline(is, line)) {
-            if (line[0] != '#') break;
-            last_position = is.tellg();
+            if (line == "# END OF HEADER") {
+                binary_start_position = is.tellg();
+                break;
+            }
         }
 
+        // Reset EOF flag
+        is.clear();
+
         // Ignore first three entries
-        is.seekg(last_position + 3 * sizeof(int), is.beg);
+        is.seekg(binary_start_position + 3 * sizeof(int), is.beg);
         is.read((char*)&number_of_entries, sizeof(int));
         // Ignore layout and dimensionality
         is.seekg(2 * sizeof(int), is.cur);
@@ -64,9 +73,9 @@ public:
         random_list.resize(number_of_entries);
         std::iota(std::begin(random_list), std::end(random_list), 0);
 
-        std::random_device rd;
-        std::mt19937 g(rd());
-        std::shuffle(std::begin(random_list), std::end(random_list), g);
+        std::default_random_engine engine(seed);
+        std::mt19937 dist(engine());
+        std::shuffle(std::begin(random_list), std::end(random_list), dist);
 
         cur_random_list = std::begin(random_list);
 
@@ -153,6 +162,8 @@ private:
 
     /// Define the end iterator
     bool end_flag;
+
+    uint64_t seed;
 };
 
 } // namespace pink

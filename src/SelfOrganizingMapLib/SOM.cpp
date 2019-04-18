@@ -37,16 +37,28 @@ SOM<CartesianLayout<2>, CartesianLayout<2>, float>::SOM(InputData const& input_d
         std::ifstream is(input_data.som_filename);
         if (!is) throw pink::exception("Error opening " + input_data.som_filename);
 
-        // Skip all header lines starting with #
+        // Skip header
         std::string line;
-        int last_position = is.tellg();
+        int binary_start_position = 0;
         while (std::getline(is, line)) {
-            if (line[0] != '#') break;
-            header += line + '\n';
-            last_position = is.tellg();
+            if (line == "# END OF HEADER") {
+                binary_start_position = is.tellg();
+                break;
+            }
         }
 
-        is.seekg(last_position, is.beg);
+        // Keep header
+        is.clear();
+        is.seekg(0, is.beg);
+        if (binary_start_position != 0) {
+            while (std::getline(is, line)) {
+                header += line + '\n';
+                if (line == "# END OF HEADER") break;
+            }
+        }
+
+        is.clear();
+        is.seekg(binary_start_position, is.beg);
 
         // <file format version> 1 <data-type> <som layout> <neuron layout> <data>
         int tmp;
@@ -63,13 +75,15 @@ SOM<CartesianLayout<2>, CartesianLayout<2>, float>::SOM(InputData const& input_d
         is.read((char*)&tmp, sizeof(int));
         if (tmp != static_cast<int>(som_layout.dimension[0])) throw pink::exception("read SOM: wrong SOM dimension[0]");
         is.read((char*)&tmp, sizeof(int));
-        if (tmp != static_cast<int>(som_layout.dimension[0])) throw pink::exception("read SOM: wrong SOM dimension[1]");
+        if (tmp != static_cast<int>(som_layout.dimension[1])) throw pink::exception("read SOM: wrong SOM dimension[1]");
+        is.read((char*)&tmp, sizeof(int));
+        if (tmp != 0) throw pink::exception("read SOM: wrong neuron layout");
         is.read((char*)&tmp, sizeof(int));
         if (tmp != neuron_layout.dimensionality) throw pink::exception("read SOM: wrong neuron dimensionality");
         is.read((char*)&tmp, sizeof(int));
         if (tmp != static_cast<int>(neuron_layout.dimension[0])) throw pink::exception("read SOM: wrong neuron dimension[0]");
         is.read((char*)&tmp, sizeof(int));
-        if (tmp != static_cast<int>(neuron_layout.dimension[0])) throw pink::exception("read SOM: wrong neuron dimension[1]");
+        if (tmp != static_cast<int>(neuron_layout.dimension[1])) throw pink::exception("read SOM: wrong neuron dimension[1]");
         is.read((char*)&data[0], data.size() * sizeof(float));
     } else
         throw pink::exception("Unknown SOMInitialization");

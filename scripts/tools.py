@@ -68,26 +68,39 @@ def save_data(filename, data):
 
 
 def ignore_header_comments(inputStream):
-    """ Omit header information with hash as quote character """
-    
-    character = inputStream.read(1) 
-    inputStream.seek(-1,1)
-    while (character == b'#'):
-        inputStream.readline() # ignore this line
-        character = inputStream.read(1)
-        inputStream.seek(-1,1)
+    """ Ignore header """
+
+    inputStream.seek(0)
+    binary_start_position = 0
+    for line in inputStream:
+        if line == b'# END OF HEADER\n':
+            binary_start_position = inputStream.tell()
+            break
+
+    inputStream.seek(binary_start_position)
         
         
 def get_header_comments(inputStream):
-    """ Return the header information """
-    
-    character = inputStream.read(1) 
-    inputStream.seek(-1,1)
+    """ Return header """
+
     header = b''
-    while (character == b'#'):
-        header = header + inputStream.readline()
-        character = inputStream.read(1)
-        inputStream.seek(-1,1)
+    
+    inputStream.seek(0)
+    binary_start_position = 0
+    for line in inputStream:
+        if line == b'# END OF HEADER\n':
+            binary_start_position = inputStream.tell()
+            break
+
+    inputStream.seek(binary_start_position)
+    
+    if binary_start_position != 0:
+        for line in inputStream:
+            header = header + inputStream.readline()
+            if line == b'# END OF HEADER\n':
+                break   
+
+    inputStream.seek(binary_start_position)     
         
     return header
 
