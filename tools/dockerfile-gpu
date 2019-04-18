@@ -40,7 +40,8 @@ RUN conan remote add braintwister https://api.bintray.com/conan/braintwister/con
     conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
 RUN git clone https://github.com/HITS-AIN/PINK.git && \
-    cd PINK && git checkout redesign && \
+    cd PINK && \
+    git checkout 2.0 && \
     mkdir build && cd build && \
     cmake .. && \
     make
