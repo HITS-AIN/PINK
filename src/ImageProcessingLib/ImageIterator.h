@@ -41,10 +41,10 @@ public:
         std::string line;
         int binary_start_position = ptrStream_->tellg();
         while (std::getline(*ptrStream_, line)) {
-			if (line == "# END OF HEADER") {
-				binary_start_position = ptrStream_->tellg();
-				break;
-			}
+            if (line == "# END OF HEADER") {
+                binary_start_position = ptrStream_->tellg();
+                break;
+            }
         }
 
         ptrStream_->clear(); // Reset EOF flag

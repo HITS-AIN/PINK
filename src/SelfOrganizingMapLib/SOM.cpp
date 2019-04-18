@@ -41,19 +41,19 @@ SOM::SOM(InputData const& inputData)
         std::string line;
         int binary_start_position = 0;
         while (std::getline(is, line)) {
-			if (line == "# END OF HEADER") {
-				binary_start_position = is.tellg();
-				break;
-			}
+            if (line == "# END OF HEADER") {
+                binary_start_position = is.tellg();
+                break;
+            }
         }
 
         // Keep header
         is.seekg(0, is.beg);
         if (binary_start_position != 0) {
-			while (std::getline(is, line)) {
-				header_ += line + '\n';
-				if (line == "# END OF HEADER") break;
-			}
+            while (std::getline(is, line)) {
+                header_ += line + '\n';
+                if (line == "# END OF HEADER") break;
+            }
         }
 
         is.seekg(binary_start_position, is.beg);
