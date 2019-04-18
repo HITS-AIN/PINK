@@ -7,13 +7,13 @@
 
 #include <iostream>
 
-#include "../SelfOrganizingMapLib/Trainer.h"
 #include "SelfOrganizingMapLib/Data.h"
 #include "SelfOrganizingMapLib/DataIO.h"
 #include "SelfOrganizingMapLib/DataIterator.h"
 #include "SelfOrganizingMapLib/FileIO.h"
 #include "SelfOrganizingMapLib/Mapper.h"
 #include "SelfOrganizingMapLib/SOM.h"
+#include "SelfOrganizingMapLib/Trainer.h"
 #include "UtilitiesLib/DistributionFunction.h"
 #include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/InputData.h"
@@ -59,24 +59,24 @@ void main_generic(InputData const& input_data)
         uint32_t count = 0;
         for (int i = 0; i < input_data.numIter; ++i)
         {
-        	iter_data_cur.set_to_begin();
-			for (; iter_data_cur != iter_data_end; ++iter_data_cur, ++progress_bar)
-			{
-				trainer(*iter_data_cur);
+            iter_data_cur.set_to_begin();
+            for (; iter_data_cur != iter_data_end; ++iter_data_cur, ++progress_bar)
+            {
+                trainer(*iter_data_cur);
 
-				if (progress_bar.valid() and input_data.intermediate_storage != IntermediateStorageType::OFF) {
-					std::string interStore_filename = input_data.result_filename;
-					if (input_data.intermediate_storage == IntermediateStorageType::KEEP) {
-						interStore_filename.insert(interStore_filename.find_last_of("."), "_" + std::to_string(count++));
-					}
-					if (input_data.verbose) std::cout << "  Write intermediate SOM to " << interStore_filename << " ... " << std::flush;
-					#ifdef __CUDACC__
-						trainer.update_som();
-					#endif
-					write(som, interStore_filename);
-					if (input_data.verbose) std::cout << "done." << std::endl;
-				}
-			}
+                if (progress_bar.valid() and input_data.intermediate_storage != IntermediateStorageType::OFF) {
+                    std::string interStore_filename = input_data.result_filename;
+                    if (input_data.intermediate_storage == IntermediateStorageType::KEEP) {
+                        interStore_filename.insert(interStore_filename.find_last_of("."), "_" + std::to_string(count++));
+                    }
+                    if (input_data.verbose) std::cout << "  Write intermediate SOM to " << interStore_filename << " ... " << std::flush;
+                    #ifdef __CUDACC__
+                        trainer.update_som();
+                    #endif
+                    write(som, interStore_filename);
+                    if (input_data.verbose) std::cout << "done." << std::endl;
+                }
+            }
         }
 
         std::cout << "  Write final SOM to " << input_data.result_filename << " ... " << std::flush;

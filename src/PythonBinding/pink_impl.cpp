@@ -8,11 +8,11 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
-#include "../UtilitiesLib/Interpolation.h"
 #include "SelfOrganizingMapLib/Mapper.h"
 #include "SelfOrganizingMapLib/Trainer.h"
 #include "SelfOrganizingMapLib/Data.h"
 #include "SelfOrganizingMapLib/SOM.h"
+#include "UtilitiesLib/Interpolation.h"
 #include "UtilitiesLib/Version.h"
 
 namespace py = pybind11;
