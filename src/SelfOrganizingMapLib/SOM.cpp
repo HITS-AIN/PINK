@@ -47,6 +47,9 @@ SOM::SOM(InputData const& inputData)
             }
         }
 
+        // Check for error state
+        if (is.eof()) is.clear();
+
         // Keep header
         is.seekg(0, is.beg);
         if (binary_start_position != 0) {
