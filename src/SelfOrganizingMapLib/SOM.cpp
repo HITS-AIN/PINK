@@ -40,10 +40,15 @@ SOM::SOM(InputData const& inputData)
         // Skip header
         std::string line;
         int binary_start_position = 0;
-        while (std::getline(is, line)) {
-            if (line == "# END OF HEADER") {
-                binary_start_position = is.tellg();
-                break;
+
+        // only scan if a header is implied
+        std::getline(is, line);
+        if (line[0] == '#'){
+            while (std::getline(is, line)) {
+                if (line == "# END OF HEADER") {
+                    binary_start_position = is.tellg();
+                    break;
+                }
             }
         }
 

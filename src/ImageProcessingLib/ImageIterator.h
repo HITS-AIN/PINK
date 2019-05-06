@@ -40,10 +40,15 @@ public:
         // Skip all header lines starting with #
         std::string line;
         int binary_start_position = ptrStream_->tellg();
-        while (std::getline(*ptrStream_, line)) {
-            if (line == "# END OF HEADER") {
-                binary_start_position = ptrStream_->tellg();
-                break;
+
+        // only scan if header is implied
+        std::getline(*ptrStream_, line);
+        if (line[0] == '#'){
+            while (std::getline(*ptrStream_, line)) {
+                if (line == "# END OF HEADER") {
+                    binary_start_position = ptrStream_->tellg();
+                    break;
+                }
             }
         }
 
