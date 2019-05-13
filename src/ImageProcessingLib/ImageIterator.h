@@ -42,15 +42,13 @@ public:
         int binary_start_position = ptrStream_->tellg();
 
         // only scan if header is implied
-        std::getline(*ptrStream_, line);
-        if (line[0] == '#'){
-            while (std::getline(*ptrStream_, line)) {
-                if (line == "# END OF HEADER") {
-                    binary_start_position = ptrStream_->tellg();
-                    break;
-                }
+        while (std::getline(*ptrStream_, line) && line[0] == '#') {
+            if (line == "# END OF HEADER") {
+                binary_start_position = ptrStream_->tellg();
+                break;
             }
         }
+    
 
         ptrStream_->clear(); // Reset EOF flag
         ptrStream_->seekg(binary_start_position, ptrStream_->beg);

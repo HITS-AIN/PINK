@@ -42,16 +42,13 @@ SOM::SOM(InputData const& inputData)
         int binary_start_position = 0;
 
         // only scan if a header is implied
-        std::getline(is, line);
-        if (line[0] == '#'){
-            while (std::getline(is, line)) {
-                if (line == "# END OF HEADER") {
-                    binary_start_position = is.tellg();
-                    break;
-                }
+        while (std::getline(is, line) && line[0] == '#' ) {
+            if (line == "# END OF HEADER") {
+                binary_start_position = is.tellg();
+                break;
             }
         }
-
+    
         // Check for error state
         if (is.eof()) is.clear();
 
