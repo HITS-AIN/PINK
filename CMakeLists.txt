@@ -98,9 +98,11 @@ if(CUDA_FOUND)
 endif()
 
 set(PYBIND11_PYTHON_VERSION 3)
-find_package(pybind11)
+find_package(pybind11 QUIET)
 if(pybind11_FOUND)
     add_subdirectory(src/PythonBinding)
+else()
+    message(STATUS "Could NOT find pybind11")
 endif()
 
 add_subdirectory(src)
