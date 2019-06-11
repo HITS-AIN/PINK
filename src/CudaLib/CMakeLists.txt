@@ -16,7 +16,6 @@ target_link_libraries(
     SelfOrganizingMapLib
     UtilitiesLib
     ${CUDA_LIBRARIES}
-    ${CUDA_CUBLAS_LIBRARIES}
 )
 
 install( 
