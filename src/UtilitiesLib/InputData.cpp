@@ -16,6 +16,7 @@
 #include "InputData.h"
 #include "pink_exception.h"
 #include "SelfOrganizingMapLib/HexagonalLayout.h"
+#include "UtilitiesLib/get_file_header.h"
 
 namespace pink {
 
@@ -360,19 +361,15 @@ InputData::InputData(int argc, char **argv)
     std::ifstream ifs(data_filename);
     if (!ifs) throw std::runtime_error("Error opening " + data_filename);
 
-    // Skip header lines
-    std::string line;
-    int last_position = ifs.tellg();
-    while (std::getline(ifs, line)) {
-        if (line[0] != '#') break;
-        last_position = ifs.tellg();
-    }
+    // Skip header
+    get_file_header(ifs);
 
-    int data_dimensionality;
     // Ignore first three entries
-    ifs.seekg(last_position + 3 * sizeof(int), ifs.beg);
+    ifs.seekg(3 * sizeof(int), ifs.cur);
     ifs.read((char*)&number_of_data_entries, sizeof(int));
     ifs.read((char*)&data_layout, sizeof(int));
+
+    int data_dimensionality;
     ifs.read((char*)&data_dimensionality, sizeof(int));
     data_dimension.resize(data_dimensionality);
 

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "Data.h"
+#include "UtilitiesLib/get_file_header.h"
 #include "UtilitiesLib/pink_exception.h"
 
 namespace pink {
@@ -45,21 +46,11 @@ public:
        end_flag(false),
        seed(seed)
     {
-        // Skip all header lines starting with #
-        std::string line;
-        int binary_start_position = 0;
-        while (std::getline(is, line)) {
-            if (line == "# END OF HEADER") {
-                binary_start_position = is.tellg();
-                break;
-            }
-        }
-
-        // Reset EOF flag
-        is.clear();
+        // Skip header
+    	get_file_header(is);
 
         // Ignore first three entries
-        is.seekg(binary_start_position + 3 * sizeof(int), is.beg);
+        is.seekg(3 * sizeof(int), is.cur);
         is.read((char*)&number_of_entries, sizeof(int));
         // Ignore layout and dimensionality
         is.seekg(2 * sizeof(int), is.cur);

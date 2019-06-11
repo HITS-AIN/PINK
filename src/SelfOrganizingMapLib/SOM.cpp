@@ -6,6 +6,7 @@
 
 #include "SOM.h"
 #include "UtilitiesLib/Filler.h"
+#include "UtilitiesLib/get_file_header.h"
 
 namespace pink {
 
@@ -37,28 +38,7 @@ SOM<CartesianLayout<2>, CartesianLayout<2>, float>::SOM(InputData const& input_d
         std::ifstream is(input_data.som_filename);
         if (!is) throw pink::exception("Error opening " + input_data.som_filename);
 
-        // Skip header
-        std::string line;
-        int binary_start_position = 0;
-        while (std::getline(is, line)) {
-            if (line == "# END OF HEADER") {
-                binary_start_position = is.tellg();
-                break;
-            }
-        }
-
-        // Keep header
-        is.clear();
-        is.seekg(0, is.beg);
-        if (binary_start_position != 0) {
-            while (std::getline(is, line)) {
-                header += line + '\n';
-                if (line == "# END OF HEADER") break;
-            }
-        }
-
-        is.clear();
-        is.seekg(binary_start_position, is.beg);
+        header = get_file_header(is);
 
         // <file format version> 1 <data-type> <som layout> <neuron layout> <data>
         int tmp;
