@@ -447,7 +447,11 @@ void InputData::print_parameters() const
               << "  Number of progress information prints = " << number_of_progress_prints << "\n"
               << "  Intermediate storage of SOM = " << intermediate_storage << "\n"
               << "  Layout = " << layout << "\n"
-              << "  Initialization type = " << init << "\n"
+              << "  Initialization type = " << init;
+
+    if (init == SOMInitialization::FILEINIT) std::cout << "\n  SOM initialization file = " << som_filename;
+
+   	std::cout << "\n"
               << "  Interpolation type = " << interpolation << "\n"
               << "  Seed = " << seed << "\n"
               << "  Number of rotations = " << number_of_rotations << "\n"
