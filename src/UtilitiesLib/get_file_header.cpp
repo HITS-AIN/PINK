@@ -15,12 +15,12 @@ std::string get_file_header(std::istream& ifs)
 
     while (std::getline(ifs, line) && line[0] == '#')
     {
+        last_position = ifs.tellg();
         if (line == "# END OF HEADER") {
-            header = line + '\n';
+            header += line + '\n';
             break;
         } else {
-            header = line + '\n';
-            last_position = ifs.tellg();
+            header += line + '\n';
         }
     }
 
