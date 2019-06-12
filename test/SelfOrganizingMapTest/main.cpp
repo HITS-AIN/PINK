@@ -4,8 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "omp.h"
-#include "gtest/gtest.h"
+#include <omp.h>
+#include <gtest/gtest.h>
 
 int main(int argc, char **argv)
 {

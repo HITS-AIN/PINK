@@ -7,7 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <vector>
 
 #include "ImageProcessingLib/Image.h"

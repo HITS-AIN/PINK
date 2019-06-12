@@ -6,7 +6,7 @@
  */
 
 #include <cmath>
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include "SelfOrganizingMapLib/CartesianLayout.h"
 #include "SelfOrganizingMapLib/HexagonalLayout.h"

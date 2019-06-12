@@ -5,15 +5,16 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "CudaLib/CudaLib.h"
-#include "UtilitiesLib/EqualFloatArrays.h"
-#include "ImageProcessingLib/ImageProcessing.h"
-#include "SelfOrganizingMapLib/SelfOrganizingMap.h"
-#include "UtilitiesLib/Filler.h"
-#include "gtest/gtest.h"
 #include <cmath>
+#include <gtest/gtest.h>
 #include <iostream>
 #include <vector>
+
+#include "CudaLib/CudaLib.h"
+#include "ImageProcessingLib/ImageProcessing.h"
+#include "SelfOrganizingMapLib/SelfOrganizingMap.h"
+#include "UtilitiesLib/EqualFloatArrays.h"
+#include "UtilitiesLib/Filler.h"
 
 using namespace pink;
 

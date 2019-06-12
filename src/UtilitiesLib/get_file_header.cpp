@@ -8,14 +8,14 @@
 
 namespace pink {
 
-std::string get_file_header(std::istream& ifs)
+std::string get_file_header(std::istream& is)
 {
     std::string header, line;
-    auto last_position{ifs.tellg()};
+    auto last_position{is.tellg()};
 
-    while (std::getline(ifs, line) && line[0] == '#')
+    while (std::getline(is, line) && line[0] == '#')
     {
-        last_position = ifs.tellg();
+        last_position = is.tellg();
         if (line == "# END OF HEADER") {
             header += line + '\n';
             break;
@@ -24,8 +24,8 @@ std::string get_file_header(std::istream& ifs)
         }
     }
 
-    ifs.clear();
-    ifs.seekg(last_position, ifs.beg);
+    is.clear();
+    is.seekg(last_position, is.beg);
 
     return header;
 }

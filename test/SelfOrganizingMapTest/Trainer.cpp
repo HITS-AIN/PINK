@@ -5,6 +5,7 @@
  */
 
 #include <cmath>
+#include <gtest/gtest.h>
 #include <limits>
 #include <omp.h>
 
@@ -15,8 +16,6 @@
 #include "SelfOrganizingMapLib/SOMIO.h"
 #include "SelfOrganizingMapLib/Trainer.h"
 #include "UtilitiesLib/DistributionFunctor.h"
-
-#include "gtest/gtest.h"
 
 using namespace pink;
 
