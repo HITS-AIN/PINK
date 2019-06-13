@@ -6,6 +6,7 @@ include_directories(
 add_executable(
     SelfOrganizingMapTest
     main.cpp
+    Cartesian.cpp
     Data.cpp
     DataIterator.cpp
     Trainer.cpp
@@ -13,7 +14,7 @@ add_executable(
     
 target_link_libraries(
     SelfOrganizingMapTest
-    SelfOrganizingMapLib
+    UtilitiesLib
     ${GTEST_BOTH_LIBRARIES}
 )
 

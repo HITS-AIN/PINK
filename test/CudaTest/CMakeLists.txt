@@ -17,7 +17,6 @@ cuda_add_executable(
 target_link_libraries(
     CudaTest
     CudaLib
-    SelfOrganizingMapLib
     ${GTEST_BOTH_LIBRARIES}
 )
 

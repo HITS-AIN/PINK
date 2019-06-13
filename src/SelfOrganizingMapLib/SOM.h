@@ -14,9 +14,32 @@
 #include "CartesianLayout.h"
 #include "Data.h"
 #include "HexagonalLayout.h"
+#include "UtilitiesLib/Filler.h"
+#include "UtilitiesLib/get_file_header.h"
 #include "UtilitiesLib/InputData.h"
 
 namespace pink {
+
+template <uint8_t dim>
+inline std::array<uint32_t, dim> extract_layout(uint32_t x, uint32_t y, uint32_t z);
+
+template <>
+inline std::array<uint32_t, 1> extract_layout<1>(uint32_t x, uint32_t /*y*/, uint32_t /*z*/)
+{
+    return std::array<uint32_t, 1>{x};
+}
+
+template <>
+inline std::array<uint32_t, 2> extract_layout<2>(uint32_t x, uint32_t y, uint32_t /*z*/)
+{
+    return std::array<uint32_t, 2>{x, y};
+}
+
+template <>
+inline std::array<uint32_t, 3> extract_layout<3>(uint32_t x, uint32_t y, uint32_t z)
+{
+    return std::array<uint32_t, 3>{x, y, z};
+}
 
 /// Generic SOM
 template <typename SOMLayout, typename NeuronLayout, typename T>
@@ -37,7 +60,34 @@ public:
     {}
 
     /// Construction by input data
-    SOM(InputData const& input_data);
+    SOM(InputData const& input_data)
+     : som_layout{extract_layout<SOMLayout::dimensionality>(input_data.som_width, input_data.som_height, input_data.som_depth)},
+       neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
+       data(som_layout.size() * neuron_layout.size())
+    {
+		// Initialize SOM
+		if (input_data.init == SOMInitialization::ZERO)
+			fill_value(&data[0], data.size());
+		else if (input_data.init == SOMInitialization::RANDOM)
+			fill_random_uniform(&data[0], data.size(), input_data.seed);
+		else if (input_data.init == SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION) {
+			fill_random_uniform(&data[0], data.size(), input_data.seed);
+			for (int n = 0; n < input_data.som_size; ++n)
+				for (uint32_t i = 0; i < input_data.neuron_dim; ++i)
+					data[n * input_data.neuron_size + i * input_data.neuron_dim + i] = 1.0;
+		}
+	    else if (input_data.init == SOMInitialization::FILEINIT) {
+	        std::ifstream is(input_data.som_filename);
+	        if (!is) throw pink::exception("Error opening " + input_data.som_filename);
+
+	        header = get_file_header(is);
+
+	        // Ignore first three entries
+	        is.seekg((9 + SOMLayout::dimensionality) * sizeof(int), is.cur);
+	        is.read((char*)&data[0], data.size() * sizeof(float));
+	    } else
+	        throw pink::exception("Unknown SOMInitialization");
+    }
 
     /// Construction without initialization
     SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout)

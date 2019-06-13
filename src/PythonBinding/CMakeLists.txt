@@ -18,7 +18,6 @@ if(PINK_USE_CUDA)
         pink
         CudaLib
         pybind11::module
-        SelfOrganizingMapLib
         UtilitiesLib
     )
 else()
@@ -29,7 +28,6 @@ else()
     
     target_link_libraries(
         pink PRIVATE
-        SelfOrganizingMapLib
         UtilitiesLib
     )
 endif()
