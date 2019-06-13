@@ -7,6 +7,7 @@ add_executable(
     UtilitiesTest
     main.cpp
     DistributionFunctorTest.cpp
+    ProgressBarTest.cpp
 )
     
 target_link_libraries(
