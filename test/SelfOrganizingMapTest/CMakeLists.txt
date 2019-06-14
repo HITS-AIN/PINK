@@ -9,6 +9,7 @@ add_executable(
     Cartesian.cpp
     Data.cpp
     DataIterator.cpp
+    Hexagonal.cpp
     Trainer.cpp
 )
     

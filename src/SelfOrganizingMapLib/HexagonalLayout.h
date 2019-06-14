@@ -29,7 +29,7 @@ struct HexagonalLayout
      : dimension(dimension),
        radius((dimension[0] - 1) / 2),
        row_size(dimension[0]),
-       row_offset(dimension[0])
+       row_offset(dimension[0] + 1)
     {
         if (dimension[0] % 2 == 0) throw pink::exception("Only odd dimensions are allowed for hexagonal layout");
         if (dimension[0] != dimension[1]) throw pink::exception("dimension[0] must be identical to dimension[1]");
@@ -41,7 +41,7 @@ struct HexagonalLayout
         }
 
         row_offset[0] = 0;
-        for (size_t i = 0; i < dimension[0] - 1; ++i) {
+        for (size_t i = 0; i < dimension[0]; ++i) {
             row_offset[i + 1] = row_offset[i] + row_size[i];
         }
     }
