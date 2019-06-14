@@ -92,7 +92,6 @@ if __name__ == "__main__":
     height = dimensions[1] if dimensionality > 1 else 1
     numberOfChannels = dimensions[2] if dimensionality > 2 else 1
 
-    print ('Number of images = ', numberOfImages)
     print ('Number of channels = ', numberOfChannels)
     print ('Width = ', width)
     print ('Height = ', height)
