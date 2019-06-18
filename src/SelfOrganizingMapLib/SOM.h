@@ -65,28 +65,28 @@ public:
        neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
        data(som_layout.size() * neuron_layout.size())
     {
-		// Initialize SOM
-		if (input_data.init == SOMInitialization::ZERO)
-			fill_value(&data[0], data.size());
-		else if (input_data.init == SOMInitialization::RANDOM)
-			fill_random_uniform(&data[0], data.size(), input_data.seed);
-		else if (input_data.init == SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION) {
-			fill_random_uniform(&data[0], data.size(), input_data.seed);
-			for (int n = 0; n < input_data.som_size; ++n)
-				for (uint32_t i = 0; i < input_data.neuron_dim; ++i)
-					data[n * input_data.neuron_size + i * input_data.neuron_dim + i] = 1.0;
-		}
-	    else if (input_data.init == SOMInitialization::FILEINIT) {
-	        std::ifstream is(input_data.som_filename);
-	        if (!is) throw pink::exception("Error opening " + input_data.som_filename);
+        // Initialize SOM
+        if (input_data.init == SOMInitialization::ZERO)
+            fill_value(&data[0], data.size());
+        else if (input_data.init == SOMInitialization::RANDOM)
+            fill_random_uniform(&data[0], data.size(), input_data.seed);
+        else if (input_data.init == SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION) {
+            fill_random_uniform(&data[0], data.size(), input_data.seed);
+            for (int n = 0; n < input_data.som_size; ++n)
+                for (uint32_t i = 0; i < input_data.neuron_dim; ++i)
+                    data[n * input_data.neuron_size + i * input_data.neuron_dim + i] = 1.0;
+        }
+        else if (input_data.init == SOMInitialization::FILEINIT) {
+            std::ifstream is(input_data.som_filename);
+            if (!is) throw pink::exception("Error opening " + input_data.som_filename);
 
-	        header = get_file_header(is);
+            header = get_file_header(is);
 
-	        // Ignore first three entries
-	        is.seekg((9 + SOMLayout::dimensionality) * sizeof(int), is.cur);
-	        is.read((char*)&data[0], data.size() * sizeof(float));
-	    } else
-	        throw pink::exception("Unknown SOMInitialization");
+            // Ignore first three entries
+            is.seekg((9 + SOMLayout::dimensionality) * sizeof(int), is.cur);
+            is.read((char*)&data[0], data.size() * sizeof(float));
+        } else
+            throw pink::exception("Unknown SOMInitialization");
     }
 
     /// Construction without initialization

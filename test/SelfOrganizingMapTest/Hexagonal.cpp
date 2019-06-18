@@ -14,7 +14,7 @@ using namespace pink;
 
 TEST(HexagonalLayoutTest, hex3)
 {
-	HexagonalLayout h{{3, 3}};
+    HexagonalLayout h{{3, 3}};
     EXPECT_EQ(7UL, h.size());
 
     EXPECT_EQ(0UL, (h.get_index({1, 0})));

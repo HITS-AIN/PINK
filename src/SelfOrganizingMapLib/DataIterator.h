@@ -47,7 +47,7 @@ public:
        seed(seed)
     {
         // Skip header
-    	get_file_header(is);
+        get_file_header(is);
 
         // Ignore first three entries
         is.seekg(3 * sizeof(int), is.cur);

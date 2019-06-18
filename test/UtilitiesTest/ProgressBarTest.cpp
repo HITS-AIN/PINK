@@ -13,7 +13,7 @@ using namespace pink;
 
 TEST(ProgressBarTest, valid)
 {
-	std::stringstream ss;
+    std::stringstream ss;
 
     ProgressBar progress(100, 70, 10, ss);
 

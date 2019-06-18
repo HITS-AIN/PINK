@@ -451,7 +451,7 @@ void InputData::print_parameters() const
 
     if (init == SOMInitialization::FILEINIT) std::cout << "\n  SOM initialization file = " << som_filename;
 
-   	std::cout << "\n"
+    std::cout << "\n"
               << "  Interpolation type = " << interpolation << "\n"
               << "  Seed = " << seed << "\n"
               << "  Number of rotations = " << number_of_rotations << "\n"

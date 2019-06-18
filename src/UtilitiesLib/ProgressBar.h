@@ -18,11 +18,11 @@ class ProgressBar
 public:
 
     ProgressBar(int total, int width, int number_of_progress_prints = 10, std::ostream& os = std::cout)
-	 : total(total < 1 ? throw pink::exception("ProgressBar: total must be larger than 0") : total),
+     : total(total < 1 ? throw pink::exception("ProgressBar: total must be larger than 0") : total),
        width(width < number_of_progress_prints ? throw pink::exception("ProgressBar: width must be larger than number of progress prints") : width),
        number_of_progress_prints(number_of_progress_prints < 0 ? throw pink::exception("ProgressBar: width must be equal or larger than 0") : number_of_progress_prints),
        number_of_ticks_in_section(total / number_of_progress_prints),
-	   os(os)
+       os(os)
     {}
 
     void operator ++ ()
