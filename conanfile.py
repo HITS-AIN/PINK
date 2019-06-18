@@ -3,7 +3,7 @@ from conans import ConanFile, CMake
 class RecordConan(ConanFile):
     
     name = "pink"
-    version = "2.0"
+    version = "2.1"
     license = "GPLv3"
     description = "Parallelized rotation and flipping INvariant Kohonen maps"
     homepage = "https://github.com/HITS-AIN/PINK"
