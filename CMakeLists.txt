@@ -10,6 +10,11 @@ endif()
 
 message(STATUS "CMake build type: ${CMAKE_BUILD_TYPE}")
 
+# Check if installation path is equal to source path
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_INSTALL_PREFIX})
+    message(FATAL_ERROR "CMAKE_INSTALL_PREFIX must not be CMAKE_SOURCE_DIR.")
+endif()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++14 -fPIC")
 
 if(${CMAKE_CXX_COMPILER} MATCHES "clang")
