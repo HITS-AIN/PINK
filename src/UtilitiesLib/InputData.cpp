@@ -138,7 +138,7 @@ InputData::InputData(int argc, char **argv)
                 else if (strcmp(optarg, "HEXAGONAL") == 0) layout = Layout::HEXAGONAL;
                 else {
                     printf ("optarg = %s\n", optarg);
-                    printf ("Unkown option %o\n", c);
+                    printf ("Unknown option %o\n", c);
                     print_usage();
                     exit(EXIT_FAILURE);
                 }
@@ -205,7 +205,7 @@ InputData::InputData(int argc, char **argv)
                 else {
                     print_usage();
                     printf ("optarg = %s\n", optarg);
-                    printf ("Unkown option %o\n", c);
+                    printf ("Unknown option %o\n", c);
                     exit(EXIT_FAILURE);
                 }
                 break;
@@ -242,7 +242,7 @@ InputData::InputData(int argc, char **argv)
                 else if (strcmp(optarg, "KEEP") == 0) intermediate_storage = IntermediateStorageType::KEEP;
                 else {
                     printf ("optarg = %s\n", optarg);
-                    printf ("Unkown option %o\n", c);
+                    printf ("Unknown option %o\n", c);
                     print_usage();
                     exit(EXIT_FAILURE);
                 }
@@ -281,7 +281,7 @@ InputData::InputData(int argc, char **argv)
                 else if (strcmp(optarg, "UINT8") == 0) euclidean_distance_type = DataType::UINT8;
                 else {
                     printf ("optarg = %s\n", optarg);
-                    printf ("Unkown option %o\n", c);
+                    printf ("Unknown option %o\n", c);
                     print_usage();
                     exit(EXIT_FAILURE);
                 }
@@ -309,7 +309,7 @@ InputData::InputData(int argc, char **argv)
                 }
                 else {
                     printf ("optarg = %s\n", optarg);
-                    printf ("Unkown option %o\n", c);
+                    printf ("Unknown option %o\n", c);
                     print_usage();
                     exit(EXIT_FAILURE);
                 }
@@ -323,13 +323,13 @@ InputData::InputData(int argc, char **argv)
             }
             case '?':
             {
-                printf ("Unkown option %o\n", c);
+                printf ("Unknown option %o\n", c);
                 print_usage();
                 exit(EXIT_FAILURE);
             }
             default:
             {
-                printf ("Unkown option %o\n", c);
+                printf ("Unknown option %o\n", c);
                 print_usage();
                 exit(EXIT_FAILURE);
             }
@@ -340,7 +340,7 @@ InputData::InputData(int argc, char **argv)
         init = SOMInitialization::FILEINIT;
     } else if (executionPath == ExecutionPath::UNDEFINED) {
         print_usage();
-        throw pink::exception("Unkown execution path.");
+        throw pink::exception("Unknown execution path.");
     }
 
     if (layout == Layout::HEXAGONAL) {
