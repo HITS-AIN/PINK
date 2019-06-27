@@ -72,7 +72,7 @@ class MAPVisualizer():
         print (str(len(self.__neurons)) + " neurons loaded")
         inputStream.close()
 
-    #Checks if hexagonal or quadratic map is used
+    #Checks if hexagonal or cartesian map is used
     def isHexMap(self):
         return len(self.__neurons) < self.__somHeight * self.__somWidth * self.__somDepth
 
@@ -91,7 +91,7 @@ class MAPVisualizer():
             print ("hexagonal map")
             image = tools.calculate_map(self.__somWidth, self.__somHeight, self.__neurons[:,start:end], self.__neuronWidth, self.__neuronHeight, shareIntensity=shareIntensity, border=borderWidth, shape="hex")
         else:
-            print ("quadratic map")
+            print ("cartesian map")
             image = tools.calculate_map(self.__somWidth, self.__somHeight, self.__neurons[:,start:end], self.__neuronWidth, self.__neuronHeight, shareIntensity=shareIntensity, border=borderWidth, shape="box")
 
         ax = pyplot.subplot()

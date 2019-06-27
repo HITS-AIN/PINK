@@ -87,7 +87,7 @@ class HeatmapVisualizer():
         self.__maps = numpy.array(self.__maps)
         print (str(len(self.__maps)) + " maps loaded")
 
-    #Checks if hexagonal or quadratic map is used
+    #Checks if hexagonal or cartesian map is used
     def isHexMap(self):
         return self.__shape == "hex"
 
@@ -105,7 +105,7 @@ class HeatmapVisualizer():
             print ("hexagonal map")
             image = tools.calculate_map(self.__somWidth, self.__somHeight, self.__maps[imageNumber], neuronSize, neuronSize, shareIntensity=shareIntensity, border=borderWidth, shape="hex")
         else:
-            print ("quadratic map")
+            print ("cartesian map")
             image = tools.calculate_map(self.__somWidth, self.__somHeight, self.__maps[imageNumber], neuronSize, neuronSize, shareIntensity=shareIntensity, border=borderWidth, shape="box")
 
         ax = pyplot.subplot()

@@ -492,7 +492,7 @@ void InputData::print_usage() const
                  "    --init, -x <string>             Type of SOM initialization (zero = default, random, random_with_preferred_direction, file_init).\n"
                  "    --interpolation <string>        Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
                  "    --inter-store <string>          Store intermediate SOM results at every progress step (off = default, overwrite, keep).\n"
-                 "    --layout, -l <string>           Layout of SOM (quadratic = default, hexagonal).\n"
+                 "    --layout, -l <string>           Layout of SOM (cartesian = default, hexagonal).\n"
                  "    --neuron-dimension, -d <int>    Dimension for quadratic SOM neurons (default = image-dimension * sqrt(2)/2).\n"
                  "    --numrot, -n <int>              Number of rotations (1 or a multiple of 4, default = 360).\n"
                  "    --numthreads, -t <int>          Number of CPU threads (default = auto).\n"

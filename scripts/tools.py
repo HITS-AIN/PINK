@@ -106,7 +106,7 @@ def get_header_comments(inputStream):
 
 
 def calculate_map(somWidth, somHeight, neurons, neuronWidth, neuronHeight, shareIntensity = False, border = 0, shape="box"):
-    """ For quadratic map, it reads through the data and creates each neuron as a 1D array
+    """ For cartesian map, it reads through the data and creates each neuron as a 1D array
         and then resizes it to the neuronSize print(neurons) """
 
     if shape == "box":
