@@ -22,16 +22,28 @@ public:
        width(width < number_of_progress_prints ? throw pink::exception("ProgressBar: width must be larger than number of progress prints") : width),
        number_of_progress_prints(number_of_progress_prints < 0 ? throw pink::exception("ProgressBar: width must be equal or larger than 0") : number_of_progress_prints),
        number_of_ticks_in_section(total / number_of_progress_prints),
-       os(os)
+       remaining_ticks_in_section(total % number_of_progress_prints),
+       os(os),
+	   next_valid_tick(number_of_ticks_in_section + (remaining_ticks_in_section ? 1 : 0))
     {}
 
     void operator ++ ()
     {
+    	if (end_reached) return;
+    	if (ticks == total)
+    	{
+    		end_reached = true;
+    		return;
+    	}
+    	if (ticks == next_valid_tick)
+    	{
+    	    next_valid_tick += number_of_ticks_in_section;
+    	}
         ++ticks;
-        if (ticks % number_of_ticks_in_section == 0)
+
+        if (ticks == next_valid_tick)
         {
-            ++progress;
-            int pos = width * progress / number_of_progress_prints;
+            int pos = width * ticks / total;
 
             std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
             auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_time).count();
@@ -43,7 +55,7 @@ public:
                 else if (i == pos) os << ">";
                 else os << ' ';
             }
-            os << "] " << static_cast<int>(100.0 * progress / number_of_progress_prints) << " % " << time_elapsed / 1000.0 << " s" << std::endl;
+            os << "] " << static_cast<int>(100.0 * ticks / total) << " % " << time_elapsed / 1000.0 << " s" << std::endl;
 
             if (ticks == total) os << std::endl;
             else os << std::flush;
@@ -52,7 +64,7 @@ public:
 
     bool valid() const
     {
-        return ticks != 0 and ticks % number_of_ticks_in_section == 0;
+        return ticks == next_valid_tick;
     }
 
 private:
@@ -71,11 +83,17 @@ private:
     /// Number of ticks between progress stages
     int number_of_ticks_in_section;
 
-    /// Current progress number
-    int progress = 0;
+    /// Number of remaining ticks
+    int remaining_ticks_in_section;
 
     /// Current progress number
     std::ostream& os;
+
+    /// Flag end was reached
+    bool end_reached = false;
+
+    ///
+    int next_valid_tick;
 
     std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
 };
