@@ -23,50 +23,6 @@ def check_extension(choices):
     return Act
 
 
-def load_data(filename):
-    """ Load data from binary file """
-    
-    file = open(filename, 'rb')
-    ignore_header_comments(file)
-    
-    version, file_type, data_type, number_of_data_entries, layout, dimensionality = struct.unpack('i' * 6, file.read(4 * 6))
-    dimensions = struct.unpack('i' * dimensionality, file.read(4 * dimensionality))
-
-    if len(dimensions) == 2:
-        size = number_of_data_entries * dimensions[0] * dimensions[1]
-        array = np.array(struct.unpack('f' * size, file.read(4 * size)))
-        return np.ndarray([number_of_data_entries, dimensions[0], dimensions[1]], 'float', array)
-    elif len(dimensions) == 3:
-        size = number_of_data_entries * dimensions[0] * dimensions[1] * dimensions[2]
-        array = np.array(struct.unpack('f' * size, file.read(4 * size)))
-        return np.ndarray([number_of_data_entries, dimensions[0], dimensions[1], dimensions[2]], 'float', array)
-
-
-def save_data(filename, data):
-    """ Write data as binary file """
-    
-    file = open(filename, 'wb')
-    
-    # Add channels
-    if len(data.shape) == 3:
-        print('Add channels')
-        data = np.expand_dims(data, axis=1)
-    
-    print('shape', np.shape(data))
-    print('numberOfImages', np.shape(data)[0])
-    print('numberOfChannels', np.shape(data)[1])
-    print('width', np.shape(data)[2])
-    print('height', np.shape(data)[3])
-    
-    file.write(struct.pack('i' * 3, version, file_type, data_type, np.shape(data)[0], layout, len(np.shape(data))-1))
-    file.write(struct.pack('i', np.shape(data)[1]))
-    file.write(struct.pack('i', np.shape(data)[2]))
-    file.write(struct.pack('i', np.shape(data)[3]))
-    file.write(struct.pack('f' * data.size, *data.flatten()))
-
-    data.tofile(file)
-
-
 def ignore_header_comments(inputStream):
     """ Ignore header """
 
