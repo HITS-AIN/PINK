@@ -142,7 +142,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("use_flip") = true,
             py::arg("max_update_distance") = -1.0,
             py::arg("interpolation") = Interpolation::BILINEAR,
-            py::arg("euclidean_distance_dim") = -1,
+            py::arg("euclidean_distance_dim"),
             py::arg("block_size") = 256,
             py::arg("euclidean_distance_type") = DataType::UINT8
         )

@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.2-devel-ubuntu18.04
+FROM braintwister/ubuntu-18.04-cuda-10.1-cmake-3.14-gcc-8-conan-1.16
 
 LABEL maintainer="Bernd Doser <bernd.doser@h-its.org>"
 
