@@ -387,6 +387,8 @@ InputData::InputData(int argc, char **argv)
         if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
     }
 
+    if (euclidean_distance_dim > neuron_dim) throw pink::exception("euclidean distance dimension must be equal or smaller than neuron dimension.");
+
     neuron_size = neuron_dim * neuron_dim;
     som_total_size = som_size * neuron_size;
     number_of_spatial_transformations = use_flip ? 2 * number_of_rotations : number_of_rotations;
