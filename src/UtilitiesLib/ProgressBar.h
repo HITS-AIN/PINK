@@ -24,21 +24,21 @@ public:
        number_of_ticks_in_section(total / number_of_progress_prints),
        remaining_ticks_in_section(total % number_of_progress_prints),
        os(os),
-	   next_valid_tick(number_of_ticks_in_section + (remaining_ticks_in_section ? 1 : 0))
+       next_valid_tick(number_of_ticks_in_section + (remaining_ticks_in_section ? 1 : 0))
     {}
 
     void operator ++ ()
     {
-    	if (end_reached) return;
-    	if (ticks == total)
-    	{
-    		end_reached = true;
-    		return;
-    	}
-    	if (ticks == next_valid_tick)
-    	{
-    	    next_valid_tick += number_of_ticks_in_section;
-    	}
+        if (end_reached) return;
+        if (ticks == total)
+        {
+            end_reached = true;
+            return;
+        }
+        if (ticks == next_valid_tick)
+        {
+            next_valid_tick += number_of_ticks_in_section;
+        }
         ++ticks;
 
         if (ticks == next_valid_tick)
