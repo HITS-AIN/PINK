@@ -68,10 +68,6 @@ public:
             euclidean_distance_dim = som.get_neuron_dimension()[0];
             if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
         }
-
-        if (verbosity)
-            std::cout << "Number of rotations = " << number_of_rotations << "\n"
-                      << "Dimension of euclidean distance calculation = " << euclidean_distance_dim << std::endl;
     }
 
     auto get_update_info() const { return update_info; }
