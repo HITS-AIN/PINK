@@ -65,16 +65,16 @@ The input data for the SOM training are radio-synthesis images of Radio Galaxy Z
 The SOM layout is hexagonal of the dimension 21x21 which has 331 neurons (see image above). The size of the neurons is 64x64.
 The accuracy for the rotational invariance is 1 degree and the flip invariance is used.
 
-CPU: 2x Intel Gold 5118 (12 cores in total)
+CPU: 2x Intel Gold 5118 (48 cores in total with hyper threading)
 
 GPU: 4x NVIDIA Tesla P40
 
-|               | PINK 1.1 | Pink 2.0 |
-| ---           | ---      | ---      |
-| CPU           |          |          |
-| CPU + 1x GPU  |    3069  |     909  |
-| CPU + 2x GPU  |    2069  |     636  |
-| CPU + 4x GPU  |    1891  |     858  |
+|               | PINK 1 | Pink 2 |
+| ---           |    --- |    --- |
+| CPU           |        |  35373 |
+| CPU + 1x GPU  |   3069 |    909 |
+| CPU + 2x GPU  |   2069 |    636 |
+| CPU + 4x GPU  |   1891 |    858 |
 
 
 ## Publication
