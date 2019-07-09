@@ -62,10 +62,10 @@ TEST_P(compare_trainer_cpu, cartesian_2d_float)
 
     auto&& f = GaussianFunctor(1.1, 0.2);
 
-    MyTrainer_cpu trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, GetParam().euclidean_distance_dim);
+    MyTrainer_cpu trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, -1.0, Interpolation::BILINEAR, GetParam().euclidean_distance_dim);
     trainer1(data);
 
-    MyTrainer_gpu trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, GetParam().euclidean_distance_dim, 256, DataType::FLOAT);
+    MyTrainer_gpu trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, -1.0, Interpolation::BILINEAR, GetParam().euclidean_distance_dim, 256, DataType::FLOAT);
     trainer2(data);
     trainer2.update_som();
 
@@ -76,15 +76,16 @@ TEST_P(compare_trainer_cpu, cartesian_2d_float)
 INSTANTIATE_TEST_CASE_P(TrainerCompareTest_all, compare_trainer_cpu,
     ::testing::Values(
         // som_dim, image_dim, neuron_dim, euclidean_distance_dim, num_rot, use_flip
-        TrainerCompareTestData(2,  2,   2,   2,   1, false)
-       ,TrainerCompareTestData(2,  2,   2,   2,   4, false)
-       ,TrainerCompareTestData(2,  2,   2,   2,   8, false)
-       ,TrainerCompareTestData(2,  2,   2,   2,   1,  true)
-       ,TrainerCompareTestData(2,  2,   2,   2,   4,  true)
-       ,TrainerCompareTestData(2,  2,   2,   2,   8,  true)
-       ,TrainerCompareTestData(2,  4,   4,   4,   1, false)
-       ,TrainerCompareTestData(2,  2,   4,   4,   1, false)
-       ,TrainerCompareTestData(2, 64,  45,  45, 360,  true)
-       ,TrainerCompareTestData(2, 64, 100, 100, 360,  true)
-       ,TrainerCompareTestData(2, 64, 100,  45, 360,  true)
+        TrainerCompareTestData(2,   2,   2,   2,   1, false)
+       ,TrainerCompareTestData(2,   2,   2,   2,   4, false)
+       ,TrainerCompareTestData(2,   2,   2,   2,   8, false)
+       ,TrainerCompareTestData(2,   2,   2,   2,   1,  true)
+       ,TrainerCompareTestData(2,   2,   2,   2,   4,  true)
+       ,TrainerCompareTestData(2,   2,   2,   2,   8,  true)
+       ,TrainerCompareTestData(2,   4,   4,   4,   1, false)
+       ,TrainerCompareTestData(2,   2,   4,   4,   1, false)
+       ,TrainerCompareTestData(2,  64,  45,  45, 360,  true)
+       ,TrainerCompareTestData(2,  64, 100, 100, 360,  true)
+       ,TrainerCompareTestData(2,  64, 100,  45, 360,  true)
+       ,TrainerCompareTestData(2, 124,  91,  64, 360,  true)
 ));

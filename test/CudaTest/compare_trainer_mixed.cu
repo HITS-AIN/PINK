@@ -50,7 +50,6 @@ TEST_P(compare_trainer_mixed, cartesian_2d_float)
 {
     typedef Data<CartesianLayout<2>, float> DataContainerType;
     typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> SOMType;
-    typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false> MyTrainer_cpu;
     typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, true> MyTrainer_gpu;
 
     DataContainerType data({GetParam().image_dim, GetParam().image_dim}, 0.0);
