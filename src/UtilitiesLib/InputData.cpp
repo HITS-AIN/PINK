@@ -343,6 +343,8 @@ InputData::InputData(int argc, char **argv)
         throw pink::exception("Unknown execution path.");
     }
 
+    if (usePBC) throw pink::exception("Periodic boundary conditions are not supported in version 2.");
+
     if (layout == Layout::HEXAGONAL) {
         if (usePBC) throw pink::exception("Periodic boundary conditions are not supported for hexagonal layout.");
         if ((som_width - 1) % 2) throw pink::exception("For hexagonal layout only odd dimension supported.");
