@@ -105,9 +105,9 @@ TEST_P(MapperTest, mapper_cartesian_2d_uint16)
 INSTANTIATE_TEST_CASE_P(MapperTest_all, MapperTest,
     ::testing::Values(
     	// som_dim, neuron_dim, image_dim, euclidean_distance_dim, num_rot, flip, result
-        MapperTestData(1, 2, 2, 2,   1, false, {4.0}),
-        MapperTestData(1, 3, 3, 2,   1, false, {4.0}),
-        MapperTestData(1, 3, 3, 2, 360, false, {4.0}),
-        MapperTestData(2, 3, 3, 2, 360, false, {4.0, 4.0, 4.0, 4.0}),
-        MapperTestData(2, 3, 3, 2, 360,  true, {4.0, 4.0, 4.0, 4.0})
+        MapperTestData(1, 2, 2, 2,   1, false, {2.0}),
+        MapperTestData(1, 3, 3, 2,   1, false, {2.0}),
+        MapperTestData(1, 3, 3, 2, 360, false, {2.0}),
+        MapperTestData(2, 3, 3, 2, 360, false, {2.0, 2.0, 2.0, 2.0}),
+        MapperTestData(2, 3, 3, 2, 360,  true, {2.0, 2.0, 2.0, 2.0})
 ));

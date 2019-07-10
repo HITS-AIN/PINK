@@ -103,6 +103,7 @@ public:
             this->som.get_number_of_neurons(), this->som.get_data_pointer(), neuron_dim, this->number_of_spatial_transformations,
             spatial_transformed_images, this->euclidean_distance_dim);
 
+        for (auto& e : euclidean_distance_matrix) e = std::sqrt(e);
         return std::make_tuple(euclidean_distance_matrix, best_rotation_matrix);
     }
 };
@@ -168,6 +169,7 @@ public:
         thrust::copy(d_euclidean_distance_matrix.begin(), d_euclidean_distance_matrix.end(), &euclidean_distance_matrix[0]);
         thrust::copy(d_best_rotation_matrix.begin(), d_best_rotation_matrix.end(), &best_rotation_matrix[0]);
 
+        for (auto& e : euclidean_distance_matrix) e = std::sqrt(e);
         return std::make_tuple(euclidean_distance_matrix, best_rotation_matrix);
     }
 
