@@ -58,7 +58,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         dim3 dim_grid(grid_size, grid_size, som_size);
 
         copy_and_transform_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_uint8[0]),
-            thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 256);
+            thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 255);
 
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
@@ -66,7 +66,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         dim3 dim_grid2(grid_size, grid_size, number_of_spatial_transformations);
 
         copy_and_transform_kernel<<<dim_grid2, dim_block>>>(thrust::raw_pointer_cast(&d_spatial_transformed_images_uint8[0]),
-            thrust::raw_pointer_cast(&d_spatial_transformed_images[0]), euclidean_distance_dim, neuron_dim, offset, 256);
+            thrust::raw_pointer_cast(&d_spatial_transformed_images[0]), euclidean_distance_dim, neuron_dim, offset, 255);
 
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
@@ -96,7 +96,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         dim3 dim_grid(grid_size, grid_size, som_size);
 
         copy_and_transform_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_uint16[0]),
-            thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 65536);
+            thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 65535);
 
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
@@ -104,7 +104,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         dim3 dim_grid2(grid_size, grid_size, number_of_spatial_transformations);
 
         copy_and_transform_kernel<<<dim_grid2, dim_block>>>(thrust::raw_pointer_cast(&d_spatial_transformed_images_uint16[0]),
-            thrust::raw_pointer_cast(&d_spatial_transformed_images[0]), euclidean_distance_dim, neuron_dim, offset, 65536);
+            thrust::raw_pointer_cast(&d_spatial_transformed_images[0]), euclidean_distance_dim, neuron_dim, offset, 65535);
 
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());

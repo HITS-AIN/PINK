@@ -190,7 +190,8 @@ void euclidean_distance_kernel<512>(uint16_t const *som, uint16_t const *rotated
     }
 #endif
 
-    first_step_local[tid] = sum;
+    // Copy and scale back to float
+    first_step_local[tid] = sum / 4294836225;
     __syncthreads();
 
     // Parallel reduction
@@ -235,7 +236,8 @@ void euclidean_distance_kernel<256>(uint16_t const *som, uint16_t const *rotated
     }
 #endif
 
-    first_step_local[tid] = sum;
+    // Copy and scale back to float
+    first_step_local[tid] = sum / 4294836225;
     __syncthreads();
 
     // Parallel reduction
@@ -279,7 +281,8 @@ void euclidean_distance_kernel<128>(uint16_t const *som, uint16_t const *rotated
     }
 #endif
 
-    first_step_local[tid] = sum;
+    // Copy and scale back to float
+    first_step_local[tid] = sum / 4294836225;
     __syncthreads();
 
     // Parallel reduction
@@ -322,7 +325,8 @@ void euclidean_distance_kernel<64>(uint16_t const *som, uint16_t const *rotated_
     }
 #endif
 
-    first_step_local[tid] = sum;
+    // Copy and scale back to float
+    first_step_local[tid] = sum / 4294836225;
     __syncthreads();
 
     // Static loop unrolling for the thread within one warp.
@@ -368,7 +372,8 @@ void euclidean_distance_kernel<512>(uint8_t const *som, uint8_t const *rotated_i
     }
 #endif
 
-    first_step_local[tid] = sum;
+    // Copy and scale back to float
+    first_step_local[tid] = sum / 65025;
     __syncthreads();
 
     // Parallel reduction
@@ -417,7 +422,8 @@ void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_i
     }
 #endif
 
-    first_step_local[tid] = sum;
+    // Copy and scale back to float
+    first_step_local[tid] = sum / 65025;
     __syncthreads();
 
     // Parallel reduction
@@ -465,7 +471,8 @@ void euclidean_distance_kernel<128>(uint8_t const *som, uint8_t const *rotated_i
     }
 #endif
 
-    first_step_local[tid] = sum;
+    // Copy and scale back to float
+    first_step_local[tid] = sum / 65025;
     __syncthreads();
 
     // Parallel reduction
@@ -512,7 +519,8 @@ void euclidean_distance_kernel<64>(uint8_t const *som, uint8_t const *rotated_im
     }
 #endif
 
-    first_step_local[tid] = sum;
+    // Copy and scale back to float
+    first_step_local[tid] = sum / 65025;
     __syncthreads();
 
     // Static loop unrolling for the thread within one warp.

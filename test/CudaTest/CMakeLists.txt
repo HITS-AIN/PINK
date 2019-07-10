@@ -7,10 +7,11 @@ include_directories(
 cuda_add_executable(
     CudaTest
     main.cpp
-    mixed_precision.cu
-    rotate_90_degrees_list.cu
     compare_trainer_cpu.cu
     compare_trainer_mixed.cu
+    mapper.cu
+    mixed_precision.cu
+    rotate_90_degrees_list.cu
     update_neurons.cu
 )
     

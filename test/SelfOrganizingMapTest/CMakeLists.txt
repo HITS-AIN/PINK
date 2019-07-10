@@ -10,6 +10,7 @@ add_executable(
     Data.cpp
     DataIterator.cpp
     Hexagonal.cpp
+    Mapper.cpp
     Trainer.cpp
 )
     
