@@ -21,7 +21,8 @@ using namespace pink;
 
 struct MapperTestData
 {
-	MapperTestData(int som_dim, int neuron_dim, int image_dim, int euclidean_distance_dim, int num_rot, bool flip, std::vector<float> result)
+	MapperTestData(uint32_t som_dim, uint32_t neuron_dim, uint32_t image_dim, uint32_t euclidean_distance_dim,
+        uint32_t num_rot, bool flip, std::vector<float> result)
       : som_dim(som_dim),
 		neuron_dim(neuron_dim),
 		image_dim(image_dim),
@@ -35,17 +36,17 @@ struct MapperTestData
         som_total_size(som_size * neuron_size)
     {}
 
-    int som_dim;
-    int neuron_dim;
-    int image_dim;
-    int euclidean_distance_dim;
-    int num_rot;
+    uint32_t som_dim;
+    uint32_t neuron_dim;
+    uint32_t image_dim;
+    uint32_t euclidean_distance_dim;
+    uint32_t num_rot;
     bool flip;
     std::vector<float> result;
-    int som_size;
-    int neuron_size;
-    int image_size;
-    int som_total_size;
+    uint32_t som_size;
+    uint32_t neuron_size;
+    uint32_t image_size;
+    uint32_t som_total_size;
 };
 
 class MapperTest : public ::testing::TestWithParam<MapperTestData>
