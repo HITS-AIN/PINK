@@ -17,10 +17,10 @@ template <class T, typename std::enable_if<std::is_floating_point<T>::value, int
 void fill_random_uniform(T *a, std::size_t length, std::uint32_t seed = std::mt19937::default_seed)
 {
     std::mt19937 rng(seed);
-    std::uniform_real_distribution<T> normal_dist(0.0);
+    std::uniform_real_distribution<T> dist(0.0);
 
     for (std::size_t i = 0; i < length; ++i) {
-        a[i] = normal_dist(rng);
+        a[i] = dist(rng);
     }
 }
 
@@ -29,10 +29,10 @@ template <class T, typename std::enable_if<std::is_integral<T>::value, int>::typ
 void fill_random_uniform(T *a, std::size_t length, std::uint32_t seed = std::mt19937::default_seed)
 {
     std::mt19937 rng(seed);
-    std::uniform_int_distribution<T> normal_dist(0);
+    std::uniform_int_distribution<T> dist(0);
 
     for (std::size_t i = 0; i < length; ++i) {
-        a[i] = normal_dist(rng);
+        a[i] = dist(rng);
     }
 }
 
