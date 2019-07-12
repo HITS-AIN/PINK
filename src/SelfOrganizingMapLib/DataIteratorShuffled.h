@@ -38,7 +38,7 @@ public:
     {}
 
     /// Parameter constructor
-    DataIteratorShuffled(std::istream& is, uint64_t seed)
+    DataIteratorShuffled(std::istream& is, uint64_t seed, bool do_shuffle = true)
      : number_of_entries(0),
        is(is),
        header_offset(0),
@@ -62,9 +62,11 @@ public:
         random_list.resize(number_of_entries);
         std::iota(std::begin(random_list), std::end(random_list), 0);
 
-        std::default_random_engine engine(seed);
-        std::mt19937 dist(engine());
-        std::shuffle(std::begin(random_list), std::end(random_list), dist);
+        if (do_shuffle) {
+            std::default_random_engine engine(seed);
+            std::mt19937 dist(engine());
+            std::shuffle(std::begin(random_list), std::end(random_list), dist);
+        }
 
         cur_random_list = std::begin(random_list);
 
@@ -74,7 +76,7 @@ public:
     /// Equal comparison
     bool operator == (DataIteratorShuffled const& other) const
     {
-        return end_flag == other.end_flag;// && is == other.is;
+        return end_flag == other.end_flag;
     }
 
     /// Unequal comparison

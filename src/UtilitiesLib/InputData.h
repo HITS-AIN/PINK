@@ -85,6 +85,7 @@ struct InputData
     int dimensionality;
     bool write_rot_flip;
     DataType euclidean_distance_type;
+    bool shuffle_data_input;
 };
 
 void stringToUpper(char* s);

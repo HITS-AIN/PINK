@@ -21,18 +21,18 @@ using namespace pink;
 
 struct MapperTestData
 {
-	MapperTestData(uint32_t som_dim, uint32_t neuron_dim, uint32_t image_dim, uint32_t euclidean_distance_dim,
+    MapperTestData(uint32_t som_dim, uint32_t neuron_dim, uint32_t image_dim, uint32_t euclidean_distance_dim,
         uint32_t num_rot, bool flip, std::vector<float> result)
       : som_dim(som_dim),
-		neuron_dim(neuron_dim),
-		image_dim(image_dim),
-		euclidean_distance_dim(euclidean_distance_dim),
-		num_rot(num_rot),
-		flip(flip),
-		result(result),
+        neuron_dim(neuron_dim),
+        image_dim(image_dim),
+        euclidean_distance_dim(euclidean_distance_dim),
+        num_rot(num_rot),
+        flip(flip),
+        result(result),
         som_size(som_dim * som_dim),
         neuron_size(neuron_dim * neuron_dim),
-		image_size(image_dim * image_dim),
+        image_size(image_dim * image_dim),
         som_total_size(som_size * neuron_size)
     {}
 
@@ -105,7 +105,7 @@ TEST_P(MapperTest, mapper_cartesian_2d_uint16)
 
 INSTANTIATE_TEST_CASE_P(MapperTest_all, MapperTest,
     ::testing::Values(
-    	// som_dim, neuron_dim, image_dim, euclidean_distance_dim, num_rot, flip, result
+        // som_dim, neuron_dim, image_dim, euclidean_distance_dim, num_rot, flip, result
         MapperTestData(1, 2, 2, 2,   1, false, {2.0}),
         MapperTestData(1, 3, 3, 2,   1, false, {2.0}),
         MapperTestData(1, 3, 3, 2, 360, false, {2.0}),

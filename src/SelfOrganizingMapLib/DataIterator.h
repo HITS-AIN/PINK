@@ -19,7 +19,7 @@
 
 namespace pink {
 
-/// Lazy iterator with random access for reading data
+/// Lazy iterator for reading data
 template <typename Layout, typename T>
 class DataIterator
 {
@@ -33,7 +33,7 @@ public:
      : number_of_entries(0),
        is(is),
        header_offset(0),
-	   count(0),
+       count(0),
        end_flag(end_flag)
     {}
 
@@ -42,7 +42,7 @@ public:
      : number_of_entries(0),
        is(is),
        header_offset(0),
-	   count(0),
+       count(0),
        end_flag(false)
     {
         // Skip header
@@ -85,8 +85,8 @@ public:
     /// Addition assignment operator
     DataIterator& operator += (int steps)
     {
-		is.seekg((steps - 1) * layout.size() * sizeof(T), is.cur);
-		count += steps - 1;
+        is.seekg((steps - 1) * layout.size() * sizeof(T), is.cur);
+        count += steps - 1;
         next();
         return *this;
     }

@@ -53,7 +53,7 @@ void main_generic(InputData const& input_data)
 #endif
         );
 
-        auto&& iter_data_cur = DataIteratorShuffled<DataLayout, T>(ifs, static_cast<uint64_t>(input_data.seed));
+        auto&& iter_data_cur = DataIteratorShuffled<DataLayout, T>(ifs, static_cast<uint64_t>(input_data.seed), input_data.shuffle_data_input);
         auto&& iter_data_end = DataIteratorShuffled<DataLayout, T>(ifs, true);
 
         ProgressBar progress_bar(iter_data_cur.get_number_of_entries() * input_data.numIter, 70, input_data.number_of_progress_prints);

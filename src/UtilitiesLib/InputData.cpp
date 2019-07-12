@@ -53,7 +53,8 @@ InputData::InputData()
    usePBC(false),
    dimensionality(1),
    write_rot_flip(false),
-   euclidean_distance_type(DataType::UINT8)
+   euclidean_distance_type(DataType::UINT8),
+   shuffle_data_input(true)
 {}
 
 InputData::InputData(int argc, char **argv)
@@ -87,6 +88,7 @@ InputData::InputData(int argc, char **argv)
         {"pbc",                          0, 0, 14},
         {"store-rot-flip",               1, 0, 15},
         {"euclidean-distance-type",      1, 0, 16},
+        {"input-shuffle-off",            0, 0, 17},
         {NULL, 0, NULL, 0}
     };
 
@@ -287,6 +289,11 @@ InputData::InputData(int argc, char **argv)
                 }
                 break;
             }
+            case 17:
+            {
+                shuffle_data_input = false;
+                break;
+            }
             case 'v':
             {
                 std::cout << "Pink version " << PROJECT_VERSION << std::endl;
@@ -461,16 +468,21 @@ void InputData::print_parameters() const
               << "  Number of rotations = " << number_of_rotations << "\n"
               << "  Use mirrored image = " << use_flip << "\n"
               << "  Number of CPU threads = " << number_of_threads << "\n"
-              << "  Use CUDA = " << use_gpu << "\n"
-              << "  Distribution function for SOM update = " << distribution_function << "\n"
-              << "  Sigma = " << sigma << "\n"
-              << "  Damping factor = " << damping << "\n"
-              << "  Maximum distance for SOM update = " << max_update_distance << "\n"
-              << "  Use periodic boundary conditions = " << usePBC << "\n"
-              << "  Store best rotation and flipping parameters = " << write_rot_flip << "\n";
+              << "  Use CUDA = " << use_gpu << "\n";
 
-    if (!rot_flip_filename.empty())
-        std::cout << "  Best rotation and flipping parameter filename = " << rot_flip_filename << "\n";
+    if (executionPath == ExecutionPath::TRAIN) {
+        std::cout << "  Distribution function for SOM update = " << distribution_function << "\n"
+                  << "  Sigma = " << sigma << "\n"
+                  << "  Damping factor = " << damping << "\n"
+                  << "  Maximum distance for SOM update = " << max_update_distance << "\n"
+                  << "  Use periodic boundary conditions = " << usePBC << "\n"
+                  << "  Random shuffle data input = " << shuffle_data_input << "\n";
+    } else if (executionPath == ExecutionPath::MAP) {
+        std::cout << "  Store best rotation and flipping parameters = " << write_rot_flip << "\n";
+
+        if (!rot_flip_filename.empty())
+            std::cout << "  Best rotation and flipping parameter filename = " << rot_flip_filename << "\n";
+    }
 
     if (verbose)
         std::cout << "  Block size 1 = " << block_size_1 << "\n";
@@ -506,6 +518,7 @@ void InputData::print_usage() const
                  "    --pbc                                         Use periodic boundary conditions for SOM.\n"
                  "    --progress, -p <int>                          Number of progress information prints (default = 10).\n"
                  "    --seed, -s <int>                              Seed for random number generator (default = 1234).\n"
+                 "    --input-shuffle-off                           Switch off random shuffle of data input (only for training).\n"
                  "    --store-rot-flip <string>                     Store the rotation and flip information of the best match of mapping.\n"
                  "    --som-width <int>                             Width dimension of SOM (default = 10).\n"
                  "    --som-height <int>                            Height dimension of SOM (default = 10).\n"
