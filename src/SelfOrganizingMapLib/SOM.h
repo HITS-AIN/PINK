@@ -140,8 +140,8 @@ public:
         return NeuronType(neuron_layout, std::vector<T>(beg, end));
     }
 
-    auto get_number_of_neurons() const -> uint32_t const { return som_layout.size(); }
-    auto get_neuron_size() const -> uint32_t const { return neuron_layout.size(); }
+    auto get_number_of_neurons() const -> uint32_t { return som_layout.size(); }
+    auto get_neuron_size() const -> uint32_t { return neuron_layout.size(); }
 
     auto get_som_layout() -> SOMLayoutType { return som_layout; }
     auto get_som_layout() const -> SOMLayoutType const { return som_layout; }
