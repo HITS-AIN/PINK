@@ -10,6 +10,7 @@
 #include "SelfOrganizingMapLib/Data.h"
 #include "SelfOrganizingMapLib/DataIO.h"
 #include "SelfOrganizingMapLib/DataIterator.h"
+#include "SelfOrganizingMapLib/DataIteratorShuffled.h"
 #include "SelfOrganizingMapLib/FileIO.h"
 #include "SelfOrganizingMapLib/Mapper.h"
 #include "SelfOrganizingMapLib/SOM.h"
@@ -35,9 +36,6 @@ void main_generic(InputData const& input_data)
     std::ifstream ifs(input_data.data_filename);
     if (!ifs) throw std::runtime_error("Error opening " + input_data.data_filename);
 
-    auto&& iter_data_cur = DataIterator<DataLayout, T>(ifs);
-    auto&& iter_data_end = DataIterator<DataLayout, T>(ifs, true);
-
     if (input_data.executionPath == ExecutionPath::TRAIN)
     {
         Trainer<SOMLayout, DataLayout, T, UseGPU> trainer(
@@ -54,6 +52,9 @@ void main_generic(InputData const& input_data)
             ,input_data.euclidean_distance_type
 #endif
         );
+
+        auto&& iter_data_cur = DataIteratorShuffled<DataLayout, T>(ifs, static_cast<uint64_t>(input_data.seed));
+        auto&& iter_data_end = DataIteratorShuffled<DataLayout, T>(ifs, true);
 
         ProgressBar progress_bar(iter_data_cur.get_number_of_entries() * input_data.numIter, 70, input_data.number_of_progress_prints);
         uint32_t count = 0;
@@ -97,6 +98,9 @@ void main_generic(InputData const& input_data)
         // File for euclidean distances
         std::ofstream result_file(input_data.result_filename);
         if (!result_file) throw pink::exception("Error opening " + input_data.result_filename);
+
+        auto&& iter_data_cur = DataIterator<DataLayout, T>(ifs, static_cast<uint64_t>(input_data.seed));
+        auto&& iter_data_end = DataIterator<DataLayout, T>(ifs, true);
 
         // <file format version> 2 <data-type> <number of entries> <som layout> <data>
         int version = 2;

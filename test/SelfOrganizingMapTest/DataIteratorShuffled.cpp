@@ -1,5 +1,5 @@
 /**
- * @file   SelfOrganizingMapTest/DataIterator.cpp
+ * @file   SelfOrganizingMapTest/DataIteratorShuffled.cpp
  * @date   Dec 12, 2018
  * @author Bernd Doser, HITS gGmbH
  */
@@ -11,7 +11,7 @@
 
 #include "SelfOrganizingMapLib/CartesianLayout.h"
 #include "SelfOrganizingMapLib/Data.h"
-#include "SelfOrganizingMapLib/DataIterator.h"
+#include "SelfOrganizingMapLib/DataIteratorShuffled.h"
 
 using namespace pink;
 
@@ -42,14 +42,14 @@ void add_binary_section(std::stringstream& ss, std::vector<std::vector<float>> c
 
 } // end anonymous namespace
 
-TEST(DataIteratorTest, cartesian_2d_without_header)
+TEST(DataIteratorShuffledTest, cartesian_2d_without_header)
 {
     std::vector<std::vector<float>> images{{1, 2, 3, 4}, {5, 6, 7, 8}};
 
     std::stringstream ss;
     add_binary_section(ss, images);
 
-    DataIterator<CartesianLayout<2>, float> iter(ss);
+    DataIteratorShuffled<CartesianLayout<2>, float> iter(ss, 2ul);
 
     EXPECT_EQ(2UL, iter->get_dimension()[0]);
     EXPECT_EQ(2UL, iter->get_dimension()[1]);
@@ -58,10 +58,10 @@ TEST(DataIteratorTest, cartesian_2d_without_header)
     ++iter;
     EXPECT_EQ((Data<CartesianLayout<2>, float>({2, 2}, images[1])), *iter);
     ++iter;
-    EXPECT_EQ((DataIterator<CartesianLayout<2>, float>(ss, true)), iter);
+    EXPECT_EQ((DataIteratorShuffled<CartesianLayout<2>, float>(ss, true)), iter);
 }
 
-TEST(DataIteratorTest, cartesian_2d_with_header)
+TEST(DataIteratorShuffledTest, cartesian_2d_with_header)
 {
     std::vector<std::vector<float>> images{{1, 2, 3, 4}, {5, 6, 7, 8}};
 
@@ -70,7 +70,7 @@ TEST(DataIteratorTest, cartesian_2d_with_header)
     ss << "# END OF HEADER\n";
     add_binary_section(ss, images);
 
-    DataIterator<CartesianLayout<2>, float> iter(ss);
+    DataIteratorShuffled<CartesianLayout<2>, float> iter(ss, 2ul);
 
     EXPECT_EQ(2UL, iter->get_dimension()[0]);
     EXPECT_EQ(2UL, iter->get_dimension()[1]);
@@ -79,5 +79,5 @@ TEST(DataIteratorTest, cartesian_2d_with_header)
     ++iter;
     EXPECT_EQ((Data<CartesianLayout<2>, float>({2, 2}, images[1])), *iter);
     ++iter;
-    EXPECT_EQ((DataIterator<CartesianLayout<2>, float>(ss, true)), iter);
+    EXPECT_EQ((DataIteratorShuffled<CartesianLayout<2>, float>(ss, true)), iter);
 }
