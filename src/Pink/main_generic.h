@@ -99,7 +99,7 @@ void main_generic(InputData const& input_data)
         std::ofstream result_file(input_data.result_filename);
         if (!result_file) throw pink::exception("Error opening " + input_data.result_filename);
 
-        auto&& iter_data_cur = DataIterator<DataLayout, T>(ifs, static_cast<uint64_t>(input_data.seed));
+        auto&& iter_data_cur = DataIterator<DataLayout, T>(ifs);
         auto&& iter_data_end = DataIterator<DataLayout, T>(ifs, true);
 
         // <file format version> 2 <data-type> <number of entries> <som layout> <data>

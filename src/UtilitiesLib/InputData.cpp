@@ -381,11 +381,6 @@ InputData::InputData(int argc, char **argv)
     ifs.read((char*)&number_of_data_entries, sizeof(int));
     ifs.read((char*)&data_layout, sizeof(int));
 
-    if (file_version != 2) throw pink::exception("Please use file format version 2 as data input.");
-    if (file_type != 0) throw pink::exception("Please use file type 0 as data input.");
-    if (data_type != 0) throw pink::exception("Only data_type = 0 (float, single precision) is supported.");
-    if (number_of_data_entries > 0) throw pink::exception("Number of data entries must be larger than 0.");
-
     int data_dimensionality;
     ifs.read((char*)&data_dimensionality, sizeof(int));
     data_dimension.resize(data_dimensionality);
@@ -415,6 +410,11 @@ InputData::InputData(int argc, char **argv)
 
     print_header();
     print_parameters();
+
+    if (file_version != 2) throw pink::exception("Please use file format version 2 as data input.");
+    if (file_type != 0) throw pink::exception("Please use file type 0 as data input.");
+    if (data_type != 0) throw pink::exception("Only data_type = 0 (float, single precision) is supported.");
+    if (number_of_data_entries <= 0) throw pink::exception("Number of data entries must be larger than 0.");
 }
 
 void InputData::print_header() const
