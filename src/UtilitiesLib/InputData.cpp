@@ -350,8 +350,6 @@ InputData::InputData(int argc, char **argv)
         throw pink::exception("Unknown execution path.");
     }
 
-    if (usePBC) throw pink::exception("Periodic boundary conditions are not supported in version 2.");
-
     if (layout == Layout::HEXAGONAL) {
         if (usePBC) throw pink::exception("Periodic boundary conditions are not supported for hexagonal layout.");
         if ((som_width - 1) % 2) throw pink::exception("For hexagonal layout only odd dimension supported.");
@@ -399,8 +397,6 @@ InputData::InputData(int argc, char **argv)
         if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
     }
 
-    if (euclidean_distance_dim > neuron_dim) throw pink::exception("euclidean distance dimension must be equal or smaller than neuron dimension.");
-
     neuron_size = neuron_dim * neuron_dim;
     som_total_size = som_size * neuron_size;
     number_of_spatial_transformations = use_flip ? 2 * number_of_rotations : number_of_rotations;
@@ -415,6 +411,8 @@ InputData::InputData(int argc, char **argv)
     if (file_type != 0) throw pink::exception("Please use file type 0 as data input.");
     if (data_type != 0) throw pink::exception("Only data_type = 0 (float, single precision) is supported.");
     if (number_of_data_entries <= 0) throw pink::exception("Number of data entries must be larger than 0.");
+    if (euclidean_distance_dim > neuron_dim) throw pink::exception("euclidean distance dimension must be equal or smaller than neuron dimension.");
+    if (usePBC) throw pink::exception("Periodic boundary conditions are not supported in version 2.");
 }
 
 void InputData::print_header() const
