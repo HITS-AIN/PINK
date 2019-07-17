@@ -29,7 +29,7 @@ RUN pip3 install --upgrade pip && \
 
 RUN git clone https://github.com/HITS-AIN/PINK.git && \
     cd PINK && \
-    git checkout 2.2 && \
+    git checkout 2.3 && \
     mkdir build && cd build && \
     cmake .. && \
     make
