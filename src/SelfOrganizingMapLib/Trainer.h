@@ -133,6 +133,7 @@ public:
             this->use_flip, this->interpolation, neuron_dim);
 
 #ifdef PRINT_DEBUG
+        std::cout << "spatial_transformed_images" << std::endl;
         for (auto&& e : spatial_transformed_images) std::cout << e << " ";
         std::cout << std::endl;
 #endif
@@ -237,6 +238,7 @@ public:
             data.get_dimension()[0], neuron_dim, this->use_flip, this->interpolation, d_cos_alpha, d_sin_alpha);
 
 #ifdef PRINT_DEBUG
+        std::cout << "spatial_transformed_images" << std::endl;
         thrust::host_vector<T> spatial_transformed_images = d_spatial_transformed_images;
         for (auto&& e : spatial_transformed_images) std::cout << e << " ";
         std::cout << std::endl;

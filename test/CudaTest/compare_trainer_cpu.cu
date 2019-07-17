@@ -88,4 +88,8 @@ INSTANTIATE_TEST_CASE_P(TrainerCompareTest_all, compare_trainer_cpu,
        ,TrainerCompareTestData(2,  64, 100, 100, 360,  true)
        ,TrainerCompareTestData(2,  64, 100,  45, 360,  true)
        ,TrainerCompareTestData(2, 124,  91,  64, 360,  true)
+       ,TrainerCompareTestData(2,   4,   2,   2,   1, false)
+       ,TrainerCompareTestData(2,   4,   2,   2,   8, false)
+       ,TrainerCompareTestData(2,   4,   2,   2,   1,  true)
+       ,TrainerCompareTestData(2,   4,   2,   2,   8,  true)
 ));

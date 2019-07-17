@@ -11,6 +11,7 @@ cuda_add_executable(
     compare_trainer_mixed.cu
     mapper.cu
     mixed_precision.cu
+    resize.cu
     rotate_90_degrees_list.cu
     update_neurons.cu
 )
