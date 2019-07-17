@@ -33,7 +33,7 @@ InputData::InputData()
    number_of_threads(-1),
    init(SOMInitialization::ZERO),
    numIter(1),
-   number_of_progress_prints(10),
+   max_number_of_progress_prints(10),
    use_flip(true),
    use_gpu(true),
    number_of_data_entries(0),
@@ -153,7 +153,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 'p':
             {
-                number_of_progress_prints = atof(optarg);
+                max_number_of_progress_prints = atof(optarg);
                 break;
             }
             case 'n':
@@ -461,7 +461,7 @@ void InputData::print_parameters() const
               << "  Number of iterations = " << numIter << "\n"
               << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
               << "  Euclidean distance dimension = " << euclidean_distance_dim << "x" << euclidean_distance_dim << "\n"
-              << "  Number of progress information prints = " << number_of_progress_prints << "\n"
+              << "  Maximal number of progress information prints = " << max_number_of_progress_prints << "\n"
               << "  Intermediate storage of SOM = " << intermediate_storage << "\n"
               << "  Layout = " << layout << "\n"
               << "  Initialization type = " << init;
@@ -524,7 +524,7 @@ void InputData::print_usage() const
                  "    --numthreads, -t <int>                        Number of CPU threads (default = auto).\n"
                  "    --num-iter <int>                              Number of iterations (default = 1).\n"
                  "    --pbc                                         Use periodic boundary conditions for SOM.\n"
-                 "    --progress, -p <int>                          Number of progress information prints (default = 10).\n"
+                 "    --progress, -p <int>                          Maximal number of progress information prints (default = 10).\n"
                  "    --seed, -s <int>                              Seed for random number generator (default = 1234).\n"
                  "    --store-rot-flip <string>                     Store the rotation and flip information of the best match of mapping.\n"
                  "    --som-width <int>                             Width dimension of SOM (default = 10).\n"

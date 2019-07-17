@@ -56,7 +56,7 @@ void main_generic(InputData const& input_data)
         auto&& iter_data_cur = DataIteratorShuffled<DataLayout, T>(ifs, static_cast<uint64_t>(input_data.seed), input_data.shuffle_data_input);
         auto&& iter_data_end = DataIteratorShuffled<DataLayout, T>(ifs, true);
 
-        ProgressBar progress_bar(iter_data_cur.get_number_of_entries() * input_data.numIter, 70, input_data.number_of_progress_prints);
+        ProgressBar progress_bar(iter_data_cur.get_number_of_entries() * input_data.numIter, 70, input_data.max_number_of_progress_prints);
         uint32_t count = 0;
         for (int i = 0; i < input_data.numIter; ++i)
         {
@@ -154,7 +154,7 @@ void main_generic(InputData const& input_data)
 #endif
         );
 
-        ProgressBar progress_bar(iter_data_cur.get_number_of_entries(), 70, input_data.number_of_progress_prints);
+        ProgressBar progress_bar(iter_data_cur.get_number_of_entries(), 70, input_data.max_number_of_progress_prints);
         for (; iter_data_cur != iter_data_end; ++iter_data_cur, ++progress_bar)
         {
             auto result = mapper(*iter_data_cur);
