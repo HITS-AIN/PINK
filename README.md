@@ -53,7 +53,6 @@ Please use also the command `Pink -h` to get more informations about the usage a
 For conversion and visualization of images and SOM some python scripts are available.
 
   - convert_data_binary_file.py     Convert binary data file from PINK version 1 to 2
-  - data_precondition.py:           Convert numpy into binary files and scale data to be within the range [0.0, 1.0]
   - show_heatmap.py:                Visualize the mapping result
   - show_images.py:                 Visualize binary images file format
   - show_som.py:                    Visualize binary SOM file format
@@ -76,6 +75,7 @@ GPU: 4x NVIDIA Tesla P40
 | CPU + 2x GPU  |   2069 |    636 |
 | CPU + 4x GPU  |   1891 |    858 |
 
+Time in seconds.
 
 ## Publication
 
