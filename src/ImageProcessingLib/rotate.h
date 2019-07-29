@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <cassert>
+
 #include "UtilitiesLib/Interpolation.h"
 #include "UtilitiesLib/pink_exception.h"
 
@@ -66,6 +68,11 @@ template <typename T>
 void rotate(T const* src, T *dst, int src_height, int src_width,
     int dst_height, int dst_width, float alpha, Interpolation interpolation)
 {
+    assert(src_height > 0);
+    assert(src_width > 0);
+    assert(dst_height > 0);
+    assert(dst_width > 0);
+
     if (interpolation == Interpolation::BILINEAR)
         rotate_bilinear(src, dst, src_height, src_width, dst_height, dst_width, alpha);
     else {

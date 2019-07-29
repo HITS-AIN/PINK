@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include "sm_61_intrinsics.h"
 
@@ -17,6 +18,9 @@ template <typename DataType>
 __device__
 void warp_reduce_64(volatile DataType *data, int tid)
 {
+    assert(tid > 0)
+    assert(tid < 32)
+
     data[tid] += data[tid + 32];
     data[tid] += data[tid + 16];
     data[tid] += data[tid +  8];

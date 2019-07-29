@@ -6,12 +6,19 @@
 
 #pragma once
 
+#include <cassert>
+
 namespace pink {
 
 /// row-major
 template <typename T>
 void resize(T const* src, T *dst, int src_height, int src_width, int dst_height, int dst_width)
 {
+    assert(src_height > 0);
+    assert(src_width > 0);
+    assert(dst_height > 0);
+    assert(dst_width > 0);
+
     int src_width_margin = 0, dst_width_margin = 0;
     if (src_width < dst_width) dst_width_margin = (dst_width - src_width) / 2;
     else if (src_width > dst_width) src_width_margin = (src_width - dst_width) / 2;

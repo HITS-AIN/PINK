@@ -38,7 +38,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
     uint32_t d_spatial_transformed_images_size = number_of_spatial_transformations * euclidean_distance_size;
 
     uint32_t neuron_dim = std::sqrt(neuron_size);
-    uint32_t offset = (neuron_dim - euclidean_distance_dim) * 0.5;
+    uint32_t offset = static_cast<uint32_t>((neuron_dim - euclidean_distance_dim) * 0.5);
 
     // First step ...
     if (euclidean_distance_type == DataType::UINT8)

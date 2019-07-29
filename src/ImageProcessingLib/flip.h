@@ -6,11 +6,17 @@
 
 #pragma once
 
+#include <cassert>
+
 namespace pink {
 
 template <typename T>
 void flip(T const *src, T *dst, int height, int width)
 {
+    assert(height > 0);
+    assert(width > 0);
+    assert(height == width);
+
     T *pdst = dst + (height-1) * width;
     T const *psrc = src;
 

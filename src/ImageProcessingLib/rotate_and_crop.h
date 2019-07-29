@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <cassert>
+
 #include "UtilitiesLib/Interpolation.h"
 #include "UtilitiesLib/pink_exception.h"
 
@@ -15,14 +17,14 @@ template <typename T>
 void rotate_and_crop_nearest_neighbor(T const* src, T *dst,
     int src_height, int src_width, int dst_height, int dst_width, float alpha)
 {
-    const int width_margin = (src_width - dst_width) * 0.5;
-    const int height_margin = (src_height - dst_height) * 0.5;
+    const int width_margin = static_cast<int>((src_width - dst_width) * 0.5);
+    const int height_margin = static_cast<int>((src_height - dst_height) * 0.5);
 
     const float cos_alpha = cos(alpha);
     const float sin_alpha = sin(alpha);
 
-    const float x0 = (src_width-1) * 0.5;
-    const float y0 = (src_height-1) * 0.5;
+    const float x0 = (src_width-1) * 0.5f;
+    const float y0 = (src_height-1) * 0.5f;
     float x1, y1;
 
     for (int x2 = 0; x2 < dst_width; ++x2) {
@@ -48,14 +50,14 @@ template <typename T>
 void rotate_and_crop_bilinear(T const* src, T *dst,
     int src_height, int src_width, int dst_height, int dst_width, float alpha)
 {
-    const int width_margin = (src_width - dst_width) * 0.5;
-    const int height_margin = (src_height - dst_height) * 0.5;
+    const int width_margin = static_cast<int>((src_width - dst_width) * 0.5);
+    const int height_margin = static_cast<int>((src_height - dst_height) * 0.5);
 
     const float cos_alpha = cos(alpha);
     const float sin_alpha = sin(alpha);
 
-    const float x0 = (src_width - 1) * 0.5;
-    const float y0 = (src_height - 1) * 0.5;
+    const float x0 = (src_width - 1) * 0.5f;
+    const float y0 = (src_height - 1) * 0.5f;
     float x1, y1, rx1, ry1, cx1, cy1;
     int ix1, iy1, ix1b, iy1b;
 
@@ -93,6 +95,14 @@ template <typename T>
 void rotate_and_crop(T const *src, T *dst, int src_height, int src_width,
     int dst_height, int dst_width, float alpha, Interpolation interpolation)
 {
+    assert(src_height > 0);
+    assert(src_width > 0);
+    assert(dst_height > 0);
+    assert(dst_width > 0);
+
+    assert(src_height >= dst_height);
+    assert(src_width >= dst_width);
+
     if (interpolation == Interpolation::NEAREST_NEIGHBOR)
         rotate_and_crop_nearest_neighbor(src, dst, src_height, src_width, dst_height, dst_width, alpha);
     else if (interpolation == Interpolation::BILINEAR)
