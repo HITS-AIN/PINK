@@ -83,24 +83,27 @@ if("${isSystemDir}" STREQUAL "-1")
     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
-find_package(CUDA)
-if(CUDA_FOUND)
-    set(PINK_USE_CUDA true)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
-    # Set flags for CUDA compiler
-    list(APPEND CUDA_NVCC_FLAGS "
-    --expt-extended-lambda
-    --expt-relaxed-constexpr
-    --default-stream per-thread
-    -arch=sm_61
-     -gencode=arch=compute_30,code=sm_30
-     -gencode=arch=compute_50,code=sm_50
-     -gencode=arch=compute_52,code=sm_52
-     -gencode=arch=compute_60,code=sm_60
-     -gencode=arch=compute_61,code=sm_61
-     -gencode=arch=compute_70,code=sm_70
-     -gencode=arch=compute_70,code=compute_70
-    ")
+option(USE_CUDA "Use CUDA" ON)
+if (USE_CUDA)
+    find_package(CUDA)
+    if(CUDA_FOUND)
+        set(PINK_USE_CUDA true)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
+        # Set flags for CUDA compiler
+        list(APPEND CUDA_NVCC_FLAGS "
+        --expt-extended-lambda
+        --expt-relaxed-constexpr
+        --default-stream per-thread
+        -arch=sm_61
+         -gencode=arch=compute_30,code=sm_30
+         -gencode=arch=compute_50,code=sm_50
+         -gencode=arch=compute_52,code=sm_52
+         -gencode=arch=compute_60,code=sm_60
+         -gencode=arch=compute_61,code=sm_61
+         -gencode=arch=compute_70,code=sm_70
+         -gencode=arch=compute_70,code=compute_70
+        ")
+    endif()
 endif()
 
 set(PYBIND11_PYTHON_VERSION 3)
