@@ -20,7 +20,7 @@ public:
     ProgressBar(int number_of_iterations, int width, int max_number_of_progress_prints, std::ostream& os = std::cout)
      : number_of_iterations(number_of_iterations < 1 ? throw pink::exception("ProgressBar: number_of_iterations must be larger than 0") : number_of_iterations),
        max_number_of_progress_prints(max_number_of_progress_prints < 1 ? throw pink::exception("ProgressBar: max number of progress prints must be larger than 0") : max_number_of_progress_prints),
-	   number_of_progress_prints(std::min(number_of_iterations, max_number_of_progress_prints)),
+       number_of_progress_prints(std::min(number_of_iterations, max_number_of_progress_prints)),
        width(width < number_of_progress_prints ? throw pink::exception("ProgressBar: width must be equal or larger than number of progress prints") : width),
        number_of_ticks_in_section(number_of_iterations / number_of_progress_prints),
        remaining_ticks_in_section(number_of_iterations % number_of_progress_prints),
