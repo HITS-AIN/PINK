@@ -56,9 +56,11 @@ TEST_P(FullDistributionFunctorTest, MexicanHat)
         // value at x = +/- 1
         float sigma2 = GetParam().sigma * GetParam().sigma;
         EXPECT_NEAR(mexican_hat(1.0),
-            2.0 / (std::sqrt(3.0 * GetParam().sigma * std::sqrt(M_PI))) * (1.0 - 1.0 / sigma2) * std::exp(-1.0 / (2.0 * sigma2)), 1e-6);
+            2.0 / (std::sqrt(3.0 * GetParam().sigma * std::sqrt(M_PI)))
+                * (1.0 - 1.0 / sigma2) * std::exp(-1.0 / (2.0 * sigma2)), 1e-6);
         EXPECT_NEAR(mexican_hat(-1.0),
-            2.0 / (std::sqrt(3.0 * GetParam().sigma * std::sqrt(M_PI))) * (1.0 - 1.0 / sigma2) * std::exp(-1.0 / (2.0 * sigma2)), 1e-6);
+            2.0 / (std::sqrt(3.0 * GetParam().sigma * std::sqrt(M_PI)))
+                * (1.0 - 1.0 / sigma2) * std::exp(-1.0 / (2.0 * sigma2)), 1e-6);
     } catch ( ... ) {
         if (GetParam().sigma > 0.0) FAIL() << "Exception with sigma > 0.0";
     }

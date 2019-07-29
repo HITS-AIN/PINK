@@ -27,8 +27,10 @@ template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
 void main_generic(InputData const& input_data)
 {
     if (input_data.verbose)
-        std::cout << "SOM layout:  " << SOMLayout::type  << "<" << static_cast<int>(SOMLayout::dimensionality)  << ">" << "\n"
-                  << "Data layout: " << DataLayout::type << "<" << static_cast<int>(DataLayout::dimensionality) << ">" << "\n"
+        std::cout << "SOM layout:  " << SOMLayout::type
+                  << "<" << static_cast<int>(SOMLayout::dimensionality)  << ">" << "\n"
+                  << "Data layout: " << DataLayout::type
+                  << "<" << static_cast<int>(DataLayout::dimensionality) << ">" << "\n"
                   << std::endl;
 
     SOM<SOMLayout, DataLayout, T> som(input_data);
@@ -54,11 +56,13 @@ void main_generic(InputData const& input_data)
         );
 
 
-        ProgressBar progress_bar(input_data.number_of_data_entries * input_data.numIter, 70, input_data.max_number_of_progress_prints);
+        ProgressBar progress_bar(input_data.number_of_data_entries * input_data.numIter,
+            70, input_data.max_number_of_progress_prints);
         uint32_t count = 0;
         for (int i = 0; i < input_data.numIter; ++i)
         {
-            auto&& iter_data_cur = DataIteratorShuffled<DataLayout, T>(ifs, static_cast<uint64_t>(input_data.seed), input_data.shuffle_data_input);
+            auto&& iter_data_cur = DataIteratorShuffled<DataLayout, T>(ifs,
+                static_cast<uint64_t>(input_data.seed), input_data.shuffle_data_input);
             auto&& iter_data_end = DataIteratorShuffled<DataLayout, T>(ifs, true);
             for (; iter_data_cur != iter_data_end; ++iter_data_cur, ++progress_bar)
             {
@@ -67,9 +71,12 @@ void main_generic(InputData const& input_data)
                 if (progress_bar.valid() and input_data.intermediate_storage != IntermediateStorageType::OFF) {
                     std::string interStore_filename = input_data.result_filename;
                     if (input_data.intermediate_storage == IntermediateStorageType::KEEP) {
-                        interStore_filename.insert(interStore_filename.find_last_of("."), "_" + std::to_string(count++));
+                        interStore_filename.insert(interStore_filename.find_last_of("."),
+                            "_" + std::to_string(count++));
                     }
-                    if (input_data.verbose) std::cout << "  Write intermediate SOM to " << interStore_filename << " ... " << std::flush;
+                    if (input_data.verbose) {
+                        std::cout << "  Write intermediate SOM to " << interStore_filename << " ... " << std::flush;
+                    }
                     #ifdef __CUDACC__
                         trainer.update_som();
                     #endif

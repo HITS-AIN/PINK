@@ -175,10 +175,13 @@ InputData::InputData(int argc, char **argv)
             {
                 char* upper_optarg = strdup(optarg);
                 stringToUpper(upper_optarg);
-                if (strcmp(upper_optarg, "ZERO") == 0) init = SOMInitialization::ZERO;
-                else if (strcmp(upper_optarg, "RANDOM") == 0) init = SOMInitialization::RANDOM;
-                else if (strcmp(upper_optarg, "RANDOM_WITH_PREFERRED_DIRECTION") == 0) init = SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION;
-                else {
+                if (strcmp(upper_optarg, "ZERO") == 0) {
+                    init = SOMInitialization::ZERO;
+                } else if (strcmp(upper_optarg, "RANDOM") == 0) {
+                    init = SOMInitialization::RANDOM;
+                } else if (strcmp(upper_optarg, "RANDOM_WITH_PREFERRED_DIRECTION") == 0) {
+                    init = SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION;
+                } else {
                     init = SOMInitialization::FILEINIT;
                     som_filename = optarg;
                 }
@@ -216,9 +219,13 @@ InputData::InputData(int argc, char **argv)
             {
                 executionPath = ExecutionPath::TRAIN;
                 int index = optind - 1;
-                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --train option.");
+                if (index >= argc or argv[index][0] == '-') {
+                    throw pink::exception("Missing arguments for --train option.");
+                }
                 data_filename = strdup(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --train option.");
+                if (index >= argc or argv[index][0] == '-') {
+                    throw pink::exception("Missing arguments for --train option.");
+                }
                 result_filename = strdup(argv[index++]);
                 optind = index - 1;
                 break;
@@ -227,11 +234,17 @@ InputData::InputData(int argc, char **argv)
             {
                 executionPath = ExecutionPath::MAP;
                 int index = optind - 1;
-                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --map option.");
+                if (index >= argc or argv[index][0] == '-') {
+                    throw pink::exception("Missing arguments for --map option.");
+                }
                 data_filename = strdup(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --map option.");
+                if (index >= argc or argv[index][0] == '-') {
+                    throw pink::exception("Missing arguments for --map option.");
+                }
                 result_filename = strdup(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --map option.");
+                if (index >= argc or argv[index][0] == '-') {
+                    throw pink::exception("Missing arguments for --map option.");
+                }
                 som_filename = strdup(argv[index++]);
                 optind = index - 1;
                 break;
@@ -321,9 +334,13 @@ InputData::InputData(int argc, char **argv)
                     exit(EXIT_FAILURE);
                 }
                 int index = optind;
-                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --dist-func option.");
+                if (index >= argc or argv[index][0] == '-') {
+                    throw pink::exception("Missing arguments for --dist-func option.");
+                }
                 sigma = atof(argv[index++]);
-                if (index >= argc or argv[index][0] == '-') throw pink::exception("Missing arguments for --dist-func option.");
+                if (index >= argc or argv[index][0] == '-') {
+                    throw pink::exception("Missing arguments for --dist-func option.");
+                }
                 damping = atof(argv[index++]);
                 optind = index;
                 break;
@@ -353,7 +370,9 @@ InputData::InputData(int argc, char **argv)
     if (layout == Layout::HEXAGONAL) {
         if (usePBC) throw pink::exception("Periodic boundary conditions are not supported for hexagonal layout.");
         if ((som_width - 1) % 2) throw pink::exception("For hexagonal layout only odd dimension supported.");
-        if (som_width != som_height) throw pink::exception("For hexagonal layout som-width must be equal to som-height.");
+        if (som_width != som_height) {
+            throw pink::exception("For hexagonal layout som-width must be equal to som-height.");
+        }
         if (som_depth != 1) throw pink::exception("For hexagonal layout som-depth must be equal to 1.");
         som_size = HexagonalLayout({som_width, som_height}).size();
     }
@@ -411,7 +430,8 @@ InputData::InputData(int argc, char **argv)
     if (file_type != 0) throw pink::exception("Please use file type 0 as data input.");
     if (data_type != 0) throw pink::exception("Only data_type = 0 (float, single precision) is supported.");
     if (number_of_data_entries <= 0) throw pink::exception("Number of data entries must be larger than 0.");
-    if (euclidean_distance_dim > neuron_dim) throw pink::exception("euclidean distance dimension must be equal or smaller than neuron dimension.");
+    if (euclidean_distance_dim > neuron_dim)
+        throw pink::exception("euclidean distance dimension must be equal or smaller than neuron dimension.");
     if (usePBC) throw pink::exception("Periodic boundary conditions are not supported in version 2.");
 }
 
@@ -456,7 +476,8 @@ void InputData::print_parameters() const
     for (size_t i = 1; i < data_dimension.size(); ++i) std::cout << " x " << data_dimension[i];
     std::cout << std::endl;
 
-    std::cout << "  SOM dimension (width x height x depth) = " << som_width << "x" << som_height << "x" << som_depth << "\n"
+    std::cout << "  SOM dimension (width x height x depth) = "
+              << som_width << "x" << som_height << "x" << som_depth << "\n"
               << "  SOM size = " << som_size << "\n"
               << "  Number of iterations = " << numIter << "\n"
               << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
@@ -507,31 +528,56 @@ void InputData::print_usage() const
                  "\n"
                  "  Options:\n"
                  "\n"
-                 "    --cuda-off                                    Switch off CUDA acceleration.\n"
-                 "    --dist-func, -f <string>                      Distribution function for SOM update (see below).\n"
-                 "    --euclidean-distance-dimension, -e <int>      Dimension for euclidean distance calculation (default = image-dimension * sqrt(2) / 2).\n"
-                 "    --euclidean-distance-type                     Data type for euclidean distance calculation (unit8 = default, uint16, float).\n"
-                 "    --flip-off                                    Switch off usage of mirrored images.\n"
-                 "    --help, -h                                    Print this lines.\n"
-                 "    --init, -x <string>                           Type of SOM initialization (zero = default, random, random_with_preferred_direction, file_init).\n"
-                 "    --input-shuffle-off                           Switch off random shuffle of data input (only for training).\n"
-                 "    --interpolation <string>                      Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
-                 "    --inter-store <string>                        Store intermediate SOM results at every progress step (off = default, overwrite, keep).\n"
-                 "    --layout, -l <string>                         Layout of SOM (cartesian = default, hexagonal).\n"
-                 "    --max-update-distance <float>                 Maximum distance for SOM update (default = off).\n"
-                 "    --neuron-dimension, -d <int>                  Dimension for quadratic SOM neurons (default = 2 * image-dimension / sqrt(2)).\n"
-                 "    --numrot, -n <int>                            Number of rotations (1 or a multiple of 4, default = 360).\n"
-                 "    --numthreads, -t <int>                        Number of CPU threads (default = auto).\n"
-                 "    --num-iter <int>                              Number of iterations (default = 1).\n"
-                 "    --pbc                                         Use periodic boundary conditions for SOM.\n"
-                 "    --progress, -p <int>                          Maximal number of progress information prints (default = 10).\n"
-                 "    --seed, -s <int>                              Seed for random number generator (default = 1234).\n"
-                 "    --store-rot-flip <string>                     Store the rotation and flip information of the best match of mapping.\n"
-                 "    --som-width <int>                             Width dimension of SOM (default = 10).\n"
-                 "    --som-height <int>                            Height dimension of SOM (default = 10).\n"
-                 "    --som-depth <int>                             Depth dimension of SOM (default = 1).\n"
-                 "    --verbose                                     Print more output.\n"
-                 "    --version, -v                                 Print version number.\n"
+                 "    --cuda-off                                    "
+                 "Switch off CUDA acceleration.\n"
+                 "    --dist-func, -f <string>                      "
+                 "Distribution function for SOM update (see below).\n"
+                 "    --euclidean-distance-dimension, -e <int>      "
+                 "Dimension for euclidean distance calculation (default = image-dimension * sqrt(2) / 2).\n"
+                 "    --euclidean-distance-type                     "
+                 "Data type for euclidean distance calculation (unit8 = default, uint16, float).\n"
+                 "    --flip-off                                    "
+                 "Switch off usage of mirrored images.\n"
+                 "    --help, -h                                    "
+                 "Print this lines.\n"
+                 "    --init, -x <string>                           "
+                 "Type of SOM initialization (zero = default, random, random_with_preferred_direction, file_init).\n"
+                 "    --input-shuffle-off                           "
+                 "Switch off random shuffle of data input (only for training).\n"
+                 "    --interpolation <string>                      "
+                 "Type of image interpolation for rotations (nearest_neighbor, bilinear = default).\n"
+                 "    --inter-store <string>                        "
+                 "Store intermediate SOM results at every progress step (off = default, overwrite, keep).\n"
+                 "    --layout, -l <string>                         "
+                 "Layout of SOM (cartesian = default, hexagonal).\n"
+                 "    --max-update-distance <float>                 "
+                 "Maximum distance for SOM update (default = off).\n"
+                 "    --neuron-dimension, -d <int>                  "
+                 "Dimension for quadratic SOM neurons (default = 2 * image-dimension / sqrt(2)).\n"
+                 "    --numrot, -n <int>                            "
+                 "Number of rotations (1 or a multiple of 4, default = 360).\n"
+                 "    --numthreads, -t <int>                        "
+                 "Number of CPU threads (default = auto).\n"
+                 "    --num-iter <int>                              "
+                 "Number of iterations (default = 1).\n"
+                 "    --pbc                                         "
+                 "Use periodic boundary conditions for SOM.\n"
+                 "    --progress, -p <int>                          "
+                 "Maximal number of progress information prints (default = 10).\n"
+                 "    --seed, -s <int>                              "
+                 "Seed for random number generator (default = 1234).\n"
+                 "    --store-rot-flip <string>                     "
+                 "Store the rotation and flip information of the best match of mapping.\n"
+                 "    --som-width <int>                             "
+                 "Width dimension of SOM (default = 10).\n"
+                 "    --som-height <int>                            "
+                 "Height dimension of SOM (default = 10).\n"
+                 "    --som-depth <int>                             "
+                 "Depth dimension of SOM (default = 1).\n"
+                 "    --verbose                                     "
+                 "Print more output.\n"
+                 "    --version, -v                                 "
+                 "Print version number.\n"
                  "\n"
                  "  Distribution function:\n"
                  "\n"

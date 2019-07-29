@@ -31,9 +31,13 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
     uint32_t number_of_rotations, bool use_flip, Interpolation interpolation, uint32_t neuron_dim)
 {
     // Images must have at least two dimensions
-    if (data.get_layout().dimensionality < 2) throw pink::exception("Date must have at least two dimensions for image rotation.");
+    if (data.get_layout().dimensionality < 2) {
+        throw pink::exception("Date must have at least two dimensions for image rotation.");
+    }
     // Images must be quadratic
-    if (data.get_dimension()[0] != data.get_dimension()[1]) throw pink::exception("Images must be quadratic.");
+    if (data.get_dimension()[0] != data.get_dimension()[1]) {
+        throw pink::exception("Images must be quadratic.");
+    }
 
     auto image_dim = data.get_dimension()[0];
     auto image_size = data.get_dimension()[0] * data.get_dimension()[1];
@@ -58,12 +62,15 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
     {
         T const *current_image = &data[i * image_size];
         T *current_rotated_image = &rotated_images[i * neuron_size];
-        resize(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim);
-        //crop(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim);
+        resize(current_image, current_rotated_image, image_dim, image_dim,
+            neuron_dim, neuron_dim);
         if (number_of_rotations != 1) {
-            rotate_90_degrees(current_rotated_image, current_rotated_image + offset1, neuron_dim, neuron_dim);
-            rotate_90_degrees(current_rotated_image + offset1, current_rotated_image + offset2, neuron_dim, neuron_dim);
-            rotate_90_degrees(current_rotated_image + offset2, current_rotated_image + offset3, neuron_dim, neuron_dim);
+            rotate_90_degrees(current_rotated_image, current_rotated_image + offset1,
+                neuron_dim, neuron_dim);
+            rotate_90_degrees(current_rotated_image + offset1, current_rotated_image + offset2,
+                neuron_dim, neuron_dim);
+            rotate_90_degrees(current_rotated_image + offset2, current_rotated_image + offset3,
+                neuron_dim, neuron_dim);
         }
     }
 
@@ -73,11 +80,14 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
         for (int j = 0; j < spacing; ++j) {
             T const *current_image = &data[j * image_size];
             T *current_rotated_image = &rotated_images[(i * spacing + j) * neuron_size];
-            rotate(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim, i * angle_step_radians, interpolation);
-            //rotate_and_crop(current_image, current_rotated_image, image_dim, image_dim, neuron_dim, neuron_dim, i * angle_step_radians, interpolation);
-            rotate_90_degrees(current_rotated_image, current_rotated_image + offset1, neuron_dim, neuron_dim);
-            rotate_90_degrees(current_rotated_image + offset1, current_rotated_image + offset2, neuron_dim, neuron_dim);
-            rotate_90_degrees(current_rotated_image + offset2, current_rotated_image + offset3, neuron_dim, neuron_dim);
+            rotate(current_image, current_rotated_image, image_dim, image_dim,
+                neuron_dim, neuron_dim, i * angle_step_radians, interpolation);
+            rotate_90_degrees(current_rotated_image, current_rotated_image + offset1,
+                neuron_dim, neuron_dim);
+            rotate_90_degrees(current_rotated_image + offset1, current_rotated_image + offset2,
+                neuron_dim, neuron_dim);
+            rotate_90_degrees(current_rotated_image + offset2, current_rotated_image + offset3,
+                neuron_dim, neuron_dim);
         }
     }
 
@@ -89,7 +99,9 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
         #pragma omp parallel for
         for (uint32_t i = 0; i < number_of_rotations; ++i) {
             for (int j = 0; j < spacing; ++j) {
-                flip(&rotated_images[(i * spacing + j) * neuron_size], flipped_rotated_images + (i * spacing + j) * neuron_size, neuron_dim, neuron_dim);
+                flip(&rotated_images[(i * spacing + j) * neuron_size],
+                    flipped_rotated_images + (i * spacing + j) * neuron_size,
+                    neuron_dim, neuron_dim);
             }
         }
     }

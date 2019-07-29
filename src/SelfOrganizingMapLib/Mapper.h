@@ -85,8 +85,10 @@ class Mapper<SOMLayout, DataLayout, T, false> : public MapperBase<SOMLayout, Dat
 public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity,
-        uint32_t number_of_rotations, bool use_flip, Interpolation interpolation, int euclidean_distance_dim = -1)
-     : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim)
+        uint32_t number_of_rotations, bool use_flip,
+        Interpolation interpolation, int euclidean_distance_dim = -1)
+     : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
+                                            use_flip, interpolation, euclidean_distance_dim)
     {}
 
     auto operator () (Data<DataLayout, T> const& data)
@@ -100,7 +102,8 @@ public:
         std::vector<uint32_t> best_rotation_matrix(this->som.get_number_of_neurons());
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
-            this->som.get_number_of_neurons(), this->som.get_data_pointer(), neuron_dim, this->number_of_spatial_transformations,
+            this->som.get_number_of_neurons(), this->som.get_data_pointer(),
+            neuron_dim, this->number_of_spatial_transformations,
             spatial_transformed_images, this->euclidean_distance_dim);
 
         for (auto& e : euclidean_distance_matrix) e = std::sqrt(e);
@@ -120,7 +123,8 @@ public:
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
         Interpolation interpolation, int euclidean_distance_dim = -1,
         uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
-     : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim),
+     : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
+                                            use_flip, interpolation, euclidean_distance_dim),
        d_som(som.get_data()),
        block_size(block_size),
        euclidean_distance_type(euclidean_distance_type),
@@ -166,8 +170,10 @@ public:
         std::vector<T> euclidean_distance_matrix(this->som.get_number_of_neurons());
         std::vector<uint32_t> best_rotation_matrix(this->som.get_number_of_neurons());
 
-        thrust::copy(d_euclidean_distance_matrix.begin(), d_euclidean_distance_matrix.end(), &euclidean_distance_matrix[0]);
-        thrust::copy(d_best_rotation_matrix.begin(), d_best_rotation_matrix.end(), &best_rotation_matrix[0]);
+        thrust::copy(d_euclidean_distance_matrix.begin(),
+            d_euclidean_distance_matrix.end(), &euclidean_distance_matrix[0]);
+        thrust::copy(d_best_rotation_matrix.begin(),
+            d_best_rotation_matrix.end(), &best_rotation_matrix[0]);
 
         for (auto& e : euclidean_distance_matrix) e = std::sqrt(e);
         return std::make_tuple(euclidean_distance_matrix, best_rotation_matrix);

@@ -34,7 +34,8 @@ T euclidean_distance_square_offset(T const *a, T const *b, int image_dim, int eu
     std::vector<T> diff(euclidean_distance_dim * euclidean_distance_dim);
     for (int i = 0; i < euclidean_distance_dim; ++i)
       for (int j = 0; j < euclidean_distance_dim; ++j)
-        diff[i * euclidean_distance_dim + j] = a[(i + offset) * image_dim + j + offset] - b[(i + offset) * image_dim + j + offset];
+        diff[i * euclidean_distance_dim + j] = a[(i + offset) * image_dim + j + offset]
+                                             - b[(i + offset) * image_dim + j + offset];
     return dot(diff);
 }
 

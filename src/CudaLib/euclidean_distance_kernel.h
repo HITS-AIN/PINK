@@ -36,7 +36,8 @@ void euclidean_distance_kernel(EuclideanType const *som, EuclideanType const *ro
 
 template <>
 __global__
-void euclidean_distance_kernel<512>(float const *som, float const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<512>(float const *som, float const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float diff;
@@ -56,9 +57,18 @@ void euclidean_distance_kernel<512>(float const *som, float const *rotated_image
     __syncthreads();
 
     // Parallel reduction
-    if (tid < 128) { first_step_local[tid] += first_step_local[tid + 256]; } __syncthreads();
-    if (tid < 128) { first_step_local[tid] += first_step_local[tid + 128]; } __syncthreads();
-    if (tid <  64) { first_step_local[tid] += first_step_local[tid +  64]; } __syncthreads();
+    if (tid < 128) {
+        first_step_local[tid] += first_step_local[tid + 256];
+        __syncthreads();
+    }
+    if (tid < 128) {
+        first_step_local[tid] += first_step_local[tid + 128];
+        __syncthreads();
+    }
+    if (tid <  64) {
+        first_step_local[tid] += first_step_local[tid +  64];
+        __syncthreads();
+    }
 
     // Static loop unrolling for the thread within one warp.
     if (tid < 32) warp_reduce_64(first_step_local, tid);
@@ -69,7 +79,8 @@ void euclidean_distance_kernel<512>(float const *som, float const *rotated_image
 
 template <>
 __global__
-void euclidean_distance_kernel<256>(float const *som, float const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<256>(float const *som, float const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float diff;
@@ -89,8 +100,14 @@ void euclidean_distance_kernel<256>(float const *som, float const *rotated_image
     __syncthreads();
 
     // Parallel reduction
-    if (tid < 128) { first_step_local[tid] += first_step_local[tid + 128]; } __syncthreads();
-    if (tid <  64) { first_step_local[tid] += first_step_local[tid +  64]; } __syncthreads();
+    if (tid < 128) {
+        first_step_local[tid] += first_step_local[tid + 128];
+        __syncthreads();
+    }
+    if (tid <  64) {
+        first_step_local[tid] += first_step_local[tid +  64];
+        __syncthreads();
+    }
 
     // Static loop unrolling for the thread within one warp.
     if (tid < 32) warp_reduce_64(first_step_local, tid);
@@ -101,7 +118,8 @@ void euclidean_distance_kernel<256>(float const *som, float const *rotated_image
 
 template <>
 __global__
-void euclidean_distance_kernel<128>(float const *som, float const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<128>(float const *som, float const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float diff;
@@ -121,7 +139,10 @@ void euclidean_distance_kernel<128>(float const *som, float const *rotated_image
     __syncthreads();
 
     // Parallel reduction
-    if (tid <  64) { first_step_local[tid] += first_step_local[tid +  64]; } __syncthreads();
+    if (tid <  64) {
+        first_step_local[tid] += first_step_local[tid +  64];
+        __syncthreads();
+    }
 
     // Static loop unrolling for the thread within one warp.
     if (tid < 32) warp_reduce_64(first_step_local, tid);
@@ -132,7 +153,8 @@ void euclidean_distance_kernel<128>(float const *som, float const *rotated_image
 
 template <>
 __global__
-void euclidean_distance_kernel<64>(float const *som, float const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<64>(float const *som, float const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float diff;
@@ -162,7 +184,8 @@ void euclidean_distance_kernel<64>(float const *som, float const *rotated_images
 
 template <>
 __global__
-void euclidean_distance_kernel<512>(uint16_t const *som, uint16_t const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<512>(uint16_t const *som, uint16_t const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float sum = 0.0;
@@ -195,9 +218,18 @@ void euclidean_distance_kernel<512>(uint16_t const *som, uint16_t const *rotated
     __syncthreads();
 
     // Parallel reduction
-    if (tid < 256) { first_step_local[tid] += first_step_local[tid + 256]; } __syncthreads();
-    if (tid < 128) { first_step_local[tid] += first_step_local[tid + 128]; } __syncthreads();
-    if (tid <  64) { first_step_local[tid] += first_step_local[tid +  64]; } __syncthreads();
+    if (tid < 256) {
+        first_step_local[tid] += first_step_local[tid + 256];
+        __syncthreads();
+    }
+    if (tid < 128) {
+        first_step_local[tid] += first_step_local[tid + 128];
+        __syncthreads();
+    }
+    if (tid <  64) {
+        first_step_local[tid] += first_step_local[tid +  64];
+        __syncthreads();
+    }
 
     // Static loop unrolling for the thread within one warp.
     if (tid < 32) warp_reduce_64(first_step_local, tid);
@@ -208,7 +240,8 @@ void euclidean_distance_kernel<512>(uint16_t const *som, uint16_t const *rotated
 
 template <>
 __global__
-void euclidean_distance_kernel<256>(uint16_t const *som, uint16_t const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<256>(uint16_t const *som, uint16_t const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float sum = 0.0;
@@ -241,8 +274,14 @@ void euclidean_distance_kernel<256>(uint16_t const *som, uint16_t const *rotated
     __syncthreads();
 
     // Parallel reduction
-    if (tid < 128) { first_step_local[tid] += first_step_local[tid + 128]; } __syncthreads();
-    if (tid <  64) { first_step_local[tid] += first_step_local[tid +  64]; } __syncthreads();
+    if (tid < 128) {
+        first_step_local[tid] += first_step_local[tid + 128];
+        __syncthreads();
+    }
+    if (tid <  64) {
+        first_step_local[tid] += first_step_local[tid +  64];
+        __syncthreads();
+    }
 
     // Static loop unrolling for the thread within one warp.
     if (tid < 32) warp_reduce_64(first_step_local, tid);
@@ -253,7 +292,8 @@ void euclidean_distance_kernel<256>(uint16_t const *som, uint16_t const *rotated
 
 template <>
 __global__
-void euclidean_distance_kernel<128>(uint16_t const *som, uint16_t const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<128>(uint16_t const *som, uint16_t const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float sum = 0.0;
@@ -286,7 +326,10 @@ void euclidean_distance_kernel<128>(uint16_t const *som, uint16_t const *rotated
     __syncthreads();
 
     // Parallel reduction
-    if (tid <  64) { first_step_local[tid] += first_step_local[tid +  64]; } __syncthreads();
+    if (tid <  64) {
+        first_step_local[tid] += first_step_local[tid +  64];
+        __syncthreads();
+    }
 
     // Static loop unrolling for the thread within one warp.
     if (tid < 32) warp_reduce_64(first_step_local, tid);
@@ -297,7 +340,8 @@ void euclidean_distance_kernel<128>(uint16_t const *som, uint16_t const *rotated
 
 template <>
 __global__
-void euclidean_distance_kernel<64>(uint16_t const *som, uint16_t const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<64>(uint16_t const *som, uint16_t const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float sum = 0.0;
@@ -340,7 +384,8 @@ void euclidean_distance_kernel<64>(uint16_t const *som, uint16_t const *rotated_
 
 template <>
 __global__
-void euclidean_distance_kernel<512>(uint8_t const *som, uint8_t const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<512>(uint8_t const *som, uint8_t const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float sum = 0.0;
@@ -377,9 +422,18 @@ void euclidean_distance_kernel<512>(uint8_t const *som, uint8_t const *rotated_i
     __syncthreads();
 
     // Parallel reduction
-    if (tid < 256) { first_step_local[tid] += first_step_local[tid + 256]; } __syncthreads();
-    if (tid < 128) { first_step_local[tid] += first_step_local[tid + 128]; } __syncthreads();
-    if (tid <  64) { first_step_local[tid] += first_step_local[tid +  64]; } __syncthreads();
+    if (tid < 256) {
+        first_step_local[tid] += first_step_local[tid + 256];
+        __syncthreads();
+    }
+    if (tid < 128) {
+        first_step_local[tid] += first_step_local[tid + 128];
+        __syncthreads();
+    }
+    if (tid <  64) {
+        first_step_local[tid] += first_step_local[tid +  64];
+        __syncthreads();
+    }
 
     // Static loop unrolling for the thread within one warp.
     if (tid < 32) warp_reduce_64(first_step_local, tid);
@@ -390,7 +444,8 @@ void euclidean_distance_kernel<512>(uint8_t const *som, uint8_t const *rotated_i
 
 template <>
 __global__
-void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float sum = 0.0;
@@ -427,8 +482,14 @@ void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_i
     __syncthreads();
 
     // Parallel reduction
-    if (tid < 128) { first_step_local[tid] += first_step_local[tid + 128]; } __syncthreads();
-    if (tid <  64) { first_step_local[tid] += first_step_local[tid +  64]; } __syncthreads();
+    if (tid < 128) {
+        first_step_local[tid] += first_step_local[tid + 128];
+        __syncthreads();
+    }
+    if (tid <  64) {
+        first_step_local[tid] += first_step_local[tid +  64];
+        __syncthreads();
+    }
 
     // Static loop unrolling for the thread within one warp.
     if (tid < 32) warp_reduce_64(first_step_local, tid);
@@ -439,7 +500,8 @@ void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_i
 
 template <>
 __global__
-void euclidean_distance_kernel<128>(uint8_t const *som, uint8_t const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<128>(uint8_t const *som, uint8_t const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float sum = 0.0;
@@ -476,7 +538,10 @@ void euclidean_distance_kernel<128>(uint8_t const *som, uint8_t const *rotated_i
     __syncthreads();
 
     // Parallel reduction
-    if (tid <  64) { first_step_local[tid] += first_step_local[tid +  64]; } __syncthreads();
+    if (tid <  64) {
+        first_step_local[tid] += first_step_local[tid +  64];
+        __syncthreads();
+    }
 
     // Static loop unrolling for the thread within one warp.
     if (tid < 32) warp_reduce_64(first_step_local, tid);
@@ -487,7 +552,8 @@ void euclidean_distance_kernel<128>(uint8_t const *som, uint8_t const *rotated_i
 
 template <>
 __global__
-void euclidean_distance_kernel<64>(uint8_t const *som, uint8_t const *rotated_images, float *first_step, uint32_t neuron_size)
+void euclidean_distance_kernel<64>(uint8_t const *som, uint8_t const *rotated_images,
+    float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
     float sum = 0.0;

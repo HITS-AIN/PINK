@@ -61,7 +61,8 @@ public:
 
     /// Construction by input data
     SOM(InputData const& input_data)
-     : som_layout{extract_layout<SOMLayout::dimensionality>(input_data.som_width, input_data.som_height, input_data.som_depth)},
+     : som_layout{extract_layout<SOMLayout::dimensionality>(input_data.som_width,
+       input_data.som_height, input_data.som_depth)},
        neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
        data(som_layout.size() * neuron_layout.size())
     {
@@ -135,7 +136,9 @@ public:
     auto get_data_pointer() const { return &data[0]; }
 
     auto get_neuron(SOMLayoutType const& position) {
-        auto&& beg = data.begin() + (position.dimension[0] * som_layout.dimension[1] + position.dimension[1]) * neuron_layout.size();
+        auto&& beg = data.begin()
+                   + (position.dimension[0] * som_layout.dimension[1]
+                   + position.dimension[1]) * neuron_layout.size();
         auto&& end = beg + neuron_layout.size();
         return NeuronType(neuron_layout, std::vector<T>(beg, end));
     }
@@ -148,10 +151,18 @@ public:
     auto get_neuron_layout() -> NeuronLayoutType { return neuron_layout; }
     auto get_neuron_layout() const -> NeuronLayoutType const { return neuron_layout; }
 
-    auto get_som_dimension() -> typename SOMLayoutType::DimensionType { return som_layout.dimension; }
-    auto get_som_dimension() const -> typename SOMLayoutType::DimensionType const { return som_layout.dimension; }
-    auto get_neuron_dimension() -> typename NeuronLayoutType::DimensionType { return neuron_layout.dimension; }
-    auto get_neuron_dimension() const -> typename NeuronLayoutType::DimensionType const { return neuron_layout.dimension; }
+    auto get_som_dimension() -> typename SOMLayoutType::DimensionType {
+        return som_layout.dimension;
+    }
+    auto get_som_dimension() const -> typename SOMLayoutType::DimensionType const {
+        return som_layout.dimension;
+    }
+    auto get_neuron_dimension() -> typename NeuronLayoutType::DimensionType {
+        return neuron_layout.dimension;
+    }
+    auto get_neuron_dimension() const -> typename NeuronLayoutType::DimensionType const {
+        return neuron_layout.dimension;
+    }
 
 private:
 

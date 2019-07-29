@@ -34,7 +34,8 @@ void rotate_bilinear(T const* src, T *dst, int src_height, int src_width, int ds
             float src_position_x = dst_position_x * cos_alpha - dst_position_y * sin_alpha + src_center_x;
             float src_position_y = dst_position_x * sin_alpha + dst_position_y * cos_alpha + src_center_y;
 
-            if (src_position_x < 0.0 or src_position_x > src_width - 1 or src_position_y < 0.0 or src_position_y > src_height - 1)
+            if (src_position_x < 0.0 or src_position_x > src_width - 1 or
+                src_position_y < 0.0 or src_position_y > src_height - 1)
             {
                 dst[dst_x * dst_height + dst_y] = 0.0;
             }
@@ -62,7 +63,8 @@ void rotate_bilinear(T const* src, T *dst, int src_height, int src_width, int ds
 }
 
 template <typename T>
-void rotate(T const* src, T *dst, int src_height, int src_width, int dst_height, int dst_width, float alpha, Interpolation interpolation)
+void rotate(T const* src, T *dst, int src_height, int src_width,
+    int dst_height, int dst_width, float alpha, Interpolation interpolation)
 {
     if (interpolation == Interpolation::BILINEAR)
         rotate_bilinear(src, dst, src_height, src_width, dst_height, dst_width, alpha);

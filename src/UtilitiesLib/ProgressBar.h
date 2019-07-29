@@ -18,10 +18,17 @@ class ProgressBar
 public:
 
     ProgressBar(int number_of_iterations, int width, int max_number_of_progress_prints, std::ostream& os = std::cout)
-     : number_of_iterations(number_of_iterations < 1 ? throw pink::exception("ProgressBar: number_of_iterations must be larger than 0") : number_of_iterations),
-       max_number_of_progress_prints(max_number_of_progress_prints < 1 ? throw pink::exception("ProgressBar: max number of progress prints must be larger than 0") : max_number_of_progress_prints),
+     : number_of_iterations(
+           number_of_iterations < 1 ?
+           throw pink::exception("ProgressBar: number_of_iterations must be larger than 0") :
+          number_of_iterations),
+       max_number_of_progress_prints(max_number_of_progress_prints < 1 ?
+           throw pink::exception("ProgressBar: max number of progress prints must be larger than 0") :
+           max_number_of_progress_prints),
        number_of_progress_prints(std::min(number_of_iterations, max_number_of_progress_prints)),
-       width(width < number_of_progress_prints ? throw pink::exception("ProgressBar: width must be equal or larger than number of progress prints") : width),
+       width(width < number_of_progress_prints ?
+           throw pink::exception("ProgressBar: width must be equal or larger than number of progress prints") :
+           width),
        number_of_ticks_in_section(number_of_iterations / number_of_progress_prints),
        remaining_ticks_in_section(number_of_iterations % number_of_progress_prints),
        os(os),
@@ -56,7 +63,8 @@ public:
                 else if (i == pos) os << ">";
                 else os << ' ';
             }
-            os << "] " << static_cast<int>(100.0 * ticks / number_of_iterations) << " % " << time_elapsed / 1000.0 << " s" << std::endl;
+            os << "] " << static_cast<int>(100.0 * ticks / number_of_iterations) << " % "
+               << time_elapsed / 1000.0 << " s" << std::endl;
 
             if (ticks == number_of_iterations) os << std::endl;
             else os << std::flush;
@@ -72,7 +80,7 @@ private:
 
     int ticks = 0;
 
-    /// Number_of_iterations
+    /// Number of iterations
     int number_of_iterations;
 
     /// Maximal number of progress information prints, must be larger than 0
@@ -96,7 +104,7 @@ private:
     /// Flag end was reached
     bool end_reached = false;
 
-    ///
+    /// Number of the next valid tick
     int next_valid_tick;
 
     std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();

@@ -70,7 +70,8 @@ private:
 /**
  * @brief Functor for mexican hat.
  *
- * 2.0 / ( math.sqrt(3.0 * sigma) * math.pow(math.pi, 0.25)) * (1- x**2.0 / sigma**2.0) * math.exp(-x**2.0/(2.0 * sigma**2))
+ * 2.0 / ( math.sqrt(3.0 * sigma) * math.pow(math.pi, 0.25))
+ *     * (1 - x**2.0 / sigma**2.0) * math.exp(-x**2.0/(2.0 * sigma**2))
  */
 struct MexicanHatFunctor : public DistributionFunctorBase
 {
@@ -85,7 +86,8 @@ struct MexicanHatFunctor : public DistributionFunctorBase
     {
         float distance2 = distance * distance;
         float sigma2 = sigma * sigma;
-        return 2.0 * damping / (sqrt(3.0 * sigma) * pow(M_PI, 0.25)) * (1.0 - distance2/sigma2) * exp(-distance2 / (2.0 * sigma2));
+        return 2.0 * damping / (sqrt(3.0 * sigma) * pow(M_PI, 0.25))
+                   * (1.0 - distance2/sigma2) * exp(-distance2 / (2.0 * sigma2));
     }
 
 private:

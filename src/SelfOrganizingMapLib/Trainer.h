@@ -139,7 +139,8 @@ public:
 #endif
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
-            this->som.get_number_of_neurons(), som.get_data_pointer(), neuron_dim, this->number_of_spatial_transformations,
+            this->som.get_number_of_neurons(), som.get_data_pointer(),
+            neuron_dim, this->number_of_spatial_transformations,
             spatial_transformed_images, this->euclidean_distance_dim);
 
 #ifdef PRINT_DEBUG

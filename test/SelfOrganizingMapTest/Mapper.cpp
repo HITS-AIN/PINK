@@ -21,7 +21,8 @@ using namespace pink;
 
 struct MapperTestData
 {
-    MapperTestData(uint32_t som_dim, uint32_t neuron_dim, uint32_t image_dim, uint32_t euclidean_distance_dim, uint32_t num_rot, bool flip,
+    MapperTestData(uint32_t som_dim, uint32_t neuron_dim, uint32_t image_dim,
+        uint32_t euclidean_distance_dim, uint32_t num_rot, bool flip,
         float neuron_value, float image_value, std::vector<float> result)
       : som_dim(som_dim),
         neuron_dim(neuron_dim),
@@ -67,7 +68,8 @@ TEST_P(MapperTest, mapper_cartesian_2d_float)
     auto data = GetParam();
 
     DataType image({data.image_dim, data.image_dim}, std::vector<float>(data.image_size, data.image_value));
-    SOMType som({data.som_dim, data.som_dim}, {data.neuron_dim, data.neuron_dim}, std::vector<float>(data.som_total_size, data.neuron_value));
+    SOMType som({data.som_dim, data.som_dim}, {data.neuron_dim, data.neuron_dim},
+        std::vector<float>(data.som_total_size, data.neuron_value));
 
     MapperType mapper(som, 0, data.num_rot, data.flip, Interpolation::BILINEAR, data.euclidean_distance_dim);
     auto result = mapper(image);

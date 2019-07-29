@@ -71,7 +71,8 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d_float)
     uint32_t neuron_dim = 2;
     uint32_t euclidean_distance_dim = 2;
 
-    DataType data({image_dim, image_dim}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0});
+    DataType data({image_dim, image_dim},
+        {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0});
     SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<float>(4, 0.0));
 
     auto&& f = StepFunctor(10.0);

@@ -24,8 +24,9 @@ namespace pink {
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
 template <typename T>
-void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust::device_vector<T> const& d_image, uint32_t spacing,
-    uint32_t num_rot, uint32_t image_dim, uint32_t neuron_dim, bool useFlip, Interpolation interpolation,
+void generate_rotated_images(thrust::device_vector<T>& d_rotated_images,
+    thrust::device_vector<T> const& d_image, uint32_t spacing, uint32_t num_rot, uint32_t image_dim,
+    uint32_t neuron_dim, bool useFlip, Interpolation interpolation,
     thrust::device_vector<float> const& d_cos_alpha, thrust::device_vector<float> const& d_sin_alpha)
 {
     const uint16_t block_size = 32;
@@ -49,13 +50,7 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
             resize_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size]),
                 thrust::raw_pointer_cast(&d_image[c * image_size]), neuron_dim, image_dim, min_dim);
 
-            cudaError_t error = cudaGetLastError();
-
-            if (error != cudaSuccess)
-            {
-                fprintf(stderr, "Failed to launch CUDA kernel crop (error code %s)!\n", cudaGetErrorString(error));
-                exit(EXIT_FAILURE);
-            }
+            gpuErrchk(cudaPeekAtLastError());
         }
     }
 
@@ -75,21 +70,17 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
                 for (uint32_t c = 0; c < spacing; ++c)
                 {
                     if (interpolation == Interpolation::BILINEAR) {
-                        rotate_bilinear_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_image[c * image_size]),
+                        rotate_bilinear_kernel<<<dim_grid, dim_block>>>(
+                            thrust::raw_pointer_cast(&d_image[c * image_size]),
                             thrust::raw_pointer_cast(&d_rotated_images[(c + spacing) * neuron_size]),
                             image_dim, image_dim, neuron_dim, neuron_dim,
-                            thrust::raw_pointer_cast(&d_cos_alpha[0]), thrust::raw_pointer_cast(&d_sin_alpha[0]), spacing);
+                            thrust::raw_pointer_cast(&d_cos_alpha[0]),
+                            thrust::raw_pointer_cast(&d_sin_alpha[0]), spacing);
                     } else {
                         throw pink::exception("generate_rotated_images: unknown interpolation type");
                     }
 
-                    cudaError_t error = cudaGetLastError();
-
-                    if (error != cudaSuccess)
-                    {
-                        fprintf(stderr, "Failed to launch CUDA kernel rotate_and_crop (error code %s)!\n", cudaGetErrorString(error));
-                        exit(EXIT_FAILURE);
-                    }
+                    gpuErrchk(cudaPeekAtLastError());
                 }
             }
         }
@@ -107,20 +98,17 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
             // Start kernel
             for (uint32_t c = 0; c < spacing; ++c)
             {
-                rotate_90_degrees_list<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size]),
+                rotate_90_degrees_list<<<dim_grid, dim_block>>>(
+                    thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size]),
                     neuron_dim, mc_neuron_size, offset);
-                rotate_90_degrees_list<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size + offset]),
+                rotate_90_degrees_list<<<dim_grid, dim_block>>>(
+                    thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size + offset]),
                     neuron_dim, mc_neuron_size, offset);
-                rotate_90_degrees_list<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size + 2 * offset]),
+                rotate_90_degrees_list<<<dim_grid, dim_block>>>(
+                    thrust::raw_pointer_cast(&d_rotated_images[c * neuron_size + 2 * offset]),
                     neuron_dim, mc_neuron_size, offset);
 
-                cudaError_t error = cudaGetLastError();
-
-                if (error != cudaSuccess)
-                {
-                    fprintf(stderr, "Failed to launch CUDA kernel rotate_90_degrees_list (error code %s)!\n", cudaGetErrorString(error));
-                    exit(EXIT_FAILURE);
-                }
+                gpuErrchk(cudaPeekAtLastError());
             }
         }
     }
@@ -133,16 +121,11 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images, thrust:
         dim3 dim_grid(grid_size, grid_size, num_rot * spacing);
 
         // Start kernel
-        flip_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_rotated_images[num_rot * spacing * neuron_size]),
+        flip_kernel<<<dim_grid, dim_block>>>(
+            thrust::raw_pointer_cast(&d_rotated_images[num_rot * spacing * neuron_size]),
             thrust::raw_pointer_cast(&d_rotated_images[0]), neuron_dim, neuron_size);
 
-        cudaError_t error = cudaGetLastError();
-
-        if (error != cudaSuccess)
-        {
-            fprintf(stderr, "Failed to launch CUDA kernel flip (error code %s)!\n", cudaGetErrorString(error));
-            exit(EXIT_FAILURE);
-        }
+        gpuErrchk(cudaPeekAtLastError());
     }
 }
 

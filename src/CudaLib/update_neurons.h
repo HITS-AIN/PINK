@@ -51,8 +51,10 @@ void update_neurons_kernel(T *som, T const *rotated_images, uint32_t const *best
  */
 template <typename T>
 void update_neurons(thrust::device_vector<T>& d_som, thrust::device_vector<T> const& d_rotated_images,
-    thrust::device_vector<uint32_t> const& d_best_rotation_matrix, thrust::device_vector<T> const& d_euclidean_distance_matrix,
-    thrust::device_vector<uint32_t>& d_best_match, thrust::device_vector<float> const& d_update_factors,
+    thrust::device_vector<uint32_t> const& d_best_rotation_matrix,
+    thrust::device_vector<T> const& d_euclidean_distance_matrix,
+    thrust::device_vector<uint32_t>& d_best_match,
+    thrust::device_vector<float> const& d_update_factors,
     uint32_t som_size, uint32_t neuron_size)
 {
     {
@@ -60,13 +62,8 @@ void update_neurons(thrust::device_vector<T>& d_som, thrust::device_vector<T> co
         find_best_matching_neuron_kernel<<<1,1>>>(thrust::raw_pointer_cast(&d_euclidean_distance_matrix[0]),
             thrust::raw_pointer_cast(&d_best_match[0]), som_size);
 
-        cudaError_t error = cudaGetLastError();
-
-        if (error != cudaSuccess)
-        {
-            fprintf(stderr, "Failed to launch CUDA kernel find_best_matching_neuron_kernel (error code %s)!\n", cudaGetErrorString(error));
-            exit(EXIT_FAILURE);
-        }
+        gpuErrchk(cudaPeekAtLastError());
+        gpuErrchk(cudaDeviceSynchronize());
     }
     {
         // Setup execution parameters
@@ -80,13 +77,8 @@ void update_neurons(thrust::device_vector<T>& d_som, thrust::device_vector<T> co
             thrust::raw_pointer_cast(&d_rotated_images[0]), thrust::raw_pointer_cast(&d_best_rotation_matrix[0]),
             d_best_match[0], thrust::raw_pointer_cast(&d_update_factors[0]), som_size, neuron_size);
 
-        cudaError_t error = cudaGetLastError();
-
-        if (error != cudaSuccess)
-        {
-            fprintf(stderr, "Failed to launch CUDA kernel update_neurons_kernel (error code %s)!\n", cudaGetErrorString(error));
-            exit(EXIT_FAILURE);
-        }
+        gpuErrchk(cudaPeekAtLastError());
+        gpuErrchk(cudaDeviceSynchronize());
     }
 }
 

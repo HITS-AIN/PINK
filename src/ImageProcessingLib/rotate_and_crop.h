@@ -12,7 +12,8 @@
 namespace pink {
 
 template <typename T>
-void rotate_and_crop_nearest_neighbor(T const* src, T *dst, int src_height, int src_width, int dst_height, int dst_width, float alpha)
+void rotate_and_crop_nearest_neighbor(T const* src, T *dst,
+    int src_height, int src_width, int dst_height, int dst_width, float alpha)
 {
     const int width_margin = (src_width - dst_width) * 0.5;
     const int height_margin = (src_height - dst_height) * 0.5;
@@ -26,12 +27,14 @@ void rotate_and_crop_nearest_neighbor(T const* src, T *dst, int src_height, int 
 
     for (int x2 = 0; x2 < dst_width; ++x2) {
         for (int y2 = 0; y2 < dst_height; ++y2) {
-            x1 = ((float)x2 + width_margin - x0) * cos_alpha + ((float)y2 + height_margin - y0) * sin_alpha + x0 + 0.1;
+            x1 = ((float)x2 + width_margin - x0) * cos_alpha
+               + ((float)y2 + height_margin - y0) * sin_alpha + x0 + 0.1;
             if (x1 < 0 or x1 >= src_width) {
                 dst[x2*dst_height + y2] = 0.0f;
                 continue;
             }
-            y1 = ((float)y2 + height_margin - y0) * cos_alpha - ((float)x2 + width_margin - x0) * sin_alpha + y0 + 0.1;
+            y1 = ((float)y2 + height_margin - y0) * cos_alpha
+               - ((float)x2 + width_margin - x0) * sin_alpha + y0 + 0.1;
             if (y1 < 0 or y1 >= src_height) {
                 dst[x2*dst_height + y2] = 0.0f;
                 continue;
@@ -42,7 +45,8 @@ void rotate_and_crop_nearest_neighbor(T const* src, T *dst, int src_height, int 
 }
 
 template <typename T>
-void rotate_and_crop_bilinear(T const* src, T *dst, int src_height, int src_width, int dst_height, int dst_width, float alpha)
+void rotate_and_crop_bilinear(T const* src, T *dst,
+    int src_height, int src_width, int dst_height, int dst_width, float alpha)
 {
     const int width_margin = (src_width - dst_width) * 0.5;
     const int height_margin = (src_height - dst_height) * 0.5;
@@ -57,12 +61,14 @@ void rotate_and_crop_bilinear(T const* src, T *dst, int src_height, int src_widt
 
     for (int x2 = 0; x2 < dst_width; ++x2) {
         for (int y2 = 0; y2 < dst_height; ++y2) {
-            x1 = ((float)x2 + width_margin - x0) * cos_alpha + ((float)y2 + height_margin - y0) * sin_alpha + x0;
+            x1 = ((float)x2 + width_margin - x0) * cos_alpha
+               + ((float)y2 + height_margin - y0) * sin_alpha + x0;
 //            if (x1 < 0 or x1 >= src_width) {
 //                dst[x2*dst_height + y2] = 0.0f;
 //                continue;
 //            }
-            y1 = ((float)y2 + height_margin - y0) * cos_alpha - ((float)x2 + width_margin - x0) * sin_alpha + y0;
+            y1 = ((float)y2 + height_margin - y0) * cos_alpha
+               - ((float)x2 + width_margin - x0) * sin_alpha + y0;
 //            if (y1 < 0 or y1 >= src_height) {
 //                dst[x2*dst_height + y2] = 0.0f;
 //                continue;
@@ -84,7 +90,8 @@ void rotate_and_crop_bilinear(T const* src, T *dst, int src_height, int src_widt
 }
 
 template <typename T>
-void rotate_and_crop(T const *src, T *dst, int src_height, int src_width, int dst_height, int dst_width, float alpha, Interpolation interpolation)
+void rotate_and_crop(T const *src, T *dst, int src_height, int src_width,
+    int dst_height, int dst_width, float alpha, Interpolation interpolation)
 {
     if (interpolation == Interpolation::NEAREST_NEIGHBOR)
         rotate_and_crop_nearest_neighbor(src, dst, src_height, src_width, dst_height, dst_width, alpha);
