@@ -23,9 +23,6 @@
 
 namespace pink {
 
-#define DEFAULT_SIGMA     1.1
-#define DEFAULT_DAMPING   0.2
-
 struct InputData
 {
     /// Default constructor
