@@ -10,6 +10,8 @@
 #include <thrust/device_ptr.h>
 #include <thrust/device_vector.h>
 
+#include "CudaLib.h"
+
 namespace pink {
 
 /// Find the position where the euclidean distance is minimal between image and neuron.
