@@ -5,12 +5,13 @@ include_directories(
 
 add_executable(
     SelfOrganizingMapTest
-    main.cpp
+    add_binary_section.cpp
     Cartesian.cpp
     Data.cpp
     DataIterator.cpp
     DataIteratorShuffled.cpp
     Hexagonal.cpp
+    main.cpp
     Mapper.cpp
     Trainer.cpp
 )

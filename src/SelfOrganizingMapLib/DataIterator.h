@@ -91,14 +91,6 @@ public:
         return *this;
     }
 
-    /// Set to first position
-    void set_to_begin()
-    {
-        is.seekg(header_offset, is.beg);
-        count = 0;
-        end_flag = false;
-    }
-
     /// Dereference
     DataType& operator * () const
     {

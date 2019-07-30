@@ -44,7 +44,6 @@ void euclidean_distance_kernel<512>(float const *som, float const *rotated_image
     float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
-    float diff;
     float sum = 0.0;
     float const *psom = som + blockIdx.y * neuron_size;
     float const *prot = rotated_images + blockIdx.x * neuron_size;
@@ -53,7 +52,7 @@ void euclidean_distance_kernel<512>(float const *som, float const *rotated_image
 
     for (uint32_t i = tid; i < neuron_size; i += 512)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 
@@ -87,7 +86,6 @@ void euclidean_distance_kernel<256>(float const *som, float const *rotated_image
     float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
-    float diff;
     float sum = 0.0;
     float const *psom = som + blockIdx.y * neuron_size;
     float const *prot = rotated_images + blockIdx.x * neuron_size;
@@ -96,7 +94,7 @@ void euclidean_distance_kernel<256>(float const *som, float const *rotated_image
 
     for (uint32_t i = tid; i < neuron_size; i += 256)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 
@@ -126,7 +124,6 @@ void euclidean_distance_kernel<128>(float const *som, float const *rotated_image
     float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
-    float diff;
     float sum = 0.0;
     float const *psom = som + blockIdx.y * neuron_size;
     float const *prot = rotated_images + blockIdx.x * neuron_size;
@@ -135,7 +132,7 @@ void euclidean_distance_kernel<128>(float const *som, float const *rotated_image
 
     for (uint32_t i = tid; i < neuron_size; i += 128)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 
@@ -161,7 +158,6 @@ void euclidean_distance_kernel<64>(float const *som, float const *rotated_images
     float *first_step, uint32_t neuron_size)
 {
     int tid = threadIdx.x;
-    float diff;
     float sum = 0.0;
     float const *psom = som + blockIdx.y * neuron_size;
     float const *prot = rotated_images + blockIdx.x * neuron_size;
@@ -170,7 +166,7 @@ void euclidean_distance_kernel<64>(float const *som, float const *rotated_images
 
     for (uint32_t i = tid; i < neuron_size; i += 64)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 
@@ -209,10 +205,9 @@ void euclidean_distance_kernel<512>(uint16_t const *som, uint16_t const *rotated
         sum += __dp2a(diff, diff, null);
     }
 #else
-    float diff;
     for (uint32_t i = tid; i < neuron_size; i += 512)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 #endif
@@ -265,10 +260,9 @@ void euclidean_distance_kernel<256>(uint16_t const *som, uint16_t const *rotated
         sum += __dp2a(diff, diff, null);
     }
 #else
-    float diff;
     for (uint32_t i = tid; i < neuron_size; i += 256)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 #endif
@@ -317,10 +311,9 @@ void euclidean_distance_kernel<128>(uint16_t const *som, uint16_t const *rotated
         sum += __dp2a(diff, diff, null);
     }
 #else
-    float diff;
     for (uint32_t i = tid; i < neuron_size; i += 128)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 #endif
@@ -365,10 +358,9 @@ void euclidean_distance_kernel<64>(uint16_t const *som, uint16_t const *rotated_
         sum += __dp2a(diff, diff, null);
     }
 #else
-    float diff;
     for (uint32_t i = tid; i < neuron_size; i += 64)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 #endif
@@ -413,10 +405,9 @@ void euclidean_distance_kernel<512>(uint8_t const *som, uint8_t const *rotated_i
         sum += __dp4a(diff, diff, null);
     }
 #else
-    float diff;
     for (uint32_t i = tid; i < neuron_size; i += 512)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 #endif
@@ -473,10 +464,9 @@ void euclidean_distance_kernel<256>(uint8_t const *som, uint8_t const *rotated_i
         sum += __dp4a(diff, diff, null);
     }
 #else
-    float diff;
     for (uint32_t i = tid; i < neuron_size; i += 256)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 #endif
@@ -529,10 +519,9 @@ void euclidean_distance_kernel<128>(uint8_t const *som, uint8_t const *rotated_i
         sum += __dp4a(diff, diff, null);
     }
 #else
-    float diff;
     for (uint32_t i = tid; i < neuron_size; i += 128)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 #endif
@@ -581,10 +570,9 @@ void euclidean_distance_kernel<64>(uint8_t const *som, uint8_t const *rotated_im
         sum += __dp4a(diff, diff, null);
     }
 #else
-    float diff;
     for (uint32_t i = tid; i < neuron_size; i += 64)
     {
-        diff = psom[i] - prot[i];
+        float diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 #endif

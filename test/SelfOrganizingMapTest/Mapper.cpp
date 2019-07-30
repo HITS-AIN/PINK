@@ -23,7 +23,7 @@ struct MapperTestData
 {
     MapperTestData(uint32_t som_dim, uint32_t neuron_dim, uint32_t image_dim,
         uint32_t euclidean_distance_dim, uint32_t num_rot, bool flip,
-        float neuron_value, float image_value, std::vector<float> result)
+        float neuron_value, float image_value, std::vector<float> const& result)
       : som_dim(som_dim),
         neuron_dim(neuron_dim),
         image_dim(image_dim),
