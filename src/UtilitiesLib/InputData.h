@@ -56,7 +56,7 @@ struct InputData
     uint32_t euclidean_distance_dim;
     Layout layout;
     int seed;
-    int number_of_rotations;
+    uint32_t number_of_rotations;
     int number_of_threads;
     SOMInitialization init;
     uint32_t number_of_iterations;

@@ -58,7 +58,8 @@ struct GaussianFunctor : public DistributionFunctorBase
 
     float operator () (float distance) const
     {
-        return damping / (sigma * sqrt(2.0 * M_PI)) * exp(-0.5 * pow((distance/sigma),2));
+        return damping / (sigma * std::sqrt(2.0f * static_cast<float>(M_PI)))
+                       * std::exp(-0.5f * std::pow((distance/sigma), 2.0f));
     }
 
 private:
@@ -86,8 +87,8 @@ struct MexicanHatFunctor : public DistributionFunctorBase
     {
         float distance2 = distance * distance;
         float sigma2 = sigma * sigma;
-        return 2.0 * damping / (sqrt(3.0 * sigma) * pow(M_PI, 0.25))
-                   * (1.0 - distance2/sigma2) * exp(-distance2 / (2.0 * sigma2));
+        return 2.0f * damping / (std::sqrt(3.0f * sigma) * std::pow(static_cast<float>(M_PI), 0.25f))
+                    * (1.0f - distance2/sigma2) * std::exp(-distance2 / (2.0f * sigma2));
     }
 
 private:

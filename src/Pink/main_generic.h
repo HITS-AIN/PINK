@@ -123,7 +123,7 @@ void main_generic(InputData const& input_data)
         result_file.write((char*)&som_layout_idx, sizeof(int));
         result_file.write((char*)&som_dimensionality, sizeof(int));
         for (int dim = 0; dim != som_dimensionality; ++dim) {
-            int tmp = som.get_som_layout().dimension[dim];
+            int tmp = static_cast<int>(som.get_som_layout().dimension[static_cast<uint32_t>(dim)]);
             result_file.write((char*)&tmp, sizeof(int));
         }
 
@@ -142,7 +142,7 @@ void main_generic(InputData const& input_data)
             spatial_transformation_file.write((char*)&som_layout_idx, sizeof(int));
             spatial_transformation_file.write((char*)&som_dimensionality, sizeof(int));
             for (int dim = 0; dim != som_dimensionality; ++dim) {
-                int tmp = som.get_som_layout().dimension[dim];
+                int tmp = static_cast<int>(som.get_som_layout().dimension[static_cast<uint32_t>(dim)]);
                 spatial_transformation_file.write((char*)&tmp, sizeof(int));
             }
         }

@@ -114,7 +114,7 @@ public:
 
     Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-        Interpolation interpolation, int euclidean_distance_dim = -1)
+        Interpolation interpolation, int euclidean_distance_dim)
      : TrainerBase<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        som(som)

@@ -38,7 +38,7 @@ class MapperBase
 public:
 
     MapperBase(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations,
-        bool use_flip, Interpolation interpolation, int euclidean_distance_dim)
+        bool use_flip, Interpolation interpolation, uint32_t euclidean_distance_dim)
      : som(som),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
@@ -50,11 +50,6 @@ public:
     {
         if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
-
-        if (euclidean_distance_dim == -1) {
-            euclidean_distance_dim = som.get_neuron_dimension()[0];
-            if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
-        }
     }
 
 protected:
@@ -71,7 +66,7 @@ protected:
     Interpolation interpolation;
 
     /// Dimension for calculation of euclidean distance
-    int euclidean_distance_dim;
+    uint32_t euclidean_distance_dim;
 };
 
 /// Primary template will never be instantiated
@@ -86,7 +81,7 @@ public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity,
         uint32_t number_of_rotations, bool use_flip,
-        Interpolation interpolation, int euclidean_distance_dim = -1)
+        Interpolation interpolation, uint32_t euclidean_distance_dim)
      : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
                                             use_flip, interpolation, euclidean_distance_dim)
     {}
@@ -121,7 +116,7 @@ class Mapper<SOMLayout, DataLayout, T, true> : public MapperBase<SOMLayout, Data
 public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
-        Interpolation interpolation, int euclidean_distance_dim = -1,
+        Interpolation interpolation, uint32_t euclidean_distance_dim,
         uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
      : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
                                             use_flip, interpolation, euclidean_distance_dim),

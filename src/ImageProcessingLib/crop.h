@@ -12,7 +12,8 @@ namespace pink {
 
 /// column major
 template <typename T>
-void crop(T const* src, T *dst, int src_height, int src_width, int dst_height, int dst_width)
+void crop(T const* src, T *dst, uint32_t src_height, uint32_t src_width,
+    uint32_t dst_height, uint32_t dst_width)
 {
     assert(src_height > 0);
     assert(src_width > 0);
@@ -22,11 +23,11 @@ void crop(T const* src, T *dst, int src_height, int src_width, int dst_height, i
     assert(src_height >= dst_height);
     assert(src_width >= dst_width);
 
-    int width_margin = (src_width - dst_width) / 2;
-    int height_margin = (src_height - dst_height) / 2;
+    uint32_t width_margin = (src_width - dst_width) / 2;
+    uint32_t height_margin = (src_height - dst_height) / 2;
 
-    for (int i = 0; i < dst_height; ++i) {
-        for (int j = 0; j < dst_width; ++j) {
+    for (uint32_t i = 0; i < dst_height; ++i) {
+        for (uint32_t j = 0; j < dst_width; ++j) {
             dst[i*dst_width+j] = src[(i+height_margin)*src_width + (j+width_margin)];
         }
     }

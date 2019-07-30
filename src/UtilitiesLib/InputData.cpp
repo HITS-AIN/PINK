@@ -22,9 +22,9 @@ namespace {
 
 uint32_t str_to_uint32_t(std::string const& str)
 {
-	auto i = std::stoi(str);
-	if (i < 0) throw std::runtime_error("str_to_uint32_t: integer must be positive");
-	return static_cast<uint32_t>(i);
+    auto i = std::stoi(str);
+    if (i < 0) throw std::runtime_error("str_to_uint32_t: integer must be positive");
+    return static_cast<uint32_t>(i);
 }
 
 } // end anonymous namespace
@@ -105,7 +105,7 @@ InputData::InputData(int argc, char **argv)
 
     int c = 0;
     int option_index = 0;
-	char *end_char;
+    char *end_char;
 
     while ((c = getopt_long(argc, argv, "vd:l:s:n:t:x:p:a:hf:", long_options, &option_index)) != -1)
     {

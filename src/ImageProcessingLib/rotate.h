@@ -14,21 +14,22 @@
 namespace pink {
 
 template <typename T>
-void rotate_bilinear(T const* src, T *dst, int src_height, int src_width, int dst_height, int dst_width, float alpha)
+void rotate_bilinear(T const* src, T *dst, uint32_t src_height, uint32_t src_width,
+    uint32_t dst_height, uint32_t dst_width, float alpha)
 {
-    const float cos_alpha = cos(alpha);
-    const float sin_alpha = sin(alpha);
+    const float cos_alpha = std::cos(alpha);
+    const float sin_alpha = std::sin(alpha);
 
     // Center of src image
-    const float src_center_x = (src_width - 1) * 0.5;
-    const float src_center_y = (src_height - 1) * 0.5;
+    const float src_center_x = (src_width - 1) * 0.5f;
+    const float src_center_y = (src_height - 1) * 0.5f;
 
     // Center of dst image
-    const float dst_center_x = (dst_width - 1) * 0.5;
-    const float dst_center_y = (dst_height - 1) * 0.5;
+    const float dst_center_x = (dst_width - 1) * 0.5f;
+    const float dst_center_y = (dst_height - 1) * 0.5f;
 
-    for (int dst_x = 0; dst_x < dst_width; ++dst_x) {
-        for (int dst_y = 0; dst_y < dst_height; ++dst_y) {
+    for (uint32_t dst_x = 0; dst_x < dst_width; ++dst_x) {
+        for (uint32_t dst_y = 0; dst_y < dst_height; ++dst_y) {
 
             float dst_position_x = static_cast<float>(dst_x) - dst_center_x;
             float dst_position_y = static_cast<float>(dst_y) - dst_center_y;
@@ -43,17 +44,17 @@ void rotate_bilinear(T const* src, T *dst, int src_height, int src_width, int ds
             }
             else
             {
-                int src_x = src_position_x;
-                int src_y = src_position_y;
+                uint32_t src_x = static_cast<uint32_t>(src_position_x);
+                uint32_t src_y = static_cast<uint32_t>(src_position_y);
 
-                int src_x_plus_1 = src_x + 1;
-                int src_y_plus_1 = src_y + 1;
+                uint32_t src_x_plus_1 = src_x + 1;
+                uint32_t src_y_plus_1 = src_y + 1;
 
                 float rx = src_position_x - src_x;
                 float ry = src_position_y - src_y;
 
-                float cx = 1.0 - rx;
-                float cy = 1.0 - ry;
+                float cx = 1.0f - rx;
+                float cy = 1.0f - ry;
 
                 dst[dst_x * dst_height + dst_y] = cx * cy * src[src_x * src_height + src_y]
                                                 + cx * ry * src[src_x * src_height + src_y_plus_1]
@@ -65,8 +66,8 @@ void rotate_bilinear(T const* src, T *dst, int src_height, int src_width, int ds
 }
 
 template <typename T>
-void rotate(T const* src, T *dst, int src_height, int src_width,
-    int dst_height, int dst_width, float alpha, Interpolation interpolation)
+void rotate(T const* src, T *dst, uint32_t src_height, uint32_t src_width,
+    uint32_t dst_height, uint32_t dst_width, float alpha, Interpolation interpolation)
 {
     assert(src_height > 0);
     assert(src_width > 0);

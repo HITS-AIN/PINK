@@ -11,7 +11,7 @@
 namespace pink {
 
 template <typename T>
-void flip(T const *src, T *dst, int height, int width)
+void flip(T const *src, T *dst, uint32_t height, uint32_t width)
 {
     assert(height > 0);
     assert(width > 0);
@@ -20,8 +20,8 @@ void flip(T const *src, T *dst, int height, int width)
     T *pdst = dst + (height-1) * width;
     T const *psrc = src;
 
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
+    for (uint32_t i = 0; i < height; ++i) {
+        for (uint32_t j = 0; j < width; ++j) {
             pdst[j] = psrc[j];
         }
         pdst -= width;

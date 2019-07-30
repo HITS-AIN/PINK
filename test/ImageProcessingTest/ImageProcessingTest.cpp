@@ -19,9 +19,9 @@ using namespace pink;
 
 TEST(ImageProcessingTest, Rotation90)
 {
-    int height = 4;
-    int width = 3;
-    int size = height * width;
+    uint32_t height = 4;
+    uint32_t width = 3;
+    uint32_t size = height * width;
     std::vector<float> image(size), image2(size), image3(size);
     fill_random_uniform(&image[0], size);
 
@@ -36,9 +36,9 @@ TEST(ImageProcessingTest, Rotation90)
 
 TEST(ImageProcessingTest, CompareRotation90WithRotation)
 {
-    int height = 13;
-    int width = 13;
-    int size = height * width;
+    uint32_t height = 13;
+    uint32_t width = 13;
+    uint32_t size = height * width;
     std::vector<float> image(size), image2(size), image3(size);
     fill_random_uniform(&image[0], size);
 
@@ -50,9 +50,9 @@ TEST(ImageProcessingTest, CompareRotation90WithRotation)
 
 TEST(ImageProcessingTest, BilinearInterpolation)
 {
-    int height = 3;
-    int width = 3;
-    int size = height * width;
+    uint32_t height = 3;
+    uint32_t width = 3;
+    uint32_t size = height * width;
     std::vector<float> image(size), image2(size), image3(size);
     fill_random_uniform(&image[0], size);
 
@@ -113,10 +113,10 @@ TEST(ImageProcessingTest, double_flip)
 
 TEST(ImageProcessingTest, Crop)
 {
-    int dim = 4;
-    int size = dim * dim;
-    int crop_dim = 2;
-    int crop_size = crop_dim * crop_dim;
+    uint32_t dim = 4;
+    uint32_t size = dim * dim;
+    uint32_t crop_dim = 2;
+    uint32_t crop_size = crop_dim * crop_dim;
 
     std::vector<float> va(size);
     float *a = &va[0];
@@ -134,10 +134,10 @@ TEST(ImageProcessingTest, Crop)
 
 TEST(ImageProcessingTest, FlipAndCrop)
 {
-    int dim = 4;
-    int size = dim * dim;
-    int crop_dim = 2;
-    int crop_size = crop_dim * crop_dim;
+    uint32_t dim = 4;
+    uint32_t size = dim * dim;
+    uint32_t crop_dim = 2;
+    uint32_t crop_size = crop_dim * crop_dim;
 
     std::vector<float> va(size);
     float *a = &va[0];
@@ -159,10 +159,10 @@ TEST(ImageProcessingTest, FlipAndCrop)
 
 TEST(ImageProcessingTest, RotateAndCrop)
 {
-    int dim = 4;
-    int size = dim * dim;
-    int crop_dim = 2;
-    int crop_size = crop_dim * crop_dim;
+    uint32_t dim = 4;
+    uint32_t size = dim * dim;
+    uint32_t crop_dim = 2;
+    uint32_t crop_size = crop_dim * crop_dim;
 
     std::vector<float> va(size);
     float *a = &va[0];

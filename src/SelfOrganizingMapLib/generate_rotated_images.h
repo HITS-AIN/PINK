@@ -46,19 +46,19 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
     uint32_t number_of_spatial_transformations = number_of_rotations * (use_flip ? 2 : 1);
     std::vector<T> rotated_images(number_of_spatial_transformations * neuron_size);
 
-    int num_real_rot = number_of_rotations / 4;
+    uint32_t num_real_rot = number_of_rotations / 4;
     T angle_step_radians = 2.0 * M_PI / number_of_rotations;
 
-    int spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
+    uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
     for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
-    int offset1 = num_real_rot * spacing * neuron_size;
-    int offset2 = 2 * offset1;
-    int offset3 = 3 * offset1;
+    uint32_t offset1 = num_real_rot * spacing * neuron_size;
+    uint32_t offset2 = 2 * offset1;
+    uint32_t offset3 = 3 * offset1;
 
     // Copy original image to first position of image array
     #pragma omp parallel for
-    for (int i = 0; i < spacing; ++i)
+    for (uint32_t i = 0; i < spacing; ++i)
     {
         T const *current_image = &data[i * image_size];
         T *current_rotated_image = &rotated_images[i * neuron_size];
@@ -76,8 +76,8 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
 
     // Rotate images
     #pragma omp parallel for
-    for (int i = 1; i < num_real_rot; ++i) {
-        for (int j = 0; j < spacing; ++j) {
+    for (uint32_t i = 1; i < num_real_rot; ++i) {
+        for (uint32_t j = 0; j < spacing; ++j) {
             T const *current_image = &data[j * image_size];
             T *current_rotated_image = &rotated_images[(i * spacing + j) * neuron_size];
             rotate(current_image, current_rotated_image, image_dim, image_dim,
@@ -98,7 +98,7 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
 
         #pragma omp parallel for
         for (uint32_t i = 0; i < number_of_rotations; ++i) {
-            for (int j = 0; j < spacing; ++j) {
+            for (uint32_t j = 0; j < spacing; ++j) {
                 flip(&rotated_images[(i * spacing + j) * neuron_size],
                     flipped_rotated_images + (i * spacing + j) * neuron_size,
                     neuron_dim, neuron_dim);

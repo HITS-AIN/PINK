@@ -12,14 +12,14 @@ namespace pink {
 
 /// Rotate quadratic image clockwise by 90 degrees
 template <typename T>
-void rotate_90_degrees(T *src, T *dst, int height, int width)
+void rotate_90_degrees(T *src, T *dst, uint32_t height, uint32_t width)
 {
     assert(height > 0);
     assert(width > 0);
     assert(height == width);
 
-    for (int x = 0; x < width; ++x) {
-        for (int y = 0; y < height; ++y) {
+    for (uint32_t x = 0; x < width; ++x) {
+        for (uint32_t y = 0; y < height; ++y) {
             dst[(height-y-1)*width + x] = src[x*height + y];
         }
     }
