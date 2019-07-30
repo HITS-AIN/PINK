@@ -18,7 +18,7 @@ template <typename T>
 __global__
 void crop_kernel(T *dst, T const *src, uint32_t new_dim, uint32_t old_dim)
 {
-    assert(old_dim >= new_dim)
+    assert(old_dim >= new_dim);
 
     uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
     uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;

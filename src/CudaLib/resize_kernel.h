@@ -16,7 +16,7 @@ template <typename T>
 __global__
 void resize_kernel(T *dst, T const *src, uint32_t dst_dim, uint32_t src_dim, uint32_t min_dim)
 {
-    assert(min_dim == std::min(dst_dim, src_dim))
+    assert(min_dim == std::min(dst_dim, src_dim));
 
     uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
     uint32_t j = blockIdx.y * blockDim.y + threadIdx.y;

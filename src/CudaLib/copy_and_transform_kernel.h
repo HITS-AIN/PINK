@@ -17,7 +17,7 @@ __global__
 void copy_and_transform_kernel(T *dst, float const *src, uint32_t dst_dim,
     uint32_t src_dim, uint32_t offset, uint32_t factor)
 {
-    assert(offset == static_cast<uint32_t>((neuron_dim - euclidean_distance_dim) * 0.5))
+    assert(offset == static_cast<uint32_t>((src_dim - dst_dim) * 0.5));
 
     uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
     uint32_t j = blockIdx.y * blockDim.y + threadIdx.y;

@@ -18,9 +18,9 @@ template <unsigned int block_size>
 __global__ void
 flip_and_crop(float *dest, float *source, int new_dim, int old_dim)
 {
-    assert(new_dim > 0)
-    assert(old_dim > 0)
-    assert(old_dim >= new_dim)
+    assert(new_dim > 0);
+    assert(old_dim > 0);
+    assert(old_dim >= new_dim);
 
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;

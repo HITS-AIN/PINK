@@ -18,7 +18,7 @@ template <typename T>
 __global__
 void flip_kernel(T *dst, T const *src, uint32_t dim, uint32_t size)
 {
-    assert(size == dim * dim)
+    assert(size == dim * dim);
 
     uint32_t x = blockIdx.x * blockDim.x + threadIdx.x;
     uint32_t y = blockIdx.y * blockDim.y + threadIdx.y;

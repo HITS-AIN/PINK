@@ -18,7 +18,7 @@ void rotate_and_crop_nearest_neighbor_kernel(T *rotated_images, T const *image,
     uint32_t neuron_size, uint32_t neuron_dim, uint32_t image_dim, float const *cos_alpha,
     float const *sin_alpha, uint32_t spacing)
 {
-    assert(image_dim >= neuron_dim)
+    assert(image_dim >= neuron_dim);
 
     const uint32_t x2 = blockIdx.x * blockDim.x + threadIdx.x;
     const uint32_t y2 = blockIdx.y * blockDim.y + threadIdx.y;

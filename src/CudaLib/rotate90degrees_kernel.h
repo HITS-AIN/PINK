@@ -19,7 +19,7 @@ template <typename T>
 __global__ void
 rotate90degrees_kernel(thrust::device_ptr<T> dest, thrust::device_ptr<T> source, int dim)
 {
-    assert(dim > 0)
+    assert(dim > 0);
 
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
