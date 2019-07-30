@@ -10,8 +10,8 @@
 
 namespace pink {
 
-void checkArrayForNan(float* a, int length, std::string const& msg);
+void check_array_for_nan(float* a, int length, std::string const& msg);
 
-void checkArrayForNanAndNegative(float* a, int length, std::string const& msg);
+void check_array_for_nan_and_negative(float* a, int length, std::string const& msg);
 
 } // namespace pink

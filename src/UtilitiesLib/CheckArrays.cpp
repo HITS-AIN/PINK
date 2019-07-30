@@ -4,25 +4,27 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
-#include "CheckArrays.h"
+#include <cmath>
 #include <iostream>
+
+#include "CheckArrays.h"
 
 namespace pink {
 
-void checkArrayForNan(float* a, int length, std::string const& msg)
+void check_array_for_nan(float* a, int length, std::string const& msg)
 {
     for (int i = 0; i < length; ++i) {
-        if (a[i] != a[i]) {
+        if (std::isnan(a[i])) {
             std::cout << msg << ": entry is nan." << std::endl;
             exit(1);
         }
     }
 }
 
-void checkArrayForNanAndNegative(float* a, int length, std::string const& msg)
+void check_array_for_nan_and_negative(float* a, int length, std::string const& msg)
 {
     for (int i = 0; i < length; ++i) {
-        if (a[i] != a[i]) {
+        if (std::isnan(a[i])) {
             std::cout << msg << ": entry is nan." << std::endl;
             exit(1);
         }

@@ -5,18 +5,29 @@
  */
 
 #include <cmath>
+#include <cstdlib>
 #include <getopt.h>
 #include <fstream>
 #include <iostream>
 #include <omp.h>
 #include <string.h>
 #include <sstream>
-#include <stdlib.h>
 
 #include "InputData.h"
 #include "pink_exception.h"
 #include "SelfOrganizingMapLib/HexagonalLayout.h"
 #include "UtilitiesLib/get_file_header.h"
+
+namespace {
+
+uint32_t str_to_uint32_t(std::string const& str)
+{
+	auto i = std::stoi(str);
+	if (i < 0) throw std::runtime_error("str_to_uint32_t: integer must be positive");
+	return static_cast<uint32_t>(i);
+}
+
+} // end anonymous namespace
 
 namespace pink {
 
@@ -32,7 +43,7 @@ InputData::InputData()
    number_of_rotations(360),
    number_of_threads(-1),
    init(SOMInitialization::ZERO),
-   numIter(1),
+   number_of_iterations(1),
    max_number_of_progress_prints(10),
    use_flip(true),
    use_gpu(true),
@@ -46,8 +57,8 @@ InputData::InputData()
    executionPath(ExecutionPath::UNDEFINED),
    intermediate_storage(IntermediateStorageType::OFF),
    distribution_function(DistributionFunction::GAUSSIAN),
-   sigma(1.1),
-   damping(0.2),
+   sigma(1.1f),
+   damping(0.2f),
    block_size_1(256),
    max_update_distance(-1.0),
    usePBC(false),
@@ -61,76 +72,74 @@ InputData::InputData(int argc, char **argv)
  : InputData()
 {
     static struct option long_options[] = {
-        {"neuron-dimension",             1, 0, 'd'},
-        {"euclidean-distance-dimension", 1, 0, 'e'},
-        {"layout",                       1, 0, 'l'},
-        {"seed",                         1, 0, 's'},
-        {"numrot",                       1, 0, 'n'},
-        {"numthreads",                   1, 0, 't'},
-        {"init",                         1, 0, 'x'},
-        {"progress",                     1, 0, 'p'},
-        {"version",                      0, 0, 'v'},
-        {"help",                         0, 0, 'h'},
-        {"dist-func",                    1, 0, 'f'},
-        {"som-width",                    1, 0, 0},
-        {"num-iter",                     1, 0, 1},
-        {"flip-off",                     0, 0, 2},
-        {"cuda-off",                     0, 0, 3},
-        {"verbose",                      0, 0, 4},
-        {"interpolation",                1, 0, 5},
-        {"train",                        1, 0, 6},
-        {"map",                          1, 0, 7},
-        {"inter-store",                  1, 0, 8},
-        {"b1",                           1, 0, 9},
-        {"max-update-distance",          1, 0, 10},
-        {"som-height",                   1, 0, 12},
-        {"som-depth",                    1, 0, 13},
-        {"pbc",                          0, 0, 14},
-        {"store-rot-flip",               1, 0, 15},
-        {"euclidean-distance-type",      1, 0, 16},
-        {"input-shuffle-off",            0, 0, 17},
+        {"neuron-dimension",             1, nullptr, 'd'},
+        {"euclidean-distance-dimension", 1, nullptr, 'e'},
+        {"layout",                       1, nullptr, 'l'},
+        {"seed",                         1, nullptr, 's'},
+        {"numrot",                       1, nullptr, 'n'},
+        {"numthreads",                   1, nullptr, 't'},
+        {"init",                         1, nullptr, 'x'},
+        {"progress",                     1, nullptr, 'p'},
+        {"version",                      0, nullptr, 'v'},
+        {"help",                         0, nullptr, 'h'},
+        {"dist-func",                    1, nullptr, 'f'},
+        {"som-width",                    1, nullptr, 0},
+        {"num-iter",                     1, nullptr, 1},
+        {"flip-off",                     0, nullptr, 2},
+        {"cuda-off",                     0, nullptr, 3},
+        {"verbose",                      0, nullptr, 4},
+        {"interpolation",                1, nullptr, 5},
+        {"train",                        1, nullptr, 6},
+        {"map",                          1, nullptr, 7},
+        {"inter-store",                  1, nullptr, 8},
+        {"b1",                           1, nullptr, 9},
+        {"max-update-distance",          1, nullptr, 10},
+        {"som-height",                   1, nullptr, 12},
+        {"som-depth",                    1, nullptr, 13},
+        {"pbc",                          0, nullptr, 14},
+        {"store-rot-flip",               1, nullptr, 15},
+        {"euclidean-distance-type",      1, nullptr, 16},
+        {"input-shuffle-off",            0, nullptr, 17},
         {NULL, 0, NULL, 0}
     };
 
     int c = 0;
     int option_index = 0;
+	char *end_char;
+
     while ((c = getopt_long(argc, argv, "vd:l:s:n:t:x:p:a:hf:", long_options, &option_index)) != -1)
     {
         switch (c)
         {
             case 'd':
             {
-                neuron_dim = atoi(optarg);
+                neuron_dim = str_to_uint32_t(optarg);
                 break;
             }
             case 'e':
             {
-                euclidean_distance_dim = atoi(optarg);
+                euclidean_distance_dim = str_to_uint32_t(optarg);
                 break;
             }
             case 0:
             {
-                som_width = atoi(optarg);
+                som_width = str_to_uint32_t(optarg);
                 break;
             }
             case 12:
             {
-                som_height = atoi(optarg);
+                som_height = str_to_uint32_t(optarg);
                 break;
             }
             case 13:
             {
-                som_depth = atoi(optarg);
+                som_depth = str_to_uint32_t(optarg);
                 break;
             }
             case 1:
             {
-                numIter = atoi(optarg);
-                if (numIter < 0) {
-                    print_usage();
-                    printf ("ERROR: Number of iterations must be larger than 0.\n");
-                    exit(EXIT_FAILURE);
-                }
+                number_of_iterations = str_to_uint32_t(optarg);
+                if (number_of_iterations == 0) throw pink::exception("Number of iterations must be larger than 0");
                 break;
             }
             case 'l':
@@ -153,7 +162,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 'p':
             {
-                max_number_of_progress_prints = atof(optarg);
+                max_number_of_progress_prints = std::atoi(optarg);
                 break;
             }
             case 'n':
@@ -270,7 +279,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 10:
             {
-                max_update_distance = atof(optarg);
+                max_update_distance = std::strtof(optarg, &end_char);
                 if (max_update_distance <= 0.0) {
                     print_usage();
                     throw pink::exception("max-update-distance must be positive.");
@@ -337,11 +346,11 @@ InputData::InputData(int argc, char **argv)
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --dist-func option.");
                 }
-                sigma = atof(argv[index++]);
+                sigma = std::strtof(argv[index++], &end_char);
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --dist-func option.");
                 }
-                damping = atof(argv[index++]);
+                damping = std::strtof(argv[index++], &end_char);
                 optind = index;
                 break;
             }
@@ -479,7 +488,7 @@ void InputData::print_parameters() const
     std::cout << "  SOM dimension (width x height x depth) = "
               << som_width << "x" << som_height << "x" << som_depth << "\n"
               << "  SOM size = " << som_size << "\n"
-              << "  Number of iterations = " << numIter << "\n"
+              << "  Number of iterations = " << number_of_iterations << "\n"
               << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
               << "  Euclidean distance dimension = " << euclidean_distance_dim << "x" << euclidean_distance_dim << "\n"
               << "  Maximal number of progress information prints = " << max_number_of_progress_prints << "\n"

@@ -56,10 +56,10 @@ void main_generic(InputData const& input_data)
         );
 
 
-        ProgressBar progress_bar(input_data.number_of_data_entries * input_data.numIter,
+        ProgressBar progress_bar(input_data.number_of_data_entries * input_data.number_of_iterations,
             70, input_data.max_number_of_progress_prints);
         uint32_t count = 0;
-        for (int i = 0; i < input_data.numIter; ++i)
+        for (uint32_t i = 0; i < input_data.number_of_iterations; ++i)
         {
             auto&& iter_data_cur = DataIteratorShuffled<DataLayout, T>(ifs,
                 static_cast<uint64_t>(input_data.seed), input_data.shuffle_data_input);

@@ -73,7 +73,7 @@ public:
             fill_random_uniform(&data[0], data.size(), input_data.seed);
         else if (input_data.init == SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION) {
             fill_random_uniform(&data[0], data.size(), input_data.seed);
-            for (int n = 0; n < input_data.som_size; ++n)
+            for (uint32_t n = 0; n < input_data.som_size; ++n)
                 for (uint32_t i = 0; i < input_data.neuron_dim; ++i)
                     data[n * input_data.neuron_size + i * input_data.neuron_dim + i] = 1.0;
         }
