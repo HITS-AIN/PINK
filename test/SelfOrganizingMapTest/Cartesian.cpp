@@ -15,7 +15,7 @@ using namespace pink;
 TEST(CartesianLayoutTest, cartesian_2d)
 {
     CartesianLayout<2> c{10, 10};
-    EXPECT_EQ(100, c.size());
+    EXPECT_EQ(100UL, c.size());
 
     EXPECT_EQ(0.0, c.get_distance({0, 0}, {0, 0}));
     EXPECT_EQ(1.0, c.get_distance({0, 0}, {0, 1}));
