@@ -4,6 +4,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <getopt.h>
@@ -415,14 +416,17 @@ InputData::InputData(int argc, char **argv)
 
     if (neuron_dim == 0) {
         neuron_dim = data_dimension[0];
-        if (number_of_rotations != 1) neuron_dim = 2 * data_dimension[0]
-						                         / static_cast<uint32_t>(std::sqrt(2.0)) + 1;
+        if (number_of_rotations != 1)
+        	neuron_dim = static_cast<uint32_t>(2 * data_dimension[0] / std::sqrt(2.0) + 1);
     }
+    assert(neuron_dim != 0);
 
     if (euclidean_distance_dim == 0) {
         euclidean_distance_dim = data_dimension[0];
-        if (number_of_rotations != 1) euclidean_distance_dim *= static_cast<uint32_t>(std::sqrt(2.0)) / 2;
+        if (number_of_rotations != 1)
+        	euclidean_distance_dim = static_cast<uint32_t>(euclidean_distance_dim * std::sqrt(2.0) / 2);
     }
+    assert(euclidean_distance_dim != 0);
 
     neuron_size = neuron_dim * neuron_dim;
     som_total_size = som_size * neuron_size;
