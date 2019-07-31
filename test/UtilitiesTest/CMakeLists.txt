@@ -7,6 +7,7 @@ add_executable(
     UtilitiesTest
     main.cpp
     DistributionFunctorTest.cpp
+    ipowTest.cpp
     ProgressBarTest.cpp
 )
     

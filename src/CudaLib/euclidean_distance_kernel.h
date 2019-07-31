@@ -10,6 +10,8 @@
 #include <cstdint>
 #include "sm_61_intrinsics.h"
 
+#include "UtilitiesLib/ipow.h"
+
 namespace pink {
 
 /// CUDA device kernel for reducing a data array with the length of 64 by
@@ -41,17 +43,17 @@ struct scale<float>
 template <>
 struct scale<uint16_t>
 {
-    float range = std::pow(2, std::numeric_limits<uint16_t>::digits) - 1;
-	float factor = 1.0f / (range * range);
-	__device__ void operator () (float& sum) const { sum *= factor; }
+	static constexpr uint32_t range = ipow(2, std::numeric_limits<uint16_t>::digits) - 1;
+	static constexpr uint32_t factor = range * range;
+	__device__ void operator () (float& sum) const { sum /= factor; }
 };
 
 template <>
 struct scale<uint8_t>
 {
-    float range = std::pow(2, std::numeric_limits<uint8_t>::digits) - 1;
-	float factor = 1.0f / (range * range);
-	__device__ void operator () (float& sum) const { sum *= factor; }
+	static constexpr uint32_t range = ipow(2, std::numeric_limits<uint8_t>::digits) - 1;
+	static constexpr uint32_t factor = range * range;
+	__device__ void operator () (float& sum) const { sum /= factor; }
 };
 
 /// CUDA device kernel to computes the euclidean distance of two arrays
