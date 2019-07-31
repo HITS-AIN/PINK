@@ -16,10 +16,11 @@
 #include "UtilitiesLib/Version.h"
 
 namespace py = pybind11;
-using namespace pink;
 
 PYBIND11_MODULE(pink, m)
 {
+	using namespace pink;
+
     m.doc() = "PINK python interface";
     m.attr("__version__") = std::string(PROJECT_VERSION) + " revision " + std::string(GIT_REVISION);
 

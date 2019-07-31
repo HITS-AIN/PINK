@@ -139,7 +139,8 @@ InputData::InputData(int argc, char **argv)
             case 1:
             {
                 number_of_iterations = str_to_uint32_t(optarg);
-                if (number_of_iterations == 0) throw pink::exception("Number of iterations must be larger than 0");
+                if (number_of_iterations == 0)
+                	throw pink::exception("Number of iterations must be larger than 0");
                 break;
             }
             case 'l':
@@ -167,12 +168,9 @@ InputData::InputData(int argc, char **argv)
             }
             case 'n':
             {
-                number_of_rotations = atoi(optarg);
-                if (number_of_rotations <= 0 or (number_of_rotations != 1 and number_of_rotations % 4)) {
-                    print_usage();
-                    printf ("ERROR: Number of rotations must be 1 or a multiple of 4.\n");
-                    exit(EXIT_FAILURE);
-                }
+                number_of_rotations = str_to_uint32_t(optarg);
+                if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4))
+                	throw pink::exception("Number of rotations must be 1 or a multiple of 4");
                 break;
             }
             case 't':
@@ -409,20 +407,21 @@ InputData::InputData(int argc, char **argv)
 
     int data_dimensionality;
     ifs.read((char*)&data_dimensionality, sizeof(int));
-    data_dimension.resize(data_dimensionality);
+    data_dimension.resize(static_cast<size_t>(data_dimensionality));
 
-    for (int i = 0; i < data_dimensionality; ++i) {
+    for (size_t i = 0; i < static_cast<size_t>(data_dimensionality); ++i) {
         ifs.read((char*)&data_dimension[i], sizeof(int));
     }
 
     if (neuron_dim == 0) {
         neuron_dim = data_dimension[0];
-        if (number_of_rotations != 1) neuron_dim = 2 * data_dimension[0] / std::sqrt(2.0) + 1;
+        if (number_of_rotations != 1) neuron_dim = 2 * data_dimension[0]
+						                         / static_cast<uint32_t>(std::sqrt(2.0)) + 1;
     }
 
     if (euclidean_distance_dim == 0) {
         euclidean_distance_dim = data_dimension[0];
-        if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
+        if (number_of_rotations != 1) euclidean_distance_dim *= static_cast<uint32_t>(std::sqrt(2.0)) / 2;
     }
 
     neuron_size = neuron_dim * neuron_dim;

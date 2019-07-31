@@ -33,7 +33,7 @@ struct CartesianLayout
 
     auto size() const
     {
-        return std::accumulate(dimension.begin(), dimension.end(), 1, std::multiplies<uint32_t>());
+        return std::accumulate(dimension.begin(), dimension.end(), 1UL, std::multiplies<uint32_t>());
     }
 
     /// Returns the array index of a layout position

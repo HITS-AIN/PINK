@@ -69,7 +69,7 @@ struct InputData
     uint32_t som_size;
     uint32_t neuron_size;
     uint32_t som_total_size;
-    int number_of_spatial_transformations;
+    uint32_t number_of_spatial_transformations;
     Interpolation interpolation;
     ExecutionPath executionPath;
     IntermediateStorageType intermediate_storage;

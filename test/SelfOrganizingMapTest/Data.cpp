@@ -102,23 +102,17 @@ TEST(SelfOrganizingMapTest, data_hexagonal)
 
     EXPECT_EQ((std::array<uint32_t, 2>{1, 1}), c.get_dimension());
 
-    Data<HexagonalLayout, float> c2({{3, 3}}, std::vector<float>({1, 2, 3, 4, 5, 6, 7}));
+    Data<HexagonalLayout, float> c2({{3, 3}}, std::vector<float>({0, 1, 2, 3, 4, 5, 6}));
+
+    std::vector<std::pair<uint32_t, uint32_t>> p = {{1, 0}, {2, 0}, {0, 1}, {1, 1}, {2, 1}, {0, 2}, {1, 2}};
 
     // Check array index
-    EXPECT_EQ(1, (c2[{1, 0}]));
-    EXPECT_EQ(2, (c2[{2, 0}]));
-    EXPECT_EQ(3, (c2[{0, 1}]));
-    EXPECT_EQ(4, (c2[{1, 1}]));
-    EXPECT_EQ(5, (c2[{2, 1}]));
-    EXPECT_EQ(6, (c2[{0, 2}]));
-    EXPECT_EQ(7, (c2[{1, 2}]));
+    for (size_t i = 0; i < p.size(); ++i) {
+        EXPECT_EQ(i, (c2[{p[i].first, p[i].second}]));
+    }
 
     // Check layout position
-    EXPECT_EQ((std::array<uint32_t, 2>{1, 0}), c2.get_layout().get_position(0));
-    EXPECT_EQ((std::array<uint32_t, 2>{2, 0}), c2.get_layout().get_position(1));
-    EXPECT_EQ((std::array<uint32_t, 2>{0, 1}), c2.get_layout().get_position(2));
-    EXPECT_EQ((std::array<uint32_t, 2>{1, 1}), c2.get_layout().get_position(3));
-    EXPECT_EQ((std::array<uint32_t, 2>{2, 1}), c2.get_layout().get_position(4));
-    EXPECT_EQ((std::array<uint32_t, 2>{0, 2}), c2.get_layout().get_position(5));
-    EXPECT_EQ((std::array<uint32_t, 2>{1, 2}), c2.get_layout().get_position(6));
+    for (size_t i = 0; i < p.size(); ++i) {
+        EXPECT_EQ((std::array<uint32_t, 2>{p[i].first, p[i].second}), c2.get_layout().get_position(i));
+    }
 }
