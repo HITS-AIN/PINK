@@ -60,7 +60,7 @@ void euclidean_distance_kernel<512>(float const *som, float const *rotated_image
     __syncthreads();
 
     // Parallel reduction
-    if (tid < 128) {
+    if (tid < 256) {
         first_step_local[tid] += first_step_local[tid + 256];
         __syncthreads();
     }
