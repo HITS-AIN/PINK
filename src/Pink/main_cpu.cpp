@@ -12,7 +12,7 @@
 #include <sstream>
 
 #ifndef NDEBUG
-    #include <fenv.h>
+    #include <cfenv>
 #endif
 
 #include "main_cpu.h"

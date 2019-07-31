@@ -12,14 +12,14 @@
 #include <sstream>
 
 #ifndef NDEBUG
-    #include <fenv.h>
+    #include <cfenv>
 #endif
 
 #include "main_cpu.h"
 #include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/pink_exception.h"
 
-#if PINK_USE_CUDA
+#ifdef PINK_USE_CUDA
     #include "CudaLib/main_gpu.h"
 #endif
 
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
         InputData input_data(argc, argv);
 
         if (input_data.use_gpu)
-#if PINK_USE_CUDA
+#ifdef PINK_USE_CUDA
             main_gpu(input_data);
 #else
             throw pink::exception("PINK was not compiled with CUDA support");

@@ -19,6 +19,6 @@ struct Point
 };
 
 //! Pretty printing of Point.
-std::ostream& operator << (std::ostream& os, Point point);
+std::ostream& operator << (std::ostream& os, Point p);
 
 } // namespace pink
