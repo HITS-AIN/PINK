@@ -53,7 +53,7 @@ public:
         // Ignore layout and dimensionality
         is.seekg(2 * sizeof(int), is.cur);
 
-        for (int i = 0; i < layout.dimensionality; ++i) {
+        for (uint8_t i = 0; i < layout.dimensionality; ++i) {
             is.read((char*)&layout.dimension[i], sizeof(int));
         }
 
@@ -113,7 +113,7 @@ public:
     }
 
     /// Return number of images.
-    int get_number_of_entries() const { return number_of_entries; }
+    auto get_number_of_entries() const { return number_of_entries; }
 
 private:
 
@@ -121,9 +121,11 @@ private:
     void next()
     {
         if (cur_random_list != std::end(random_list)) {
-            is.seekg(header_offset + *cur_random_list * layout.size() * sizeof(T), is.beg);
+            is.seekg(header_offset + static_cast<std::streamoff>(
+                *cur_random_list * layout.size() * sizeof(T)), is.beg);
             ptr_current_entry = std::make_shared<DataType>(layout);
-            is.read((char*)ptr_current_entry->get_data_pointer(), layout.size() * sizeof(T));
+            is.read((char*)ptr_current_entry->get_data_pointer(),
+                static_cast<std::streamsize>(layout.size() * sizeof(T)));
             ++cur_random_list;
         } else {
             end_flag = true;
@@ -140,7 +142,7 @@ private:
 
     PtrDataType ptr_current_entry;
 
-    int header_offset;
+    std::streamoff header_offset;
 
     Layout layout;
 

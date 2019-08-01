@@ -41,17 +41,11 @@ void write(SOM<SOMLayout, NeuronLayout, T> const& som, std::string const& filena
     os.write((char*)&data_type_idx, sizeof(int));
     os.write((char*)&som_layout_idx, sizeof(int));
     os.write((char*)&som_dimensionality, sizeof(int));
-    for (int dim = 0; dim != som_layout.dimensionality; ++dim) {
-        int tmp = som_layout.dimension[dim];
-        os.write((char*)&tmp, sizeof(int));
-    }
+    for (auto d : som_layout.dimension) os.write((char*)&d, sizeof(int));
     os.write((char*)&neuron_layout_idx, sizeof(int));
     os.write((char*)&neuron_dimensionality, sizeof(int));
-    for (int dim = 0; dim != neuron_layout.dimensionality; ++dim) {
-        int tmp = neuron_layout.dimension[dim];
-        os.write((char*)&tmp, sizeof(int));
-    }
-    os.write((char*)som.get_data_pointer(), som.size() * sizeof(T));
+    for (auto d : neuron_layout.dimension) os.write((char*)&d, sizeof(int));
+    os.write((char*)som.get_data_pointer(), static_cast<std::streamsize>(som.size() * sizeof(T)));
 }
 
 } // namespace pink

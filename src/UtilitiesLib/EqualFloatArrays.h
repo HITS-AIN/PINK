@@ -25,7 +25,7 @@ template <class T>
     const char* separator = " ";
     for (unsigned long index = 0; index < length; index++)
     {
-        if (fabs(expected[index] - actual[index]) > tolerance)
+        if (std::abs(expected[index] - actual[index]) > tolerance)
         {
             if (errorsFound == 0)
             {

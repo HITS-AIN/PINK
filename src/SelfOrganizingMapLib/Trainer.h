@@ -39,7 +39,7 @@ public:
 
     TrainerBase(SOM<SOMLayout, DataLayout, T> const& som, std::function<float(float)> distribution_function,
         int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-        Interpolation interpolation, int euclidean_distance_dim)
+        Interpolation interpolation, uint32_t euclidean_distance_dim)
      : distribution_function(distribution_function),
        verbosity(verbosity),
        number_of_rotations(number_of_rotations),
@@ -48,7 +48,7 @@ public:
        max_update_distance(max_update_distance),
        interpolation(interpolation),
        update_info(som.get_som_layout()),
-       som_size(som.get_som_layout().size()),
+       som_size(static_cast<uint32_t>(som.get_som_layout().size())),
        update_factors(som_size * som_size, 0.0),
        euclidean_distance_dim(euclidean_distance_dim)
     {
@@ -62,11 +62,6 @@ public:
                     update_factors[i * som_size + j] = distribution_function(distance);
                 }
             }
-        }
-
-        if (euclidean_distance_dim == -1) {
-            euclidean_distance_dim = som.get_neuron_dimension()[0];
-            if (number_of_rotations != 1) euclidean_distance_dim *= std::sqrt(2.0) / 2.0;
         }
     }
 
@@ -95,7 +90,7 @@ protected:
     std::vector<float> update_factors;
 
     /// Dimension for calculation of euclidean distance
-    int euclidean_distance_dim;
+    uint32_t euclidean_distance_dim;
 };
 
 /// Primary template will never be instantiated
@@ -114,7 +109,7 @@ public:
 
     Trainer(SOMType& som, std::function<float(float)> const& distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-        Interpolation interpolation, int euclidean_distance_dim)
+        Interpolation interpolation, uint32_t euclidean_distance_dim)
      : TrainerBase<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        som(som)
@@ -159,8 +154,9 @@ public:
 
         auto&& current_neuron = som.get_data_pointer();
         for (uint32_t i = 0; i < this->som.get_number_of_neurons(); ++i) {
-            float factor = this->update_factors[best_match * this->som.get_number_of_neurons() + i];
-            if (factor != 0.0) {
+            float factor = this->update_factors[
+                static_cast<size_t>(best_match * this->som.get_number_of_neurons()) + i];
+            if (factor != 0.0f) {
                 T *current_image = &spatial_transformed_images[best_rotation_matrix[i] * neuron_size];
                 for (uint32_t j = 0; j < neuron_size; ++j) {
                     current_neuron[j] -= (current_neuron[j] - current_image[j]) * factor;
@@ -169,7 +165,7 @@ public:
             current_neuron += neuron_size;
         }
 
-        ++this->update_info[best_match];
+        ++this->update_info[static_cast<uint32_t>(best_match)];
     }
 
 private:
@@ -192,7 +188,7 @@ public:
 
     Trainer(SOMType& som, std::function<float(float)> const& distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-        Interpolation interpolation, int euclidean_distance_dim = -1,
+        Interpolation interpolation, uint32_t euclidean_distance_dim,
         uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
      : TrainerBase<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, euclidean_distance_dim),
@@ -210,7 +206,7 @@ public:
             std::vector<float> sin_alpha(number_of_rotations - 1);
 
             uint32_t num_real_rot = number_of_rotations / 4;
-            float angle_step_radians = 0.5 * M_PI / num_real_rot;
+            float angle_step_radians = static_cast<float>(0.5 * M_PI) / num_real_rot;
             for (uint32_t i = 0; i < num_real_rot - 1; ++i) {
                 float angle = (i+1) * angle_step_radians;
                 cos_alpha[i] = std::cos(angle);

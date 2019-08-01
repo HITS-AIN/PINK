@@ -29,15 +29,21 @@ TEST(SelfOrganizingMapTest, trainer_num_rot)
     uint32_t euclidean_distance_dim = 2;
     MySOM som({som_dim, som_dim}, {neuron_dim, neuron_dim}, 0.0);
 
-    auto&& f = GaussianFunctor(1.1, 0.2);
+    auto&& f = GaussianFunctor(1.1f, 0.2f);
 
-    EXPECT_THROW(MyTrainer(som, f, 0,  0, false, 1.0, Interpolation::BILINEAR, euclidean_distance_dim), pink::exception);
-    EXPECT_THROW(MyTrainer(som, f, 0,  3, false, 1.0, Interpolation::BILINEAR, euclidean_distance_dim), pink::exception);
-    EXPECT_THROW(MyTrainer(som, f, 0, 90, false, 1.0, Interpolation::BILINEAR, euclidean_distance_dim), pink::exception);
+    EXPECT_THROW(MyTrainer(som, f, 0,  0, false, 1.0,
+        Interpolation::BILINEAR, euclidean_distance_dim), pink::exception);
+    EXPECT_THROW(MyTrainer(som, f, 0,  3, false, 1.0,
+        Interpolation::BILINEAR, euclidean_distance_dim), pink::exception);
+    EXPECT_THROW(MyTrainer(som, f, 0, 90, false, 1.0,
+        Interpolation::BILINEAR, euclidean_distance_dim), pink::exception);
 
-    EXPECT_NO_THROW(MyTrainer(som, f, 0,   1, false, 1.0, Interpolation::BILINEAR, euclidean_distance_dim));
-    EXPECT_NO_THROW(MyTrainer(som, f, 0,   4, false, 1.0, Interpolation::BILINEAR, euclidean_distance_dim));
-    EXPECT_NO_THROW(MyTrainer(som, f, 0, 720, false, 1.0, Interpolation::BILINEAR, euclidean_distance_dim));
+    EXPECT_NO_THROW(MyTrainer(som, f, 0,   1, false, 1.0,
+        Interpolation::BILINEAR, euclidean_distance_dim));
+    EXPECT_NO_THROW(MyTrainer(som, f, 0,   4, false, 1.0,
+        Interpolation::BILINEAR, euclidean_distance_dim));
+    EXPECT_NO_THROW(MyTrainer(som, f, 0, 720, false, 1.0,
+        Interpolation::BILINEAR, euclidean_distance_dim));
 }
 
 TEST(SelfOrganizingMapTest, trainer_cartesian_2d_int)
@@ -54,7 +60,7 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d_int)
     DataType data({image_dim, image_dim}, {1000, 2000, 3000, 4000});
     SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<int>(16, 0));
 
-    auto&& f = GaussianFunctor(1.1, 0.2);
+    auto&& f = GaussianFunctor(1.1f, 0.2f);
 
     MyTrainer trainer(som, f, 0, 1, false, 0.0, Interpolation::BILINEAR, euclidean_distance_dim);
     trainer(data);
@@ -77,7 +83,7 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d_float)
         {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0});
     SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim}, std::vector<float>(4, 0.0));
 
-    auto&& f = StepFunctor(10.0);
+    auto&& f = StepFunctor(10.0f);
 
     MyTrainer trainer(som, f, 0, 1, false, 0.0, Interpolation::BILINEAR, euclidean_distance_dim);
     trainer(data);

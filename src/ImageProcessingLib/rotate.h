@@ -37,8 +37,8 @@ void rotate_bilinear(T const* src, T *dst, uint32_t src_height, uint32_t src_wid
             float src_position_x = dst_position_x * cos_alpha - dst_position_y * sin_alpha + src_center_x;
             float src_position_y = dst_position_x * sin_alpha + dst_position_y * cos_alpha + src_center_y;
 
-            if (src_position_x < 0.0 or src_position_x > src_width - 1 or
-                src_position_y < 0.0 or src_position_y > src_height - 1)
+            if (src_position_x < 0.0f or src_position_x > src_width - 1 or
+                src_position_y < 0.0f or src_position_y > src_height - 1)
             {
                 dst[dst_x * dst_height + dst_y] = 0.0;
             }
@@ -56,10 +56,11 @@ void rotate_bilinear(T const* src, T *dst, uint32_t src_height, uint32_t src_wid
                 float cx = 1.0f - rx;
                 float cy = 1.0f - ry;
 
-                dst[dst_x * dst_height + dst_y] = cx * cy * src[src_x * src_height + src_y]
+                dst[dst_x * dst_height + dst_y] = static_cast<T>(
+                                                  cx * cy * src[src_x * src_height + src_y]
                                                 + cx * ry * src[src_x * src_height + src_y_plus_1]
                                                 + rx * cy * src[src_x_plus_1 * src_height + src_y]
-                                                + rx * ry * src[src_x_plus_1 * src_height + src_y_plus_1];
+                                                + rx * ry * src[src_x_plus_1 * src_height + src_y_plus_1]);
             }
         }
     }

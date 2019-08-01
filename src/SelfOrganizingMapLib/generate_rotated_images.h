@@ -47,7 +47,7 @@ auto generate_rotated_images(Data<LayoutType, T> const& data,
     std::vector<T> rotated_images(number_of_spatial_transformations * neuron_size);
 
     uint32_t num_real_rot = number_of_rotations / 4;
-    T angle_step_radians = static_cast<T>(2 * M_PI) / number_of_rotations;
+    float angle_step_radians = static_cast<float>(2 * M_PI) / number_of_rotations;
 
     uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
     for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];

@@ -5,6 +5,7 @@
  */
 
 #include <cassert>
+#include <cctype>
 #include <cmath>
 #include <cstdlib>
 #include <getopt.h>
@@ -101,7 +102,7 @@ InputData::InputData(int argc, char **argv)
         {"store-rot-flip",               1, nullptr, 15},
         {"euclidean-distance-type",      1, nullptr, 16},
         {"input-shuffle-off",            0, nullptr, 17},
-        {NULL, 0, NULL, 0}
+        {nullptr,                        0, nullptr, 0}
     };
 
     int c = 0;
@@ -159,7 +160,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 's':
             {
-                seed = atoi(optarg);
+                seed = str_to_uint32_t(optarg);
                 break;
             }
             case 'p':
@@ -279,7 +280,7 @@ InputData::InputData(int argc, char **argv)
             case 10:
             {
                 max_update_distance = std::strtof(optarg, &end_char);
-                if (max_update_distance <= 0.0) {
+                if (max_update_distance <= 0.0f) {
                     print_usage();
                     throw pink::exception("max-update-distance must be positive.");
                 }
@@ -400,7 +401,7 @@ InputData::InputData(int argc, char **argv)
 
     int file_version, file_type, data_type;
     // Ignore first three entries
-    ifs.read((char*)&file_version, sizeof(int));
+    ifs.read(reinterpret_cast<char*>(&file_version), sizeof(int));
     ifs.read((char*)&file_type, sizeof(int));
     ifs.read((char*)&data_type, sizeof(int));
     ifs.read((char*)&number_of_data_entries, sizeof(int));
@@ -577,7 +578,7 @@ void InputData::print_usage() const
                  "Use periodic boundary conditions for SOM.\n"
                  "    --progress, -p <int>                          "
                  "Maximal number of progress information prints (default = 10).\n"
-                 "    --seed, -s <int>                              "
+                 "    --seed, -s <unsigned int>                              "
                  "Seed for random number generator (default = 1234).\n"
                  "    --store-rot-flip <string>                     "
                  "Store the rotation and flip information of the best match of mapping.\n"
@@ -615,7 +616,7 @@ std::function<float(float)> InputData::get_distribution_function() const
 
 void stringToUpper(char* s)
 {
-    for (char *ps = s; *ps != '\0'; ++ps) *ps = toupper(*ps);
+    for (char *ps = s; *ps != '\0'; ++ps) *ps = static_cast<char>(std::toupper(*ps));
 }
 
 } // namespace pink

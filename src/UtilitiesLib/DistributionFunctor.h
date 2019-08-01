@@ -80,7 +80,7 @@ struct MexicanHatFunctor : public DistributionFunctorBase
      : sigma(sigma),
        damping(damping)
     {
-        if (sigma <= 0.0) throw std::runtime_error("MexicanHatFunctor: sigma <= 0 not defined.");
+        if (sigma <= 0.0f) throw std::runtime_error("MexicanHatFunctor: sigma <= 0 not defined.");
     }
 
     float operator () (float distance) const

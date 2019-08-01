@@ -44,7 +44,7 @@ public:
        number_of_rotations(number_of_rotations),
        use_flip(use_flip),
        number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
-       angle_step_radians(0.5 * M_PI / number_of_rotations / 4),
+       angle_step_radians(static_cast<float>(0.5 * M_PI) / number_of_rotations / 4),
        interpolation(interpolation),
        euclidean_distance_dim(euclidean_distance_dim)
     {

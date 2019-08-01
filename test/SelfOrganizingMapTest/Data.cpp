@@ -113,6 +113,7 @@ TEST(SelfOrganizingMapTest, data_hexagonal)
 
     // Check layout position
     for (size_t i = 0; i < p.size(); ++i) {
-        EXPECT_EQ((std::array<uint32_t, 2>{p[i].first, p[i].second}), c2.get_layout().get_position(i));
+        EXPECT_EQ((std::array<uint32_t, 2>{p[i].first, p[i].second}),
+            c2.get_layout().get_position(static_cast<uint32_t>(i)));
     }
 }

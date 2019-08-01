@@ -55,7 +55,7 @@ struct InputData
     uint32_t neuron_dim;
     uint32_t euclidean_distance_dim;
     Layout layout;
-    int seed;
+    uint32_t seed;
     uint32_t number_of_rotations;
     int number_of_threads;
     SOMInitialization init;

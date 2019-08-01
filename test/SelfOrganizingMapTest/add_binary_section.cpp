@@ -25,6 +25,8 @@ void add_binary_section(std::stringstream& ss, std::vector<std::vector<float>> c
     ss.write(reinterpret_cast<const char*>(&dimensionality), sizeof(int));
     ss.write(reinterpret_cast<const char*>(&width), sizeof(int));
     ss.write(reinterpret_cast<const char*>(&height), sizeof(int));
-    ss.write(reinterpret_cast<const char*>(&images[0][0]), width * height * sizeof(float));
-    ss.write(reinterpret_cast<const char*>(&images[1][0]), width * height * sizeof(float));
+    ss.write(reinterpret_cast<const char*>(&images[0][0]),
+        static_cast<std::streamsize>(width * height * sizeof(float)));
+    ss.write(reinterpret_cast<const char*>(&images[1][0]),
+        static_cast<std::streamsize>(width * height * sizeof(float)));
 }

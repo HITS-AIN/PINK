@@ -17,9 +17,9 @@ TEST(CartesianLayoutTest, cartesian_2d)
     CartesianLayout<2> c{10, 10};
     EXPECT_EQ(100UL, c.size());
 
-    EXPECT_EQ(0.0, c.get_distance({0, 0}, {0, 0}));
-    EXPECT_EQ(1.0, c.get_distance({0, 0}, {0, 1}));
-    EXPECT_EQ(2.0, c.get_distance({0, 0}, {0, 2}));
-    EXPECT_NEAR(std::sqrt(2.0), c.get_distance({0, 0}, {1, 1}), 1e-7);
-    EXPECT_NEAR(std::sqrt(8.0), c.get_distance({0, 0}, {2, 2}), 1e-7);
+    EXPECT_EQ(0.0f, c.get_distance({0, 0}, {0, 0}));
+    EXPECT_EQ(1.0f, c.get_distance({0, 0}, {0, 1}));
+    EXPECT_EQ(2.0f, c.get_distance({0, 0}, {0, 2}));
+    EXPECT_NEAR(static_cast<float>(std::sqrt(2.0)), c.get_distance({0, 0}, {1, 1}), 1e-7f);
+    EXPECT_NEAR(static_cast<float>(std::sqrt(8.0)), c.get_distance({0, 0}, {2, 2}), 1e-7f);
 }
