@@ -19,7 +19,7 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(pink, m)
 {
-	using namespace pink;
+    using namespace pink;
 
     m.doc() = "PINK python interface";
     m.attr("__version__") = std::string(PROJECT_VERSION) + " revision " + std::string(GIT_REVISION);

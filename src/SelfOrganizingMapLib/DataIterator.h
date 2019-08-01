@@ -38,7 +38,7 @@ public:
     {}
 
     /// Parameter constructor
-    DataIterator(std::istream& is)
+    explicit DataIterator(std::istream& is)
      : number_of_entries(0),
        is(is),
        header_offset(0),

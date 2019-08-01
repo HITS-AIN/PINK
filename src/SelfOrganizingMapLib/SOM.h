@@ -60,7 +60,7 @@ public:
     {}
 
     /// Construction by input data
-    SOM(InputData const& input_data)
+    explicit SOM(InputData const& input_data)
      : som_layout{extract_layout<SOMLayout::dimensionality>(input_data.som_width,
        input_data.som_height, input_data.som_depth)},
        neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},

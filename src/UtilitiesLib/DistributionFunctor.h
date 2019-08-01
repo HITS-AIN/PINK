@@ -29,7 +29,7 @@ struct DistributionFunctorBase
  */
 struct StepFunctor : public DistributionFunctorBase
 {
-    StepFunctor(float value)
+    explicit StepFunctor(float value)
      : value(value)
     {}
 

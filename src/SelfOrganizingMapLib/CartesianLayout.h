@@ -12,7 +12,7 @@
 #include <iostream>
 #include <numeric>
 
-#include "Dimension.h"
+#include "UtilitiesLib/DimensionIO.h"
 
 namespace pink {
 

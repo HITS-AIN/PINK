@@ -112,7 +112,7 @@ class Trainer<SOMLayout, DataLayout, T, false> : public TrainerBase<SOMLayout, D
 
 public:
 
-    Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
+    Trainer(SOMType& som, std::function<float(float)> const& distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, int euclidean_distance_dim)
      : TrainerBase<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
@@ -190,7 +190,7 @@ class Trainer<SOMLayout, DataLayout, T, true> : public TrainerBase<SOMLayout, Da
 
 public:
 
-    Trainer(SOMType& som, std::function<float(float)> distribution_function, int verbosity,
+    Trainer(SOMType& som, std::function<float(float)> const& distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, int euclidean_distance_dim = -1,
         uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)

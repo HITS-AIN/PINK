@@ -141,7 +141,7 @@ InputData::InputData(int argc, char **argv)
             {
                 number_of_iterations = str_to_uint32_t(optarg);
                 if (number_of_iterations == 0)
-                	throw pink::exception("Number of iterations must be larger than 0");
+                    throw pink::exception("Number of iterations must be larger than 0");
                 break;
             }
             case 'l':
@@ -171,7 +171,7 @@ InputData::InputData(int argc, char **argv)
             {
                 number_of_rotations = str_to_uint32_t(optarg);
                 if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4))
-                	throw pink::exception("Number of rotations must be 1 or a multiple of 4");
+                    throw pink::exception("Number of rotations must be 1 or a multiple of 4");
                 break;
             }
             case 't':
@@ -417,14 +417,14 @@ InputData::InputData(int argc, char **argv)
     if (neuron_dim == 0) {
         neuron_dim = data_dimension[0];
         if (number_of_rotations != 1)
-        	neuron_dim = static_cast<uint32_t>(2 * data_dimension[0] / std::sqrt(2.0) + 1);
+            neuron_dim = static_cast<uint32_t>(2 * data_dimension[0] / std::sqrt(2.0) + 1);
     }
     assert(neuron_dim != 0);
 
     if (euclidean_distance_dim == 0) {
         euclidean_distance_dim = data_dimension[0];
         if (number_of_rotations != 1)
-        	euclidean_distance_dim = static_cast<uint32_t>(euclidean_distance_dim * std::sqrt(2.0) / 2);
+            euclidean_distance_dim = static_cast<uint32_t>(euclidean_distance_dim * std::sqrt(2.0) / 2);
     }
     assert(euclidean_distance_dim != 0);
 
@@ -441,7 +441,7 @@ InputData::InputData(int argc, char **argv)
     if (file_version != 2) throw pink::exception("Please use file format version 2 as data input.");
     if (file_type != 0) throw pink::exception("Please use file type 0 as data input.");
     if (data_type != 0) throw pink::exception("Only data_type = 0 (float, single precision) is supported.");
-    if (number_of_data_entries <= 0) throw pink::exception("Number of data entries must be larger than 0.");
+    if (number_of_data_entries == 0) throw pink::exception("Number of data entries must be larger than 0.");
     if (euclidean_distance_dim > neuron_dim)
         throw pink::exception("euclidean distance dimension must be equal or smaller than neuron dimension.");
     if (usePBC) throw pink::exception("Periodic boundary conditions are not supported in version 2.");
@@ -494,6 +494,7 @@ void InputData::print_parameters() const
               << "  Number of iterations = " << number_of_iterations << "\n"
               << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
               << "  Euclidean distance dimension = " << euclidean_distance_dim << "x" << euclidean_distance_dim << "\n"
+              << "  Data type for euclidean distance calculation = " << euclidean_distance_type << "\n"
               << "  Maximal number of progress information prints = " << max_number_of_progress_prints << "\n"
               << "  Intermediate storage of SOM = " << intermediate_storage << "\n"
               << "  Layout = " << layout << "\n"

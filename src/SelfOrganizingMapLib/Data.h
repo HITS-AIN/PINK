@@ -30,7 +30,7 @@ public:
     {}
 
     /// Construction without initialization
-    Data(LayoutType const& layout)
+    explicit Data(LayoutType const& layout)
      : layout(layout),
        data(layout.size())
     {}
@@ -59,6 +59,15 @@ public:
      : layout(other.layout),
        data(other.data.begin(), other.data.end())
     {}
+
+    /// Copy assignment
+    template <typename T2>
+    Data& operator = (Data<Layout, T2> const& other)
+    {
+        std::swap(layout, other.layout);
+        std::swap(data, other.data);
+        return *this;
+    }
 
     auto operator == (SelfType const& other) const
     {

@@ -11,7 +11,7 @@
 #include <numeric>
 #include <vector>
 
-#include "Dimension.h"
+#include "UtilitiesLib/DimensionIO.h"
 #include "UtilitiesLib/pink_exception.h"
 
 namespace pink {
@@ -25,7 +25,12 @@ struct HexagonalLayout
     typedef HexagonalLayout SelfType;
     typedef typename std::array<uint32_t, dimensionality> DimensionType;
 
-    HexagonalLayout(DimensionType const& dimension = {1, 1})
+    HexagonalLayout()
+     : dimension({0, 0}),
+       radius(0)
+    {}
+
+    HexagonalLayout(DimensionType const& dimension)
      : dimension(dimension),
        radius((dimension[0] - 1) / 2),
        row_size(dimension[0]),

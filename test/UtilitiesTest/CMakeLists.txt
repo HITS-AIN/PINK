@@ -6,6 +6,7 @@ include_directories(
 add_executable(
     UtilitiesTest
     main.cpp
+    DimensionIOTest.cpp
     DistributionFunctorTest.cpp
     ipowTest.cpp
     ProgressBarTest.cpp

@@ -37,23 +37,23 @@ struct scale;
 template <>
 struct scale<float>
 {
-	__device__ void operator () (float& sum) const { /* nothing to do */ }
+    __device__ void operator () (float& sum) const { /* nothing to do */ }
 };
 
 template <>
 struct scale<uint16_t>
 {
-	static constexpr uint32_t range = ipow(2, std::numeric_limits<uint16_t>::digits) - 1;
-	static constexpr uint32_t factor = range * range;
-	__device__ void operator () (float& sum) const { sum /= factor; }
+    static constexpr uint32_t range = ipow(2, std::numeric_limits<uint16_t>::digits) - 1;
+    static constexpr uint32_t factor = range * range;
+    __device__ void operator () (float& sum) const { sum /= factor; }
 };
 
 template <>
 struct scale<uint8_t>
 {
-	static constexpr uint32_t range = ipow(2, std::numeric_limits<uint8_t>::digits) - 1;
-	static constexpr uint32_t factor = range * range;
-	__device__ void operator () (float& sum) const { sum /= factor; }
+    static constexpr uint32_t range = ipow(2, std::numeric_limits<uint8_t>::digits) - 1;
+    static constexpr uint32_t factor = range * range;
+    __device__ void operator () (float& sum) const { sum /= factor; }
 };
 
 /// CUDA device kernel to computes the euclidean distance of two arrays
@@ -72,7 +72,7 @@ void euclidean_distance_kernel(EuclideanType const *som, EuclideanType const *ro
 
     for (uint32_t i = tid; i < neuron_size; i += block_size)
     {
-    	DataType diff = psom[i] - prot[i];
+        DataType diff = psom[i] - prot[i];
         sum += diff * diff;
     }
 
