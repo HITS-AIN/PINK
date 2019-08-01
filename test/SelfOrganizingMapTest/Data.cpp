@@ -100,7 +100,7 @@ TEST(SelfOrganizingMapTest, data_hexagonal)
 {
     Data<HexagonalLayout, float> c;
 
-    EXPECT_EQ((std::array<uint32_t, 2>{1, 1}), c.get_dimension());
+    EXPECT_EQ((std::array<uint32_t, 2>{0, 0}), c.get_dimension());
 
     Data<HexagonalLayout, float> c2({{3, 3}}, std::vector<float>({0, 1, 2, 3, 4, 5, 6}));
 
