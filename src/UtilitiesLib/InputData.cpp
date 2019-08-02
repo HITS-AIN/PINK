@@ -4,6 +4,7 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include <algorithm>
 #include <cassert>
 #include <cctype>
 #include <cmath>
@@ -12,7 +13,6 @@
 #include <fstream>
 #include <iostream>
 #include <omp.h>
-#include <string.h>
 #include <sstream>
 
 #include "InputData.h"
@@ -27,6 +27,16 @@ uint32_t str_to_uint32_t(std::string const& str)
     auto i = std::stoi(str);
     if (i < 0) throw std::runtime_error("str_to_uint32_t: integer must be positive");
     return static_cast<uint32_t>(i);
+}
+
+std::string str_to_upper(std::string str)
+{
+    std::transform(str.begin(), str.end(), str.begin(),
+        [](unsigned char c) {
+            return std::toupper(c);
+        }
+    );
+    return str;
 }
 
 } // end anonymous namespace
@@ -147,14 +157,15 @@ InputData::InputData(int argc, char **argv)
             }
             case 'l':
             {
-                stringToUpper(optarg);
-                if (strcmp(optarg, "CARTESIAN") == 0) layout = Layout::CARTESIAN;
-                else if (strcmp(optarg, "HEXAGONAL") == 0) layout = Layout::HEXAGONAL;
+                auto str = str_to_upper(optarg);
+                if (str == "CARTESIAN") {
+                    layout = Layout::CARTESIAN;
+                }
+                else if (str == "HEXAGONAL") {
+                    layout = Layout::HEXAGONAL;
+                }
                 else {
-                    printf ("optarg = %s\n", optarg);
-                    printf ("Unknown option %o\n", c);
-                    print_usage();
-                    exit(EXIT_FAILURE);
+                    throw pink::exception("Unknown layout option " + str);
                 }
                 break;
             }
@@ -182,15 +193,17 @@ InputData::InputData(int argc, char **argv)
             }
             case 'x':
             {
-                char* upper_optarg = strdup(optarg);
-                stringToUpper(upper_optarg);
-                if (strcmp(upper_optarg, "ZERO") == 0) {
+                auto str = str_to_upper(optarg);
+                if (str == "ZERO") {
                     init = SOMInitialization::ZERO;
-                } else if (strcmp(upper_optarg, "RANDOM") == 0) {
+                }
+                else if (str == "RANDOM") {
                     init = SOMInitialization::RANDOM;
-                } else if (strcmp(upper_optarg, "RANDOM_WITH_PREFERRED_DIRECTION") == 0) {
+                }
+                else if (str == "RANDOM_WITH_PREFERRED_DIRECTION") {
                     init = SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION;
-                } else {
+                }
+                else {
                     init = SOMInitialization::FILEINIT;
                     som_filename = optarg;
                 }
@@ -213,14 +226,15 @@ InputData::InputData(int argc, char **argv)
             }
             case 5:
             {
-                stringToUpper(optarg);
-                if (strcmp(optarg, "NEAREST_NEIGHBOR") == 0) interpolation = Interpolation::NEAREST_NEIGHBOR;
-                else if (strcmp(optarg, "BILINEAR") == 0) interpolation = Interpolation::BILINEAR;
+                auto str = str_to_upper(optarg);
+                if (str == "NEAREST_NEIGHBOR") {
+                    interpolation = Interpolation::NEAREST_NEIGHBOR;
+                }
+                else if (str == "BILINEAR") {
+                    interpolation = Interpolation::BILINEAR;
+                }
                 else {
-                    print_usage();
-                    printf ("optarg = %s\n", optarg);
-                    printf ("Unknown option %o\n", c);
-                    exit(EXIT_FAILURE);
+                    throw pink::exception("Unknown interpolation option " + str);
                 }
                 break;
             }
@@ -231,11 +245,11 @@ InputData::InputData(int argc, char **argv)
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --train option.");
                 }
-                data_filename = strdup(argv[index++]);
+                data_filename = argv[index++];
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --train option.");
                 }
-                result_filename = strdup(argv[index++]);
+                result_filename = argv[index++];
                 optind = index - 1;
                 break;
             }
@@ -246,29 +260,32 @@ InputData::InputData(int argc, char **argv)
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --map option.");
                 }
-                data_filename = strdup(argv[index++]);
+                data_filename = argv[index++];
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --map option.");
                 }
-                result_filename = strdup(argv[index++]);
+                result_filename = argv[index++];
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --map option.");
                 }
-                som_filename = strdup(argv[index++]);
+                som_filename = argv[index++];
                 optind = index - 1;
                 break;
             }
             case 8:
             {
-                stringToUpper(optarg);
-                if (strcmp(optarg, "OFF") == 0) intermediate_storage = IntermediateStorageType::OFF;
-                else if (strcmp(optarg, "OVERWRITE") == 0) intermediate_storage = IntermediateStorageType::OVERWRITE;
-                else if (strcmp(optarg, "KEEP") == 0) intermediate_storage = IntermediateStorageType::KEEP;
+                auto str = str_to_upper(optarg);
+                if (str == "OFF") {
+                    intermediate_storage = IntermediateStorageType::OFF;
+                }
+                else if (str == "OVERWRITE") {
+                    intermediate_storage = IntermediateStorageType::OVERWRITE;
+                }
+                else if (str == "KEEP") {
+                    intermediate_storage = IntermediateStorageType::KEEP;
+                }
                 else {
-                    printf ("optarg = %s\n", optarg);
-                    printf ("Unknown option %o\n", c);
-                    print_usage();
-                    exit(EXIT_FAILURE);
+                    throw pink::exception("Unknown intermediate storage option " + str);
                 }
                 break;
             }
@@ -299,15 +316,18 @@ InputData::InputData(int argc, char **argv)
             }
             case 16:
             {
-                stringToUpper(optarg);
-                if (strcmp(optarg, "FLOAT") == 0) euclidean_distance_type = DataType::FLOAT;
-                else if (strcmp(optarg, "UINT16") == 0) euclidean_distance_type = DataType::UINT16;
-                else if (strcmp(optarg, "UINT8") == 0) euclidean_distance_type = DataType::UINT8;
+                auto str = str_to_upper(optarg);
+                if (str == "FLOAT") {
+                    euclidean_distance_type = DataType::FLOAT;
+                }
+                else if (str == "UINT16") {
+                    euclidean_distance_type = DataType::UINT16;
+                }
+                else if (str == "UINT8") {
+                    euclidean_distance_type = DataType::UINT8;
+                }
                 else {
-                    printf ("optarg = %s\n", optarg);
-                    printf ("Unknown option %o\n", c);
-                    print_usage();
-                    exit(EXIT_FAILURE);
+                    throw pink::exception("Unknown intermediate storage option " + str);
                 }
                 break;
             }
@@ -329,18 +349,15 @@ InputData::InputData(int argc, char **argv)
             }
             case 'f':
             {
-                stringToUpper(optarg);
-                if (strcmp(optarg, "GAUSSIAN") == 0) {
+                auto str = str_to_upper(optarg);
+                if (str == "GAUSSIAN") {
                     distribution_function = DistributionFunction::GAUSSIAN;
                 }
-                else if (strcmp(optarg, "MEXICANHAT") == 0) {
+                else if (str == "MEXICANHAT") {
                     distribution_function = DistributionFunction::MEXICANHAT;
                 }
                 else {
-                    printf ("optarg = %s\n", optarg);
-                    printf ("Unknown option %o\n", c);
-                    print_usage();
-                    exit(EXIT_FAILURE);
+                    throw pink::exception("Unknown intermediate storage option " + str);
                 }
                 int index = optind;
                 if (index >= argc or argv[index][0] == '-') {
@@ -578,7 +595,7 @@ void InputData::print_usage() const
                  "Use periodic boundary conditions for SOM.\n"
                  "    --progress, -p <int>                          "
                  "Maximal number of progress information prints (default = 10).\n"
-                 "    --seed, -s <unsigned int>                              "
+                 "    --seed, -s <unsigned int>                     "
                  "Seed for random number generator (default = 1234).\n"
                  "    --store-rot-flip <string>                     "
                  "Store the rotation and flip information of the best match of mapping.\n"
@@ -612,11 +629,6 @@ std::function<float(float)> InputData::get_distribution_function() const
     else
         pink::exception("Unknown distribution function");
     return result;
-}
-
-void stringToUpper(char* s)
-{
-    for (char *ps = s; *ps != '\0'; ++ps) *ps = static_cast<char>(std::toupper(*ps));
 }
 
 } // namespace pink

@@ -103,9 +103,6 @@ public:
         return &(operator*());
     }
 
-    /// Return number of images.
-    auto get_number_of_entries() const { return number_of_entries; }
-
 private:
 
     /// Read next entry

@@ -85,6 +85,4 @@ struct InputData
     bool shuffle_data_input;
 };
 
-void stringToUpper(char* s);
-
 } // namespace pink
