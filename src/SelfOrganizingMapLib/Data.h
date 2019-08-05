@@ -16,7 +16,7 @@ namespace pink {
 /// Abstract base class of data
 struct DataBase
 {
-	virtual ~DataBase() {}
+    virtual ~DataBase() {}
 };
 
 /// Primary template for generic Data

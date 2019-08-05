@@ -12,8 +12,9 @@
 //#include "DynamicMapper.h"
 //#include "DynamicSOM.h"
 //#include "DynamicTrainer.h"
-#include "UtilitiesLib/Interpolation.h"
 #include "UtilitiesLib/DataType.h"
+#include "UtilitiesLib/Interpolation.h"
+#include "UtilitiesLib/Layout.h"
 #include "UtilitiesLib/Version.h"
 
 namespace py = pybind11;
@@ -36,29 +37,29 @@ PYBIND11_MODULE(pink, m)
        .value("UINT8", DataType::UINT8)
        .export_values();
 
+    py::enum_<Layout>(m, "layout")
+       .value("CARTESIAN", Layout::CARTESIAN)
+       .value("HEXAGONAL", Layout::HEXAGONAL)
+       .export_values();
+
     py::class_<DynamicData>(m, "data", py::buffer_protocol())
-        .def(py::init([](DataType data_type, py::buffer b)
+        .def(py::init([](DataType data_type, Layout layout, py::buffer b)
         {
             py::buffer_info info = b.request();
-            return new DynamicData(data_type, layout_type, info.shape, info.ptr);
-        },
-            py::arg("data_type")
-        ));
-//        .def_buffer([](Data<CartesianLayout<2>, float> &m) -> py::buffer_info {
-//
-//             auto&& dimension = m.get_dimension();
-//
-//             return py::buffer_info(
-//                 m.get_data_pointer(),                   /* Pointer to buffer */
-//                 sizeof(float),                          /* Size of one scalar */
-//                 py::format_descriptor<float>::format(), /* Python struct-style format descriptor */
-//                 2,                                      /* Number of dimensions */
-//                 { dimension[0],
-//                   dimension[1]},                        /* Buffer dimensions */
-//                 { sizeof(float) * dimension[1],
-//                   sizeof(float) }                       /* Strides (in bytes) for each index */
-//             );
-//         });
+            return new DynamicData(data_type, layout, info.shape, info.ptr);
+        }))
+        .def_buffer([](DynamicData &m) -> py::buffer_info
+        {
+            auto&& info = m.get_buffer_info();
+            return py::buffer_info(
+                info.ptr,
+                info.itemsize,
+                info.format,
+                info.ndim,
+                info.shape,
+                info.strides
+            );
+        });
 
 //    py::class_<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m, "som", py::buffer_protocol())
 //        .def(py::init())
