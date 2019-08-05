@@ -54,8 +54,10 @@ buffer_info DynamicData::get_buffer_info() const
         auto&& ptr = std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data)->get_data_pointer();
 
         return buffer_info(static_cast<void*>(ptr), static_cast<ssize_t>(sizeof(float)), "f", static_cast<ssize_t>(2),
-            std::vector<ssize_t>{shape[0], shape[1]},
-            std::vector<ssize_t>{sizeof(float) * shape[1], sizeof(float)});
+            std::vector<ssize_t>{static_cast<ssize_t>(shape[0]),
+        	                     static_cast<ssize_t>(shape[1])},
+            std::vector<ssize_t>{static_cast<ssize_t>(sizeof(float) * shape[1]),
+            	                 static_cast<ssize_t>(sizeof(float))});
     }
     else
     {

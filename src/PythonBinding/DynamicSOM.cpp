@@ -45,11 +45,14 @@ buffer_info DynamicSOM::get_buffer_info() const
 
         return buffer_info(static_cast<void*>(ptr), static_cast<ssize_t>(sizeof(float)),
             "f", static_cast<ssize_t>(4),
-            std::vector<ssize_t>{som_shape[0], som_shape[1], neuron_shape[0], neuron_shape[1]},
-            std::vector<ssize_t>{sizeof(float) * neuron_shape[1] * neuron_shape[0] * som_shape[1],
-                                 sizeof(float) * neuron_shape[1] * neuron_shape[0],
-                                 sizeof(float) * neuron_shape[1],
-                                 sizeof(float)});
+            std::vector<ssize_t>{static_cast<ssize_t>(som_shape[0]),
+            		             static_cast<ssize_t>(som_shape[1]),
+            		             static_cast<ssize_t>(neuron_shape[0]),
+            		             static_cast<ssize_t>(neuron_shape[1])},
+            std::vector<ssize_t>{static_cast<ssize_t>(sizeof(float) * neuron_shape[1] * neuron_shape[0] * som_shape[1]),
+            		             static_cast<ssize_t>(sizeof(float) * neuron_shape[1] * neuron_shape[0]),
+            		             static_cast<ssize_t>(sizeof(float) * neuron_shape[1]),
+            					 static_cast<ssize_t>(sizeof(float))});
     }
     else
     {
