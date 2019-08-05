@@ -41,9 +41,15 @@ inline std::array<uint32_t, 3> extract_layout<3>(uint32_t x, uint32_t y, uint32_
     return std::array<uint32_t, 3>{x, y, z};
 }
 
+/// Abstract base class of data
+struct SOMBase
+{
+    virtual ~SOMBase() {}
+};
+
 /// Generic SOM
 template <typename SOMLayout, typename NeuronLayout, typename T>
-class SOM
+class SOM : public SOMBase
 {
 public:
 

@@ -6,6 +6,8 @@ include_directories(
 pybind11_add_module(
     pink MODULE
     pink.cpp
+    DynamicData.cpp
+    DynamicSOM.cpp
 )
 
 target_link_libraries(

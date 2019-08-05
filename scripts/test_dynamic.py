@@ -27,13 +27,17 @@ class GaussianFunctor():
 
 def main():
 
-    image = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], np.float32)
-    print(image)
+    np_data = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], np.float32)
+    print(np_data)
 
-    data_cart = pink.data(pink.data_type.FLOAT, pink.layout.CARTESIAN, image)
+    data_cart = pink.data(np_data, data_type="float32", layout="cartesian-2d")
 
-    np_data_cart = np.array(data_cart, copy=False)
-    print(np_data_cart)
+    np_som = np.random.rand(2, 2, 3, 3).astype(np.float32)
+    print(np_som)
+
+    som_cart = pink.som(np_som, data_type="float32", som_layout="cartesian-2d", neuron_layout="cartesian-2d")
+    
+    #print(np.array(som_cart, copy=False))
 
     print('All done.')
 
