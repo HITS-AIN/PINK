@@ -117,7 +117,7 @@ public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
         Interpolation interpolation, uint32_t euclidean_distance_dim,
-        uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
+        uint32_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
      : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
                                             use_flip, interpolation, euclidean_distance_dim),
        d_som(som.get_data()),
@@ -179,7 +179,7 @@ private:
     /// Device memory for SOM
     thrust::device_vector<T> d_som;
 
-    uint16_t block_size;
+    uint32_t block_size;
 
     /// The data type for the euclidean distance
     DataType euclidean_distance_type;

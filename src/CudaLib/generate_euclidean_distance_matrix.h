@@ -37,7 +37,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
     uint32_t d_som_size = som_size * euclidean_distance_size;
     uint32_t d_spatial_transformed_images_size = number_of_spatial_transformations * euclidean_distance_size;
 
-    uint32_t neuron_dim = std::sqrt(neuron_size);
+    uint32_t neuron_dim = static_cast<uint32_t>(std::sqrt(neuron_size));
     uint32_t offset = static_cast<uint32_t>((neuron_dim - euclidean_distance_dim) * 0.5);
 
     // First step ...
@@ -52,7 +52,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
             d_spatial_transformed_images_uint8.resize(d_spatial_transformed_images_size);
 
         // Setup execution parameters
-        uint32_t grid_size = ceil((float)euclidean_distance_dim/16);
+        uint32_t grid_size = static_cast<uint32_t>(ceil(static_cast<float>(euclidean_distance_dim) / 16));
 
         dim3 dim_block(16, 16);
         dim3 dim_grid(grid_size, grid_size, som_size);
@@ -92,7 +92,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
             d_spatial_transformed_images_uint16.resize(d_spatial_transformed_images_size);
 
         // Setup execution parameters
-        uint32_t grid_size = ceil((float)euclidean_distance_dim/16);
+        uint32_t grid_size = static_cast<uint32_t>(ceil(static_cast<float>(euclidean_distance_dim) / 16));
 
         dim3 dim_block(16, 16);
         dim3 dim_grid(grid_size, grid_size, som_size);
@@ -132,7 +132,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
             d_spatial_transformed_images_float.resize(d_spatial_transformed_images_size);
 
         // Setup execution parameters
-        uint32_t grid_size = ceil((float)euclidean_distance_dim/16);
+        uint32_t grid_size = static_cast<uint32_t>(ceil(static_cast<float>(euclidean_distance_dim) / 16));
 
         dim3 dim_block(16, 16);
         dim3 dim_grid(grid_size, grid_size, som_size);
@@ -162,7 +162,9 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         }
     }
     else
+    {
         throw pink::exception("Unknown euclidean_distance_type");
+    }
 
     // Second step ...
     generate_euclidean_distance_matrix_second_step(d_euclidean_distance_matrix,

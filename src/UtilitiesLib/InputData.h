@@ -76,7 +76,7 @@ struct InputData
     DistributionFunction distribution_function;
     float sigma;
     float damping;
-    int block_size_1;
+    uint32_t block_size_1;
     float max_update_distance;
     int usePBC;
     int dimensionality;

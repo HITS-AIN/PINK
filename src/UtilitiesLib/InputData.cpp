@@ -291,7 +291,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 9:
             {
-                block_size_1 = atoi(optarg);
+                block_size_1 = str_to_uint32_t(optarg);
                 break;
             }
             case 10:

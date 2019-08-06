@@ -66,7 +66,8 @@ PYBIND11_MODULE(pink, m)
         });
 
     py::class_<DynamicSOM>(m, "som", py::buffer_protocol())
-        .def(py::init([](py::buffer b, std::string const& data_type, std::string const& som_layout, std::string const& neuron_layout)
+        .def(py::init([](py::buffer b, std::string const& data_type,
+            std::string const& som_layout, std::string const& neuron_layout)
         {
             py::buffer_info info = b.request();
             return new DynamicSOM(data_type, som_layout, neuron_layout, info.shape, info.ptr);

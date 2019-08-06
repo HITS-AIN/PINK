@@ -189,7 +189,7 @@ public:
     Trainer(SOMType& som, std::function<float(float)> const& distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, uint32_t euclidean_distance_dim,
-        uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
+        uint32_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
      : TrainerBase<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
            use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        som(som),
@@ -277,7 +277,7 @@ private:
     /// Device memory for SOM
     thrust::device_vector<T> d_som;
 
-    uint16_t block_size;
+    uint32_t block_size;
 
     /// The data type for the euclidean distance
     DataType euclidean_distance_type;

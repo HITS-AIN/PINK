@@ -39,9 +39,12 @@ buffer_info DynamicSOM::get_buffer_info() const
 {
     if (dimensionality == 4)
     {
-        auto&& som_shape = std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(data)->get_som_dimension();
-        auto&& neuron_shape = std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(data)->get_neuron_dimension();
-        auto&& ptr = std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(data)->get_data_pointer();
+        auto&& som_shape = std::dynamic_pointer_cast<
+            SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(data)->get_som_dimension();
+        auto&& neuron_shape = std::dynamic_pointer_cast<
+            SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(data)->get_neuron_dimension();
+        auto&& ptr = std::dynamic_pointer_cast<
+            SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(data)->get_data_pointer();
 
         return buffer_info(static_cast<void*>(ptr), static_cast<ssize_t>(sizeof(float)),
             "f", static_cast<ssize_t>(4),
