@@ -11,7 +11,7 @@ namespace pink {
 DynamicData::DynamicData(std::string const& data_type, std::string const& layout, std::vector<ssize_t> shape, void* ptr)
  : data_type(data_type),
    layout(layout),
-   dimensionality(shape.size())
+   dimensionality(static_cast<uint8_t>(shape.size()))
 {
     if (data_type != "float32") throw std::runtime_error("data-type not supported");
     if (layout != "cartesian-2d") throw std::runtime_error("layout not supported");
@@ -55,9 +55,9 @@ buffer_info DynamicData::get_buffer_info() const
 
         return buffer_info(static_cast<void*>(ptr), static_cast<ssize_t>(sizeof(float)), "f", static_cast<ssize_t>(2),
             std::vector<ssize_t>{static_cast<ssize_t>(shape[0]),
-        	                     static_cast<ssize_t>(shape[1])},
+                                 static_cast<ssize_t>(shape[1])},
             std::vector<ssize_t>{static_cast<ssize_t>(sizeof(float) * shape[1]),
-            	                 static_cast<ssize_t>(sizeof(float))});
+                                 static_cast<ssize_t>(sizeof(float))});
     }
     else
     {

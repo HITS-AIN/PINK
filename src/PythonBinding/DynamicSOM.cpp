@@ -13,7 +13,7 @@ DynamicSOM::DynamicSOM(std::string const& data_type, std::string const& som_layo
  : data_type(data_type),
    som_layout(som_layout),
    neuron_layout(neuron_layout),
-   dimensionality(shape.size())
+   dimensionality(static_cast<uint8_t>(shape.size()))
 {
     if (data_type != "float32") throw std::runtime_error("data-type not supported");
     if (som_layout != "cartesian-2d") throw std::runtime_error("som_layout not supported");
@@ -46,13 +46,13 @@ buffer_info DynamicSOM::get_buffer_info() const
         return buffer_info(static_cast<void*>(ptr), static_cast<ssize_t>(sizeof(float)),
             "f", static_cast<ssize_t>(4),
             std::vector<ssize_t>{static_cast<ssize_t>(som_shape[0]),
-            		             static_cast<ssize_t>(som_shape[1]),
-            		             static_cast<ssize_t>(neuron_shape[0]),
-            		             static_cast<ssize_t>(neuron_shape[1])},
+                                 static_cast<ssize_t>(som_shape[1]),
+                                 static_cast<ssize_t>(neuron_shape[0]),
+                                 static_cast<ssize_t>(neuron_shape[1])},
             std::vector<ssize_t>{static_cast<ssize_t>(sizeof(float) * neuron_shape[1] * neuron_shape[0] * som_shape[1]),
-            		             static_cast<ssize_t>(sizeof(float) * neuron_shape[1] * neuron_shape[0]),
-            		             static_cast<ssize_t>(sizeof(float) * neuron_shape[1]),
-            					 static_cast<ssize_t>(sizeof(float))});
+                                 static_cast<ssize_t>(sizeof(float) * neuron_shape[1] * neuron_shape[0]),
+                                 static_cast<ssize_t>(sizeof(float) * neuron_shape[1]),
+                                 static_cast<ssize_t>(sizeof(float))});
     }
     else
     {

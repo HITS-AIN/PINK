@@ -45,11 +45,11 @@ std::vector<thrust::device_vector<T>> allocate_local_memory(std::vector<int> con
 template <typename DataType, typename EuclideanType>
 void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vector<EuclideanType> const& d_som,
     thrust::device_vector<EuclideanType> const& d_rotated_images, thrust::device_vector<DataType>& d_first_step,
-    uint32_t number_of_spatial_transformations, uint32_t som_size, uint32_t neuron_size, uint16_t block_size)
+    uint32_t number_of_spatial_transformations, size_t som_size, uint32_t neuron_size, uint16_t block_size)
 {
     auto&& gpu_ids = cuda_get_gpu_ids();
-    int number_of_gpus = gpu_ids.size();
-    int number_of_threads = omp_get_max_threads();
+    auto number_of_gpus = gpu_ids.size();
+    auto number_of_threads = static_cast<size_t>(omp_get_max_threads());
 
     if (number_of_threads < number_of_gpus) {
         std::cout << "Number of threads = " << number_of_threads << std::endl;
@@ -61,17 +61,17 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
     }
 
     // Set size
-    std::vector<int> size(number_of_gpus);
-    int rest = som_size % number_of_gpus;
-    for (int i = 0; i < number_of_gpus; ++i) {
+    std::vector<size_t> size(number_of_gpus);
+    size_t rest = som_size % number_of_gpus;
+    for (size_t i = 0; i < number_of_gpus; ++i) {
         size[i] = som_size / number_of_gpus;
         if (rest > i) ++size[i];
     }
 
     // Set offset
-    std::vector<int> offset(number_of_gpus);
+    std::vector<size_t> offset(number_of_gpus);
     offset[0] = 0;
-    for (int i = 1; i < number_of_gpus; ++i) {
+    for (size_t i = 1; i < number_of_gpus; ++i) {
         offset[i] = offset[i-1] + size[i-1];
     }
 
@@ -82,7 +82,7 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
     static auto d_first_step_local = allocate_local_memory<DataType>(
         std::vector<int>(size.begin() + 1, size.end()) * static_cast<int>(number_of_spatial_transformations));
 
-    for (int i = 1; i < number_of_gpus; ++i)
+    for (size_t i = 1; i < number_of_gpus; ++i)
     {
         // Set GPU device
         cudaSetDevice(gpu_ids[i]);
@@ -100,7 +100,7 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
     }
 
     std::vector<std::thread> workers;
-    for (int i = 1; i < number_of_gpus; ++i)
+    for (size_t i = 1; i < number_of_gpus; ++i)
     {
         workers.push_back(std::thread([&, i]()
         {
@@ -175,7 +175,7 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
     // Wait for all workers
     for (auto&& w : workers) w.join();
 
-    for (int i = 1; i < number_of_gpus; ++i)
+    for (size_t i = 1; i < number_of_gpus; ++i)
     {
         // Copy data
         gpuErrchk(cudaMemcpyPeer(
