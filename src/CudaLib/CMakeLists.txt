@@ -1,5 +1,8 @@
 include_directories(
     ..
+)
+
+include_directories(SYSTEM
     ${CUDA_INCLUDE_DIRS}
 )
 
