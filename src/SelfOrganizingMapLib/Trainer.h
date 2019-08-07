@@ -37,7 +37,7 @@ class TrainerBase
 {
 public:
 
-    TrainerBase(SOM<SOMLayout, DataLayout, T> const& som, std::function<float(float)> distribution_function,
+    TrainerBase(SOM<SOMLayout, DataLayout, T> const& som, std::function<float(float)> const& distribution_function,
         int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, uint32_t euclidean_distance_dim)
      : distribution_function(distribution_function),

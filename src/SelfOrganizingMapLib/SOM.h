@@ -143,9 +143,9 @@ public:
 
     auto get_neuron(SOMLayoutType const& position) {
         auto&& beg = m_data.begin()
-                   + (position.m_dimension[0] * m_som_layout.m_dimension[1]
-                   + position.m_dimension[1]) * m_neuron_layout.size();
-        auto&& end = beg + m_neuron_layout.size();
+                   + static_cast<int>((position.m_dimension[0] * m_som_layout.m_dimension[1]
+                   + position.m_dimension[1]) * m_neuron_layout.size());
+        auto&& end = beg + static_cast<int>(m_neuron_layout.size());
         return NeuronType(m_neuron_layout, std::vector<T>(beg, end));
     }
 

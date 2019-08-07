@@ -17,9 +17,9 @@ namespace pink {
  */
 struct DistributionFunctorBase
 {
-    virtual float operator () (float distance) const = 0;
+    virtual ~DistributionFunctorBase();
 
-    virtual ~DistributionFunctorBase() {}
+    virtual float operator () (float distance) const = 0;
 };
 
 /**
@@ -29,17 +29,9 @@ struct DistributionFunctorBase
  */
 struct StepFunctor : public DistributionFunctorBase
 {
-    explicit StepFunctor(float value)
-     : m_value(value)
-    {}
+    explicit StepFunctor(float value);
 
-    virtual ~StepFunctor() = default;
-
-    float operator () (float distance) const
-    {
-        if (distance <= m_value) return 1.0;
-        return 0.0;
-    }
+    float operator () (float distance) const;
 
 private:
 
@@ -53,16 +45,9 @@ private:
  */
 struct GaussianFunctor : public DistributionFunctorBase
 {
-    GaussianFunctor(float sigma, float damping)
-     : m_sigma(sigma),
-       m_damping(damping)
-    {}
+    GaussianFunctor(float sigma, float damping);
 
-    float operator () (float distance) const
-    {
-        return m_damping / (m_sigma * std::sqrt(2.0f * static_cast<float>(M_PI)))
-                       * std::exp(-0.5f * std::pow((distance/m_sigma), 2.0f));
-    }
+    float operator () (float distance) const;
 
 private:
 
@@ -78,20 +63,9 @@ private:
  */
 struct MexicanHatFunctor : public DistributionFunctorBase
 {
-    MexicanHatFunctor(float sigma, float damping)
-     : m_sigma(sigma),
-       m_damping(damping)
-    {
-        if (sigma <= 0.0f) throw std::runtime_error("MexicanHatFunctor: sigma <= 0 not defined.");
-    }
+    MexicanHatFunctor(float sigma, float damping);
 
-    float operator () (float distance) const
-    {
-        float distance2 = distance * distance;
-        float sigma2 = m_sigma * m_sigma;
-        return 2.0f * m_damping / (std::sqrt(3.0f * m_sigma) * std::pow(static_cast<float>(M_PI), 0.25f))
-                    * (1.0f - distance2/sigma2) * std::exp(-distance2 / (2.0f * sigma2));
-    }
+    float operator () (float distance) const;
 
 private:
 
