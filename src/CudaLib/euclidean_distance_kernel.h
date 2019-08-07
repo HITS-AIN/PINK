@@ -8,7 +8,7 @@
 
 #include <cassert>
 #include <cstdint>
-#include "sm_61_intrinsics.h"
+#include <sm_61_intrinsics.h>
 
 #include "UtilitiesLib/ipow.h"
 

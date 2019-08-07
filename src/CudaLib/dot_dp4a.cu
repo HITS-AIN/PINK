@@ -4,7 +4,7 @@
  * @author Bernd Doser <bernd.doser@h-its.org>
  */
 
-#include "sm_61_intrinsics.h"
+#include <sm_61_intrinsics.h>
 
 namespace pink {
 
