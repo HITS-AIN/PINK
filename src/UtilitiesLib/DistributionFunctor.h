@@ -33,6 +33,8 @@ struct StepFunctor : public DistributionFunctorBase
      : m_value(value)
     {}
 
+    virtual ~StepFunctor() = default;
+
     float operator () (float distance) const
     {
         if (distance <= m_value) return 1.0;

@@ -61,113 +61,113 @@ public:
 
     /// Default construction
     SOM()
-     : som_layout{0},
-       neuron_layout{0}
+     : m_som_layout{0},
+       m_neuron_layout{0}
     {}
 
     /// Construction by input data
     explicit SOM(InputData const& input_data)
-     : som_layout{extract_layout<SOMLayout::dimensionality>(input_data.m_som_width,
+     : m_som_layout{extract_layout<SOMLayout::dimensionality>(input_data.m_som_width,
        input_data.m_som_height, input_data.m_som_depth)},
-       neuron_layout{{input_data.m_neuron_dim, input_data.m_neuron_dim}},
-       data(som_layout.size() * neuron_layout.size())
+       m_neuron_layout{{input_data.m_neuron_dim, input_data.m_neuron_dim}},
+       m_data(m_som_layout.size() * m_neuron_layout.size())
     {
         // Initialize SOM
         if (input_data.m_init == SOMInitialization::ZERO)
-            fill_value(&data[0], data.size());
+            fill_value(&m_data[0], m_data.size());
         else if (input_data.m_init == SOMInitialization::RANDOM)
-            fill_random_uniform(&data[0], data.size(), input_data.m_seed);
+            fill_random_uniform(&m_data[0], m_data.size(), input_data.m_seed);
         else if (input_data.m_init == SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION) {
-            fill_random_uniform(&data[0], data.size(), input_data.m_seed);
+            fill_random_uniform(&m_data[0], m_data.size(), input_data.m_seed);
             for (uint32_t n = 0; n < input_data.m_som_size; ++n)
                 for (uint32_t i = 0; i < input_data.m_neuron_dim; ++i)
-                    data[n * input_data.m_neuron_size + i * input_data.m_neuron_dim + i] = 1.0;
+                    m_data[n * input_data.m_neuron_size + i * input_data.m_neuron_dim + i] = 1.0;
         }
         else if (input_data.m_init == SOMInitialization::FILEINIT) {
             std::ifstream is(input_data.m_som_filename);
             if (!is) throw pink::exception("Error opening " + input_data.m_som_filename);
 
-            header = get_file_header(is);
+            m_header = get_file_header(is);
 
             // Ignore first three entries
             is.seekg((9 + SOMLayout::dimensionality) * sizeof(int), is.cur);
-            is.read((char*)&data[0], static_cast<std::streamsize>(data.size() * sizeof(float)));
+            is.read((char*)&m_data[0], static_cast<std::streamsize>(m_data.size() * sizeof(float)));
         } else
             throw pink::exception("Unknown SOMInitialization");
     }
 
     /// Construction without initialization
     SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout)
-     : som_layout(som_layout),
-       neuron_layout(neuron_layout),
-       data(som_layout.size() * neuron_layout.size())
+     : m_som_layout(som_layout),
+       m_neuron_layout(neuron_layout),
+       m_data(som_layout.size() * neuron_layout.size())
     {}
 
     /// Construction and initialize all elements to value
     SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout, T value)
-     : som_layout(som_layout),
-       neuron_layout(neuron_layout),
-       data(som_layout.size() * neuron_layout.size(), value)
+     : m_som_layout(som_layout),
+       m_neuron_layout(neuron_layout),
+       m_data(som_layout.size() * neuron_layout.size(), value)
     {}
 
     /// Construction and copy data
     SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout,
         std::vector<T> const& data)
-     : som_layout(som_layout),
-       neuron_layout(neuron_layout),
-       data(data)
+     : m_som_layout(som_layout),
+       m_neuron_layout(neuron_layout),
+       m_data(data)
     {}
 
     /// Construction and move data
     SOM(SOMLayoutType const& som_layout, NeuronLayoutType const& neuron_layout,
         std::vector<T>&& data)
-     : som_layout(som_layout),
-       neuron_layout(neuron_layout),
-       data(data)
+     : m_som_layout(som_layout),
+       m_neuron_layout(neuron_layout),
+       m_data(data)
     {}
 
     auto operator == (SelfType const& other) const
     {
-        return som_layout == other.som_layout and
-               neuron_layout == other.neuron_layout and
-               data == other.data;
+        return m_som_layout == other.m_som_layout and
+               m_neuron_layout == other.m_neuron_layout and
+               m_data == other.m_data;
     }
 
-    auto size() const { return data.size(); }
+    auto size() const { return m_data.size(); }
 
-    auto get_data() { return data; }
-    auto get_data() const { return data; }
+    auto get_data() { return m_data; }
+    auto get_data() const { return m_data; }
 
-    auto get_data_pointer() { return &data[0]; }
-    auto get_data_pointer() const { return &data[0]; }
+    auto get_data_pointer() { return &m_data[0]; }
+    auto get_data_pointer() const { return &m_data[0]; }
 
     auto get_neuron(SOMLayoutType const& position) {
-        auto&& beg = data.begin()
-                   + (position.m_dimension[0] * som_layout.m_dimension[1]
-                   + position.m_dimension[1]) * neuron_layout.size();
-        auto&& end = beg + neuron_layout.size();
-        return NeuronType(neuron_layout, std::vector<T>(beg, end));
+        auto&& beg = m_data.begin()
+                   + (position.m_dimension[0] * m_som_layout.m_dimension[1]
+                   + position.m_dimension[1]) * m_neuron_layout.size();
+        auto&& end = beg + m_neuron_layout.size();
+        return NeuronType(m_neuron_layout, std::vector<T>(beg, end));
     }
 
-    auto get_number_of_neurons() const -> uint32_t { return static_cast<uint32_t>(som_layout.size()); }
-    auto get_neuron_size() const -> uint32_t { return static_cast<uint32_t>(neuron_layout.size()); }
+    auto get_number_of_neurons() const -> uint32_t { return static_cast<uint32_t>(m_som_layout.size()); }
+    auto get_neuron_size() const -> uint32_t { return static_cast<uint32_t>(m_neuron_layout.size()); }
 
-    auto get_som_layout() -> SOMLayoutType { return som_layout; }
-    auto get_som_layout() const -> SOMLayoutType const { return som_layout; }
-    auto get_neuron_layout() -> NeuronLayoutType { return neuron_layout; }
-    auto get_neuron_layout() const -> NeuronLayoutType const { return neuron_layout; }
+    auto get_som_layout() -> SOMLayoutType { return m_som_layout; }
+    auto get_som_layout() const -> SOMLayoutType const { return m_som_layout; }
+    auto get_neuron_layout() -> NeuronLayoutType { return m_neuron_layout; }
+    auto get_neuron_layout() const -> NeuronLayoutType const { return m_neuron_layout; }
 
     auto get_som_dimension() -> typename SOMLayoutType::DimensionType {
-        return som_layout.m_dimension;
+        return m_som_layout.m_dimension;
     }
     auto get_som_dimension() const -> typename SOMLayoutType::DimensionType const {
-        return som_layout.m_dimension;
+        return m_som_layout.m_dimension;
     }
     auto get_neuron_dimension() -> typename NeuronLayoutType::DimensionType {
-        return neuron_layout.m_dimension;
+        return m_neuron_layout.m_dimension;
     }
     auto get_neuron_dimension() const -> typename NeuronLayoutType::DimensionType const {
-        return neuron_layout.m_dimension;
+        return m_neuron_layout.m_dimension;
     }
 
 private:
@@ -178,14 +178,14 @@ private:
     template <typename A, typename B, typename C>
     friend std::ostream& operator << (std::ostream& os, SOM<A, B, C> const& som);
 
-    SOMLayoutType som_layout;
+    SOMLayoutType m_som_layout;
 
-    NeuronLayoutType neuron_layout;
+    NeuronLayoutType m_neuron_layout;
 
     // Header of initialization SOM, will be copied to resulting SOM
-    std::string header;
+    std::string m_header;
 
-    std::vector<T> data;
+    std::vector<T> m_data;
 
 };
 

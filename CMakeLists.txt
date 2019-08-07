@@ -19,7 +19,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 if(${CMAKE_CXX_COMPILER} MATCHES "clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-braces -Wmissing-field-initializers")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-braces -Wmissing-field-initializers -Wno-unused-function")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabsolute-value -Wbad-function-cast -Wconditional-uninitialized -Wconstant-conversion -Wconversion -Wdelete-non-virtual-dtor -Wfloat-conversion -Wfloat-equal -Wformat-security -Wheader-hygiene -Wimplicit-fallthrough -Winfinite-recursion -Wliteral-conversion -Wmultichar -Wnon-virtual-dtor -Wnull-arithmetic -Wnull-conversion -Woverlength-strings -Wpointer-bool-conversion -Wpointer-sign -Wreturn-type -Wself-assign -Wself-assign-field -Wself-assign-overloaded -Wself-move -Wshift-sign-overflow -Wshorten-64-to-32 -Wsign-compare -Wsign-conversion -Wsometimes-uninitialized -Wstatic-self-init -Wstring-plus-int -Wstring-compare -Wstring-conversion -Wtautological-constant-compare -Wtautological-pointer-compare -Wtautological-type-limit-compare -Wtautological-unsigned-zero-compare -Wundef -Wuninitialized -Wvector-conversion")
 endif()
 

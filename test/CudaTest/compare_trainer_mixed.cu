@@ -25,22 +25,22 @@ using namespace pink;
 struct TrainerCompareTestData
 {
     TrainerCompareTestData(uint32_t som_dim, uint32_t image_dim, uint32_t neuron_dim,
-        int euclidean_distance_dim, int num_rot, bool use_flip)
-     : som_dim(som_dim),
-       image_dim(image_dim),
-       neuron_dim(neuron_dim),
-       euclidean_distance_dim(euclidean_distance_dim),
-       num_rot(num_rot),
-       use_flip(use_flip)
+        uint32_t euclidean_distance_dim, uint32_t num_rot, bool use_flip)
+     : m_som_dim(som_dim),
+       m_image_dim(image_dim),
+       m_neuron_dim(neuron_dim),
+       m_euclidean_distance_dim(euclidean_distance_dim),
+       m_num_rot(num_rot),
+       m_use_flip(use_flip)
     {}
 
-    uint32_t som_dim;
-    uint32_t image_dim;
-    uint32_t neuron_dim;
-    uint32_t euclidean_distance_dim;
+    uint32_t m_som_dim;
+    uint32_t m_image_dim;
+    uint32_t m_neuron_dim;
+    uint32_t m_euclidean_distance_dim;
 
-    uint32_t num_rot;
-    bool use_flip;
+    uint32_t m_num_rot;
+    bool m_use_flip;
 };
 
 class compare_trainer_mixed : public ::testing::TestWithParam<TrainerCompareTestData>
@@ -52,25 +52,28 @@ TEST_P(compare_trainer_mixed, cartesian_2d_float)
     typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> SOMType;
     typedef Trainer<CartesianLayout<2>, CartesianLayout<2>, float, true> MyTrainer_gpu;
 
-    DataContainerType data({GetParam().image_dim, GetParam().image_dim}, 0.0);
+    DataContainerType data({GetParam().m_image_dim, GetParam().m_image_dim}, 0.0);
     fill_random_uniform(data.get_data_pointer(), data.size());
 
-    SOMType som1({GetParam().som_dim, GetParam().som_dim}, {GetParam().neuron_dim, GetParam().neuron_dim}, 0.0);
+    SOMType som1({GetParam().m_som_dim, GetParam().m_som_dim},
+        {GetParam().m_neuron_dim, GetParam().m_neuron_dim}, 0.0);
     fill_random_uniform(som1.get_data_pointer(), som1.size());
     SOMType som2 = som1;
 
-    auto&& f = GaussianFunctor(1.1, 0.2);
+    auto&& f = GaussianFunctor(1.1f, 0.2f);
 
-    MyTrainer_gpu trainer1(som1, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, GetParam().euclidean_distance_dim, 256, DataType::FLOAT);
+    MyTrainer_gpu trainer1(som1, f, 0, GetParam().m_num_rot, GetParam().m_use_flip, 0.0,
+        Interpolation::BILINEAR, GetParam().m_euclidean_distance_dim, 256, DataType::FLOAT);
     trainer1(data);
     trainer1.update_som();
 
-    MyTrainer_gpu trainer2(som2, f, 0, GetParam().num_rot, GetParam().use_flip, 0.0, Interpolation::BILINEAR, GetParam().euclidean_distance_dim, 256, DataType::UINT8);
+    MyTrainer_gpu trainer2(som2, f, 0, GetParam().m_num_rot, GetParam().m_use_flip, 0.0,
+        Interpolation::BILINEAR, GetParam().m_euclidean_distance_dim, 256, DataType::UINT8);
     trainer2(data);
     trainer2.update_som();
 
     EXPECT_EQ(som1.size(), som2.size());
-    EXPECT_TRUE(EqualFloatArrays(som1.get_data_pointer(), som2.get_data_pointer(), som1.size(), 1e-4));
+    EXPECT_TRUE(EqualFloatArrays(som1.get_data_pointer(), som2.get_data_pointer(), som1.size(), 1e-4f));
 }
 
 INSTANTIATE_TEST_CASE_P(TrainerCompareTest_all, compare_trainer_mixed,
