@@ -108,7 +108,7 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
     {
         auto si = static_cast<size_t>(i);
 
-        workers.push_back(std::thread([&, i]()
+        workers.push_back(std::thread([&, si]()
         {
             // Set GPU device
             cudaSetDevice(gpu_ids[si]);

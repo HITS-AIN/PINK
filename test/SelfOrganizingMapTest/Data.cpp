@@ -29,8 +29,8 @@ TEST(SelfOrganizingMapTest, data_cartesian_1d)
     EXPECT_EQ(2, c2[1]);
 
     // Check layout position
-    EXPECT_EQ(1, (c2[{0}]));
-    EXPECT_EQ(2, (c2[{1}]));
+    EXPECT_EQ(1, (c2[0]));
+    EXPECT_EQ(2, (c2[1]));
 }
 
 TEST(SelfOrganizingMapTest, data_cartesian_2d)
