@@ -41,10 +41,10 @@ void write(SOM<SOMLayout, NeuronLayout, T> const& som, std::string const& filena
     os.write((char*)&data_type_idx, sizeof(int));
     os.write((char*)&som_layout_idx, sizeof(int));
     os.write((char*)&som_dimensionality, sizeof(int));
-    for (auto d : som_layout.dimension) os.write((char*)&d, sizeof(int));
+    for (auto d : som_layout.m_dimension) os.write((char*)&d, sizeof(int));
     os.write((char*)&neuron_layout_idx, sizeof(int));
     os.write((char*)&neuron_dimensionality, sizeof(int));
-    for (auto d : neuron_layout.dimension) os.write((char*)&d, sizeof(int));
+    for (auto d : neuron_layout.m_dimension) os.write((char*)&d, sizeof(int));
     os.write((char*)som.get_data_pointer(), static_cast<std::streamsize>(som.size() * sizeof(T)));
 }
 

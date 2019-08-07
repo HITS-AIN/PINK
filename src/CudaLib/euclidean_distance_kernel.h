@@ -58,7 +58,7 @@ struct scale<uint8_t>
 
 /// CUDA device kernel to computes the euclidean distance of two arrays
 /// using a reduced type to calculate the euclidean distance
-template <uint16_t block_size, typename DataType, typename EuclideanType>
+template <uint32_t block_size, typename DataType, typename EuclideanType>
 __global__ static
 void euclidean_distance_kernel(EuclideanType const *som, EuclideanType const *rotated_images,
     DataType *first_step, uint32_t neuron_size)

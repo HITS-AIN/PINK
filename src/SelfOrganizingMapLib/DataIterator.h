@@ -55,7 +55,7 @@ public:
         is.seekg(2 * sizeof(int), is.cur);
 
         for (uint8_t i = 0; i < layout.dimensionality; ++i) {
-            is.read((char*)&layout.dimension[i], sizeof(int));
+            is.read((char*)&layout.m_dimension[i], sizeof(int));
         }
 
         header_offset = is.tellg();

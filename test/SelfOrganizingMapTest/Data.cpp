@@ -67,7 +67,7 @@ TEST(SelfOrganizingMapTest, data_cartesian_3d)
     EXPECT_EQ((std::array<uint32_t, 3>{2, 2, 2}), c2.get_dimension());
 
     // Check linear position
-    for (int i = 0; i < 8; ++i) EXPECT_EQ(i+1, c2[i]);
+    for (size_t i = 0; i < 8; ++i) EXPECT_EQ(i+1, c2[i]);
 
     // Check layout position
     EXPECT_EQ(1, (c2[{0, 0, 0}]));

@@ -45,11 +45,12 @@ void generate_euclidean_distance_matrix_second_step(thrust::device_vector<T>& d_
     thrust::device_vector<uint32_t>& d_best_rotation_matrix, thrust::device_vector<T> const& d_first_step,
     uint32_t number_of_spatial_transformations, uint32_t som_size)
 {
-    const uint16_t block_size = 16;
+    const uint32_t block_size = 16;
+    const uint32_t grid_size = static_cast<uint32_t>(ceil(static_cast<float>(som_size) / block_size));
 
     // Setup execution parameters
     dim3 dimBlock(block_size);
-    dim3 dimGrid(ceil((float)som_size / block_size));
+    dim3 dimGrid(grid_size);
 
     // Start kernel
     second_step_kernel<<<dimGrid, dimBlock>>>(thrust::raw_pointer_cast(&d_euclidean_distance_matrix[0]),

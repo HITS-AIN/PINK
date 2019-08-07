@@ -39,10 +39,10 @@ void cuda_print_properties()
         printf("  Warp size:                     %d\n",  devProp.warpSize);
         printf("  Maximum memory pitch:          %lu\n",  devProp.memPitch);
         printf("  Maximum threads per block:     %d\n",  devProp.maxThreadsPerBlock);
-        for (int i = 0; i < 3; ++i)
-            printf("  Maximum dimension %d of block:  %d\n", i, devProp.maxThreadsDim[i]);
-        for (int i = 0; i < 3; ++i)
-            printf("  Maximum dimension %d of grid:   %d\n", i, devProp.maxGridSize[i]);
+        for (int j = 0; j < 3; ++j)
+            printf("  Maximum dimension %d of block:  %d\n", j, devProp.maxThreadsDim[j]);
+        for (int j = 0; j < 3; ++j)
+            printf("  Maximum dimension %d of grid:   %d\n", j, devProp.maxGridSize[j]);
         printf("  Clock rate:                    %d\n",  devProp.clockRate);
         printf("  Total constant memory:         %lu\n",  devProp.totalConstMem);
         printf("  Texture alignment:             %lu\n",  devProp.textureAlignment);
@@ -63,7 +63,7 @@ std::vector<int> cuda_get_gpu_ids()
     char const* cuda_visible_devices = std::getenv("CUDA_VISIBLE_DEVICES");
 
     if (cuda_visible_devices == nullptr) {
-        gpu_ids.resize(number_of_gpu_devices);
+        gpu_ids.resize(static_cast<size_t>(number_of_gpu_devices));
         std::iota(std::begin(gpu_ids), std::end(gpu_ids), 0);
     } else {
         // Split comma separated string into vector

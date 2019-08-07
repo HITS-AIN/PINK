@@ -26,7 +26,7 @@ template <typename T>
 void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_distance_matrix,
     thrust::device_vector<uint32_t>& d_best_rotation_matrix, uint32_t som_size, uint32_t neuron_size,
     thrust::device_vector<T> const& d_som, uint32_t number_of_spatial_transformations,
-    thrust::device_vector<T> const& d_spatial_transformed_images, uint16_t block_size,
+    thrust::device_vector<T> const& d_spatial_transformed_images, uint32_t block_size,
     DataType euclidean_distance_type, uint32_t euclidean_distance_dim)
 {
     static thrust::device_vector<T> d_first_step(som_size * number_of_spatial_transformations);

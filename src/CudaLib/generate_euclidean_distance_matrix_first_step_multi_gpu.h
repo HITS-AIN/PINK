@@ -156,19 +156,19 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
 
     switch (block_size)
     {
-        case  512: euclidean_distance_kernel< 512><<<dim_grid, dim_block>>>(
+        case 512: euclidean_distance_kernel<512><<<dim_grid, dim_block>>>(
             thrust::raw_pointer_cast(d_som.data()), thrust::raw_pointer_cast(d_rotated_images.data()),
             thrust::raw_pointer_cast(d_first_step.data()), neuron_size);
             break;
-        case  256: euclidean_distance_kernel< 256><<<dim_grid, dim_block>>>(
+        case 256: euclidean_distance_kernel<256><<<dim_grid, dim_block>>>(
             thrust::raw_pointer_cast(d_som.data()), thrust::raw_pointer_cast(d_rotated_images.data()),
             thrust::raw_pointer_cast(d_first_step.data()), neuron_size);
             break;
-        case  128: euclidean_distance_kernel< 128><<<dim_grid, dim_block>>>(
+        case 128: euclidean_distance_kernel<128><<<dim_grid, dim_block>>>(
             thrust::raw_pointer_cast(d_som.data()), thrust::raw_pointer_cast(d_rotated_images.data()),
             thrust::raw_pointer_cast(d_first_step.data()), neuron_size);
             break;
-        case   64: euclidean_distance_kernel<  64><<<dim_grid, dim_block>>>(
+        case 64: euclidean_distance_kernel<64><<<dim_grid, dim_block>>>(
             thrust::raw_pointer_cast(d_som.data()), thrust::raw_pointer_cast(d_rotated_images.data()),
             thrust::raw_pointer_cast(d_first_step.data()), neuron_size);
             break;
@@ -187,7 +187,7 @@ void generate_euclidean_distance_matrix_first_step_multi_gpu(thrust::device_vect
 
         // Copy data
         gpuErrchk(cudaMemcpyPeer(
-            thrust::raw_pointer_cast(d_first_step.data()) + offset[i] * number_of_spatial_transformations, 0,
+            thrust::raw_pointer_cast(d_first_step.data()) + offset[si] * number_of_spatial_transformations, 0,
             thrust::raw_pointer_cast(d_first_step_local[si - 1].data()),
             i, size[si] * number_of_spatial_transformations * sizeof(DataType)));
     }

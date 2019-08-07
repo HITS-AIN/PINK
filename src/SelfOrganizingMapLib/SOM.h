@@ -67,25 +67,25 @@ public:
 
     /// Construction by input data
     explicit SOM(InputData const& input_data)
-     : som_layout{extract_layout<SOMLayout::dimensionality>(input_data.som_width,
-       input_data.som_height, input_data.som_depth)},
-       neuron_layout{{input_data.neuron_dim, input_data.neuron_dim}},
+     : som_layout{extract_layout<SOMLayout::dimensionality>(input_data.m_som_width,
+       input_data.m_som_height, input_data.m_som_depth)},
+       neuron_layout{{input_data.m_neuron_dim, input_data.m_neuron_dim}},
        data(som_layout.size() * neuron_layout.size())
     {
         // Initialize SOM
-        if (input_data.init == SOMInitialization::ZERO)
+        if (input_data.m_init == SOMInitialization::ZERO)
             fill_value(&data[0], data.size());
-        else if (input_data.init == SOMInitialization::RANDOM)
-            fill_random_uniform(&data[0], data.size(), input_data.seed);
-        else if (input_data.init == SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION) {
-            fill_random_uniform(&data[0], data.size(), input_data.seed);
-            for (uint32_t n = 0; n < input_data.som_size; ++n)
-                for (uint32_t i = 0; i < input_data.neuron_dim; ++i)
-                    data[n * input_data.neuron_size + i * input_data.neuron_dim + i] = 1.0;
+        else if (input_data.m_init == SOMInitialization::RANDOM)
+            fill_random_uniform(&data[0], data.size(), input_data.m_seed);
+        else if (input_data.m_init == SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION) {
+            fill_random_uniform(&data[0], data.size(), input_data.m_seed);
+            for (uint32_t n = 0; n < input_data.m_som_size; ++n)
+                for (uint32_t i = 0; i < input_data.m_neuron_dim; ++i)
+                    data[n * input_data.m_neuron_size + i * input_data.m_neuron_dim + i] = 1.0;
         }
-        else if (input_data.init == SOMInitialization::FILEINIT) {
-            std::ifstream is(input_data.som_filename);
-            if (!is) throw pink::exception("Error opening " + input_data.som_filename);
+        else if (input_data.m_init == SOMInitialization::FILEINIT) {
+            std::ifstream is(input_data.m_som_filename);
+            if (!is) throw pink::exception("Error opening " + input_data.m_som_filename);
 
             header = get_file_header(is);
 
@@ -143,8 +143,8 @@ public:
 
     auto get_neuron(SOMLayoutType const& position) {
         auto&& beg = data.begin()
-                   + (position.dimension[0] * som_layout.dimension[1]
-                   + position.dimension[1]) * neuron_layout.size();
+                   + (position.m_dimension[0] * som_layout.m_dimension[1]
+                   + position.m_dimension[1]) * neuron_layout.size();
         auto&& end = beg + neuron_layout.size();
         return NeuronType(neuron_layout, std::vector<T>(beg, end));
     }
@@ -158,16 +158,16 @@ public:
     auto get_neuron_layout() const -> NeuronLayoutType const { return neuron_layout; }
 
     auto get_som_dimension() -> typename SOMLayoutType::DimensionType {
-        return som_layout.dimension;
+        return som_layout.m_dimension;
     }
     auto get_som_dimension() const -> typename SOMLayoutType::DimensionType const {
-        return som_layout.dimension;
+        return som_layout.m_dimension;
     }
     auto get_neuron_dimension() -> typename NeuronLayoutType::DimensionType {
-        return neuron_layout.dimension;
+        return neuron_layout.m_dimension;
     }
     auto get_neuron_dimension() const -> typename NeuronLayoutType::DimensionType const {
-        return neuron_layout.dimension;
+        return neuron_layout.m_dimension;
     }
 
 private:

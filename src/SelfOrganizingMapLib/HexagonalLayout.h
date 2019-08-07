@@ -26,40 +26,40 @@ struct HexagonalLayout
     typedef typename std::array<uint32_t, dimensionality> DimensionType;
 
     HexagonalLayout()
-     : dimension({0, 0}),
-       radius(0)
+     : m_dimension({0, 0}),
+       m_radius(0)
     {}
 
     HexagonalLayout(DimensionType const& dimension)
-     : dimension(dimension),
-       radius((dimension[0] - 1) / 2),
-       row_size(dimension[0]),
-       row_offset(dimension[0] + 1)
+     : m_dimension(dimension),
+       m_radius((dimension[0] - 1) / 2),
+       m_row_size(dimension[0]),
+       m_row_offset(dimension[0] + 1)
     {
         if (dimension[0] % 2 == 0) throw pink::exception("Only odd dimensions are allowed for hexagonal layout");
         if (dimension[0] != dimension[1]) throw pink::exception("dimension[0] must be identical to dimension[1]");
 
-        row_size[radius] = dimension[0];
-        for (uint32_t i = 1; i < radius + 1; ++i) {
-            row_size[radius + i] = dimension[0] - i;
-            row_size[radius - i] = dimension[0] - i;
+        m_row_size[m_radius] = dimension[0];
+        for (uint32_t i = 1; i < m_radius + 1; ++i) {
+            m_row_size[m_radius + i] = dimension[0] - i;
+            m_row_size[m_radius - i] = dimension[0] - i;
         }
 
-        row_offset[0] = 0;
+        m_row_offset[0] = 0;
         for (size_t i = 0; i < dimension[0]; ++i) {
-            row_offset[i + 1] = row_offset[i] + row_size[i];
+            m_row_offset[i + 1] = m_row_offset[i] + m_row_size[i];
         }
     }
 
     bool operator == (SelfType const& other) const
     {
-        return dimension == other.dimension;
+        return m_dimension == other.m_dimension;
     }
 
     /// Returns the number of elements for a hexagonal grid
     auto size() const
     {
-        return dimension[0] * dimension[0] - radius * (radius + 1);
+        return m_dimension[0] * m_dimension[0] - m_radius * (m_radius + 1);
     }
 
     /// Returns the array index of a layout position
@@ -67,8 +67,8 @@ struct HexagonalLayout
     /// position[1] -> r (row index)
     auto get_index(DimensionType const& position) const
     {
-        auto index = row_offset[position[1]] + position[0];
-        if (radius > position[1]) index -= radius - position[1];
+        auto index = m_row_offset[position[1]] + position[0];
+        if (m_radius > position[1]) index -= m_radius - position[1];
         return index;
     }
 
@@ -76,9 +76,9 @@ struct HexagonalLayout
     auto get_position(IndexType i) const
     {
         uint32_t r = 0;
-        for (;r < dimension[0]; ++r) if (i < row_offset[r+1]) break;
-        uint32_t q = i - row_offset[r];
-        if (radius > r) q += radius - r;
+        for (;r < m_dimension[0]; ++r) if (i < m_row_offset[r+1]) break;
+        uint32_t q = i - m_row_offset[r];
+        if (m_radius > r) q += m_radius - r;
         return DimensionType({q, r});
     }
 
@@ -104,16 +104,16 @@ struct HexagonalLayout
     }
 
     /// Number of rows and columns must be equal and stored in the first element
-    DimensionType dimension;
+    DimensionType m_dimension;
 
     /// Auxiliary quantity
-    uint32_t radius;
+    uint32_t m_radius;
 
     /// Number of elements in a row
-    std::vector<uint32_t> row_size;
+    std::vector<uint32_t> m_row_size;
 
     /// Starting index of a row
-    std::vector<uint32_t> row_offset;
+    std::vector<uint32_t> m_row_offset;
 };
 
 } // namespace pink
