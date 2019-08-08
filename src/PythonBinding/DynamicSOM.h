@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "SelfOrganizingMapLib/CartesianLayout.h"
-#include "SelfOrganizingMapLib/HexagonalLayout.h"
 #include "SelfOrganizingMapLib/SOM.h"
 #include "UtilitiesLib/DataType.h"
 #include "UtilitiesLib/Layout.h"
@@ -18,16 +16,12 @@
 
 namespace pink {
 
-class DynamicSOM
+struct DynamicSOM
 {
-public:
-
     DynamicSOM(std::string const& data_type, std::string const& som_layout,
         std::string const& neuron_layout, std::vector<ssize_t> shape, void* ptr);
 
     buffer_info get_buffer_info() const;
-
-private:
 
     std::shared_ptr<SOMBase> data;
 
@@ -38,7 +32,6 @@ private:
     std::string neuron_layout;
 
     uint8_t dimensionality;
-
 };
 
 } // namespace pink

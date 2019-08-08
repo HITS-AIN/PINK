@@ -16,24 +16,19 @@
 
 namespace pink {
 
-class DynamicData
+struct DynamicData
 {
-public:
-
     DynamicData(std::string const& data_type, std::string const& layout, std::vector<ssize_t> shape, void* ptr);
 
     buffer_info get_buffer_info() const;
 
-private:
+    std::shared_ptr<DataBase> m_data;
 
-    std::shared_ptr<DataBase> data;
+    std::string m_data_type;
 
-    std::string data_type;
+    std::string m_layout;
 
-    std::string layout;
-
-    uint8_t dimensionality;
-
+    uint8_t m_dimensionality;
 };
 
 } // namespace pink

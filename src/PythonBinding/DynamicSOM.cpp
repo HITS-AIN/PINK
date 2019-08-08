@@ -5,6 +5,8 @@
  */
 
 #include "DynamicSOM.h"
+#include "SelfOrganizingMapLib/CartesianLayout.h"
+#include "SelfOrganizingMapLib/HexagonalLayout.h"
 
 namespace pink {
 

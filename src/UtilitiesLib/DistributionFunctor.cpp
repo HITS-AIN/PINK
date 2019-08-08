@@ -11,9 +11,6 @@
 
 namespace pink {
 
-DistributionFunctorBase::~DistributionFunctorBase()
-{}
-
 StepFunctor::StepFunctor(float value)
  : m_value(value)
 {}

@@ -41,7 +41,7 @@ inline std::array<uint32_t, 3> extract_layout<3>(uint32_t x, uint32_t y, uint32_
     return std::array<uint32_t, 3>{x, y, z};
 }
 
-/// Abstract base class of data
+/// Abstract base class
 struct SOMBase
 {
     virtual ~SOMBase() {}

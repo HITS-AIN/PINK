@@ -11,6 +11,7 @@ pybind11_add_module(
     pink.cpp
     DynamicData.cpp
     DynamicSOM.cpp
+    DynamicTrainer.cpp
 )
 
 target_link_libraries(

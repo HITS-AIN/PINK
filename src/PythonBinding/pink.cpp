@@ -9,9 +9,8 @@
 #include <pybind11/pybind11.h>
 
 #include "DynamicData.h"
-//#include "DynamicMapper.h"
 #include "DynamicSOM.h"
-//#include "DynamicTrainer.h"
+#include "DynamicTrainer.h"
 #include "UtilitiesLib/DataType.h"
 #include "UtilitiesLib/Interpolation.h"
 #include "UtilitiesLib/Layout.h"
@@ -90,21 +89,24 @@ PYBIND11_MODULE(pink, m)
             );
         });
 
-//    py::class_<DynamicTrainer>(m, "trainer")
-//        .def(py::init<DynamicSOM&, std::function<float(float)>, int, uint32_t, bool, float, Interpolation, int>(),
-//            py::arg("som"),
-//            py::arg("distribution_function"),
-//            py::arg("verbosity") = 0,
-//            py::arg("number_of_rotations") = 360,
-//            py::arg("use_flip") = true,
-//            py::arg("max_update_distance") = -1.0,
-//            py::arg("interpolation") = Interpolation::BILINEAR,
-//            py::arg("euclidean_distance_dim") = -1
-//        )
-//        .def("__call__", [](DynamicTrainer& trainer, DynamicData const& data)
-//        {
-//            return trainer(data);
-//        });
+    py::class_<DynamicTrainer>(m, "trainer")
+        .def(py::init<DynamicSOM&, std::function<float(float)> const&, int,
+            uint32_t, bool, float, Interpolation, bool, uint32_t, DataType>(),
+            py::arg("som"),
+            py::arg("distribution_function"),
+            py::arg("verbosity") = 0,
+            py::arg("number_of_rotations") = 360,
+            py::arg("use_flip") = true,
+            py::arg("max_update_distance") = -1.0,
+            py::arg("interpolation") = Interpolation::BILINEAR,
+            py::arg("use_gpu") = true,
+            py::arg("euclidean_distance_dim") = -1,
+            py::arg("euclidean_distance_type") = DataType::UINT8
+        )
+        .def("__call__", [](DynamicTrainer& trainer, DynamicData const& data)
+        {
+            return trainer(data);
+        });
 
 //    py::class_<Mapper<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "mapper")
 //        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>,

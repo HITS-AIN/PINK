@@ -13,7 +13,7 @@
 
 namespace pink {
 
-/// Abstract base class of data
+/// Abstract base class
 struct DataBase
 {
     virtual ~DataBase() {}
