@@ -512,7 +512,7 @@ void InputData::print_parameters() const
               << "  Number of iterations = " << m_number_of_iterations << "\n"
               << "  Neuron dimension = " << m_neuron_dim << "x" << m_neuron_dim << "\n"
               << "  Euclidean distance dimension = "
-			  << m_euclidean_distance_dim << "x" << m_euclidean_distance_dim << "\n"
+              << m_euclidean_distance_dim << "x" << m_euclidean_distance_dim << "\n"
               << "  Data type for euclidean distance calculation = " << m_euclidean_distance_type << "\n"
               << "  Maximal number of progress information prints = " << m_max_number_of_progress_prints << "\n"
               << "  Intermediate storage of SOM = " << m_intermediate_storage << "\n"

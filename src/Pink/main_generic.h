@@ -57,7 +57,7 @@ void main_generic(InputData const& input_data)
 
 
         ProgressBar progress_bar(static_cast<int>(
-        	input_data.m_number_of_data_entries * input_data.m_number_of_iterations),
+            input_data.m_number_of_data_entries * input_data.m_number_of_iterations),
             70, input_data.m_max_number_of_progress_prints);
         uint32_t count = 0;
         for (uint32_t i = 0; i < input_data.m_number_of_iterations; ++i)
