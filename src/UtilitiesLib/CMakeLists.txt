@@ -10,3 +10,5 @@ add_library(
     get_file_header.cpp
     InputData.cpp
 )
+
+set_property(TARGET UtilitiesLib PROPERTY POSITION_INDEPENDENT_CODE ON)
