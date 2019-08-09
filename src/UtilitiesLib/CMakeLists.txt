@@ -9,5 +9,4 @@ add_library(
     DistributionFunctor.cpp
     get_file_header.cpp
     InputData.cpp
-    Point.cpp
 )

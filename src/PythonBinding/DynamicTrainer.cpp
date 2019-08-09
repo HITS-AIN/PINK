@@ -23,7 +23,7 @@ DynamicTrainer::DynamicTrainer(DynamicSOM& som, std::function<float(float)> cons
     if (som.m_neuron_layout != "cartesian-2d") throw std::runtime_error("neuron_layout not supported");
 
     if (euclidean_distance_dim == 0) {
-        euclidean_distance_dim = som.m_shape[2];
+        euclidean_distance_dim = static_cast<uint32_t>(som.m_shape[2]);
         if (number_of_rotations != 1)
             euclidean_distance_dim = static_cast<uint32_t>(euclidean_distance_dim * std::sqrt(2.0) / 2);
     }
@@ -51,7 +51,8 @@ DynamicTrainer::DynamicTrainer(DynamicSOM& som, std::function<float(float)> cons
 
 void DynamicTrainer::operator () (DynamicData const& data)
 {
-    auto s_trainer = *(std::dynamic_pointer_cast<Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m_trainer));
+    auto s_trainer = *(std::dynamic_pointer_cast<
+    	Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m_trainer));
     auto s_data = *(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data));
 
     s_trainer(s_data);
