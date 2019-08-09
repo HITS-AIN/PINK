@@ -91,7 +91,7 @@ public:
 
             // Ignore first three entries
             is.seekg((9 + SOMLayout::dimensionality) * sizeof(int), is.cur);
-            is.read((char*)&m_data[0], static_cast<std::streamsize>(m_data.size() * sizeof(float)));
+            is.read(reinterpret_cast<char*>(&m_data[0]), static_cast<std::streamsize>(m_data.size() * sizeof(float)));
         } else
             throw pink::exception("Unknown SOMInitialization");
     }

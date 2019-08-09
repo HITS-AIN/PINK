@@ -117,13 +117,13 @@ void main_generic(InputData const& input_data)
         int som_dimensionality = static_cast<int>(som.get_som_layout().dimensionality);
         int number_of_data_entries = static_cast<int>(input_data.m_number_of_data_entries);
 
-        result_file.write((char*)&version, sizeof(int));
-        result_file.write((char*)&file_type, sizeof(int));
-        result_file.write((char*)&data_type_idx, sizeof(int));
-        result_file.write((char*)&number_of_data_entries, sizeof(int));
-        result_file.write((char*)&som_layout_idx, sizeof(int));
-        result_file.write((char*)&som_dimensionality, sizeof(int));
-        for (auto d : som.get_som_layout().m_dimension) result_file.write((char*)&d, sizeof(int));
+        result_file.write(reinterpret_cast<char*>(&version), sizeof(int));
+        result_file.write(reinterpret_cast<char*>(&file_type), sizeof(int));
+        result_file.write(reinterpret_cast<char*>(&data_type_idx), sizeof(int));
+        result_file.write(reinterpret_cast<char*>(&number_of_data_entries), sizeof(int));
+        result_file.write(reinterpret_cast<char*>(&som_layout_idx), sizeof(int));
+        result_file.write(reinterpret_cast<char*>(&som_dimensionality), sizeof(int));
+        for (auto d : som.get_som_layout().m_dimension) result_file.write(reinterpret_cast<char*>(&d), sizeof(int));
 
         // File for spatial_transformations (optional)
         std::ofstream spatial_transformation_file;
@@ -134,12 +134,12 @@ void main_generic(InputData const& input_data)
             // <file format version> 3 <number of entries> <som layout> <data>
             file_type = 3;
 
-            spatial_transformation_file.write((char*)&version, sizeof(int));
-            spatial_transformation_file.write((char*)&file_type, sizeof(int));
-            spatial_transformation_file.write((char*)&number_of_data_entries, sizeof(int));
-            spatial_transformation_file.write((char*)&som_layout_idx, sizeof(int));
-            spatial_transformation_file.write((char*)&som_dimensionality, sizeof(int));
-            for (auto d : som.get_som_layout().m_dimension) spatial_transformation_file.write((char*)&d, sizeof(int));
+            spatial_transformation_file.write(reinterpret_cast<char*>(&version), sizeof(int));
+            spatial_transformation_file.write(reinterpret_cast<char*>(&file_type), sizeof(int));
+            spatial_transformation_file.write(reinterpret_cast<char*>(&number_of_data_entries), sizeof(int));
+            spatial_transformation_file.write(reinterpret_cast<char*>(&som_layout_idx), sizeof(int));
+            spatial_transformation_file.write(reinterpret_cast<char*>(&som_dimensionality), sizeof(int));
+            for (auto d : som.get_som_layout().m_dimension) spatial_transformation_file.write(reinterpret_cast<char*>(&d), sizeof(int));
         }
 
         Mapper<SOMLayout, DataLayout, T, UseGPU> mapper(
@@ -162,7 +162,7 @@ void main_generic(InputData const& input_data)
             // corresponds to structured binding with C++17:
             //auto& [euclidean_distance_matrix, best_rotation_matrix] = mapper(data);
 
-            result_file.write((char*)&std::get<0>(result)[0],
+            result_file.write(reinterpret_cast<char*>(&std::get<0>(result)[0]),
                 static_cast<std::streamsize>(som.get_number_of_neurons() * sizeof(float)));
 
             if (input_data.m_write_rot_flip) {
@@ -171,7 +171,7 @@ void main_generic(InputData const& input_data)
                     char flip = static_cast<char>(std::get<1>(result)[i] / input_data.m_number_of_rotations);
                     float angle = (std::get<1>(result)[i] % input_data.m_number_of_rotations) * angle_step_radians;
                     spatial_transformation_file.write(&flip, sizeof(char));
-                    spatial_transformation_file.write((char*)&angle, sizeof(float));
+                    spatial_transformation_file.write(reinterpret_cast<char*>(&angle), sizeof(float));
                 }
             }
         }

@@ -50,12 +50,12 @@ public:
 
         // Ignore first three entries
         is.seekg(3 * sizeof(int), is.cur);
-        is.read((char*)&number_of_entries, sizeof(int));
+        is.read(reinterpret_cast<char*>(&number_of_entries), sizeof(int));
         // Ignore layout and dimensionality
         is.seekg(2 * sizeof(int), is.cur);
 
         for (uint8_t i = 0; i < layout.dimensionality; ++i) {
-            is.read((char*)&layout.m_dimension[i], sizeof(int));
+            is.read(reinterpret_cast<char*>(&layout.m_dimension[i]), sizeof(int));
         }
 
         header_offset = is.tellg();
@@ -110,7 +110,7 @@ private:
     {
         if (count < number_of_entries) {
             ptr_current_entry = std::make_shared<DataType>(layout);
-            is.read((char*)ptr_current_entry->get_data_pointer(),
+            is.read(reinterpret_cast<char*>(ptr_current_entry->get_data_pointer()),
                 static_cast<std::streamsize>(layout.size() * sizeof(T)));
             ++count;
         } else {
