@@ -36,16 +36,16 @@ void write(SOM<SOMLayout, NeuronLayout, T> const& som, std::string const& filena
     int som_dimensionality = som_layout.dimensionality;
     int neuron_dimensionality = neuron_layout.dimensionality;
 
-    os.write((char*)&version, sizeof(int));
-    os.write((char*)&file_type, sizeof(int));
-    os.write((char*)&data_type_idx, sizeof(int));
-    os.write((char*)&som_layout_idx, sizeof(int));
-    os.write((char*)&som_dimensionality, sizeof(int));
-    for (auto d : som_layout.m_dimension) os.write((char*)&d, sizeof(int));
-    os.write((char*)&neuron_layout_idx, sizeof(int));
-    os.write((char*)&neuron_dimensionality, sizeof(int));
-    for (auto d : neuron_layout.m_dimension) os.write((char*)&d, sizeof(int));
-    os.write((char*)som.get_data_pointer(), static_cast<std::streamsize>(som.size() * sizeof(T)));
+    os.write(reinterpret_cast<char*>(&version), sizeof(int));
+    os.write(reinterpret_cast<char*>(&file_type), sizeof(int));
+    os.write(reinterpret_cast<char*>(&data_type_idx), sizeof(int));
+    os.write(reinterpret_cast<char*>(&som_layout_idx), sizeof(int));
+    os.write(reinterpret_cast<char*>(&som_dimensionality), sizeof(int));
+    for (auto d : som_layout.m_dimension) os.write(reinterpret_cast<char*>(&d), sizeof(int));
+    os.write(reinterpret_cast<char*>(&neuron_layout_idx), sizeof(int));
+    os.write(reinterpret_cast<char*>(&neuron_dimensionality), sizeof(int));
+    for (auto d : neuron_layout.m_dimension) os.write(reinterpret_cast<char*>(&d), sizeof(int));
+    os.write(reinterpret_cast<const char*>(som.get_data_pointer()), static_cast<std::streamsize>(som.size() * sizeof(T)));
 }
 
 } // namespace pink
