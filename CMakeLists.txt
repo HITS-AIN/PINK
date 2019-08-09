@@ -50,6 +50,7 @@ if(CONAN)
                     BUILD missing)
     
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    set(CONAN_SYSTEM_INCLUDES "On")
     conan_basic_setup()
 endif()
 
