@@ -19,6 +19,19 @@ target_link_libraries(
     UtilitiesLib
 )
 
+add_library(
+    PythonBindingLib
+    STATIC
+    DynamicData.cpp
+    DynamicSOM.cpp
+    DynamicTrainer.cpp
+)
+
+target_link_libraries(
+    PythonBindingLib PRIVATE
+    UtilitiesLib
+)
+
 set_target_properties(pink PROPERTIES PREFIX "")
 
 install( 

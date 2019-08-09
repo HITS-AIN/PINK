@@ -28,7 +28,7 @@ struct DynamicData
 
     std::string m_layout;
 
-    uint8_t m_dimensionality;
+    std::vector<ssize_t> m_shape;
 };
 
 } // namespace pink

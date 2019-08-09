@@ -95,12 +95,12 @@ PYBIND11_MODULE(pink, m)
             py::arg("som"),
             py::arg("distribution_function"),
             py::arg("verbosity") = 0,
-            py::arg("number_of_rotations") = 360,
+            py::arg("number_of_rotations") = 360UL,
             py::arg("use_flip") = true,
             py::arg("max_update_distance") = -1.0,
             py::arg("interpolation") = Interpolation::BILINEAR,
             py::arg("use_gpu") = true,
-            py::arg("euclidean_distance_dim") = -1,
+            py::arg("euclidean_distance_dim") = 0UL,
             py::arg("euclidean_distance_type") = DataType::UINT8
         )
         .def("__call__", [](DynamicTrainer& trainer, DynamicData const& data)

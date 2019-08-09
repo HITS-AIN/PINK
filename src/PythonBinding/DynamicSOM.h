@@ -23,15 +23,15 @@ struct DynamicSOM
 
     buffer_info get_buffer_info() const;
 
-    std::shared_ptr<SOMBase> data;
+    std::shared_ptr<SOMBase> m_data;
 
-    std::string data_type;
+    std::string m_data_type;
 
-    std::string som_layout;
+    std::string m_som_layout;
 
-    std::string neuron_layout;
+    std::string m_neuron_layout;
 
-    uint8_t dimensionality;
+    std::vector<ssize_t> m_shape;
 };
 
 } // namespace pink
