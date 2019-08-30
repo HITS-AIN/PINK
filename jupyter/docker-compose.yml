@@ -1,0 +1,18 @@
+version: "2.3"
+services:
+
+  pink:
+    image: astroinformatix/pink-jupyter:devel-gpu
+    runtime: nvidia
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - $PWD/notebooks:/notebooks
+      - /home/doserbd/projects/AIN-ADASS/:/notebooks/data
+      - /home/doserbd/git/pink/build/cmake.run.linux.x86_64:/PINK
+    environment:
+      - USER_ID=${USER_ID}
+      - GROUP_ID=${GROUP_ID}
+      - USER_NAME=${USER_NAME}
+      - GROUP_NAME=${GROUP_NAME}
+    ports:
+      - 8888:8888
