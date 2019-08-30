@@ -123,6 +123,8 @@ public:
 
     void operator () (Data<DataLayout, T> const& data)
     {
+    	std::cout << "hey cpu" << std::endl;
+
         uint32_t neuron_dim = m_som.get_neuron_dimension()[0];
         uint32_t neuron_size = neuron_dim * neuron_dim;
 
@@ -173,6 +175,9 @@ public:
 
         ++this->m_update_info[static_cast<uint32_t>(best_match)];
     }
+
+    void update_som()
+    {}
 
 private:
 
@@ -229,6 +234,8 @@ public:
     /// Training the SOM by a single data point
     void operator () (Data<DataLayout, T> const& data)
     {
+    	std::cout << "hey gpu" << std::endl;
+
         /// Device memory for data
         thrust::device_vector<T> d_data = data.get_data();
 
@@ -272,6 +279,7 @@ public:
 
     void update_som()
     {
+    	std::cout << "hey gpu update_som" << std::endl;
         thrust::copy(d_som.begin(), d_som.end(), m_som.get_data_pointer());
     }
 

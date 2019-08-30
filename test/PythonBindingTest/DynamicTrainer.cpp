@@ -28,7 +28,7 @@ TEST(GenericPythonBindingTest, DynamicTrainer)
 
     auto&& f = GaussianFunctor(1.1f, 0.2f);
 
-    DynamicTrainer trainer(som, f, 0, 16, true, -1.0, Interpolation::BILINEAR, 3, false, DataType::UINT8);
+    DynamicTrainer trainer(som, f, 0, 16, true, -1.0, Interpolation::BILINEAR, true, 3, DataType::UINT8);
 
     trainer(data);
 }

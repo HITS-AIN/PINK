@@ -20,12 +20,16 @@ struct DynamicTrainer
 {
     DynamicTrainer(DynamicSOM& som, std::function<float(float)> const& distribution_function,
         int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-        Interpolation interpolation, uint32_t euclidean_distance_dim, bool use_gpu,
+        Interpolation interpolation, bool use_gpu, uint32_t euclidean_distance_dim,
         DataType euclidean_distance_type);
 
     void operator () (DynamicData const& data);
 
+    void update_som();
+
     std::shared_ptr<TrainerBase> m_trainer;
+
+    bool m_use_gpu;
 };
 
 } // namespace pink

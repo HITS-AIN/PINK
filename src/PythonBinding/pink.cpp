@@ -111,6 +111,10 @@ PYBIND11_MODULE(pink, m)
         .def("__call__", [](DynamicTrainer& trainer, DynamicData const& data)
         {
             return trainer(data);
+        })
+        .def("update_som", [](DynamicTrainer& trainer)
+        {
+            return trainer.update_som();
         });
 
 //    py::class_<Mapper<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "mapper")
