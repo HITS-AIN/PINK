@@ -13,6 +13,10 @@ RUN echo $TZ > /etc/timezone && \
   apt-get clean
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        libomp-dev \
+        libsm6 \
+        libxext6 \
+        libxrender-dev \
         python3-tk \
         && \
     apt-get clean && \
@@ -24,18 +28,17 @@ RUN pip3 install --upgrade pip && \
     jupyter \
     matplotlib \
     numpy \
+    opencv-python \
     tensorflow \
     tqdm
 
-ENV PYTHONPATH /PINK/build/default/lib
-ENV JUPYTER_PATH /PINK/build/default/lib
-ENV LD_LIBRARY_PATH /PINK/build/default/lib
+ENV PYTHONPATH /PINK/lib
+ENV JUPYTER_PATH /PINK/lib
+ENV LD_LIBRARY_PATH /PINK/lib
 
 # Set up notebook config
 COPY jupyter_notebook_config.py /jupyter-config/
 ENV JUPYTER_CONFIG_DIR /jupyter-config
-
-COPY notebooks-gpu /notebooks
 
 # Add entrypoint
 ADD chmod_notebooks.sh /entrypoint.d/
