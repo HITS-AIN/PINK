@@ -12,6 +12,7 @@
 #include "DynamicSOM.h"
 #include "DynamicTrainer.h"
 #include "UtilitiesLib/DataType.h"
+#include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/Interpolation.h"
 #include "UtilitiesLib/Layout.h"
 #include "UtilitiesLib/Version.h"
@@ -40,6 +41,10 @@ PYBIND11_MODULE(pink, m)
        .value("CARTESIAN", Layout::CARTESIAN)
        .value("HEXAGONAL", Layout::HEXAGONAL)
        .export_values();
+
+    py::class_<GaussianFunctor>(m, "GaussianFunctor")
+       .def(py::init<float, float>())
+       .def("__call__", [](const GaussianFunctor& f, float d) { return f(d); });
 
     py::class_<DynamicData>(m, "data", py::buffer_protocol())
         .def(py::init([](py::buffer b, std::string data_type, std::string layout)
@@ -93,7 +98,7 @@ PYBIND11_MODULE(pink, m)
         .def(py::init<DynamicSOM&, std::function<float(float)> const&, int,
             uint32_t, bool, float, Interpolation, bool, uint32_t, DataType>(),
             py::arg("som"),
-            py::arg("distribution_function"),
+            py::arg("distribution_function") = GaussianFunctor(1.1f, 0.2f),
             py::arg("verbosity") = 0,
             py::arg("number_of_rotations") = 360UL,
             py::arg("use_flip") = true,
