@@ -52,15 +52,15 @@ void DynamicTrainer::operator () (DynamicData const& data)
     
     if (m_use_gpu)
     {
-        auto s_trainer = *(std::dynamic_pointer_cast<
-    	    Trainer<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m_trainer));
-        s_trainer(s_data);
+        auto s_trainer = std::dynamic_pointer_cast<
+    	    Trainer<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m_trainer);
+        s_trainer->operator()(s_data);
     }
     else
     {
-        auto s_trainer = *(std::dynamic_pointer_cast<
-            Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m_trainer));
-        s_trainer(s_data); 
+        auto s_trainer = std::dynamic_pointer_cast<
+            Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m_trainer);
+        s_trainer->operator()(s_data); 
     }
 }
 
@@ -68,15 +68,15 @@ void DynamicTrainer::update_som()
 {
     if (m_use_gpu)
     {
-		auto s_trainer = *(std::dynamic_pointer_cast<
-			Trainer<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m_trainer));
-        s_trainer.update_som();
+		auto s_trainer = std::dynamic_pointer_cast<
+			Trainer<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m_trainer);
+        s_trainer->update_som();
     }
     else
     {
-		auto s_trainer = *(std::dynamic_pointer_cast<
-			Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m_trainer));
-        s_trainer.update_som();
+		auto s_trainer = std::dynamic_pointer_cast<
+			Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m_trainer);
+        s_trainer->update_som();
     }
 }
 

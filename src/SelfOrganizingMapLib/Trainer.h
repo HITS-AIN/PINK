@@ -123,8 +123,6 @@ public:
 
     void operator () (Data<DataLayout, T> const& data)
     {
-    	std::cout << "hey cpu" << std::endl;
-
         uint32_t neuron_dim = m_som.get_neuron_dimension()[0];
         uint32_t neuron_size = neuron_dim * neuron_dim;
 
@@ -174,6 +172,10 @@ public:
         }
 
         ++this->m_update_info[static_cast<uint32_t>(best_match)];
+
+#ifdef PRINT_DEBUG
+        std::cout << "best_match = " << best_match << std::endl;
+#endif
     }
 
     void update_som()
@@ -196,6 +198,8 @@ class Trainer<SOMLayout, DataLayout, T, true> : public TrainerBase, public Train
     typedef typename TrainerCommon<SOMLayout, DataLayout, T>::UpdateInfoType UpdateInfoType;
 
 public:
+
+    Trainer(Trainer const&) = delete;
 
     Trainer(SOMType& som, std::function<float(float)> const& distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
@@ -234,8 +238,6 @@ public:
     /// Training the SOM by a single data point
     void operator () (Data<DataLayout, T> const& data)
     {
-    	std::cout << "hey gpu" << std::endl;
-
         /// Device memory for data
         thrust::device_vector<T> d_data = data.get_data();
 
@@ -273,13 +275,14 @@ public:
         update_neurons(d_som, d_spatial_transformed_images, d_best_rotation_matrix, d_euclidean_distance_matrix,
             d_best_match, d_update_factors, this->m_som.get_number_of_neurons(), neuron_size);
 
+        thrust::copy(d_som.begin(), d_som.end(), m_som.get_data_pointer());
+
         thrust::host_vector<uint32_t> best_match = d_best_match;
         ++this->m_update_info[best_match[0]];
     }
 
     void update_som()
     {
-    	std::cout << "hey gpu update_som" << std::endl;
         thrust::copy(d_som.begin(), d_som.end(), m_som.get_data_pointer());
     }
 

@@ -23,6 +23,8 @@ struct DynamicTrainer
         Interpolation interpolation, bool use_gpu, uint32_t euclidean_distance_dim,
         DataType euclidean_distance_type);
 
+    DynamicTrainer(DynamicTrainer const&) = delete;
+
     void operator () (DynamicData const& data);
 
     void update_som();
