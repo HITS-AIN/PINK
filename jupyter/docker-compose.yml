@@ -8,7 +8,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - $PWD/notebooks:/notebooks
       - /home/doserbd/projects/AIN-ADASS/:/notebooks/data
-      - /home/doserbd/git/pink/build/cmake.run.linux.x86_64:/PINK
+      - /home/doserbd/git/pink/build/default:/PINK
     environment:
       - USER_ID=${USER_ID}
       - GROUP_ID=${GROUP_ID}

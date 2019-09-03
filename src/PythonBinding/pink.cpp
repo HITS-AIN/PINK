@@ -9,6 +9,7 @@
 #include <pybind11/pybind11.h>
 
 #include "DynamicData.h"
+#include "DynamicMapper.h"
 #include "DynamicSOM.h"
 #include "DynamicTrainer.h"
 #include "UtilitiesLib/DataType.h"
@@ -117,20 +118,20 @@ PYBIND11_MODULE(pink, m)
             return trainer.update_som();
         });
 
-//    py::class_<Mapper<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m, "mapper")
-//        .def(py::init<SOM<CartesianLayout<2>, CartesianLayout<2>,
-//            float>&, int, uint32_t, bool, Interpolation, int>(),
-//            py::arg("som"),
-//            py::arg("verbosity") = 0,
-//            py::arg("number_of_rotations") = 360,
-//            py::arg("use_flip") = true,
-//            py::arg("interpolation") = Interpolation::BILINEAR,
-//            py::arg("euclidean_distance_dim") = -1
-//        )
-//        .def("__call__", [](Mapper<CartesianLayout<2>, CartesianLayout<2>,
-//            float, false>& mapper, Data<CartesianLayout<2>, float> const& data)
-//        {
-//            return mapper(data);
-//        });
+    py::class_<DynamicMapper>(m, "mapper")
+        .def(py::init<DynamicSOM const&, int, uint32_t, bool, Interpolation, bool, uint32_t, DataType>(),
+            py::arg("som"),
+            py::arg("verbosity") = 0,
+            py::arg("number_of_rotations") = 360,
+            py::arg("use_flip") = true,
+            py::arg("interpolation") = Interpolation::BILINEAR,
+            py::arg("use_gpu") = true,
+            py::arg("euclidean_distance_dim") = 0UL,
+			py::arg("euclidean_distance_type") = DataType::UINT8
+        )
+        .def("__call__", [](DynamicMapper& mapper, DynamicData const& data)
+        {
+            return mapper(data);
+        });
 
 }

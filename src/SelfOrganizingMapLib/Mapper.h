@@ -32,12 +32,18 @@
 
 namespace pink {
 
+/// Abstract base class
+struct MapperBase
+{
+    virtual ~MapperBase() {}
+};
+
 template <typename SOMLayout, typename DataLayout, typename T>
-class MapperBase
+class MapperCommon
 {
 public:
 
-    MapperBase(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations,
+    MapperCommon(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations,
         bool use_flip, Interpolation interpolation, uint32_t euclidean_distance_dim)
      : m_som(som),
        m_verbosity(verbosity),
@@ -75,14 +81,14 @@ class Mapper;
 
 /// CPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Mapper<SOMLayout, DataLayout, T, false> : public MapperBase<SOMLayout, DataLayout, T>
+class Mapper<SOMLayout, DataLayout, T, false> : public MapperBase, public MapperCommon<SOMLayout, DataLayout, T>
 {
 public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity,
         uint32_t number_of_rotations, bool use_flip,
         Interpolation interpolation, uint32_t euclidean_distance_dim)
-     : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
+     : MapperCommon<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
                                             use_flip, interpolation, euclidean_distance_dim)
     {}
 
@@ -111,14 +117,14 @@ public:
 
 /// GPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Mapper<SOMLayout, DataLayout, T, true> : public MapperBase<SOMLayout, DataLayout, T>
+class Mapper<SOMLayout, DataLayout, T, true> : public MapperBase, public MapperCommon<SOMLayout, DataLayout, T>
 {
 public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
         Interpolation interpolation, uint32_t euclidean_distance_dim,
         uint32_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
-     : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
+     : MapperCommon<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
                                             use_flip, interpolation, euclidean_distance_dim),
        d_som(som.get_data()),
        m_block_size(block_size),

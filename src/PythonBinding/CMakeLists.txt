@@ -15,6 +15,7 @@ if(PINK_USE_CUDA)
         PythonBindingLib
 	    SHARED
 	    DynamicData.cpp
+	    DynamicMapper.cu
 	    DynamicSOM.cpp
 	    DynamicTrainer.cu
     )
