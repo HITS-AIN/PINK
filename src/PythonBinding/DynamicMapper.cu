@@ -1,5 +1,5 @@
 /**
- * @file   PythonBinding/DynamicMapper.cpp
+ * @file   PythonBinding/DynamicMapper.cu
  * @date   Sep 3, 2019
  * @author Bernd Doser, HITS gGmbH
  */

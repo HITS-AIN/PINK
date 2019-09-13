@@ -9,5 +9,4 @@
 /data
 *__pycache__
 /softwipe_build/
-/run*.sh
 .ipynb_checkpoints/
