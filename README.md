@@ -58,24 +58,26 @@ For conversion and visualization of images and SOM some python scripts are avail
   - show_som.py:                    Visualize binary SOM file format
   - train.py:                       SOM training using the PINK Python interface
 
+
 ## Benchmarks
 
 The input data for the SOM training are radio-synthesis images of Radio Galaxy Zoo containing 176750 images of the dimension 124x124.
 The SOM layout is hexagonal of the dimension 21x21 which has 331 neurons (see image above). The size of the neurons is 64x64.
 The accuracy for the rotational invariance is 1 degree and the flip invariance is used.
 
-CPU: 2x Intel Gold 5118 (48 cores in total with hyper threading)
+|                              | PINK 1 | Pink 2 |
+| ---                          |    --- |    --- |
+| CPU-1                        |        |  35373 |
+| CPU-1 +    NVIDIA Tesla P40  |   3069 |    909 |
+| CPU-1 + 2x NVIDIA Tesla P40  |   2069 |    636 |
+| CPU-1 + 4x NVIDIA Tesla P40  |   1891 |    858 |
+| CPU-2 +    NVIDIA RTX 2080   |        |    673 |
 
-GPU: 4x NVIDIA Tesla P40
+All times are in seconds.
 
-|               | PINK 1 | Pink 2 |
-| ---           |    --- |    --- |
-| CPU           |        |  35373 |
-| CPU + 1x GPU  |   3069 |    909 |
-| CPU + 2x GPU  |   2069 |    636 |
-| CPU + 4x GPU  |   1891 |    858 |
+CPU-1: Intel Gold 5118 (2 sockets, 12 physical cores per socket)
+CPU-2: Intel Core i7-8700K (1 socket, 6 physical cores per socket)
 
-Time in seconds.
 
 ## Publication
 
