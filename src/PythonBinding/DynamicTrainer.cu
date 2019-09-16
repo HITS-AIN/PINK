@@ -20,7 +20,6 @@ DynamicTrainer::DynamicTrainer(DynamicSOM& som, std::function<float(float)> cons
  : m_use_gpu(use_gpu)
 {
     if (som.m_data_type != "float32") throw std::runtime_error("data-type not supported");
-    if (som.m_som_layout != "cartesian-2d") throw std::runtime_error("som_layout not supported");
     if (som.m_neuron_layout != "cartesian-2d") throw std::runtime_error("neuron_layout not supported");
 
     if (euclidean_distance_dim == 0) {

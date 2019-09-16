@@ -123,3 +123,16 @@ def calculate_map(somWidth, somHeight, neurons, neuronWidth, neuronHeight, share
                         else:
                             image[x][y] = neuron
     return image
+
+
+def show(som, border = 0):
+    """ Visualization of PINK SOM """
+    
+    print("som_layout", som.get_som_layout())
+    
+    np_som = np.array(som, copy=False)
+    print("shape", np_som.shape)
+    
+    return calculate_map(np_som.shape[0], np_som.shape[1],
+                          np_som.reshape(np_som.shape[0] * np_som.shape[1], np_som.shape[2], np_som.shape[3]),
+                          np_som.shape[2], np_som.shape[3], shareIntensity = False, border = 2, shape="box")

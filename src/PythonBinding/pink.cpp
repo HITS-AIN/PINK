@@ -82,7 +82,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("som_layout") = "cartesian-2d",
             py::arg("neuron_layout") = "cartesian-2d"
         )
-        .def_buffer([](DynamicSOM &m) -> py::buffer_info
+        .def_buffer([](DynamicSOM& m) -> py::buffer_info
         {
             auto&& info = m.get_buffer_info();
             return py::buffer_info(
@@ -93,7 +93,11 @@ PYBIND11_MODULE(pink, m)
                 info.m_shape,
                 info.m_strides
             );
-        });
+        })
+        .def("get_som_layout", [](DynamicSOM& som)
+		{
+            return som.m_som_layout;
+		});
 
     py::class_<DynamicTrainer>(m, "trainer")
         .def(py::init<DynamicSOM&, std::function<float(float)> const&, int,
@@ -133,5 +137,4 @@ PYBIND11_MODULE(pink, m)
         {
             return mapper(data);
         });
-
 }
