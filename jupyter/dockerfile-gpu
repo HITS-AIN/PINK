@@ -34,8 +34,8 @@ RUN git clone https://github.com/HITS-AIN/PINK.git && \
     cmake .. && \
     make
 
-ENV PYTHONPATH /PINK/build/lib
-ENV JUPYTER_PATH /PINK/build/lib
+ENV PYTHONPATH /PINK/build/lib:/PINK/scripts
+ENV JUPYTER_PATH /PINK/build/lib:/PINK/scripts
 
 COPY notebooks-gpu /notebooks
 
