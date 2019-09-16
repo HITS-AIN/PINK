@@ -33,14 +33,14 @@ DynamicTrainer::DynamicTrainer(DynamicSOM& som, std::function<float(float)> cons
     if (m_use_gpu)
     {
         m_trainer = std::make_shared<Trainer<CartesianLayout<2>, CartesianLayout<2>, float, true>>(
-            *(std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(som.m_data)),
+            *(std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(som.m_som)),
             distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
             interpolation, euclidean_distance_dim, 256, euclidean_distance_type);
     }
     else
     {
         m_trainer = std::make_shared<Trainer<CartesianLayout<2>, CartesianLayout<2>, float, false>>(
-            *(std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(som.m_data)),
+            *(std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(som.m_som)),
             distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
             interpolation, euclidean_distance_dim);
     }

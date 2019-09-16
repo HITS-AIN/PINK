@@ -4,6 +4,8 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include <cassert>
+
 #include "DynamicSOM.h"
 #include "SelfOrganizingMapLib/CartesianLayout.h"
 #include "SelfOrganizingMapLib/HexagonalLayout.h"
@@ -11,42 +13,49 @@
 namespace pink {
 
 DynamicSOM::DynamicSOM(std::string const& data_type, std::string const& som_layout,
-        std::string const& neuron_layout, std::vector<ssize_t> shape, void* ptr)
+        std::string const& neuron_layout, std::vector<uint32_t> const& shape, void* ptr)
  : m_data_type(data_type),
    m_som_layout(som_layout),
    m_neuron_layout(neuron_layout),
    m_shape(shape)
 {
-    if (data_type != "float32") throw std::runtime_error("data-type not supported");
-    if (som_layout != "cartesian-2d") throw std::runtime_error("som_layout not supported");
-    if (neuron_layout != "cartesian-2d") throw std::runtime_error("neuron_layout not supported");
+    if (m_data_type != "float32") throw std::runtime_error("data-type not supported");
+    if (m_neuron_layout != "cartesian-2d") throw std::runtime_error("neuron_layout not supported");
 
-    std::vector<uint32_t> my_shape(std::begin(shape), std::end(shape));
-
-    if (m_shape.size() == 4)
+    if (m_som_layout == "cartesian-2d")
     {
+    	assert(m_shape.size() == 4);
         auto&& p = static_cast<float*>(ptr);
-        m_data = std::make_shared<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(
-            CartesianLayout<2>{my_shape[0], my_shape[1]},
-            CartesianLayout<2>{my_shape[2], my_shape[3]},
-            std::vector<float>(p, p + my_shape[0] * my_shape[1] * my_shape[2] * my_shape[3]));
+        m_som = std::make_shared<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(
+            CartesianLayout<2>{{m_shape[0], m_shape[1]}},
+            CartesianLayout<2>{{m_shape[2], m_shape[3]}},
+            std::vector<float>(p, p + m_shape[0] * m_shape[1] * m_shape[2] * m_shape[3]));
+    }
+    else if (m_som_layout == "hexagonal-2d")
+    {
+    	assert(m_shape.size() == 3);
+        auto&& p = static_cast<float*>(ptr);
+        m_som = std::make_shared<SOM<HexagonalLayout, CartesianLayout<2>, float>>(
+            HexagonalLayout{{m_shape[0], m_shape[0]}},
+            CartesianLayout<2>{{m_shape[1], m_shape[2]}},
+            std::vector<float>(p, p + m_shape[0] * m_shape[1] * m_shape[2]));
     }
     else
     {
-        throw std::runtime_error("shape not supported");
+        throw std::runtime_error("som_layout " + m_som_layout + " not supported");
     }
 }
 
 buffer_info DynamicSOM::get_buffer_info() const
 {
-    if (m_shape.size() == 4)
+    if (m_som_layout == "cartesian-2d")
     {
         auto&& som_shape = std::dynamic_pointer_cast<
-            SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m_data)->get_som_dimension();
+            SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m_som)->get_som_dimension();
         auto&& neuron_shape = std::dynamic_pointer_cast<
-            SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m_data)->get_neuron_dimension();
+            SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m_som)->get_neuron_dimension();
         auto&& ptr = std::dynamic_pointer_cast<
-            SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m_data)->get_data_pointer();
+            SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(m_som)->get_data_pointer();
 
         return buffer_info(static_cast<void*>(ptr), static_cast<ssize_t>(sizeof(float)),
             "f", static_cast<ssize_t>(4),
@@ -58,10 +67,28 @@ buffer_info DynamicSOM::get_buffer_info() const
                                  static_cast<ssize_t>(sizeof(float) * neuron_shape[1] * neuron_shape[0]),
                                  static_cast<ssize_t>(sizeof(float) * neuron_shape[1]),
                                  static_cast<ssize_t>(sizeof(float))});
-    }
+	}
+	else if (m_som_layout == "hexagonal-2d")
+	{
+        auto&& som_shape = std::dynamic_pointer_cast<
+            SOM<HexagonalLayout, CartesianLayout<2>, float>>(m_som)->get_som_dimension();
+        auto&& neuron_shape = std::dynamic_pointer_cast<
+            SOM<HexagonalLayout, CartesianLayout<2>, float>>(m_som)->get_neuron_dimension();
+        auto&& ptr = std::dynamic_pointer_cast<
+            SOM<HexagonalLayout, CartesianLayout<2>, float>>(m_som)->get_data_pointer();
+
+        return buffer_info(static_cast<void*>(ptr), static_cast<ssize_t>(sizeof(float)),
+            "f", static_cast<ssize_t>(3),
+            std::vector<ssize_t>{static_cast<ssize_t>(som_shape[0]),
+                                 static_cast<ssize_t>(neuron_shape[0]),
+                                 static_cast<ssize_t>(neuron_shape[1])},
+            std::vector<ssize_t>{static_cast<ssize_t>(sizeof(float) * neuron_shape[1] * neuron_shape[0]),
+                                 static_cast<ssize_t>(sizeof(float) * neuron_shape[1]),
+                                 static_cast<ssize_t>(sizeof(float))});
+	}
     else
     {
-        throw std::runtime_error("shape not supported");
+    	throw std::runtime_error("som_layout " + m_som_layout + " not supported");
     }
 }
 

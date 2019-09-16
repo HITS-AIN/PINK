@@ -32,13 +32,13 @@ DynamicMapper::DynamicMapper(DynamicSOM const& som, int verbosity, uint32_t numb
     if (m_use_gpu)
     {
         m_mapper = std::make_shared<Mapper<CartesianLayout<2>, CartesianLayout<2>, float, true>>(
-            *(std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(som.m_data)),
+            *(std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(som.m_som)),
             verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim, 256, euclidean_distance_type);
     }
     else
     {
         m_mapper = std::make_shared<Mapper<CartesianLayout<2>, CartesianLayout<2>, float, false>>(
-            *(std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(som.m_data)),
+            *(std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(som.m_som)),
             verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim);
     }
 }

@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "SelfOrganizingMapLib/SOM.h"
 #include "UtilitiesLib/DataType.h"
@@ -19,11 +20,11 @@ namespace pink {
 struct DynamicSOM
 {
     DynamicSOM(std::string const& data_type, std::string const& som_layout,
-        std::string const& neuron_layout, std::vector<ssize_t> shape, void* ptr);
+        std::string const& neuron_layout, std::vector<uint32_t> const& shape, void* ptr);
 
     buffer_info get_buffer_info() const;
 
-    std::shared_ptr<SOMBase> m_data;
+    std::shared_ptr<SOMBase> m_som;
 
     std::string m_data_type;
 
@@ -31,7 +32,7 @@ struct DynamicSOM
 
     std::string m_neuron_layout;
 
-    std::vector<ssize_t> m_shape;
+    std::vector<uint32_t> m_shape;
 };
 
 } // namespace pink
