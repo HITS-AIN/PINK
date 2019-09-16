@@ -135,4 +135,4 @@ def show(som, border = 0):
     
     return calculate_map(np_som.shape[0], np_som.shape[1],
                           np_som.reshape(np_som.shape[0] * np_som.shape[1], np_som.shape[2], np_som.shape[3]),
-                          np_som.shape[2], np_som.shape[3], shareIntensity = False, border = 2, shape="box")
+                          np_som.shape[2], np_som.shape[3], shareIntensity = False, border = border, shape="box")
