@@ -36,6 +36,8 @@ namespace pink {
 struct TrainerBase
 {
     virtual ~TrainerBase() {}
+
+    virtual void update_som() = 0;
 };
 
 template <typename SOMLayout, typename DataLayout, typename T>
