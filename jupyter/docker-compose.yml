@@ -8,9 +8,9 @@ services:
     runtime: nvidia
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - $PWD/notebooks:/notebooks
-      - /home/doserbd/projects/AIN-ADASS/:/notebooks/data
-      - /home/doserbd/git/pink:/PINK
+      - ${PWD}/notebooks:/notebooks
+      - ${GIT_DIR}/pink:/PINK
+      - ${GIT_DIR}/AIN-ADASS:/notebooks/data
     environment:
       - USER_ID=${USER_ID}
       - GROUP_ID=${GROUP_ID}
