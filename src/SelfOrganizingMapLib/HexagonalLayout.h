@@ -7,6 +7,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <cstddef>
 #include <numeric>
 #include <vector>
@@ -60,6 +61,19 @@ struct HexagonalLayout
     auto size() const
     {
         return m_dimension[0] * m_dimension[0] - m_radius * (m_radius + 1);
+    }
+
+    static IndexType get_size_from_dim(IndexType dim)
+    {
+    	IndexType radius = (dim - 1) / 2;
+    	return dim * dim - radius * (radius + 1);
+    }
+
+    static IndexType get_dim_from_size(IndexType size)
+    {
+    	IndexType dim = std::sqrt((4 * size - 1) / 3);
+        assert(get_size_from_dim(dim) == size);
+	    return dim;
     }
 
     /// Returns the array index of a layout position

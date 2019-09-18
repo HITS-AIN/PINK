@@ -34,9 +34,10 @@ DynamicSOM::DynamicSOM(std::string const& data_type, std::string const& som_layo
     else if (m_som_layout == "hexagonal-2d")
     {
     	assert(m_shape.size() == 3);
+    	auto dim = HexagonalLayout::get_dim_from_size(m_shape[0]);
         auto&& p = static_cast<float*>(ptr);
         m_som = std::make_shared<SOM<HexagonalLayout, CartesianLayout<2>, float>>(
-            HexagonalLayout{{m_shape[0], m_shape[0]}},
+            HexagonalLayout{{dim, dim}},
             CartesianLayout<2>{{m_shape[1], m_shape[2]}},
             std::vector<float>(p, p + m_shape[0] * m_shape[1] * m_shape[2]));
     }
@@ -70,8 +71,8 @@ buffer_info DynamicSOM::get_buffer_info() const
 	}
 	else if (m_som_layout == "hexagonal-2d")
 	{
-        auto&& som_shape = std::dynamic_pointer_cast<
-            SOM<HexagonalLayout, CartesianLayout<2>, float>>(m_som)->get_som_dimension();
+        auto&& number_of_neurons = std::dynamic_pointer_cast<
+            SOM<HexagonalLayout, CartesianLayout<2>, float>>(m_som)->get_number_of_neurons();
         auto&& neuron_shape = std::dynamic_pointer_cast<
             SOM<HexagonalLayout, CartesianLayout<2>, float>>(m_som)->get_neuron_dimension();
         auto&& ptr = std::dynamic_pointer_cast<
@@ -79,7 +80,7 @@ buffer_info DynamicSOM::get_buffer_info() const
 
         return buffer_info(static_cast<void*>(ptr), static_cast<ssize_t>(sizeof(float)),
             "f", static_cast<ssize_t>(3),
-            std::vector<ssize_t>{static_cast<ssize_t>(som_shape[0]),
+            std::vector<ssize_t>{static_cast<ssize_t>(number_of_neurons),
                                  static_cast<ssize_t>(neuron_shape[0]),
                                  static_cast<ssize_t>(neuron_shape[1])},
             std::vector<ssize_t>{static_cast<ssize_t>(sizeof(float) * neuron_shape[1] * neuron_shape[0]),

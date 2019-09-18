@@ -134,8 +134,8 @@ def show(som, border = 0):
                              np_som.reshape(np_som.shape[0] * np_som.shape[1], np_som.shape[2], np_som.shape[3]),
                              np_som.shape[2], np_som.shape[3], shareIntensity = False, border = border, shape="box")
     if som.get_som_layout() == "hexagonal-2d":
-        return calculate_map(np_som.shape[0], np_som.shape[1],
-                             np_som.reshape(np_som.shape[0] * np_som.shape[1], np_som.shape[2], np_som.shape[3]),
-                             np_som.shape[2], np_som.shape[3], shareIntensity = False, border = border, shape="hex")
+        dim = math.sqrt((4 * np_som.shape[0] - 1) / 3);
+        return calculate_map(dim, dim, np_som.reshape(np_som.shape[0], np_som.shape[1] * np_som.shape[2]),
+                             np_som.shape[1], np_som.shape[2], shareIntensity = False, border = border, shape="hex")
     else:
         raise RuntimeError("Unsupported SOM layout %s" % som.get_som_layout())

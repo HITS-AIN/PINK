@@ -37,3 +37,17 @@ TEST(HexagonalLayoutTest, hex3)
 
     EXPECT_EQ(2.0, h.get_distance(0, 5));
 }
+
+TEST(HexagonalLayoutTest, get_size_from_dim)
+{
+	EXPECT_EQ(7UL, HexagonalLayout::get_size_from_dim(3UL));
+	EXPECT_EQ(19L, HexagonalLayout::get_size_from_dim(5UL));
+	EXPECT_EQ(37UL, HexagonalLayout::get_size_from_dim(7UL));
+}
+
+TEST(HexagonalLayoutTest, get_dim_from_size)
+{
+	EXPECT_EQ(3UL, HexagonalLayout::get_dim_from_size(7UL));
+	EXPECT_EQ(5UL, HexagonalLayout::get_dim_from_size(19UL));
+	EXPECT_EQ(7UL, HexagonalLayout::get_dim_from_size(37UL));
+}
