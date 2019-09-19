@@ -10,7 +10,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${PWD}/notebooks:/notebooks
       - ${GIT_DIR}/pink:/PINK
-      - ${GIT_DIR}/AIN-ADASS:/notebooks/data
+      - ${DATA_DIR}/AIN-ADASS:/notebooks/data
     environment:
       - USER_ID=${USER_ID}
       - GROUP_ID=${GROUP_ID}
