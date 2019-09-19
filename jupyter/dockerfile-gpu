@@ -1,4 +1,4 @@
-FROM braintwister/ubuntu-18.04-cuda-10.1-cmake-3.14-gcc-8-conan-1.16
+FROM braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-8-conan-1.18
 
 LABEL maintainer="Bernd Doser <bernd.doser@h-its.org>"
 
@@ -13,6 +13,10 @@ RUN echo $TZ > /etc/timezone && \
   apt-get clean
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        libomp-dev \
+        libsm6 \
+        libxext6 \
+        libxrender-dev \
         python3-tk \
         && \
     apt-get clean && \
@@ -24,6 +28,7 @@ RUN pip3 install --upgrade pip && \
     jupyter \
     matplotlib \
     numpy \
+    opencv-python \
     tensorflow \
     tqdm
 
@@ -37,7 +42,7 @@ RUN git clone https://github.com/HITS-AIN/PINK.git && \
 ENV PYTHONPATH /PINK/build/lib:/PINK/scripts
 ENV JUPYTER_PATH /PINK/build/lib:/PINK/scripts
 
-COPY notebooks-gpu /notebooks
+COPY notebooks /notebooks
 
 # Add entrypoint
 ADD chmod_notebooks.sh /entrypoint.d/
