@@ -18,7 +18,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='PINK convert binary formats')
     parser.add_argument('data', help='Data input file (.bin)', action=tools.check_extension({'bin'}))
-    parser.add_argument('-o', '--output', help='Data output file')
+    parser.add_argument('-o', '--output', default="out.bin", help='Data output file')
     parser.add_argument('-v', '--verbose', action='store_true', help='Be talkative')
     args = parser.parse_args()
 
