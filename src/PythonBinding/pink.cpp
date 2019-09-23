@@ -28,18 +28,18 @@ PYBIND11_MODULE(pink, m)
     m.doc() = "PINK python interface";
     m.attr("__version__") = std::string(PROJECT_VERSION) + " revision " + std::string(GIT_REVISION);
 
-    py::enum_<Interpolation>(m, "interpolation")
+    py::enum_<Interpolation>(m, "Interpolation")
        .value("NEAREST_NEIGHBOR", Interpolation::NEAREST_NEIGHBOR)
        .value("BILINEAR", Interpolation::BILINEAR)
        .export_values();
 
-    py::enum_<DataType>(m, "data_type")
+    py::enum_<DataType>(m, "DataType")
        .value("FLOAT", DataType::FLOAT)
        .value("UINT16", DataType::UINT16)
        .value("UINT8", DataType::UINT8)
        .export_values();
 
-    py::enum_<Layout>(m, "layout")
+    py::enum_<Layout>(m, "Layout")
        .value("CARTESIAN", Layout::CARTESIAN)
        .value("HEXAGONAL", Layout::HEXAGONAL)
        .export_values();
@@ -51,7 +51,7 @@ PYBIND11_MODULE(pink, m)
        )
        .def("__call__", [](const GaussianFunctor& f, float d) { return f(d); });
 
-    py::class_<DynamicData>(m, "data", py::buffer_protocol())
+    py::class_<DynamicData>(m, "Data", py::buffer_protocol())
         .def(py::init([](py::buffer b, std::string data_type, std::string layout)
         {
             py::buffer_info info = b.request();
@@ -74,7 +74,7 @@ PYBIND11_MODULE(pink, m)
             );
         });
 
-    py::class_<DynamicSOM>(m, "som", py::buffer_protocol())
+    py::class_<DynamicSOM>(m, "SOM", py::buffer_protocol())
         .def(py::init([](py::buffer b, std::string const& data_type,
             std::string const& som_layout, std::string const& neuron_layout)
         {
@@ -103,7 +103,7 @@ PYBIND11_MODULE(pink, m)
             return som.m_som_layout;
         });
 
-    py::class_<DynamicTrainer>(m, "trainer")
+    py::class_<DynamicTrainer>(m, "Trainer")
         .def(py::init<DynamicSOM&, std::function<float(float)> const&, int,
             uint32_t, bool, float, Interpolation, bool, uint32_t, DataType>(),
             py::arg("som"),
