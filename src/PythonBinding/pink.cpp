@@ -44,7 +44,10 @@ PYBIND11_MODULE(pink, m)
        .export_values();
 
     py::class_<GaussianFunctor>(m, "GaussianFunctor")
-       .def(py::init<float, float>())
+       .def(py::init<float, float>(),
+           py::arg("sigma") = 1.1,
+		   py::arg("damping") = 0.2
+       )
        .def("__call__", [](const GaussianFunctor& f, float d) { return f(d); });
 
     py::class_<DynamicData>(m, "data", py::buffer_protocol())
