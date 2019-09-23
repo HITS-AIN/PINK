@@ -1,6 +1,9 @@
 include_directories(
-    ${GTEST_INCLUDE_DIR}
     ${PROJECT_SOURCE_DIR}/src
+)
+
+include_directories(SYSTEM
+    ${GTEST_INCLUDE_DIR}
 )
 
 add_executable(

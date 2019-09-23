@@ -1,5 +1,8 @@
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
+)
+
+include_directories(SYSTEM
     ${PYTHON_INCLUDE_DIRS}
 )
 
@@ -9,28 +12,44 @@ if(PINK_USE_CUDA)
     )
 
     cuda_add_library(
-        pink
+        PythonBindingLib
         SHARED
-        pink.cu
+        DynamicData.cpp
+        DynamicMapper.cu
+        DynamicSOM.cpp
+        DynamicTrainer.cu
     )
     
     target_link_libraries(
-        pink
+        PythonBindingLib
         CudaLib
-        pybind11::module
         UtilitiesLib
     )
 else()
-    pybind11_add_module(
-        pink MODULE
-        pink.cpp
+    add_library(
+        PythonBindingLib
+        SHARED
+        DynamicData.cpp
+        DynamicSOM.cpp
+        DynamicTrainer.cpp
     )
     
     target_link_libraries(
-        pink PRIVATE
+        PythonBindingLib PRIVATE
         UtilitiesLib
     )
 endif()
+
+pybind11_add_module(
+    pink MODULE
+    pink.cpp
+)
+
+target_link_libraries(
+    pink PRIVATE
+    PythonBindingLib
+    UtilitiesLib
+)
 
 set_target_properties(pink PROPERTIES PREFIX "")
 

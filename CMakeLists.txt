@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Pink VERSION 2.3 LANGUAGES C CXX)
+project(Pink VERSION 2.4 LANGUAGES C CXX)
 
 message(STATUS "${PROJECT_NAME} version ${PROJECT_VERSION}")
 
@@ -15,10 +15,12 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_INSTALL_PREFIX})
     message(FATAL_ERROR "CMAKE_INSTALL_PREFIX must not be CMAKE_SOURCE_DIR.")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++14 -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 if(${CMAKE_CXX_COMPILER} MATCHES "clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-braces -Wmissing-field-initializers")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-braces -Wmissing-field-initializers -Wno-unused-function")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabsolute-value -Wbad-function-cast -Wconditional-uninitialized -Wconstant-conversion -Wconversion -Wdelete-non-virtual-dtor -Wfloat-conversion -Wfloat-equal -Wformat-security -Wheader-hygiene -Wimplicit-fallthrough -Winfinite-recursion -Wliteral-conversion -Wmultichar -Wnon-virtual-dtor -Wnull-arithmetic -Wnull-conversion -Woverlength-strings -Wpointer-bool-conversion -Wpointer-sign -Wreturn-type -Wself-assign -Wself-assign-field -Wself-assign-overloaded -Wself-move -Wshift-sign-overflow -Wshorten-64-to-32 -Wsign-compare -Wsign-conversion -Wsometimes-uninitialized -Wstatic-self-init -Wstring-plus-int -Wstring-compare -Wstring-conversion -Wtautological-constant-compare -Wtautological-pointer-compare -Wtautological-type-limit-compare -Wtautological-unsigned-zero-compare -Wundef -Wuninitialized -Wvector-conversion")
 endif()
 
 find_package(OpenMP REQUIRED)
@@ -48,6 +50,7 @@ if(CONAN)
                     BUILD missing)
     
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    set(CONAN_SYSTEM_INCLUDES "On")
     conan_basic_setup()
 endif()
 

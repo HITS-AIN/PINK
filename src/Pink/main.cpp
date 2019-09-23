@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 
         InputData input_data(argc, argv);
 
-        if (input_data.use_gpu)
+        if (input_data.m_use_gpu)
 #ifdef PINK_USE_CUDA
             main_gpu(input_data);
 #else

@@ -69,8 +69,8 @@ void update_neurons(thrust::device_vector<T>& d_som, thrust::device_vector<T> co
     }
     {
         // Setup execution parameters
-        const uint16_t block_size = 32;
-        int grid_size = ceil((float)neuron_size / block_size);
+        const uint32_t block_size = 32;
+        const uint32_t grid_size = static_cast<uint32_t>(ceil(static_cast<float>(neuron_size) / block_size));
         dim3 dim_block(block_size);
         dim3 dim_grid(grid_size, som_size);
 

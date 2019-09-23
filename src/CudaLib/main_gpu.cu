@@ -16,16 +16,16 @@ void main_gpu(InputData const & input_data)
 {
     cuda_print_properties();
 
-    if (input_data.layout == Layout::CARTESIAN)
-        if (input_data.dimensionality == 1)
+    if (input_data.m_layout == Layout::CARTESIAN)
+        if (input_data.m_dimensionality == 1)
             main_generic<CartesianLayout<1>, CartesianLayout<2>, float, true>(input_data);
-        else if (input_data.dimensionality == 2)
+        else if (input_data.m_dimensionality == 2)
             main_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>(input_data);
-        else if (input_data.dimensionality == 3)
+        else if (input_data.m_dimensionality == 3)
             main_generic<CartesianLayout<3>, CartesianLayout<2>, float, true>(input_data);
         else
-            throw pink::exception("Unsupported dimensionality of " + input_data.dimensionality);
-    else if (input_data.layout == Layout::HEXAGONAL)
+            throw pink::exception("Unsupported dimensionality of " + input_data.m_dimensionality);
+    else if (input_data.m_layout == Layout::HEXAGONAL)
         main_generic<HexagonalLayout, CartesianLayout<2>, float, true>(input_data);
     else
         throw pink::exception("Unknown layout");

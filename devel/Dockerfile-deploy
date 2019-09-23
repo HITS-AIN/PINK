@@ -1,4 +1,4 @@
-FROM braintwister/ubuntu-18.04-cuda-10.1-cmake-3.14-gcc-7-conan-1.13
+FROM braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-7-conan-1.18
 
 MAINTAINER Bernd Doser <bernd.doser@h-its.org>
 

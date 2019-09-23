@@ -123,3 +123,55 @@ def calculate_map(somWidth, somHeight, neurons, neuronWidth, neuronHeight, share
                         else:
                             image[x][y] = neuron
     return image
+
+
+def show(som, border = 0):
+    """ Visualization of PINK SOM """
+    
+    np_som = np.array(som, copy=False)
+    if som.get_som_layout() == "cartesian-2d":
+        return calculate_map(np_som.shape[0], np_som.shape[1],
+                             np_som.reshape(np_som.shape[0] * np_som.shape[1], np_som.shape[2], np_som.shape[3]),
+                             np_som.shape[2], np_som.shape[3], shareIntensity = False, border = border, shape="box")
+    if som.get_som_layout() == "hexagonal-2d":
+        dim = math.sqrt((4 * np_som.shape[0] - 1) / 3);
+        return calculate_map(dim, dim, np_som.reshape(np_som.shape[0], np_som.shape[1] * np_som.shape[2]),
+                             np_som.shape[1], np_som.shape[2], shareIntensity = False, border = border, shape="hex")
+    else:
+        raise RuntimeError("Unsupported SOM layout %s" % som.get_som_layout())
+
+
+class DataIterator:
+    """ Lazy iteration over data file """
+    
+    def __init__(self, filename):
+        self.file = open(filename, 'rb')
+        ignore_header_comments(self.file)
+        
+        # <file format version> 0 <data-type> <number of entries> <data layout> <data>
+        version, file_type, data_type, self.number_of_images, layout, dimensionality = struct.unpack('i' * 6, self.file.read(4 * 6))
+        self.dimensions = np.fromfile(self.file, count=dimensionality, dtype=np.int32)
+        
+        print('version:', version)
+        print('file_type:', file_type)
+        print('data_type:', data_type)
+        print('number_of_images:', self.number_of_images)
+        print('layout:', layout)
+        print('dimensionality:', dimensionality)
+        print('dimensions:', self.dimensions)
+        print('size:', np.prod(self.dimensions))
+
+        self.data = np.fromfile(self.file, count=np.prod(self.dimensions), dtype=np.float32).reshape(self.dimensions)
+
+    def __iter__(self):
+        return self
+   
+    def __next__(self):
+        a = np.fromfile(self.file, count=np.prod(self.dimensions), dtype=np.float32)
+
+        if a.size == np.prod(self.dimensions):
+            x = self.data
+            self.data = a.reshape(self.dimensions)
+            return x
+        else:
+            raise StopIteration

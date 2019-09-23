@@ -32,21 +32,27 @@
 
 namespace pink {
 
+/// Abstract base class
+struct MapperBase
+{
+    virtual ~MapperBase() {}
+};
+
 template <typename SOMLayout, typename DataLayout, typename T>
-class MapperBase
+class MapperCommon
 {
 public:
 
-    MapperBase(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations,
+    MapperCommon(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations,
         bool use_flip, Interpolation interpolation, uint32_t euclidean_distance_dim)
-     : som(som),
-       verbosity(verbosity),
-       number_of_rotations(number_of_rotations),
-       use_flip(use_flip),
-       number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
-       angle_step_radians(static_cast<float>(0.5 * M_PI) / number_of_rotations / 4),
-       interpolation(interpolation),
-       euclidean_distance_dim(euclidean_distance_dim)
+     : m_som(som),
+       m_verbosity(verbosity),
+       m_number_of_rotations(number_of_rotations),
+       m_use_flip(use_flip),
+       m_number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
+       m_angle_step_radians(static_cast<float>(0.5 * M_PI) / number_of_rotations / 4),
+       m_interpolation(interpolation),
+       m_euclidean_distance_dim(euclidean_distance_dim)
     {
         if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
@@ -55,18 +61,18 @@ public:
 protected:
 
     /// A reference to the SOM will be trained
-    SOM<SOMLayout, DataLayout, T> const& som;
+    SOM<SOMLayout, DataLayout, T> const& m_som;
 
-    int verbosity;
-    uint32_t number_of_rotations;
-    bool use_flip;
-    uint32_t number_of_spatial_transformations;
-    float angle_step_radians;
+    int m_verbosity;
+    uint32_t m_number_of_rotations;
+    bool m_use_flip;
+    uint32_t m_number_of_spatial_transformations;
+    float m_angle_step_radians;
 
-    Interpolation interpolation;
+    Interpolation m_interpolation;
 
     /// Dimension for calculation of euclidean distance
-    uint32_t euclidean_distance_dim;
+    uint32_t m_euclidean_distance_dim;
 };
 
 /// Primary template will never be instantiated
@@ -75,31 +81,31 @@ class Mapper;
 
 /// CPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Mapper<SOMLayout, DataLayout, T, false> : public MapperBase<SOMLayout, DataLayout, T>
+class Mapper<SOMLayout, DataLayout, T, false> : public MapperBase, public MapperCommon<SOMLayout, DataLayout, T>
 {
 public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity,
         uint32_t number_of_rotations, bool use_flip,
         Interpolation interpolation, uint32_t euclidean_distance_dim)
-     : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
+     : MapperCommon<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
                                             use_flip, interpolation, euclidean_distance_dim)
     {}
 
     auto operator () (Data<DataLayout, T> const& data)
     {
-        uint32_t neuron_dim = this->som.get_neuron_dimension()[0];
+        uint32_t neuron_dim = this->m_som.get_neuron_dimension()[0];
 
-        auto&& spatial_transformed_images = generate_rotated_images(data, this->number_of_rotations,
-            this->use_flip, this->interpolation, neuron_dim);
+        auto&& spatial_transformed_images = generate_rotated_images(data, this->m_number_of_rotations,
+            this->m_use_flip, this->m_interpolation, neuron_dim);
 
-        std::vector<T> euclidean_distance_matrix(this->som.get_number_of_neurons());
-        std::vector<uint32_t> best_rotation_matrix(this->som.get_number_of_neurons());
+        std::vector<T> euclidean_distance_matrix(this->m_som.get_number_of_neurons());
+        std::vector<uint32_t> best_rotation_matrix(this->m_som.get_number_of_neurons());
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
-            this->som.get_number_of_neurons(), this->som.get_data_pointer(),
-            neuron_dim, this->number_of_spatial_transformations,
-            spatial_transformed_images, this->euclidean_distance_dim);
+            this->m_som.get_number_of_neurons(), this->m_som.get_data_pointer(),
+            neuron_dim, this->m_number_of_spatial_transformations,
+            spatial_transformed_images, this->m_euclidean_distance_dim);
 
         for (auto& e : euclidean_distance_matrix) e = std::sqrt(e);
         return std::make_tuple(euclidean_distance_matrix, best_rotation_matrix);
@@ -111,19 +117,19 @@ public:
 
 /// GPU version of training
 template <typename SOMLayout, typename DataLayout, typename T>
-class Mapper<SOMLayout, DataLayout, T, true> : public MapperBase<SOMLayout, DataLayout, T>
+class Mapper<SOMLayout, DataLayout, T, true> : public MapperBase, public MapperCommon<SOMLayout, DataLayout, T>
 {
 public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
         Interpolation interpolation, uint32_t euclidean_distance_dim,
-        uint16_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
-     : MapperBase<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
+        uint32_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
+     : MapperCommon<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
                                             use_flip, interpolation, euclidean_distance_dim),
        d_som(som.get_data()),
-       block_size(block_size),
-       euclidean_distance_type(euclidean_distance_type),
-       d_spatial_transformed_images(this->number_of_spatial_transformations * som.get_neuron_size()),
+       m_block_size(block_size),
+       m_euclidean_distance_type(euclidean_distance_type),
+       d_spatial_transformed_images(this->m_number_of_spatial_transformations * som.get_neuron_size()),
        d_euclidean_distance_matrix(som.get_number_of_neurons()),
        d_best_rotation_matrix(som.get_number_of_neurons()),
        d_best_match(1)
@@ -134,7 +140,7 @@ public:
             std::vector<float> sin_alpha(num_real_rot - 1);
 
             for (uint32_t i = 0; i < num_real_rot - 1; ++i) {
-                float angle = (i+1) * this->angle_step_radians;
+                float angle = (i+1) * this->m_angle_step_radians;
                 cos_alpha[i] = std::cos(angle);
                 sin_alpha[i] = std::sin(angle);
             }
@@ -150,20 +156,20 @@ public:
         /// Device memory for data
         thrust::device_vector<T> d_data = data.get_data();
 
-        uint32_t neuron_dim = this->som.get_neuron_dimension()[0];
+        uint32_t neuron_dim = this->m_som.get_neuron_dimension()[0];
         uint32_t neuron_size = neuron_dim * neuron_dim;
         uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
         for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
-        generate_rotated_images(d_spatial_transformed_images, d_data, spacing, this->number_of_rotations,
-            data.get_dimension()[0], neuron_dim, this->use_flip, this->interpolation, d_cos_alpha, d_sin_alpha);
+        generate_rotated_images(d_spatial_transformed_images, d_data, spacing, this->m_number_of_rotations,
+            data.get_dimension()[0], neuron_dim, this->m_use_flip, this->m_interpolation, d_cos_alpha, d_sin_alpha);
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
-            this->som.get_number_of_neurons(), neuron_size, d_som, this->number_of_spatial_transformations,
-            d_spatial_transformed_images, block_size, euclidean_distance_type, this->euclidean_distance_dim);
+            this->m_som.get_number_of_neurons(), neuron_size, d_som, this->m_number_of_spatial_transformations,
+            d_spatial_transformed_images, m_block_size, m_euclidean_distance_type, this->m_euclidean_distance_dim);
 
-        std::vector<T> euclidean_distance_matrix(this->som.get_number_of_neurons());
-        std::vector<uint32_t> best_rotation_matrix(this->som.get_number_of_neurons());
+        std::vector<float> euclidean_distance_matrix(this->m_som.get_number_of_neurons());
+        std::vector<uint32_t> best_rotation_matrix(this->m_som.get_number_of_neurons());
 
         thrust::copy(d_euclidean_distance_matrix.begin(),
             d_euclidean_distance_matrix.end(), &euclidean_distance_matrix[0]);
@@ -179,13 +185,13 @@ private:
     /// Device memory for SOM
     thrust::device_vector<T> d_som;
 
-    uint16_t block_size;
+    uint32_t m_block_size;
 
     /// The data type for the euclidean distance
-    DataType euclidean_distance_type;
+    DataType m_euclidean_distance_type;
 
     thrust::device_vector<T> d_spatial_transformed_images;
-    thrust::device_vector<T> d_euclidean_distance_matrix;
+    thrust::device_vector<float> d_euclidean_distance_matrix;
     thrust::device_vector<uint32_t> d_best_rotation_matrix;
     thrust::device_vector<uint32_t> d_best_match;
 

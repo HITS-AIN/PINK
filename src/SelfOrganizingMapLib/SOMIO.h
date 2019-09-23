@@ -16,14 +16,14 @@ namespace pink {
 template <typename SOMLayout, typename NeuronLayout, typename T>
 std::ostream& operator << (std::ostream& os, SOM<SOMLayout, NeuronLayout, T> const& som)
 {
-    for (auto&& e : som.data) os << e << " ";
+    for (auto&& e : som.m_data) os << e << " ";
     return os << std::endl;
 }
 
 template <typename SOMLayout, typename NeuronLayout>
 std::ostream& operator << (std::ostream& os, SOM<SOMLayout, NeuronLayout, uint8_t> const& som)
 {
-    for (auto&& e : som.data) os << static_cast<int>(e) << " ";
+    for (auto&& e : som.m_data) os << static_cast<int>(e) << " ";
     return os << std::endl;
 }
 

@@ -28,12 +28,12 @@ struct CartesianLayout
 
     bool operator == (SelfType const& other) const
     {
-        return dimension == other.dimension;
+        return m_dimension == other.m_dimension;
     }
 
     auto size() const
     {
-        return std::accumulate(dimension.begin(), dimension.end(), 1UL, std::multiplies<uint32_t>());
+        return std::accumulate(m_dimension.begin(), m_dimension.end(), 1UL, std::multiplies<uint32_t>());
     }
 
     /// Returns the array index of a layout position
@@ -58,7 +58,7 @@ struct CartesianLayout
         return get_distance(get_position(i1), get_position(i2));
     }
 
-    DimensionType dimension;
+    DimensionType m_dimension;
 
 };
 
@@ -71,13 +71,13 @@ inline auto CartesianLayout<1>::get_index(DimensionType const& p) const
 template <>
 inline auto CartesianLayout<2>::get_index(DimensionType const& p) const
 {
-    return p[0] + p[1] * dimension[0];
+    return p[0] + p[1] * m_dimension[0];
 }
 
 template <>
 inline auto CartesianLayout<3>::get_index(DimensionType const& p) const
 {
-    return p[0] + p[1] * dimension[0] + p[2] * dimension[0] * dimension[1];
+    return p[0] + p[1] * m_dimension[0] + p[2] * m_dimension[0] * m_dimension[1];
 }
 
 template <>
@@ -89,17 +89,17 @@ inline auto CartesianLayout<1>::get_position(IndexType i) const
 template <>
 inline auto CartesianLayout<2>::get_position(IndexType i) const
 {
-    IndexType y = i / dimension[1];
-    IndexType x = i % dimension[1];
+    IndexType y = i / m_dimension[1];
+    IndexType x = i % m_dimension[1];
     return DimensionType({x, y});
 }
 
 template <>
 inline auto CartesianLayout<3>::get_position(IndexType i) const
 {
-    IndexType z = i / dimension[0] / dimension[1];
-    IndexType y = (i - z * dimension[0] * dimension[1]) / dimension[1];
-    IndexType x = i % dimension[1];
+    IndexType z = i / m_dimension[0] / m_dimension[1];
+    IndexType y = (i - z * m_dimension[0] * m_dimension[1]) / m_dimension[1];
+    IndexType x = i % m_dimension[1];
     return DimensionType({x, y, z});
 }
 

@@ -1,4 +1,4 @@
-FROM braintwister/ubuntu-18.04-cmake-3.14-gcc-8-conan-1.16
+FROM braintwister/ubuntu-18.04
 
 LABEL maintainer="Bernd Doser <bernd.doser@h-its.org>"
 
@@ -27,24 +27,17 @@ RUN pip3 install --upgrade pip && \
     tensorflow \
     tqdm
 
-RUN git clone https://github.com/HITS-AIN/PINK.git && \
-    cd PINK && \
-    git checkout 2.3 && \
-    mkdir build && cd build && \
-    cmake .. && \
-    make
+ENV PYTHONPATH /PINK/build/default/lib:/PINK/scripts
+ENV JUPYTER_PATH /PINK/build/default/lib:/PINK/scripts
 
-ENV PYTHONPATH /PINK/build/lib
-ENV JUPYTER_PATH /PINK/build/lib
+# Set up notebook config
+COPY jupyter_notebook_config.py /jupyter-config/
+ENV JUPYTER_CONFIG_DIR /jupyter-config
 
 COPY notebooks-cpu /notebooks
 
 # Add entrypoint
 ADD chmod_notebooks.sh /entrypoint.d/
-
-# Set up notebook config
-COPY jupyter_notebook_config.py /jupyter-config/
-ENV JUPYTER_CONFIG_DIR /jupyter-config
 
 WORKDIR /notebooks
 EXPOSE 8888

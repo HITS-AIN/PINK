@@ -1,5 +1,8 @@
 include_directories(
-    ..
+    ${PROJECT_SOURCE_DIR}/src
+)
+
+include_directories(SYSTEM
     ${CUDA_INCLUDE_DIRS}
 )
 

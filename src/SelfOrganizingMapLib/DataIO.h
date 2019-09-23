@@ -55,7 +55,7 @@ template <typename T>
 std::ostream& operator << (std::ostream& os, Data<HexagonalLayout, T> const& data)
 {
     for (uint32_t i = 0, p = 0; i != data.get_dimension()[0]; ++i) {
-        for (uint32_t j = 0; j != data.get_layout().row_size[i]; ++j, ++p) {
+        for (uint32_t j = 0; j != data.get_layout().m_row_size[i]; ++j, ++p) {
             os << std::setw(6) << data[p] << " ";
         }
         os << "\n";

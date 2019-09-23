@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <cstdio>
+#include <cassert>
 #include <thrust/device_vector.h>
 #include <thrust/execution_policy.h>
 #include <thrust/fill.h>
@@ -29,18 +29,17 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images,
     uint32_t neuron_dim, bool useFlip, Interpolation interpolation,
     thrust::device_vector<float> const& d_cos_alpha, thrust::device_vector<float> const& d_sin_alpha)
 {
-    const uint16_t block_size = 32;
-    uint32_t neuron_size = neuron_dim * neuron_dim;
-    uint32_t image_size = image_dim * image_dim;
+    const uint32_t block_size = 32;
+    const uint32_t neuron_size = neuron_dim * neuron_dim;
+    const uint32_t image_size = image_dim * image_dim;
 
     thrust::fill(thrust::device, d_rotated_images.begin(), d_rotated_images.end(), 0.0);
 
     // Resize the first image
     {
-        int min_dim = std::min(image_dim, neuron_dim);
-
         // Setup execution parameters
-        int grid_size = ceil((float)min_dim/block_size);
+        auto min_dim = std::min(image_dim, neuron_dim);
+        auto grid_size = static_cast<uint32_t>(ceil(static_cast<float>(min_dim) / block_size));
         dim3 dim_block(block_size, block_size);
         dim3 dim_grid(grid_size, grid_size);
 
@@ -56,11 +55,13 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images,
 
     if (num_rot != 1)
     {
+        assert(num_rot % 4 == 0);
+
         // Rotate images between 0 and 90 degrees
         {
             // Setup execution parameters
-            int grid_size = ceil((float)neuron_dim/block_size);
-            int num_real_rot = num_rot/4-1;
+            auto grid_size = static_cast<uint32_t>(ceil(static_cast<float>(neuron_dim) / block_size));
+            auto num_real_rot = static_cast<uint32_t>(num_rot / 4) - 1;
 
             if (num_real_rot) {
                 dim3 dim_block(block_size, block_size);
@@ -88,7 +89,7 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images,
         // Special 90 degree rotation for remaining rotations between 90 and 360 degrees
         {
             // Setup execution parameters
-            int grid_size = ceil((float)neuron_dim/block_size);
+            auto grid_size = static_cast<uint32_t>(ceil(static_cast<float>(neuron_dim) / block_size));
             dim3 dim_block(block_size, block_size);
             dim3 dim_grid(grid_size, grid_size, num_rot/4);
 
@@ -116,7 +117,7 @@ void generate_rotated_images(thrust::device_vector<T>& d_rotated_images,
     if (useFlip)
     {
         // Setup execution parameters
-        int grid_size = ceil((float)neuron_dim/block_size);
+        auto grid_size = static_cast<uint32_t>(ceil(static_cast<float>(neuron_dim) / block_size));
         dim3 dim_block(block_size, block_size);
         dim3 dim_grid(grid_size, grid_size, num_rot * spacing);
 

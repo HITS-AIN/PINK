@@ -17,9 +17,9 @@ namespace pink {
  */
 struct DistributionFunctorBase
 {
-    virtual float operator () (float distance) const = 0;
+    virtual ~DistributionFunctorBase() = default;
 
-    virtual ~DistributionFunctorBase() {}
+    virtual float operator () (float distance) const = 0;
 };
 
 /**
@@ -29,19 +29,13 @@ struct DistributionFunctorBase
  */
 struct StepFunctor : public DistributionFunctorBase
 {
-    explicit StepFunctor(float value)
-     : value(value)
-    {}
+    explicit StepFunctor(float value);
 
-    float operator () (float distance) const
-    {
-        if (distance <= value) return 1.0;
-        return 0.0;
-    }
+    float operator () (float distance) const;
 
 private:
 
-    float value;
+    float m_value;
 };
 
 /**
@@ -51,21 +45,14 @@ private:
  */
 struct GaussianFunctor : public DistributionFunctorBase
 {
-    GaussianFunctor(float sigma, float damping)
-     : sigma(sigma),
-       damping(damping)
-    {}
+    GaussianFunctor(float sigma, float damping);
 
-    float operator () (float distance) const
-    {
-        return damping / (sigma * std::sqrt(2.0f * static_cast<float>(M_PI)))
-                       * std::exp(-0.5f * std::pow((distance/sigma), 2.0f));
-    }
+    float operator () (float distance) const;
 
 private:
 
-    float sigma;
-    float damping;
+    float m_sigma;
+    float m_damping;
 };
 
 /**
@@ -76,25 +63,15 @@ private:
  */
 struct MexicanHatFunctor : public DistributionFunctorBase
 {
-    MexicanHatFunctor(float sigma, float damping)
-     : sigma(sigma),
-       damping(damping)
-    {
-        if (sigma <= 0.0f) throw std::runtime_error("MexicanHatFunctor: sigma <= 0 not defined.");
-    }
+    MexicanHatFunctor(float sigma, float damping);
 
-    float operator () (float distance) const
-    {
-        float distance2 = distance * distance;
-        float sigma2 = sigma * sigma;
-        return 2.0f * damping / (std::sqrt(3.0f * sigma) * std::pow(static_cast<float>(M_PI), 0.25f))
-                    * (1.0f - distance2/sigma2) * std::exp(-distance2 / (2.0f * sigma2));
-    }
+    float operator () (float distance) const;
 
 private:
 
-    float sigma;
-    float damping;
+    float m_sigma;
+    float m_damping;
+
 };
 
 } // namespace pink

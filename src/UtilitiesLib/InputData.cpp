@@ -44,40 +44,40 @@ std::string str_to_upper(std::string str)
 namespace pink {
 
 InputData::InputData()
- : verbose(false),
-   som_width(10),
-   som_height(10),
-   som_depth(1),
-   neuron_dim(0),
-   euclidean_distance_dim(0),
-   layout(Layout::CARTESIAN),
-   seed(1234),
-   number_of_rotations(360),
-   number_of_threads(-1),
-   init(SOMInitialization::ZERO),
-   number_of_iterations(1),
-   max_number_of_progress_prints(10),
-   use_flip(true),
-   use_gpu(true),
-   number_of_data_entries(0),
-   data_layout(Layout::CARTESIAN),
-   som_size(0),
-   neuron_size(0),
-   som_total_size(0),
-   number_of_spatial_transformations(0),
-   interpolation(Interpolation::BILINEAR),
-   executionPath(ExecutionPath::UNDEFINED),
-   intermediate_storage(IntermediateStorageType::OFF),
-   distribution_function(DistributionFunction::GAUSSIAN),
-   sigma(1.1f),
-   damping(0.2f),
-   block_size_1(256),
-   max_update_distance(-1.0),
-   usePBC(false),
-   dimensionality(1),
-   write_rot_flip(false),
-   euclidean_distance_type(DataType::UINT8),
-   shuffle_data_input(true)
+ : m_verbose(false),
+   m_som_width(10),
+   m_som_height(10),
+   m_som_depth(1),
+   m_neuron_dim(0),
+   m_euclidean_distance_dim(0),
+   m_layout(Layout::CARTESIAN),
+   m_seed(1234),
+   m_number_of_rotations(360),
+   m_number_of_threads(-1),
+   m_init(SOMInitialization::ZERO),
+   m_number_of_iterations(1),
+   m_max_number_of_progress_prints(10),
+   m_use_flip(true),
+   m_use_gpu(true),
+   m_number_of_data_entries(0),
+   m_data_layout(Layout::CARTESIAN),
+   m_som_size(0),
+   m_neuron_size(0),
+   m_som_total_size(0),
+   m_number_of_spatial_transformations(0),
+   m_interpolation(Interpolation::BILINEAR),
+   m_executionPath(ExecutionPath::UNDEFINED),
+   m_intermediate_storage(IntermediateStorageType::OFF),
+   m_distribution_function(DistributionFunction::GAUSSIAN),
+   m_sigma(1.1f),
+   m_damping(0.2f),
+   m_block_size_1(256),
+   m_max_update_distance(-1.0),
+   m_use_pbc(false),
+   m_dimensionality(1),
+   m_write_rot_flip(false),
+   m_euclidean_distance_type(DataType::UINT8),
+   m_shuffle_data_input(true)
 {}
 
 InputData::InputData(int argc, char **argv)
@@ -125,33 +125,33 @@ InputData::InputData(int argc, char **argv)
         {
             case 'd':
             {
-                neuron_dim = str_to_uint32_t(optarg);
+                m_neuron_dim = str_to_uint32_t(optarg);
                 break;
             }
             case 'e':
             {
-                euclidean_distance_dim = str_to_uint32_t(optarg);
+                m_euclidean_distance_dim = str_to_uint32_t(optarg);
                 break;
             }
             case 0:
             {
-                som_width = str_to_uint32_t(optarg);
+                m_som_width = str_to_uint32_t(optarg);
                 break;
             }
             case 12:
             {
-                som_height = str_to_uint32_t(optarg);
+                m_som_height = str_to_uint32_t(optarg);
                 break;
             }
             case 13:
             {
-                som_depth = str_to_uint32_t(optarg);
+                m_som_depth = str_to_uint32_t(optarg);
                 break;
             }
             case 1:
             {
-                number_of_iterations = str_to_uint32_t(optarg);
-                if (number_of_iterations == 0)
+                m_number_of_iterations = str_to_uint32_t(optarg);
+                if (m_number_of_iterations == 0)
                     throw pink::exception("Number of iterations must be larger than 0");
                 break;
             }
@@ -159,10 +159,10 @@ InputData::InputData(int argc, char **argv)
             {
                 auto str = str_to_upper(optarg);
                 if (str == "CARTESIAN") {
-                    layout = Layout::CARTESIAN;
+                    m_layout = Layout::CARTESIAN;
                 }
                 else if (str == "HEXAGONAL") {
-                    layout = Layout::HEXAGONAL;
+                    m_layout = Layout::HEXAGONAL;
                 }
                 else {
                     throw pink::exception("Unknown layout option " + str);
@@ -171,67 +171,67 @@ InputData::InputData(int argc, char **argv)
             }
             case 's':
             {
-                seed = str_to_uint32_t(optarg);
+                m_seed = str_to_uint32_t(optarg);
                 break;
             }
             case 'p':
             {
-                max_number_of_progress_prints = std::atoi(optarg);
+                m_max_number_of_progress_prints = std::atoi(optarg);
                 break;
             }
             case 'n':
             {
-                number_of_rotations = str_to_uint32_t(optarg);
-                if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4))
+                m_number_of_rotations = str_to_uint32_t(optarg);
+                if (m_number_of_rotations == 0 or (m_number_of_rotations != 1 and m_number_of_rotations % 4))
                     throw pink::exception("Number of rotations must be 1 or a multiple of 4");
                 break;
             }
             case 't':
             {
-                number_of_threads = atoi(optarg);
+                m_number_of_threads = atoi(optarg);
                 break;
             }
             case 'x':
             {
                 auto str = str_to_upper(optarg);
                 if (str == "ZERO") {
-                    init = SOMInitialization::ZERO;
+                    m_init = SOMInitialization::ZERO;
                 }
                 else if (str == "RANDOM") {
-                    init = SOMInitialization::RANDOM;
+                    m_init = SOMInitialization::RANDOM;
                 }
                 else if (str == "RANDOM_WITH_PREFERRED_DIRECTION") {
-                    init = SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION;
+                    m_init = SOMInitialization::RANDOM_WITH_PREFERRED_DIRECTION;
                 }
                 else {
-                    init = SOMInitialization::FILEINIT;
-                    som_filename = optarg;
+                    m_init = SOMInitialization::FILEINIT;
+                    m_som_filename = optarg;
                 }
                 break;
             }
             case 2:
             {
-                use_flip = false;
+                m_use_flip = false;
                 break;
             }
             case 3:
             {
-                use_gpu = false;
+                m_use_gpu = false;
                 break;
             }
             case 4:
             {
-                verbose = true;
+                m_verbose = true;
                 break;
             }
             case 5:
             {
                 auto str = str_to_upper(optarg);
                 if (str == "NEAREST_NEIGHBOR") {
-                    interpolation = Interpolation::NEAREST_NEIGHBOR;
+                    m_interpolation = Interpolation::NEAREST_NEIGHBOR;
                 }
                 else if (str == "BILINEAR") {
-                    interpolation = Interpolation::BILINEAR;
+                    m_interpolation = Interpolation::BILINEAR;
                 }
                 else {
                     throw pink::exception("Unknown interpolation option " + str);
@@ -240,35 +240,35 @@ InputData::InputData(int argc, char **argv)
             }
             case 6:
             {
-                executionPath = ExecutionPath::TRAIN;
+                m_executionPath = ExecutionPath::TRAIN;
                 int index = optind - 1;
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --train option.");
                 }
-                data_filename = argv[index++];
+                m_data_filename = argv[index++];
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --train option.");
                 }
-                result_filename = argv[index++];
+                m_result_filename = argv[index++];
                 optind = index - 1;
                 break;
             }
             case 7:
             {
-                executionPath = ExecutionPath::MAP;
+                m_executionPath = ExecutionPath::MAP;
                 int index = optind - 1;
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --map option.");
                 }
-                data_filename = argv[index++];
+                m_data_filename = argv[index++];
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --map option.");
                 }
-                result_filename = argv[index++];
+                m_result_filename = argv[index++];
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --map option.");
                 }
-                som_filename = argv[index++];
+                m_som_filename = argv[index++];
                 optind = index - 1;
                 break;
             }
@@ -276,13 +276,13 @@ InputData::InputData(int argc, char **argv)
             {
                 auto str = str_to_upper(optarg);
                 if (str == "OFF") {
-                    intermediate_storage = IntermediateStorageType::OFF;
+                    m_intermediate_storage = IntermediateStorageType::OFF;
                 }
                 else if (str == "OVERWRITE") {
-                    intermediate_storage = IntermediateStorageType::OVERWRITE;
+                    m_intermediate_storage = IntermediateStorageType::OVERWRITE;
                 }
                 else if (str == "KEEP") {
-                    intermediate_storage = IntermediateStorageType::KEEP;
+                    m_intermediate_storage = IntermediateStorageType::KEEP;
                 }
                 else {
                     throw pink::exception("Unknown intermediate storage option " + str);
@@ -291,13 +291,13 @@ InputData::InputData(int argc, char **argv)
             }
             case 9:
             {
-                block_size_1 = atoi(optarg);
+                m_block_size_1 = str_to_uint32_t(optarg);
                 break;
             }
             case 10:
             {
-                max_update_distance = std::strtof(optarg, &end_char);
-                if (max_update_distance <= 0.0f) {
+                m_max_update_distance = std::strtof(optarg, &end_char);
+                if (m_max_update_distance <= 0.0f) {
                     print_usage();
                     throw pink::exception("max-update-distance must be positive.");
                 }
@@ -305,26 +305,26 @@ InputData::InputData(int argc, char **argv)
             }
             case 14:
             {
-                usePBC = true;
+                m_use_pbc = true;
                 break;
             }
             case 15:
             {
-                write_rot_flip = true;
-                rot_flip_filename = optarg;
+                m_write_rot_flip = true;
+                m_rot_flip_filename = optarg;
                 break;
             }
             case 16:
             {
                 auto str = str_to_upper(optarg);
                 if (str == "FLOAT") {
-                    euclidean_distance_type = DataType::FLOAT;
+                    m_euclidean_distance_type = DataType::FLOAT;
                 }
                 else if (str == "UINT16") {
-                    euclidean_distance_type = DataType::UINT16;
+                    m_euclidean_distance_type = DataType::UINT16;
                 }
                 else if (str == "UINT8") {
-                    euclidean_distance_type = DataType::UINT8;
+                    m_euclidean_distance_type = DataType::UINT8;
                 }
                 else {
                     throw pink::exception("Unknown intermediate storage option " + str);
@@ -333,7 +333,7 @@ InputData::InputData(int argc, char **argv)
             }
             case 17:
             {
-                shuffle_data_input = false;
+                m_shuffle_data_input = false;
                 break;
             }
             case 'v':
@@ -351,10 +351,10 @@ InputData::InputData(int argc, char **argv)
             {
                 auto str = str_to_upper(optarg);
                 if (str == "GAUSSIAN") {
-                    distribution_function = DistributionFunction::GAUSSIAN;
+                    m_distribution_function = DistributionFunction::GAUSSIAN;
                 }
                 else if (str == "MEXICANHAT") {
-                    distribution_function = DistributionFunction::MEXICANHAT;
+                    m_distribution_function = DistributionFunction::MEXICANHAT;
                 }
                 else {
                     throw pink::exception("Unknown intermediate storage option " + str);
@@ -363,11 +363,11 @@ InputData::InputData(int argc, char **argv)
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --dist-func option.");
                 }
-                sigma = std::strtof(argv[index++], &end_char);
+                m_sigma = std::strtof(argv[index++], &end_char);
                 if (index >= argc or argv[index][0] == '-') {
                     throw pink::exception("Missing arguments for --dist-func option.");
                 }
-                damping = std::strtof(argv[index++], &end_char);
+                m_damping = std::strtof(argv[index++], &end_char);
                 optind = index;
                 break;
             }
@@ -386,32 +386,32 @@ InputData::InputData(int argc, char **argv)
         }
     }
 
-    if (executionPath == ExecutionPath::MAP) {
-        init = SOMInitialization::FILEINIT;
-    } else if (executionPath == ExecutionPath::UNDEFINED) {
+    if (m_executionPath == ExecutionPath::MAP) {
+        m_init = SOMInitialization::FILEINIT;
+    } else if (m_executionPath == ExecutionPath::UNDEFINED) {
         print_usage();
         throw pink::exception("Unknown execution path.");
     }
 
-    if (layout == Layout::HEXAGONAL) {
-        if (usePBC) throw pink::exception("Periodic boundary conditions are not supported for hexagonal layout.");
-        if ((som_width - 1) % 2) throw pink::exception("For hexagonal layout only odd dimension supported.");
-        if (som_width != som_height) {
+    if (m_layout == Layout::HEXAGONAL) {
+        if (m_use_pbc) throw pink::exception("Periodic boundary conditions are not supported for hexagonal layout.");
+        if ((m_som_width - 1) % 2) throw pink::exception("For hexagonal layout only odd dimension supported.");
+        if (m_som_width != m_som_height) {
             throw pink::exception("For hexagonal layout som-width must be equal to som-height.");
         }
-        if (som_depth != 1) throw pink::exception("For hexagonal layout som-depth must be equal to 1.");
-        som_size = HexagonalLayout({som_width, som_height}).size();
+        if (m_som_depth != 1) throw pink::exception("For hexagonal layout som-depth must be equal to 1.");
+        m_som_size = HexagonalLayout({m_som_width, m_som_height}).size();
     }
-    else som_size = som_width * som_height * som_depth;
+    else m_som_size = m_som_width * m_som_height * m_som_depth;
 
-    if (som_width < 2) throw pink::exception("som-width must be > 1.");
-    if (som_height < 1) throw pink::exception("som-height must be > 0.");
-    if (som_depth < 1) throw pink::exception("som-depth must be > 0.");
-    if (som_height > 1) ++dimensionality;
-    if (som_depth > 1) ++dimensionality;
+    if (m_som_width < 2) throw pink::exception("som-width must be > 1.");
+    if (m_som_height < 1) throw pink::exception("som-height must be > 0.");
+    if (m_som_depth < 1) throw pink::exception("som-depth must be > 0.");
+    if (m_som_height > 1) ++m_dimensionality;
+    if (m_som_depth > 1) ++m_dimensionality;
 
-    std::ifstream ifs(data_filename);
-    if (!ifs) throw std::runtime_error("Error opening " + data_filename);
+    std::ifstream ifs(m_data_filename);
+    if (!ifs) throw std::runtime_error("Error opening " + m_data_filename);
 
     // Skip header
     get_file_header(ifs);
@@ -419,39 +419,39 @@ InputData::InputData(int argc, char **argv)
     int file_version, file_type, data_type;
     // Ignore first three entries
     ifs.read(reinterpret_cast<char*>(&file_version), sizeof(int));
-    ifs.read((char*)&file_type, sizeof(int));
-    ifs.read((char*)&data_type, sizeof(int));
-    ifs.read((char*)&number_of_data_entries, sizeof(int));
-    ifs.read((char*)&data_layout, sizeof(int));
+    ifs.read(reinterpret_cast<char*>(&file_type), sizeof(int));
+    ifs.read(reinterpret_cast<char*>(&data_type), sizeof(int));
+    ifs.read(reinterpret_cast<char*>(&m_number_of_data_entries), sizeof(int));
+    ifs.read(reinterpret_cast<char*>(&m_data_layout), sizeof(int));
 
     int data_dimensionality;
-    ifs.read((char*)&data_dimensionality, sizeof(int));
-    data_dimension.resize(static_cast<size_t>(data_dimensionality));
+    ifs.read(reinterpret_cast<char*>(&data_dimensionality), sizeof(int));
+    m_data_dimension.resize(static_cast<size_t>(data_dimensionality));
 
     for (size_t i = 0; i < static_cast<size_t>(data_dimensionality); ++i) {
-        ifs.read((char*)&data_dimension[i], sizeof(int));
+        ifs.read(reinterpret_cast<char*>(&m_data_dimension[i]), sizeof(int));
     }
 
-    if (neuron_dim == 0) {
-        neuron_dim = data_dimension[0];
-        if (number_of_rotations != 1)
-            neuron_dim = static_cast<uint32_t>(2 * data_dimension[0] / std::sqrt(2.0) + 1);
+    if (m_neuron_dim == 0) {
+        m_neuron_dim = m_data_dimension[0];
+        if (m_number_of_rotations != 1)
+            m_neuron_dim = static_cast<uint32_t>(2 * m_data_dimension[0] / std::sqrt(2.0) + 1);
     }
-    assert(neuron_dim != 0);
+    assert(m_neuron_dim != 0);
 
-    if (euclidean_distance_dim == 0) {
-        euclidean_distance_dim = data_dimension[0];
-        if (number_of_rotations != 1)
-            euclidean_distance_dim = static_cast<uint32_t>(euclidean_distance_dim * std::sqrt(2.0) / 2);
+    if (m_euclidean_distance_dim == 0) {
+        m_euclidean_distance_dim = m_data_dimension[0];
+        if (m_number_of_rotations != 1)
+            m_euclidean_distance_dim = static_cast<uint32_t>(m_euclidean_distance_dim * std::sqrt(2.0) / 2);
     }
-    assert(euclidean_distance_dim != 0);
+    assert(m_euclidean_distance_dim != 0);
 
-    neuron_size = neuron_dim * neuron_dim;
-    som_total_size = som_size * neuron_size;
-    number_of_spatial_transformations = use_flip ? 2 * number_of_rotations : number_of_rotations;
+    m_neuron_size = m_neuron_dim * m_neuron_dim;
+    m_som_total_size = m_som_size * m_neuron_size;
+    m_number_of_spatial_transformations = m_use_flip ? 2 * m_number_of_rotations : m_number_of_rotations;
 
-    if (number_of_threads == -1) number_of_threads = omp_get_max_threads();
-    omp_set_num_threads(number_of_threads);
+    if (m_number_of_threads == -1) m_number_of_threads = omp_get_max_threads();
+    omp_set_num_threads(m_number_of_threads);
 
     print_header();
     print_parameters();
@@ -459,10 +459,10 @@ InputData::InputData(int argc, char **argv)
     if (file_version != 2) throw pink::exception("Please use file format version 2 as data input.");
     if (file_type != 0) throw pink::exception("Please use file type 0 as data input.");
     if (data_type != 0) throw pink::exception("Only data_type = 0 (float, single precision) is supported.");
-    if (number_of_data_entries == 0) throw pink::exception("Number of data entries must be larger than 0.");
-    if (euclidean_distance_dim > neuron_dim)
+    if (m_number_of_data_entries == 0) throw pink::exception("Number of data entries must be larger than 0.");
+    if (m_euclidean_distance_dim > m_neuron_dim)
         throw pink::exception("euclidean distance dimension must be equal or smaller than neuron dimension.");
-    if (usePBC) throw pink::exception("Periodic boundary conditions are not supported in version 2.");
+    if (m_use_pbc) throw pink::exception("Periodic boundary conditions are not supported in version 2.");
 }
 
 void InputData::print_header() const
@@ -494,56 +494,57 @@ void InputData::print_header() const
 
 void InputData::print_parameters() const
 {
-    std::cout << "  Data file = " << data_filename << "\n"
-              << "  Result file = " << result_filename << "\n";
+    std::cout << "  Data file = " << m_data_filename << "\n"
+              << "  Result file = " << m_result_filename << "\n";
 
-    if (executionPath == ExecutionPath::MAP)
-        std::cout << "  SOM file = " << som_filename << "\n";
+    if (m_executionPath == ExecutionPath::MAP)
+        std::cout << "  SOM file = " << m_som_filename << "\n";
 
-    std::cout << "  Number of data entries = " << number_of_data_entries << "\n"
-              << "  Data dimension = " << data_dimension[0];
+    std::cout << "  Number of data entries = " << m_number_of_data_entries << "\n"
+              << "  Data dimension = " << m_data_dimension[0];
 
-    for (size_t i = 1; i < data_dimension.size(); ++i) std::cout << " x " << data_dimension[i];
+    for (size_t i = 1; i < m_data_dimension.size(); ++i) std::cout << " x " << m_data_dimension[i];
     std::cout << std::endl;
 
     std::cout << "  SOM dimension (width x height x depth) = "
-              << som_width << "x" << som_height << "x" << som_depth << "\n"
-              << "  SOM size = " << som_size << "\n"
-              << "  Number of iterations = " << number_of_iterations << "\n"
-              << "  Neuron dimension = " << neuron_dim << "x" << neuron_dim << "\n"
-              << "  Euclidean distance dimension = " << euclidean_distance_dim << "x" << euclidean_distance_dim << "\n"
-              << "  Data type for euclidean distance calculation = " << euclidean_distance_type << "\n"
-              << "  Maximal number of progress information prints = " << max_number_of_progress_prints << "\n"
-              << "  Intermediate storage of SOM = " << intermediate_storage << "\n"
-              << "  Layout = " << layout << "\n"
-              << "  Initialization type = " << init;
+              << m_som_width << "x" << m_som_height << "x" << m_som_depth << "\n"
+              << "  SOM size = " << m_som_size << "\n"
+              << "  Number of iterations = " << m_number_of_iterations << "\n"
+              << "  Neuron dimension = " << m_neuron_dim << "x" << m_neuron_dim << "\n"
+              << "  Euclidean distance dimension = "
+              << m_euclidean_distance_dim << "x" << m_euclidean_distance_dim << "\n"
+              << "  Data type for euclidean distance calculation = " << m_euclidean_distance_type << "\n"
+              << "  Maximal number of progress information prints = " << m_max_number_of_progress_prints << "\n"
+              << "  Intermediate storage of SOM = " << m_intermediate_storage << "\n"
+              << "  Layout = " << m_layout << "\n"
+              << "  Initialization type = " << m_init;
 
-    if (init == SOMInitialization::FILEINIT) std::cout << "\n  SOM initialization file = " << som_filename;
+    if (m_init == SOMInitialization::FILEINIT) std::cout << "\n  SOM initialization file = " << m_som_filename;
 
     std::cout << "\n"
-              << "  Interpolation type = " << interpolation << "\n"
-              << "  Seed = " << seed << "\n"
-              << "  Number of rotations = " << number_of_rotations << "\n"
-              << "  Use mirrored image = " << use_flip << "\n"
-              << "  Number of CPU threads = " << number_of_threads << "\n"
-              << "  Use CUDA = " << use_gpu << "\n";
+              << "  Interpolation type = " << m_interpolation << "\n"
+              << "  Seed = " << m_seed << "\n"
+              << "  Number of rotations = " << m_number_of_rotations << "\n"
+              << "  Use mirrored image = " << m_use_flip << "\n"
+              << "  Number of CPU threads = " << m_number_of_threads << "\n"
+              << "  Use CUDA = " << m_use_gpu << "\n";
 
-    if (executionPath == ExecutionPath::TRAIN) {
-        std::cout << "  Distribution function for SOM update = " << distribution_function << "\n"
-                  << "  Sigma = " << sigma << "\n"
-                  << "  Damping factor = " << damping << "\n"
-                  << "  Maximum distance for SOM update = " << max_update_distance << "\n"
-                  << "  Use periodic boundary conditions = " << usePBC << "\n"
-                  << "  Random shuffle data input = " << shuffle_data_input << "\n";
-    } else if (executionPath == ExecutionPath::MAP) {
-        std::cout << "  Store best rotation and flipping parameters = " << write_rot_flip << "\n";
+    if (m_executionPath == ExecutionPath::TRAIN) {
+        std::cout << "  Distribution function for SOM update = " << m_distribution_function << "\n"
+                  << "  Sigma = " << m_sigma << "\n"
+                  << "  Damping factor = " << m_damping << "\n"
+                  << "  Maximum distance for SOM update = " << m_max_update_distance << "\n"
+                  << "  Use periodic boundary conditions = " << m_use_pbc << "\n"
+                  << "  Random shuffle data input = " << m_shuffle_data_input << "\n";
+    } else if (m_executionPath == ExecutionPath::MAP) {
+        std::cout << "  Store best rotation and flipping parameters = " << m_write_rot_flip << "\n";
 
-        if (!rot_flip_filename.empty())
-            std::cout << "  Best rotation and flipping parameter filename = " << rot_flip_filename << "\n";
+        if (!m_rot_flip_filename.empty())
+            std::cout << "  Best rotation and flipping parameter filename = " << m_rot_flip_filename << "\n";
     }
 
-    if (verbose)
-        std::cout << "  Block size 1 = " << block_size_1 << "\n";
+    if (m_verbose)
+        std::cout << "  Block size 1 = " << m_block_size_1 << "\n";
 
     std::cout << std::endl;
 }
@@ -622,10 +623,10 @@ void InputData::print_usage() const
 std::function<float(float)> InputData::get_distribution_function() const
 {
     std::function<float(float)> result;
-    if (distribution_function == DistributionFunction::GAUSSIAN)
-        result = GaussianFunctor(sigma, damping);
-    else if (distribution_function == DistributionFunction::MEXICANHAT)
-        result = MexicanHatFunctor(sigma, damping);
+    if (m_distribution_function == DistributionFunction::GAUSSIAN)
+        result = GaussianFunctor(m_sigma, m_damping);
+    else if (m_distribution_function == DistributionFunction::MEXICANHAT)
+        result = MexicanHatFunctor(m_sigma, m_damping);
     else
         pink::exception("Unknown distribution function");
     return result;

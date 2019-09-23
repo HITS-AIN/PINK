@@ -16,7 +16,7 @@ namespace pink {
 template <typename DataType, typename EuclideanType>
 void generate_euclidean_distance_matrix_first_step(thrust::device_vector<EuclideanType> const& d_som,
     thrust::device_vector<EuclideanType> const& d_rotated_images, thrust::device_vector<DataType>& d_first_step,
-    uint32_t number_of_spatial_transformations, uint32_t som_size, uint32_t neuron_size, uint16_t block_size)
+    uint32_t number_of_spatial_transformations, uint32_t som_size, uint32_t neuron_size, uint32_t block_size)
 {
     // Setup execution parameters
     dim3 dim_block(block_size);
