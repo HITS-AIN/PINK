@@ -79,7 +79,7 @@ private:
     }
 
     template <typename SOM_Layout, typename Neuron_Layout>
-    auto train(DynamicData const& data)
+    void train(DynamicData const& data)
     {
         if (m_use_gpu == true) {
             std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, true>>(m_trainer)->operator()(

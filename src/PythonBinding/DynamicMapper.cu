@@ -7,58 +7,46 @@
 #include <cassert>
 
 #include "DynamicMapper.h"
-#include "SelfOrganizingMapLib/CartesianLayout.h"
-#include "SelfOrganizingMapLib/HexagonalLayout.h"
-#include "UtilitiesLib/pink_exception.h"
 
 namespace pink {
 
-DynamicMapper::DynamicMapper(DynamicSOM const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
-    Interpolation interpolation, bool use_gpu, uint32_t euclidean_distance_dim,
+DynamicMapper::DynamicMapper(DynamicSOM const& dynamic_som, int verbosity, uint32_t number_of_rotations,
+    bool use_flip, Interpolation interpolation, bool use_gpu, uint32_t euclidean_distance_dim,
     [[maybe_unused]] DataType euclidean_distance_type)
- : m_use_gpu(use_gpu)
+ : m_data_type(dynamic_som.m_data_type),
+   m_som_layout(dynamic_som.m_som_layout),
+   m_neuron_layout(dynamic_som.m_neuron_layout),
+   m_use_gpu(use_gpu)
 {
-    if (som.m_data_type != "float32") throw std::runtime_error("data-type not supported");
-    if (som.m_som_layout != "cartesian-2d") throw std::runtime_error("som_layout not supported");
-    if (som.m_neuron_layout != "cartesian-2d") throw std::runtime_error("neuron_layout not supported");
+    if (m_data_type != "float32") throw pink::exception("data-type not supported");
 
     if (euclidean_distance_dim == 0) {
-        euclidean_distance_dim = static_cast<uint32_t>(som.m_shape[2]);
+        euclidean_distance_dim = static_cast<uint32_t>(dynamic_som.m_shape[2]);
         if (number_of_rotations != 1)
             euclidean_distance_dim = static_cast<uint32_t>(euclidean_distance_dim * std::sqrt(2.0) / 2);
     }
     assert(euclidean_distance_dim != 0);
 
-    if (m_use_gpu)
-    {
-        m_mapper = std::make_shared<Mapper<CartesianLayout<2>, CartesianLayout<2>, float, true>>(
-            *(std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(som.m_som)),
-            verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim, 256, euclidean_distance_type);
-    }
-    else
-    {
-        m_mapper = std::make_shared<Mapper<CartesianLayout<2>, CartesianLayout<2>, float, false>>(
-            *(std::dynamic_pointer_cast<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(som.m_som)),
-            verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim);
+    if (m_som_layout == "cartesian-2d") {
+        m_mapper = get_mapper<CartesianLayout<2>>(dynamic_som, verbosity, number_of_rotations, use_flip,
+            interpolation, euclidean_distance_dim, euclidean_distance_type);
+    } else if (m_som_layout == "hexagonal-2d") {
+        m_mapper = get_mapper<HexagonalLayout>(dynamic_som, verbosity, number_of_rotations, use_flip,
+            interpolation, euclidean_distance_dim, euclidean_distance_type);
+    } else {
+        throw pink::exception("som layout " + m_som_layout + " is not supported");
     }
 }
 
-auto DynamicMapper::operator () (DynamicData const& data)
+auto DynamicMapper::operator () (DynamicData const& data) const
     -> std::tuple<std::vector<float>, std::vector<uint32_t>>
 {
-    auto s_data = *(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data));
-    
-    if (m_use_gpu)
-    {
-        auto s_mapper = std::dynamic_pointer_cast<
-            Mapper<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m_mapper);
-        return s_mapper->operator()(s_data);
-    }
-    else
-    {
-        auto s_mapper = std::dynamic_pointer_cast<
-            Mapper<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m_mapper);
-        return s_mapper->operator()(s_data);
+    if (m_som_layout == "cartesian-2d") {
+        return map<CartesianLayout<2>>(data);
+    } else if (m_som_layout == "hexagonal-2d") {
+        return map<HexagonalLayout>(data);
+    } else {
+        throw pink::exception("som layout " + m_som_layout + " is not supported");
     }
 }
 
