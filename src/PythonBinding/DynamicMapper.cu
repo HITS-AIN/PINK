@@ -51,7 +51,7 @@ auto DynamicMapper::operator () (DynamicData const& data)
     if (m_use_gpu)
     {
         auto s_mapper = std::dynamic_pointer_cast<
-    	    Mapper<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m_mapper);
+            Mapper<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m_mapper);
         return s_mapper->operator()(s_data);
     }
     else

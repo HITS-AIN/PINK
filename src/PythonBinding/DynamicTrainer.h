@@ -37,13 +37,13 @@ private:
     template <typename SOM_Layout>
     auto get_trainer(DynamicSOM& dynamic_som, std::function<float(float)> const& distribution_function,
         int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-    	Interpolation interpolation, uint32_t euclidean_distance_dim,
-		DataType euclidean_distance_type) -> std::shared_ptr<TrainerBase>
+        Interpolation interpolation, uint32_t euclidean_distance_dim,
+        DataType euclidean_distance_type) -> std::shared_ptr<TrainerBase>
     {
         if (m_neuron_layout == "cartesian-2d") {
-			return get_trainer<SOM_Layout, CartesianLayout<2>>(dynamic_som, distribution_function,
-				verbosity, number_of_rotations, use_flip, max_update_distance,
-				interpolation, euclidean_distance_dim, euclidean_distance_type);
+            return get_trainer<SOM_Layout, CartesianLayout<2>>(dynamic_som, distribution_function,
+                verbosity, number_of_rotations, use_flip, max_update_distance,
+                interpolation, euclidean_distance_dim, euclidean_distance_type);
         } else {
             throw pink::exception("neuron layout " + m_neuron_layout + " is not supported");
         }
@@ -52,27 +52,27 @@ private:
     template <typename SOM_Layout, typename Neuron_Layout>
     auto get_trainer(DynamicSOM& dynamic_som, std::function<float(float)> const& distribution_function,
         int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-    	Interpolation interpolation, uint32_t euclidean_distance_dim,
+        Interpolation interpolation, uint32_t euclidean_distance_dim,
         [[maybe_unused]] DataType euclidean_distance_type) -> std::shared_ptr<TrainerBase>
     {
-    	if (m_use_gpu == true) {
-			return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, true>>(
-				*(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
-				distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
-				interpolation, euclidean_distance_dim, 256, euclidean_distance_type);
-    	} else {
-			return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, false>>(
-				*(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
-				distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
-				interpolation, euclidean_distance_dim);
-    	}
+        if (m_use_gpu == true) {
+            return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, true>>(
+                *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
+                distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
+                interpolation, euclidean_distance_dim, 256, euclidean_distance_type);
+        } else {
+            return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, false>>(
+                *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
+                distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
+                interpolation, euclidean_distance_dim);
+        }
     }
 
     template <typename SOM_Layout>
     void train(DynamicData const& data)
     {
         if (m_neuron_layout == "cartesian-2d") {
-			train<SOM_Layout, CartesianLayout<2>>(data);
+            train<SOM_Layout, CartesianLayout<2>>(data);
         } else {
             throw pink::exception("neuron layout " + m_neuron_layout + " is not supported");
         }
@@ -81,13 +81,13 @@ private:
     template <typename SOM_Layout, typename Neuron_Layout>
     auto train(DynamicData const& data)
     {
-    	if (m_use_gpu == true) {
-	        std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, true>>(m_trainer)->operator()(
-	        	*(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data)));
-    	} else {
-	        std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, false>>(m_trainer)->operator()(
-	        	*(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data)));
-    	}
+        if (m_use_gpu == true) {
+            std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, true>>(m_trainer)->operator()(
+                *(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data)));
+        } else {
+            std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, false>>(m_trainer)->operator()(
+                *(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data)));
+        }
     }
 
     std::shared_ptr<TrainerBase> m_trainer;

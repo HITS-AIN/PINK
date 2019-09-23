@@ -47,7 +47,7 @@ PYBIND11_MODULE(pink, m)
     py::class_<GaussianFunctor>(m, "GaussianFunctor")
        .def(py::init<float, float>(),
            py::arg("sigma") = 1.1,
-		   py::arg("damping") = 0.2
+           py::arg("damping") = 0.2
        )
        .def("__call__", [](const GaussianFunctor& f, float d) { return f(d); });
 
@@ -99,9 +99,9 @@ PYBIND11_MODULE(pink, m)
             );
         })
         .def("get_som_layout", [](DynamicSOM& som)
-		{
+        {
             return som.m_som_layout;
-		});
+        });
 
     py::class_<DynamicTrainer>(m, "trainer")
         .def(py::init<DynamicSOM&, std::function<float(float)> const&, int,
@@ -135,7 +135,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("interpolation") = Interpolation::BILINEAR,
             py::arg("use_gpu") = true,
             py::arg("euclidean_distance_dim") = 0UL,
-			py::arg("euclidean_distance_type") = DataType::UINT8
+            py::arg("euclidean_distance_type") = DataType::UINT8
         )
         .def("__call__", [](DynamicMapper& mapper, DynamicData const& data)
         {

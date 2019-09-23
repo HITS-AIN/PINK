@@ -24,7 +24,7 @@ DynamicSOM::DynamicSOM(std::string const& data_type, std::string const& som_layo
 
     if (m_som_layout == "cartesian-2d")
     {
-    	assert(m_shape.size() == 4);
+        assert(m_shape.size() == 4);
         auto&& p = static_cast<float*>(ptr);
         m_som = std::make_shared<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(
             CartesianLayout<2>{{m_shape[0], m_shape[1]}},
@@ -33,8 +33,8 @@ DynamicSOM::DynamicSOM(std::string const& data_type, std::string const& som_layo
     }
     else if (m_som_layout == "hexagonal-2d")
     {
-    	assert(m_shape.size() == 3);
-    	auto dim = HexagonalLayout::get_dim_from_size(m_shape[0]);
+        assert(m_shape.size() == 3);
+        auto dim = HexagonalLayout::get_dim_from_size(m_shape[0]);
         auto&& p = static_cast<float*>(ptr);
         m_som = std::make_shared<SOM<HexagonalLayout, CartesianLayout<2>, float>>(
             HexagonalLayout{{dim, dim}},
@@ -68,9 +68,9 @@ buffer_info DynamicSOM::get_buffer_info() const
                                  static_cast<ssize_t>(sizeof(float) * neuron_shape[1] * neuron_shape[0]),
                                  static_cast<ssize_t>(sizeof(float) * neuron_shape[1]),
                                  static_cast<ssize_t>(sizeof(float))});
-	}
-	else if (m_som_layout == "hexagonal-2d")
-	{
+    }
+    else if (m_som_layout == "hexagonal-2d")
+    {
         auto&& number_of_neurons = std::dynamic_pointer_cast<
             SOM<HexagonalLayout, CartesianLayout<2>, float>>(m_som)->get_number_of_neurons();
         auto&& neuron_shape = std::dynamic_pointer_cast<
@@ -86,10 +86,10 @@ buffer_info DynamicSOM::get_buffer_info() const
             std::vector<ssize_t>{static_cast<ssize_t>(sizeof(float) * neuron_shape[1] * neuron_shape[0]),
                                  static_cast<ssize_t>(sizeof(float) * neuron_shape[1]),
                                  static_cast<ssize_t>(sizeof(float))});
-	}
+    }
     else
     {
-    	throw std::runtime_error("som_layout " + m_som_layout + " not supported");
+        throw std::runtime_error("som_layout " + m_som_layout + " not supported");
     }
 }
 

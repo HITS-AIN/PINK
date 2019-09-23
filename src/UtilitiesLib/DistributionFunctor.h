@@ -17,7 +17,7 @@ namespace pink {
  */
 struct DistributionFunctorBase
 {
-	virtual ~DistributionFunctorBase() = default;
+    virtual ~DistributionFunctorBase() = default;
 
     virtual float operator () (float distance) const = 0;
 };

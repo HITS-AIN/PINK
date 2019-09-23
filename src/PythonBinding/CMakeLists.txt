@@ -13,31 +13,31 @@ if(PINK_USE_CUDA)
 
     cuda_add_library(
         PythonBindingLib
-	    SHARED
-	    DynamicData.cpp
-	    DynamicMapper.cu
-	    DynamicSOM.cpp
-	    DynamicTrainer.cu
+        SHARED
+        DynamicData.cpp
+        DynamicMapper.cu
+        DynamicSOM.cpp
+        DynamicTrainer.cu
     )
-	
-	target_link_libraries(
-	    PythonBindingLib
-	    CudaLib
-	    UtilitiesLib
-	)
+    
+    target_link_libraries(
+        PythonBindingLib
+        CudaLib
+        UtilitiesLib
+    )
 else()
-	add_library(
-	    PythonBindingLib
-	    SHARED
-	    DynamicData.cpp
-	    DynamicSOM.cpp
-	    DynamicTrainer.cpp
-	)
-	
-	target_link_libraries(
-	    PythonBindingLib PRIVATE
-	    UtilitiesLib
-	)
+    add_library(
+        PythonBindingLib
+        SHARED
+        DynamicData.cpp
+        DynamicSOM.cpp
+        DynamicTrainer.cpp
+    )
+    
+    target_link_libraries(
+        PythonBindingLib PRIVATE
+        UtilitiesLib
+    )
 endif()
 
 pybind11_add_module(

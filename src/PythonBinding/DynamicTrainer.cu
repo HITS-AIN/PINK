@@ -28,13 +28,13 @@ DynamicTrainer::DynamicTrainer(DynamicSOM& dynamic_som, std::function<float(floa
     assert(euclidean_distance_dim != 0);
 
     if (m_som_layout == "cartesian-2d") {
-    	m_trainer = get_trainer<CartesianLayout<2>>(dynamic_som, distribution_function,
-    	    verbosity, number_of_rotations, use_flip, max_update_distance,
-    	    interpolation, euclidean_distance_dim, euclidean_distance_type);
+        m_trainer = get_trainer<CartesianLayout<2>>(dynamic_som, distribution_function,
+            verbosity, number_of_rotations, use_flip, max_update_distance,
+            interpolation, euclidean_distance_dim, euclidean_distance_type);
     } else if (m_som_layout == "hexagonal-2d") {
-    	m_trainer = get_trainer<HexagonalLayout>(dynamic_som, distribution_function,
-    	    verbosity, number_of_rotations, use_flip, max_update_distance,
-    	    interpolation, euclidean_distance_dim, euclidean_distance_type);
+        m_trainer = get_trainer<HexagonalLayout>(dynamic_som, distribution_function,
+            verbosity, number_of_rotations, use_flip, max_update_distance,
+            interpolation, euclidean_distance_dim, euclidean_distance_type);
     } else {
         throw pink::exception("som layout " + m_som_layout + " is not supported");
     }
@@ -42,13 +42,13 @@ DynamicTrainer::DynamicTrainer(DynamicSOM& dynamic_som, std::function<float(floa
 
 void DynamicTrainer::operator () (DynamicData const& data)
 {
-	if (m_som_layout == "cartesian-2d") {
-		train<CartesianLayout<2>>(data);
-	} else if (m_som_layout == "hexagonal-2d") {
-		train<HexagonalLayout>(data);
-	} else {
-		throw pink::exception("som layout " + m_som_layout + " is not supported");
-	}
+    if (m_som_layout == "cartesian-2d") {
+        train<CartesianLayout<2>>(data);
+    } else if (m_som_layout == "hexagonal-2d") {
+        train<HexagonalLayout>(data);
+    } else {
+        throw pink::exception("som layout " + m_som_layout + " is not supported");
+    }
 }
 
 void DynamicTrainer::update_som()
