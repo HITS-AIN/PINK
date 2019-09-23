@@ -168,7 +168,7 @@ public:
             this->m_som.get_number_of_neurons(), neuron_size, d_som, this->m_number_of_spatial_transformations,
             d_spatial_transformed_images, m_block_size, m_euclidean_distance_type, this->m_euclidean_distance_dim);
 
-        std::vector<T> euclidean_distance_matrix(this->m_som.get_number_of_neurons());
+        std::vector<float> euclidean_distance_matrix(this->m_som.get_number_of_neurons());
         std::vector<uint32_t> best_rotation_matrix(this->m_som.get_number_of_neurons());
 
         thrust::copy(d_euclidean_distance_matrix.begin(),
@@ -191,7 +191,7 @@ private:
     DataType m_euclidean_distance_type;
 
     thrust::device_vector<T> d_spatial_transformed_images;
-    thrust::device_vector<T> d_euclidean_distance_matrix;
+    thrust::device_vector<float> d_euclidean_distance_matrix;
     thrust::device_vector<uint32_t> d_best_rotation_matrix;
     thrust::device_vector<uint32_t> d_best_match;
 

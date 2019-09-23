@@ -43,7 +43,8 @@ DynamicMapper::DynamicMapper(DynamicSOM const& som, int verbosity, uint32_t numb
     }
 }
 
-void DynamicMapper::operator () (DynamicData const& data)
+auto DynamicMapper::operator () (DynamicData const& data)
+    -> std::tuple<std::vector<float>, std::vector<uint32_t>>
 {
     auto s_data = *(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data));
     
@@ -51,13 +52,13 @@ void DynamicMapper::operator () (DynamicData const& data)
     {
         auto s_mapper = std::dynamic_pointer_cast<
     	    Mapper<CartesianLayout<2>, CartesianLayout<2>, float, true>>(m_mapper);
-        s_mapper->operator()(s_data);
+        return s_mapper->operator()(s_data);
     }
     else
     {
         auto s_mapper = std::dynamic_pointer_cast<
             Mapper<CartesianLayout<2>, CartesianLayout<2>, float, false>>(m_mapper);
-        s_mapper->operator()(s_data); 
+        return s_mapper->operator()(s_data);
     }
 }
 

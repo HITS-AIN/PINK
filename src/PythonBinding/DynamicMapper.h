@@ -24,7 +24,8 @@ struct DynamicMapper
 
     DynamicMapper(DynamicMapper const&) = delete;
 
-    void operator () (DynamicData const& data);
+    auto operator () (DynamicData const& data)
+        -> std::tuple<std::vector<float>, std::vector<uint32_t>>;
 
     void update_som();
 

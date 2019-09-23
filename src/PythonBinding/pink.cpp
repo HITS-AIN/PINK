@@ -7,6 +7,7 @@
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "DynamicData.h"
 #include "DynamicMapper.h"
@@ -125,11 +126,11 @@ PYBIND11_MODULE(pink, m)
             return trainer.update_som();
         });
 
-    py::class_<DynamicMapper>(m, "mapper")
+    py::class_<DynamicMapper>(m, "Mapper")
         .def(py::init<DynamicSOM const&, int, uint32_t, bool, Interpolation, bool, uint32_t, DataType>(),
             py::arg("som"),
             py::arg("verbosity") = 0,
-            py::arg("number_of_rotations") = 360,
+            py::arg("number_of_rotations") = 360UL,
             py::arg("use_flip") = true,
             py::arg("interpolation") = Interpolation::BILINEAR,
             py::arg("use_gpu") = true,
