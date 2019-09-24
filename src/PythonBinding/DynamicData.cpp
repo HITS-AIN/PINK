@@ -14,7 +14,6 @@ DynamicData::DynamicData(std::string const& data_type, std::string const& layout
    m_shape(shape)
 {
     if (data_type != "float32") throw std::runtime_error("data-type not supported");
-    if (layout != "cartesian-2d") throw std::runtime_error("layout not supported");
 
     std::vector<uint32_t> my_shape(std::begin(shape), std::end(shape));
 

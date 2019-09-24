@@ -20,26 +20,19 @@ DynamicSOM::DynamicSOM(std::string const& data_type, std::string const& som_layo
    m_shape(shape)
 {
     if (m_data_type != "float32") throw std::runtime_error("data-type not supported");
-    if (m_neuron_layout != "cartesian-2d") throw std::runtime_error("neuron_layout not supported");
 
     if (m_som_layout == "cartesian-2d")
     {
-        assert(m_shape.size() == 4);
-        auto&& p = static_cast<float*>(ptr);
-        m_som = std::make_shared<SOM<CartesianLayout<2>, CartesianLayout<2>, float>>(
-            CartesianLayout<2>{{m_shape[0], m_shape[1]}},
-            CartesianLayout<2>{{m_shape[2], m_shape[3]}},
-            std::vector<float>(p, p + m_shape[0] * m_shape[1] * m_shape[2] * m_shape[3]));
+        assert(m_shape.size() >= 3);
+        m_som = get_som<CartesianLayout<2>>({m_shape[0], m_shape[1]}, std::vector<uint32_t>(&m_shape[2], m_shape.end()),
+        	static_cast<float*>(ptr), m_shape[0] * m_shape[1] * m_shape[2] * m_shape[3]);
     }
     else if (m_som_layout == "hexagonal-2d")
     {
-        assert(m_shape.size() == 3);
+        assert(m_shape.size() >= 2);
         auto dim = HexagonalLayout::get_dim_from_size(m_shape[0]);
-        auto&& p = static_cast<float*>(ptr);
-        m_som = std::make_shared<SOM<HexagonalLayout, CartesianLayout<2>, float>>(
-            HexagonalLayout{{dim, dim}},
-            CartesianLayout<2>{{m_shape[1], m_shape[2]}},
-            std::vector<float>(p, p + m_shape[0] * m_shape[1] * m_shape[2]));
+        m_som = get_som<HexagonalLayout>({dim, dim}, std::vector<uint32_t>(&m_shape[1], m_shape.end()),
+        	static_cast<float*>(ptr), m_shape[0] * m_shape[1] * m_shape[2]);
     }
     else
     {

@@ -24,6 +24,24 @@ struct DynamicSOM
 
     buffer_info get_buffer_info() const;
 
+    template <typename SOM_Layout>
+    auto get_som(SOM_Layout const& som_layout, std::vector<uint32_t> const& shape, float* p, uint32_t size)
+        -> std::shared_ptr<SOMBase>
+    {
+        if (m_neuron_layout == "cartesian-1d") {
+            throw pink::exception("neuron layout " + m_neuron_layout + " is not supported");
+        } else if (m_neuron_layout == "cartesian-2d") {
+            return std::make_shared<SOM<SOM_Layout, CartesianLayout<2>, float>>(
+            	som_layout,
+                CartesianLayout<2>{{m_shape[0], m_shape[1]}},
+                std::vector<float>(p, p + size));
+        } else if (m_neuron_layout == "cartesian-3d") {
+            throw pink::exception("neuron layout " + m_neuron_layout + " is not supported");
+        } else {
+            throw pink::exception("neuron layout " + m_neuron_layout + " is not supported");
+        }
+    }
+
     std::shared_ptr<SOMBase> m_som;
 
     std::string m_data_type;
