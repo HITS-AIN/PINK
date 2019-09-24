@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip3 install --upgrade pip && \
     hash -r pip3 && \
     pip3 install -I \
+    googledrivedownloade \
     jupyter \
     matplotlib \
     numpy \
