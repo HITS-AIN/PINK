@@ -80,7 +80,7 @@ PYBIND11_MODULE(pink, m)
         {
             py::buffer_info info = b.request();
             return new DynamicSOM(data_type, som_layout, neuron_layout,
-            	std::vector<uint32_t>(info.shape.begin(), info.shape.end()), info.ptr);
+                std::vector<uint32_t>(info.shape.begin(), info.shape.end()), info.ptr);
         }),
             py::arg().noconvert(),
             py::arg("data_type") = "float32",

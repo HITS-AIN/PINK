@@ -28,24 +28,24 @@ struct DynamicSOM
 
     template <typename SOM_Layout>
     auto get_som(SOM_Layout const& som_layout, std::vector<uint32_t> const& neuron_shape,
-    	float* p, uint32_t size) -> std::shared_ptr<SOMBase>
+        float* p, uint32_t size) -> std::shared_ptr<SOMBase>
     {
         if (m_neuron_layout == "cartesian-1d") {
             assert(neuron_shape.size() == 1);
             return std::make_shared<SOM<SOM_Layout, CartesianLayout<1U>, float>>(
-            	som_layout,
+                som_layout,
                 CartesianLayout<1U>{{neuron_shape[0]}},
                 std::vector<float>(p, p + size));
         } else if (m_neuron_layout == "cartesian-2d") {
             assert(neuron_shape.size() == 2);
             return std::make_shared<SOM<SOM_Layout, CartesianLayout<2U>, float>>(
-            	som_layout,
+                som_layout,
                 CartesianLayout<2U>{{neuron_shape[0], neuron_shape[1]}},
                 std::vector<float>(p, p + size));
         } else if (m_neuron_layout == "cartesian-3d") {
             assert(neuron_shape.size() == 3);
             return std::make_shared<SOM<SOM_Layout, CartesianLayout<3U>, float>>(
-            	som_layout,
+                som_layout,
                 CartesianLayout<3U>{{neuron_shape[0], neuron_shape[1], neuron_shape[2]}},
                 std::vector<float>(p, p + size));
         } else {
