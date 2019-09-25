@@ -40,11 +40,26 @@ private:
         Interpolation interpolation, uint32_t euclidean_distance_dim,
         DataType euclidean_distance_type) -> std::shared_ptr<TrainerBase>
     {
-        if (m_neuron_layout == "cartesian-2d") {
-            return get_trainer<SOM_Layout, CartesianLayout<2>>(dynamic_som, distribution_function,
+        if (m_neuron_layout == "cartesian-1d")
+        {
+            return get_trainer<SOM_Layout, CartesianLayout<1U>>(dynamic_som, distribution_function,
                 verbosity, number_of_rotations, use_flip, max_update_distance,
                 interpolation, euclidean_distance_dim, euclidean_distance_type);
-        } else {
+        }
+        else if (m_neuron_layout == "cartesian-2d")
+        {
+            return get_trainer<SOM_Layout, CartesianLayout<2U>>(dynamic_som, distribution_function,
+                verbosity, number_of_rotations, use_flip, max_update_distance,
+                interpolation, euclidean_distance_dim, euclidean_distance_type);
+        }
+        else if (m_neuron_layout == "cartesian-3d")
+        {
+            return get_trainer<SOM_Layout, CartesianLayout<3U>>(dynamic_som, distribution_function,
+                verbosity, number_of_rotations, use_flip, max_update_distance,
+                interpolation, euclidean_distance_dim, euclidean_distance_type);
+        }
+        else
+        {
             throw pink::exception("neuron layout " + m_neuron_layout + " is not supported");
         }
     }
@@ -71,8 +86,12 @@ private:
     template <typename SOM_Layout>
     void train(DynamicData const& data)
     {
-        if (m_neuron_layout == "cartesian-2d") {
-            train<SOM_Layout, CartesianLayout<2>>(data);
+        if (m_neuron_layout == "cartesian-1d") {
+            train<SOM_Layout, CartesianLayout<1U>>(data);
+        } else if (m_neuron_layout == "cartesian-2d") {
+            train<SOM_Layout, CartesianLayout<2U>>(data);
+        } else if (m_neuron_layout == "cartesian-3d") {
+            train<SOM_Layout, CartesianLayout<3U>>(data);
         } else {
             throw pink::exception("neuron layout " + m_neuron_layout + " is not supported");
         }
@@ -83,10 +102,10 @@ private:
     {
         if (m_use_gpu == true) {
             std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, true>>(m_trainer)->operator()(
-                *(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data)));
+                *(std::dynamic_pointer_cast<Data<Neuron_Layout, float>>(data.m_data)));
         } else {
             std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, false>>(m_trainer)->operator()(
-                *(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data)));
+                *(std::dynamic_pointer_cast<Data<Neuron_Layout, float>>(data.m_data)));
         }
     }
 
