@@ -18,15 +18,15 @@ void main_gpu(InputData const & input_data)
 
     if (input_data.m_layout == Layout::CARTESIAN)
         if (input_data.m_dimensionality == 1)
-            main_generic<CartesianLayout<1>, CartesianLayout<2>, float, true>(input_data);
+            main_generic<CartesianLayout<1>, float, true>(input_data);
         else if (input_data.m_dimensionality == 2)
-            main_generic<CartesianLayout<2>, CartesianLayout<2>, float, true>(input_data);
+            main_generic<CartesianLayout<2>, float, true>(input_data);
         else if (input_data.m_dimensionality == 3)
-            main_generic<CartesianLayout<3>, CartesianLayout<2>, float, true>(input_data);
+            main_generic<CartesianLayout<3>, float, true>(input_data);
         else
             throw pink::exception("Unsupported dimensionality of " + input_data.m_dimensionality);
     else if (input_data.m_layout == Layout::HEXAGONAL)
-        main_generic<HexagonalLayout, CartesianLayout<2>, float, true>(input_data);
+        main_generic<HexagonalLayout, float, true>(input_data);
     else
         throw pink::exception("Unknown layout");
 }

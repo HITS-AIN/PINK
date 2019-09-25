@@ -23,6 +23,22 @@
 
 namespace pink {
 
+template <typename SOMLayout, typename T, bool UseGPU>
+void main_generic(InputData const& input_data)
+{
+    if (input_data.m_data_layout == Layout::CARTESIAN)
+        if (input_data.m_data_dimension.size() == 1)
+            main_generic<SOMLayout, CartesianLayout<1U>, T, UseGPU>(input_data);
+        else if (input_data.m_data_dimension.size() == 2)
+            main_generic<SOMLayout, CartesianLayout<2U>, T, UseGPU>(input_data);
+        else if (input_data.m_data_dimension.size() == 3)
+            main_generic<SOMLayout, CartesianLayout<3U>, T, UseGPU>(input_data);
+        else
+            throw pink::exception("Unsupported data dimensionality: " + std::to_string(input_data.m_data_dimension.size()));
+    else
+        throw pink::exception("Unsupported data layout: " + std::to_string(input_data.m_data_layout));
+}
+
 template <typename SOMLayout, typename DataLayout, typename T, bool UseGPU>
 void main_generic(InputData const& input_data)
 {

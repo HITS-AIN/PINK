@@ -26,3 +26,14 @@ inline std::ostream& operator << (std::ostream& os, Layout layout)
 }
 
 } // namespace pink
+
+namespace std {
+
+inline std::string to_string(pink::Layout layout)
+{
+    if (layout == pink::Layout::CARTESIAN) return "cartesian";
+    else if (layout == pink::Layout::HEXAGONAL) return "hexagonal";
+    else return "undefined";
+}
+
+} // namespace std
