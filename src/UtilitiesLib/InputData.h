@@ -66,6 +66,7 @@ struct InputData
     uint32_t m_number_of_data_entries;
     Layout m_data_layout;
     std::vector<uint32_t> m_data_dimension;
+    std::vector<uint32_t> m_neuron_dimension;
     uint32_t m_som_size;
     uint32_t m_neuron_size;
     uint32_t m_som_total_size;

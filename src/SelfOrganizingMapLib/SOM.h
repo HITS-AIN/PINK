@@ -17,6 +17,7 @@
 #include "UtilitiesLib/Filler.h"
 #include "UtilitiesLib/get_file_header.h"
 #include "UtilitiesLib/InputData.h"
+#include "UtilitiesLib/get_static_array.h"
 
 namespace pink {
 
@@ -69,7 +70,7 @@ public:
     explicit SOM(InputData const& input_data)
      : m_som_layout{extract_layout<SOMLayout::dimensionality>(input_data.m_som_width,
        input_data.m_som_height, input_data.m_som_depth)},
-       m_neuron_layout{{input_data.m_neuron_dim, input_data.m_neuron_dim}},
+       m_neuron_layout{get_static_array<NeuronLayout::dimensionality>(input_data.m_neuron_dimension)},
        m_data(m_som_layout.size() * m_neuron_layout.size())
     {
         // Initialize SOM

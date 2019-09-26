@@ -439,6 +439,12 @@ InputData::InputData(int argc, char **argv)
     }
     assert(m_neuron_dim != 0);
 
+    m_neuron_dimension = m_data_dimension;
+    if (m_neuron_dimension.size() == 2) {
+        m_neuron_dimension[0] = m_neuron_dim;
+        m_neuron_dimension[1] = m_neuron_dim;
+    }
+
     if (m_euclidean_distance_dim == 0) {
         m_euclidean_distance_dim = m_data_dimension[0];
         if (m_number_of_rotations != 1)
