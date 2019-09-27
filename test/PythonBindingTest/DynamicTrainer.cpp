@@ -40,7 +40,7 @@ TEST(GenericPythonBindingTest, DynamicTrainer_hex)
 
     DynamicData data("float32", "cartesian-2d", shape, static_cast<void*>(&ptr[0]));
 
-    std::vector<uint32_t> som_shape{3, 3, 3};
+    std::vector<uint32_t> som_shape{7, 3, 3};
     std::vector<float> som_ptr(7, 0.0f);
 
     DynamicSOM som("float32", "hexagonal-2d", "cartesian-2d", som_shape, static_cast<void*>(&som_ptr[0]));
