@@ -115,7 +115,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("max_update_distance") = -1.0,
             py::arg("interpolation") = Interpolation::BILINEAR,
             py::arg("use_gpu") = true,
-            py::arg("euclidean_distance_dim") = 0UL,
+            py::arg("euclidean_distance_dim"),
             py::arg("euclidean_distance_type") = DataType::UINT8
         )
         .def("__call__", [](DynamicTrainer& trainer, DynamicData const& data)
@@ -135,7 +135,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("use_flip") = true,
             py::arg("interpolation") = Interpolation::BILINEAR,
             py::arg("use_gpu") = true,
-            py::arg("euclidean_distance_dim") = 0UL,
+            py::arg("euclidean_distance_dim"),
             py::arg("euclidean_distance_type") = DataType::UINT8
         )
         .def("__call__", [](DynamicMapper& mapper, DynamicData const& data)

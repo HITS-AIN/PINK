@@ -19,13 +19,7 @@ DynamicMapper::DynamicMapper(DynamicSOM const& dynamic_som, int verbosity, uint3
    m_use_gpu(use_gpu)
 {
     if (m_data_type != "float32") throw pink::exception("data-type not supported");
-
-    if (euclidean_distance_dim == 0) {
-        euclidean_distance_dim = static_cast<uint32_t>(dynamic_som.m_shape[2]);
-        if (number_of_rotations != 1)
-            euclidean_distance_dim = static_cast<uint32_t>(euclidean_distance_dim * std::sqrt(2.0) / 2);
-    }
-    assert(euclidean_distance_dim != 0);
+    if (euclidean_distance_dim == 0) throw pink::exception("euclidean_distance_dim not defined");
 
     if (m_som_layout == "cartesian-2d") {
         m_mapper = get_mapper<CartesianLayout<2>>(dynamic_som, verbosity, number_of_rotations, use_flip,
