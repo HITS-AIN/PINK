@@ -211,9 +211,10 @@ public:
            use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        m_som(som),
        d_som(som.get_data()),
+       m_spacing(get_spacing()),
        m_block_size(block_size),
        m_euclidean_distance_type(euclidean_distance_type),
-       d_spatial_transformed_images(this->m_number_of_spatial_transformations * som.get_neuron_size()),
+       d_spatial_transformed_images(this->m_number_of_spatial_transformations * som.get_neuron_size() * m_spacing),
        d_euclidean_distance_matrix(som.get_number_of_neurons()),
        d_best_rotation_matrix(som.get_number_of_neurons()),
        d_best_match(1)
@@ -245,10 +246,8 @@ public:
 
         uint32_t neuron_dim = m_som.get_neuron_dimension()[0];
         uint32_t neuron_size = neuron_dim * neuron_dim;
-        uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
-        for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
 
-        generate_rotated_images(d_spatial_transformed_images, d_data, spacing, this->m_number_of_rotations,
+        generate_rotated_images(d_spatial_transformed_images, d_data, m_spacing, this->m_number_of_rotations,
             data.get_dimension()[0], neuron_dim, this->m_use_flip, this->m_interpolation, d_cos_alpha, d_sin_alpha);
 
 #ifdef PRINT_DEBUG
@@ -290,11 +289,21 @@ public:
 
 private:
 
+    auto get_spacing() const
+    {
+        uint32_t spacing = m_som.get_neuron_layout().dimensionality > 2 ? m_som.get_neuron_dimension()[2] : 1;
+        for (uint32_t i = 3; i < m_som.get_neuron_layout().dimensionality; ++i) spacing *= m_som.get_neuron_dimension()[i];
+        return spacing;
+    }
+
     /// A reference to the SOM will be trained
     SOMType& m_som;
 
     /// Device memory for SOM
     thrust::device_vector<T> d_som;
+
+    /// Number of channels
+    uint32_t m_spacing;
 
     uint32_t m_block_size;
 
