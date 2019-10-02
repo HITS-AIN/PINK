@@ -125,8 +125,8 @@ public:
 
     void operator () (Data<DataLayout, T> const& data)
     {
-        uint32_t neuron_dim = m_som.get_neuron_dimension()[0];
-        uint32_t neuron_size = neuron_dim * neuron_dim;
+        auto neuron_dim = m_som.get_neuron_dimension()[0];
+        auto neuron_size = m_som.get_neuron_size();
 
         // Memory allocation
         std::vector<T> euclidean_distance_matrix(this->m_som.get_number_of_neurons());
@@ -214,7 +214,7 @@ public:
        m_spacing(get_spacing()),
        m_block_size(block_size),
        m_euclidean_distance_type(euclidean_distance_type),
-       d_spatial_transformed_images(this->m_number_of_spatial_transformations * som.get_neuron_size() * m_spacing),
+       d_spatial_transformed_images(this->m_number_of_spatial_transformations * som.get_neuron_size()),
        d_euclidean_distance_matrix(som.get_number_of_neurons()),
        d_best_rotation_matrix(som.get_number_of_neurons()),
        d_best_match(1)
@@ -244,8 +244,8 @@ public:
         /// Device memory for data
         thrust::device_vector<T> d_data = data.get_data();
 
-        uint32_t neuron_dim = m_som.get_neuron_dimension()[0];
-        uint32_t neuron_size = neuron_dim * neuron_dim;
+        auto neuron_dim = m_som.get_neuron_dimension()[0];
+        auto neuron_size = neuron_dim * neuron_dim; // Must be changed into m_som.get_neuron_size()
 
         generate_rotated_images(d_spatial_transformed_images, d_data, m_spacing, this->m_number_of_rotations,
             data.get_dimension()[0], neuron_dim, this->m_use_flip, this->m_interpolation, d_cos_alpha, d_sin_alpha);
