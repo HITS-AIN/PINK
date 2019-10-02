@@ -18,7 +18,7 @@ namespace pink {
 
 struct DynamicData
 {
-    DynamicData(std::string const& data_type, std::string const& layout, std::vector<ssize_t> shape, void* ptr);
+    DynamicData(std::string const& data_type, std::string const& layout, std::vector<uint32_t> shape, void* ptr);
 
     buffer_info get_buffer_info() const;
 
@@ -28,7 +28,7 @@ struct DynamicData
 
     std::string m_layout;
 
-    std::vector<ssize_t> m_shape;
+    std::vector<uint32_t> m_shape;
 };
 
 } // namespace pink

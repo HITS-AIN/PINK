@@ -16,7 +16,7 @@ using namespace pink;
 
 TEST(GenericPythonBindingTest, DynamicTrainer)
 {
-    std::vector<ssize_t> shape{3, 3};
+    std::vector<uint32_t> shape{3, 3};
     std::vector<float> ptr{2.0f, 3.0f, 0.0f, 1.0f};
 
     DynamicData data("float32", "cartesian-2d", shape, static_cast<void*>(&ptr[0]));
@@ -35,7 +35,7 @@ TEST(GenericPythonBindingTest, DynamicTrainer)
 
 TEST(GenericPythonBindingTest, DynamicTrainer_hex)
 {
-    std::vector<ssize_t> shape{3, 3};
+    std::vector<uint32_t> shape{3, 3};
     std::vector<float> ptr{2.0f, 3.0f, 0.0f, 1.0f};
 
     DynamicData data("float32", "cartesian-2d", shape, static_cast<void*>(&ptr[0]));

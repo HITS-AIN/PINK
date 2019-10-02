@@ -55,7 +55,7 @@ PYBIND11_MODULE(pink, m)
         .def(py::init([](py::buffer b, std::string data_type, std::string layout)
         {
             py::buffer_info info = b.request();
-            return new DynamicData(data_type, layout, info.shape, info.ptr);
+            return new DynamicData(data_type, layout, std::vector<uint32_t>(info.shape.begin(), info.shape.end()), info.ptr);
         }),
             py::arg().noconvert(),
             py::arg("data_type") = "float32",

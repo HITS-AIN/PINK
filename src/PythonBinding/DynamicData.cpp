@@ -4,64 +4,63 @@
  * @author Bernd Doser, HITS gGmbH
  */
 
+#include <cassert>
+
 #include "DynamicData.h"
+#include "UtilitiesLib/pink_exception.h"
+#include "UtilitiesLib/get_strides.h"
 
 namespace pink {
 
-DynamicData::DynamicData(std::string const& data_type, std::string const& layout, std::vector<ssize_t> shape, void* ptr)
+DynamicData::DynamicData(std::string const& data_type, std::string const& layout, std::vector<uint32_t> shape, void* ptr)
  : m_data_type(data_type),
    m_layout(layout),
    m_shape(shape)
 {
-    if (data_type != "float32") throw std::runtime_error("data-type not supported");
+    if (m_data_type != "float32") throw pink::exception("data-type not supported");
+    auto p = static_cast<float*>(ptr);
+    auto size = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<int>());
 
-    std::vector<uint32_t> my_shape(std::begin(shape), std::end(shape));
-
-    if (m_shape.size() == 1)
-    {
-        auto p = static_cast<float*>(ptr);
-        std::vector<float> v(p, p + shape[0]);
-        m_data = std::make_shared<Data<CartesianLayout<1>, float>>(
-            CartesianLayout<1>{my_shape[0]}, v);
-    }
-    else if (m_shape.size() == 2)
-    {
-        auto p = static_cast<float*>(ptr);
-        std::vector<float> v(p, p + shape[0] * shape[1]);
-
-        m_data = std::make_shared<Data<CartesianLayout<2>, float>>(
-            CartesianLayout<2>{my_shape[0], my_shape[1]}, v);
-    }
-    else if (m_shape.size() == 3)
-    {
-        auto p = static_cast<float*>(ptr);
-        std::vector<float> v(p, p + shape[0] * shape[1] * shape[2]);
-        m_data = std::make_shared<Data<CartesianLayout<3>, float>>(
-            CartesianLayout<3>{my_shape[0], my_shape[1], my_shape[2]}, v);
-    }
-    else
-    {
-        throw std::runtime_error("shape not supported");
+    if (m_layout == "cartesian-1d") {
+        assert(m_shape.size() == 1);
+        m_data = std::make_shared<Data<CartesianLayout<1U>, float>>(
+        	CartesianLayout<1U>{m_shape[0]},
+			std::vector<float>(p, p + size));
+    } else if (m_layout == "cartesian-2d") {
+        assert(m_shape.size() == 2);
+        m_data = std::make_shared<Data<CartesianLayout<2U>, float>>(
+        	CartesianLayout<2U>{m_shape[0], m_shape[1]},
+		    std::vector<float>(p, p + size));
+    } else if (m_layout == "cartesian-3d") {
+        assert(m_shape.size() == 3);
+        m_data = std::make_shared<Data<CartesianLayout<3U>, float>>(
+        	CartesianLayout<3U>{m_shape[0], m_shape[1], m_shape[2]},
+		    std::vector<float>(p, p + size));
+    } else {
+        throw pink::exception("layout " + m_layout + " is not supported");
     }
 }
 
 buffer_info DynamicData::get_buffer_info() const
 {
-    if (m_shape.size() == 2)
-    {
-        auto&& shape = std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(m_data)->get_dimension();
-        auto&& ptr = std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(m_data)->get_data_pointer();
+	void* ptr = nullptr;
 
-        return buffer_info(static_cast<void*>(ptr), static_cast<ssize_t>(sizeof(float)), "f", static_cast<ssize_t>(2),
-            std::vector<ssize_t>{static_cast<ssize_t>(shape[0]),
-                                 static_cast<ssize_t>(shape[1])},
-            std::vector<ssize_t>{static_cast<ssize_t>(sizeof(float) * shape[1]),
-                                 static_cast<ssize_t>(sizeof(float))});
+    if (m_layout == "cartesian-1d") {
+	    ptr = static_cast<void*>(std::dynamic_pointer_cast<
+            Data<CartesianLayout<1U>, float>>(m_data)->get_data_pointer());
+    } else if (m_layout == "cartesian-2d") {
+	    ptr = static_cast<void*>(std::dynamic_pointer_cast<
+            Data<CartesianLayout<2U>, float>>(m_data)->get_data_pointer());
+    } else if (m_layout == "cartesian-3d") {
+	    ptr = static_cast<void*>(std::dynamic_pointer_cast<
+            Data<CartesianLayout<3U>, float>>(m_data)->get_data_pointer());
+    } else {
+        throw pink::exception("layout " + m_layout + " is not supported");
     }
-    else
-    {
-        throw std::runtime_error("shape not supported");
-    }
+
+    return buffer_info(ptr, static_cast<ssize_t>(sizeof(float)),
+        "f", static_cast<ssize_t>(m_shape.size()),
+		std::vector<ssize_t>(m_shape.begin(), m_shape.end()), get_strides(m_shape));
 }
 
 } // namespace pink
