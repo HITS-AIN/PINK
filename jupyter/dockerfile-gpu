@@ -1,4 +1,4 @@
-FROM braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-8-conan-1.18
+FROM braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-8-conan-1.19
 
 LABEL maintainer="Bernd Doser <bernd.doser@h-its.org>"
 
@@ -35,7 +35,7 @@ RUN pip3 install --upgrade pip && \
 
 RUN git clone https://github.com/HITS-AIN/PINK.git && \
     cd PINK && \
-    git checkout 2.3 && \
+    git checkout 2.4-rc3 && \
     mkdir build && cd build && \
     cmake .. && \
     make
@@ -43,14 +43,15 @@ RUN git clone https://github.com/HITS-AIN/PINK.git && \
 ENV PYTHONPATH /PINK/build/lib:/PINK/scripts
 ENV JUPYTER_PATH /PINK/build/lib:/PINK/scripts
 
-COPY notebooks /notebooks
-
 # Add entrypoint
-ADD chmod_notebooks.sh /entrypoint.d/
+RUN cp /PINK/jupyter/chmod_notebooks.sh /entrypoint.d
 
 # Set up notebook config
-COPY jupyter_notebook_config.py /jupyter-config/
+RUN mkdir /jupyter-config/ && \
+    cp /PINK/jupyter/jupyter_notebook_config.py /jupyter-config/
 ENV JUPYTER_CONFIG_DIR /jupyter-config
+
+RUN cp -r /PINK/jupyter/notebooks /
 
 WORKDIR /notebooks
 EXPOSE 8888

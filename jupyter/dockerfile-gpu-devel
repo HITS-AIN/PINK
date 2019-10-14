@@ -34,7 +34,7 @@ RUN pip3 install --upgrade pip && \
     tqdm
 
 ENV PYTHONPATH /PINK/build/default/lib:/PINK/scripts
-ENV JUPYTER_PATH /PINK/lib:/PINK/scripts
+ENV JUPYTER_PATH /PINK/build/default/lib:/PINK/scripts
 ENV LD_LIBRARY_PATH /PINK/build/default/lib
 
 # Set up notebook config
