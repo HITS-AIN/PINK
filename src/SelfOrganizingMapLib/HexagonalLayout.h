@@ -71,7 +71,7 @@ struct HexagonalLayout
 
     static IndexType get_dim_from_size(IndexType size)
     {
-        IndexType dim = std::sqrt((4 * size - 1) / 3);
+        auto dim = static_cast<IndexType>(std::sqrt((4 * size - 1) / 3));
         assert(get_size_from_dim(dim) == size);
         return dim;
     }
