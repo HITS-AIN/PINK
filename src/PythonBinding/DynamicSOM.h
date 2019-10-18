@@ -58,16 +58,16 @@ struct DynamicSOM
     template <typename SOM_Layout>
     buffer_info get_buffer_info() const
     {
-    	void* ptr = nullptr;
+        void* ptr = nullptr;
 
         if (m_neuron_layout == "cartesian-1d") {
-    	    ptr = static_cast<void*>(std::dynamic_pointer_cast<
+            ptr = static_cast<void*>(std::dynamic_pointer_cast<
                 SOM<SOM_Layout, CartesianLayout<1U>, float>>(m_som)->get_data_pointer());
         } else if (m_neuron_layout == "cartesian-2d") {
-    	    ptr = static_cast<void*>(std::dynamic_pointer_cast<
+            ptr = static_cast<void*>(std::dynamic_pointer_cast<
                 SOM<SOM_Layout, CartesianLayout<2U>, float>>(m_som)->get_data_pointer());
         } else if (m_neuron_layout == "cartesian-3d") {
-    	    ptr = static_cast<void*>(std::dynamic_pointer_cast<
+            ptr = static_cast<void*>(std::dynamic_pointer_cast<
                 SOM<SOM_Layout, CartesianLayout<3U>, float>>(m_som)->get_data_pointer());
         } else {
             throw pink::exception("neuron layout " + m_neuron_layout + " is not supported");
@@ -75,7 +75,7 @@ struct DynamicSOM
 
         return buffer_info(ptr, static_cast<ssize_t>(sizeof(float)),
             "f", static_cast<ssize_t>(m_shape.size()),
-			std::vector<ssize_t>(m_shape.begin(), m_shape.end()), get_strides(m_shape));
+            std::vector<ssize_t>(m_shape.begin(), m_shape.end()), get_strides(m_shape));
     }
 
     std::shared_ptr<SOMBase> m_som;

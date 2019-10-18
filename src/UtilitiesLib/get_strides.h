@@ -12,10 +12,10 @@ namespace pink {
 
 inline std::vector<ssize_t> get_strides(std::vector<uint32_t> shape)
 {
-	std::vector<ssize_t> strides(shape.size(), sizeof(float));
-	for (size_t i = 1; i < shape.size(); ++i)
-		for (size_t j = i; j < shape.size(); ++j) strides[i - 1] *= shape[j];
-	return strides;
+    std::vector<ssize_t> strides(shape.size(), sizeof(float));
+    for (size_t i = 1; i < shape.size(); ++i)
+        for (size_t j = i; j < shape.size(); ++j) strides[i - 1] *= shape[j];
+    return strides;
 }
 
 } // namespace pink

@@ -47,7 +47,7 @@ struct CartesianLayout
     {
         float distance = 0.0;
         for (uint8_t i = 0; i < dimensionality; ++i) {
-            distance += std::pow(static_cast<float>(p1[i]) - p2[i], 2);
+            distance += static_cast<float>(std::pow(p1[i] - p2[i], 2));
         }
         return std::sqrt(distance);
     }

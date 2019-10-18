@@ -23,14 +23,14 @@ DynamicSOM::DynamicSOM(std::string const& data_type, std::string const& som_layo
     {
         assert(m_shape.size() >= 3);
         m_som = get_som<CartesianLayout<2>>({{m_shape[0], m_shape[1]}}, std::vector<uint32_t>(m_shape.begin() + 2, m_shape.end()),
-            static_cast<float*>(ptr), std::accumulate(m_shape.begin(), m_shape.end(), 1, std::multiplies<int>()));
+            static_cast<float*>(ptr), std::accumulate(m_shape.begin(), m_shape.end(), 1U, std::multiplies<uint32_t>()));
     }
     else if (m_som_layout == "hexagonal-2d")
     {
         assert(m_shape.size() >= 2);
         auto dim = HexagonalLayout::get_dim_from_size(m_shape[0]);
         m_som = get_som<HexagonalLayout>({{dim, dim}}, std::vector<uint32_t>(m_shape.begin() + 1, m_shape.end()),
-            static_cast<float*>(ptr), std::accumulate(m_shape.begin(), m_shape.end(), 1, std::multiplies<int>()));
+            static_cast<float*>(ptr), std::accumulate(m_shape.begin(), m_shape.end(), 1U, std::multiplies<uint32_t>()));
     }
     else
     {

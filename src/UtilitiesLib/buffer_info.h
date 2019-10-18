@@ -35,15 +35,15 @@ struct buffer_info
 
 inline std::ostream& operator << (std::ostream& os, pink::buffer_info const& buffer_info)
 {
-	os << "ptr = " << buffer_info.m_ptr << std::endl;
-	os << "itemsize = " << buffer_info.m_itemsize << std::endl;
-	os << "format = " << buffer_info.m_format << std::endl;
-	os << "ndim = " << buffer_info.m_ndim << std::endl;
-	os << "shape = ";
-	for (size_t i = 0; i < buffer_info.m_shape.size(); ++i) os << buffer_info.m_shape[i] << " ";
-	os << std::endl;
-	os << "strides = ";
-	for (size_t i = 0; i < buffer_info.m_strides.size(); ++i) os << buffer_info.m_strides[i] << " ";
-	os << std::endl;
-	return os;
+    os << "ptr = " << buffer_info.m_ptr << std::endl;
+    os << "itemsize = " << buffer_info.m_itemsize << std::endl;
+    os << "format = " << buffer_info.m_format << std::endl;
+    os << "ndim = " << buffer_info.m_ndim << std::endl;
+    os << "shape = ";
+    for (size_t i = 0; i < buffer_info.m_shape.size(); ++i) os << buffer_info.m_shape[i] << " ";
+    os << std::endl;
+    os << "strides = ";
+    for (size_t i = 0; i < buffer_info.m_strides.size(); ++i) os << buffer_info.m_strides[i] << " ";
+    os << std::endl;
+    return os;
 }
