@@ -99,22 +99,23 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_3d_float)
     typedef SOM<CartesianLayout<2>, CartesianLayout<3>, float> SOMType;
     typedef Trainer<CartesianLayout<2>, CartesianLayout<3>, float, false> MyTrainer;
 
-    uint32_t som_dim = 1;
-    uint32_t image_dim = 2;
-    uint32_t neuron_dim = 2;
+    CartesianLayout<2> som_dim{2, 2};
+    CartesianLayout<3> neuron_dim{2, 2, 2};
+    auto data_dim = neuron_dim;
     uint32_t euclidean_distance_dim = 2;
-    uint32_t number_of_channels = 2;
 
-    DataType data({image_dim, image_dim, number_of_channels},
-        {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0});
-    SOMType som({som_dim, som_dim}, {neuron_dim, neuron_dim, number_of_channels}, std::vector<float>(8, 0.0));
+    std::vector<float> raw_data(8);
+    std::iota(raw_data.begin(), raw_data.end(), 1.0);
 
-    auto&& f = StepFunctor(10.0f);
+    DataType data(data_dim, raw_data);
+    SOMType som(som_dim, neuron_dim, std::vector<float>(32, 0.0));
+
+    auto&& f = StepFunctor(0.0f);
 
     MyTrainer trainer(som, f, 0, 1, false, 0.0, Interpolation::BILINEAR, euclidean_distance_dim);
     trainer(data);
 
-    DataType expected{{neuron_dim, neuron_dim, number_of_channels}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}};
+    DataType expected{neuron_dim, raw_data};
     auto actual = som.get_neuron({0, 0});
     EXPECT_EQ(expected, actual);
 }
