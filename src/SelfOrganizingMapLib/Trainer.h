@@ -276,8 +276,6 @@ public:
         update_neurons(d_som, d_spatial_transformed_images, d_best_rotation_matrix, d_euclidean_distance_matrix,
             d_best_match, d_update_factors, this->m_som.get_number_of_neurons(), neuron_size);
 
-        thrust::copy(d_som.begin(), d_som.end(), m_som.get_data_pointer());
-
         thrust::host_vector<uint32_t> best_match = d_best_match;
         ++this->m_update_info[best_match[0]];
     }
