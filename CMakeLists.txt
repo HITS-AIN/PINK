@@ -3,12 +3,41 @@ project(Pink VERSION 2.4 LANGUAGES C CXX)
 
 message(STATUS "${PROJECT_NAME} version ${PROJECT_VERSION}")
 
-# Set release as default build type
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release")
-endif()
+message("* Adding build types...")
+set(CMAKE_CXX_FLAGS_COVERAGE
+    "-g -O0 -Wall -fprofile-arcs -ftest-coverage"
+    CACHE STRING "Flags used by the C++ compiler during coverage builds."
+    FORCE
+)
+set(CMAKE_C_FLAGS_COVERAGE
+    "-g -O0 -Wall -fprofile-arcs -ftest-coverage"
+    CACHE STRING "Flags used by the C compiler during coverage builds."
+    FORCE
+)
+set(CMAKE_EXE_LINKER_FLAGS_COVERAGE
+    "-lgcov"
+    CACHE STRING "Flags used for linking binaries during coverage builds."
+    FORCE
+)
+set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE
+    "-lgcov"
+    CACHE STRING "Flags used by the shared libraries linker during coverage builds."
+    FORCE
+)
+MARK_AS_ADVANCED(
+    CMAKE_CXX_FLAGS_COVERAGE
+    CMAKE_C_FLAGS_COVERAGE
+    CMAKE_EXE_LINKER_FLAGS_COVERAGE
+    CMAKE_SHARED_LINKER_FLAGS_COVERAGE
+)
 
-message(STATUS "CMake build type: ${CMAKE_BUILD_TYPE}")
+# Set release as default build type
+if(NOT CMAKE_BUILD_TYPE)
+   set(CMAKE_BUILD_TYPE Release
+       CACHE STRING "Choose the type of build : None Debug Release RelWithDebInfo MinSizeRel Coverage."
+       FORCE)
+endif()
+message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 
 # Check if installation path is equal to source path
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_INSTALL_PREFIX})
@@ -47,6 +76,7 @@ if(CONAN)
     conan_cmake_run(CONANFILE conanfile.py
                     BASIC_SETUP CMAKE_TARGETS
                     SETTINGS compiler.libcxx=libstdc++11
+                    BUILD_TYPE "None"
                     BUILD missing)
     
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)

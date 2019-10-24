@@ -79,23 +79,23 @@ pipeline {
             }
           }
         }
-        stage('clang-9') {
+        stage('clang-8') {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-clang-9-conan-1.19'
+              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-clang-8-conan-1.19'
               args '--runtime=nvidia'
             }
           }
           steps {
-            sh './build.sh clang-9 Release'
+            sh './build.sh clang-8 Release'
           }
           post {
             always {
               step([
                 $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
                 defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
-                parserConfigurations: [[parserName: 'Clang (LLVM based)', pattern: 'build-clang-9/make.out']],
+                parserConfigurations: [[parserName: 'Clang (LLVM based)', pattern: 'build-clang-8/make.out']],
                 unHealthy: ''
               ])
             }
@@ -168,23 +168,23 @@ pipeline {
             }
           }
         }
-        stage('clang-9') {
+        stage('clang-8') {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-clang-9-conan-1.19'
+              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-clang-8-conan-1.19'
               args '--runtime=nvidia'
             }
           }
           steps {
-            sh 'cd build-clang-9 && make test'
+            sh 'cd build-clang-8 && make test'
           }
           post {
             always {
               step([
                 $class: 'XUnitPublisher',
                 thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-                tools: [[$class: 'GoogleTestType', pattern: 'build-clang-9/Testing/*.xml']]
+                tools: [[$class: 'GoogleTestType', pattern: 'build-clang-8/Testing/*.xml']]
               ])
             }
           }
@@ -199,16 +199,31 @@ pipeline {
           args '--runtime=nvidia'
         }
       }
+    }
+    stage('Coverage') {
+      agent {
+        docker {
+          reuseNode true
+          image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-8-conan-1.19'
+          args '--runtime=nvidia'
+        }
+      }
       steps {
-        sh './build.sh doc Release'
-        publishHTML( target: [
-          allowMissing: false,
-          alwaysLinkToLastBuild: false,
-          keepAll: true,
-          reportName: 'Doxygen',
-          reportDir: 'build-doc/doxygen/html',
-          reportFiles: 'index.html'
-        ])
+        sh '''
+          ./build.sh gcc-8-cov Coverage
+          cd build-gcc-8-cov
+          gcovr -r ../../ -x > coverage.xml
+        '''
+      }
+      post {
+        always {
+          step([
+            $class: 'CoberturaPublisher',
+            autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/coverage.xml',
+            failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false,
+            sourceEncoding: 'ASCII', zoomCoverageChart: false
+          ])
+        }
       }
     }
     stage('Deploy') {
