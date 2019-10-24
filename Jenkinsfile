@@ -13,45 +13,45 @@ pipeline {
   stages {
     stage('Build') {
       parallel {
-        stage('gcc-5') {
+        stage('gcc-6') {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-5-conan-1.19'
+              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-6-conan-1.19'
               args '--runtime=nvidia'
             }
           }
           steps {
-            sh './build.sh gcc-5 Release'
+            sh './build.sh gcc-6 Release'
           }
           post {
             always {
               step([
                 $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
                 defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
-                parserConfigurations: [[parserName: 'GNU Make + GNU C Compiler (gcc)', pattern: 'build-gcc-5/make.out']],
+                parserConfigurations: [[parserName: 'GNU Make + GNU C Compiler (gcc)', pattern: 'build-gcc-6/make.out']],
                 unHealthy: ''
               ])
             }
           }
         }
-        stage('gcc-8') {
+        stage('gcc-9') {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-8-conan-1.19'
+              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-9-conan-1.19'
               args '--runtime=nvidia'
             }
           }
           steps {
-            sh './build.sh gcc-8 Release'
+            sh './build.sh gcc-9 Release'
           }
           post {
             always {
               step([
                 $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
                 defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
-                parserConfigurations: [[parserName: 'GNU Make + GNU C Compiler (gcc)', pattern: 'build-gcc-8/make.out']],
+                parserConfigurations: [[parserName: 'GNU Make + GNU C Compiler (gcc)', pattern: 'build-gcc-9/make.out']],
                 unHealthy: ''
               ])
             }
@@ -83,44 +83,44 @@ pipeline {
     }
     stage('Test') {
       parallel {
-        stage('gcc-5') {
+        stage('gcc-6') {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-5-conan-1.19'
+              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-6-conan-1.19'
               args '--runtime=nvidia'
             }
           }
           steps {
-            sh 'cd build-gcc-5 && make test'
+            sh 'cd build-gcc-6 && make test'
           }
           post {
             always {
               step([
                 $class: 'XUnitBuilder',
                 thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-                tools: [[$class: 'GoogleTestType', pattern: 'build-gcc-5/Testing/*.xml']]
+                tools: [[$class: 'GoogleTestType', pattern: 'build-gcc-6/Testing/*.xml']]
               ])
             }
           }
         }
-        stage('gcc-8') {
+        stage('gcc-9') {
           agent {
             docker {
               reuseNode true
-              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-8-conan-1.19'
+              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-gcc-9-conan-1.19'
               args '--runtime=nvidia'
             }
           }
           steps {
-            sh 'cd build-gcc-8 && make test'
+            sh 'cd build-gcc-9 && make test'
           }
           post {
             always {
               step([
                 $class: 'XUnitBuilder',
                 thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-                tools: [[$class: 'GoogleTestType', pattern: 'build-gcc-8/Testing/*.xml']]
+                tools: [[$class: 'GoogleTestType', pattern: 'build-gcc-9/Testing/*.xml']]
               ])
             }
           }
@@ -142,6 +142,27 @@ pipeline {
                 $class: 'XUnitBuilder',
                 thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
                 tools: [[$class: 'GoogleTestType', pattern: 'build-clang-6/Testing/*.xml']]
+              ])
+            }
+          }
+        }
+        stage('clang-9') {
+          agent {
+            docker {
+              reuseNode true
+              image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-clang-9-conan-1.19'
+              args '--runtime=nvidia'
+            }
+          }
+          steps {
+            sh 'cd build-clang-9 && make test'
+          }
+          post {
+            always {
+              step([
+                $class: 'XUnitBuilder',
+                thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
+                tools: [[$class: 'GoogleTestType', pattern: 'build-clang-9/Testing/*.xml']]
               ])
             }
           }
@@ -178,8 +199,8 @@ pipeline {
       }
       steps {
         sh '''
-            export CONAN_USER_HOME=$PWD/conan-gcc-8
-            cd build-gcc-8
+            export CONAN_USER_HOME=$PWD/conan-gcc-9
+            cd build-gcc-9
             make package
         '''
       }
