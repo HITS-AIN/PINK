@@ -199,6 +199,17 @@ pipeline {
           args '--runtime=nvidia'
         }
       }
+      steps {
+        sh './build.sh doc Release'
+        publishHTML( target: [
+          allowMissing: false,
+          alwaysLinkToLastBuild: false,
+          keepAll: true,
+          reportName: 'Doxygen',
+          reportDir: 'build-doc/doxygen/html',
+          reportFiles: 'index.html'
+        ])
+      }
     }
     stage('Coverage') {
       agent {
