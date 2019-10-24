@@ -26,12 +26,8 @@ pipeline {
           }
           post {
             always {
-              step([
-                $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
-                defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
-                parserConfigurations: [[parserName: 'GNU Make + GNU C Compiler (gcc)', pattern: 'build-gcc-6/make.out']],
-                unHealthy: ''
-              ])
+              recordIssues enabledForFailure: true, tool: checkStyle()
+              recordIssues enabledForFailure: true, tool: gcc(pattern: 'build-gcc-8/make.out')
             }
           }
         }
