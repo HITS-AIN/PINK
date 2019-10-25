@@ -26,9 +26,8 @@ pipeline {
           }
           post {
             always {
-              recordIssues enabledForFailure: true, aggregatingResults: true, tool: [
-                gcc(pattern: 'build-gcc-6/make.out')
-              ]
+              recordIssues enabledForFailure: true, aggregatingResults: true,
+                tool: gcc(pattern: 'build-gcc-6/make.out')
             }
           }
         }
