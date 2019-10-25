@@ -207,7 +207,7 @@ pipeline {
         sh '''
           ./build.sh gcc-8-cov Coverage
           cd build-gcc-8-cov
-          gcovr -r ../../ -x > coverage.xml
+          gcovr -r .. -x > coverage.xml
         '''
       }
       post {
