@@ -44,12 +44,8 @@ pipeline {
           }
           post {
             always {
-              step([
-                $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
-                defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
-                parserConfigurations: [[parserName: 'GNU Make + GNU C Compiler (gcc)', pattern: 'build-gcc-8/make.out']],
-                unHealthy: ''
-              ])
+              recordIssues enabledForFailure: true, aggregatingResults: true,
+                tool: gcc(pattern: 'build-gcc-8/make.out')
             }
           }
         }
@@ -66,12 +62,8 @@ pipeline {
           }
           post {
             always {
-              step([
-                $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
-                defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
-                parserConfigurations: [[parserName: 'Clang (LLVM based)', pattern: 'build-clang-6/make.out']],
-                unHealthy: ''
-              ])
+              recordIssues enabledForFailure: true, aggregatingResults: true,
+                tool: clang(pattern: 'build-clang-6/make.out')
             }
           }
         }
@@ -88,12 +80,8 @@ pipeline {
           }
           post {
             always {
-              step([
-                $class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
-                defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '',
-                parserConfigurations: [[parserName: 'Clang (LLVM based)', pattern: 'build-clang-8/make.out']],
-                unHealthy: ''
-              ])
+              recordIssues enabledForFailure: true, aggregatingResults: true,
+                tool: clang(pattern: 'build-clang-8/make.out')
             }
           }
         }
