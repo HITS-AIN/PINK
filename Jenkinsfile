@@ -27,7 +27,6 @@ pipeline {
           post {
             always {
               recordIssues enabledForFailure: true, aggregatingResults: true, tool: [
-                cmake(),
                 gcc(pattern: 'build-gcc-6/make.out')
               ]
             }
