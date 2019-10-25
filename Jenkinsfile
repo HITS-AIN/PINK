@@ -26,8 +26,8 @@ pipeline {
           }
           post {
             always {
-              recordIssues enabledForFailure: true,
-                tool: gcc(id='gcc-6', pattern: 'build-gcc-6/make.out')
+              recordIssues enabledForFailure: true, aggregatingResults: false,
+                tool: gcc(id: 'gcc-6', pattern: 'build-gcc-6/make.out')
             }
           }
         }
@@ -44,8 +44,8 @@ pipeline {
           }
           post {
             always {
-              recordIssues enabledForFailure: true,
-                tool: gcc(id='gcc-8', pattern: 'build-gcc-8/make.out')
+              recordIssues enabledForFailure: true, aggregatingResults: false,
+                tool: gcc(id: 'gcc-8', pattern: 'build-gcc-8/make.out')
             }
           }
         }
@@ -62,8 +62,8 @@ pipeline {
           }
           post {
             always {
-              recordIssues enabledForFailure: true,
-                tool: clang(id='clang-6', pattern: 'build-clang-6/make.out')
+              recordIssues enabledForFailure: true, aggregatingResults: false,
+                tool: clang(id: 'clang-6', pattern: 'build-clang-6/make.out')
             }
           }
         }
@@ -80,8 +80,8 @@ pipeline {
           }
           post {
             always {
-              recordIssues enabledForFailure: true,
-                tool: clang(id='clang-8', pattern: 'build-clang-8/make.out')
+              recordIssues enabledForFailure: true, aggregatingResults: false,
+                tool: clang(id: 'clang-8', pattern: 'build-clang-8/make.out')
             }
           }
         }
