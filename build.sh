@@ -20,7 +20,7 @@ rm -fr $BUILD_DIR
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 
-cmake -DCMAKE_BUILD_TYPE=$2 ..
+cmake -DCMAKE_BUILD_TYPE=$2 .. 2>&1 |tee cmake.out
 
 if [ "$1" == "doc" ]; then
     make doc

@@ -26,8 +26,10 @@ pipeline {
           }
           post {
             always {
-              recordIssues enabledForFailure: true, tool: checkStyle()
-              recordIssues enabledForFailure: true, tool: gcc(pattern: 'build-gcc-8/make.out')
+              recordIssues enabledForFailure: true, aggregatingResults: true, tool: [
+                cmake(build-gcc-6/cmake.out),
+                gcc(pattern: 'build-gcc-6/make.out')
+              ]
             }
           }
         }
