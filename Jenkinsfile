@@ -226,7 +226,7 @@ pipeline {
       agent {
         docker {
           reuseNode true
-          image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-clang-7-conan-1.19-softwipe-f0ee3dd'
+          image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-clang-7-conan-1.19-softwipe-6be89c2'
           args '--runtime=nvidia'
         }
       }
