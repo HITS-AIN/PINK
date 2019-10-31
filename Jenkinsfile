@@ -222,6 +222,22 @@ pipeline {
         }
       }
     }
+    stage('Softwipe') {
+      agent {
+        docker {
+          reuseNode true
+          image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-clang-7-conan-1.19-softwipe-f0ee3dd'
+          args '--runtime=nvidia'
+        }
+      }
+      steps {
+        sh '''
+          mkdir build-softwipe
+          cd build-softwipe
+          /softwipe/softwipe.py -CM .. -e ../run_softwipe.sh
+        '''
+      }
+    }
     stage('Deploy') {
       agent {
         dockerfile {

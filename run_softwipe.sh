@@ -1,1 +1,1 @@
-../softwipe_build/bin/Pink --train ../scripts/data.bin som.bin
+../build-softwipe/bin/Pink --train ../scripts/data.bin som.bin
