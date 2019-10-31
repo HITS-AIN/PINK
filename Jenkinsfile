@@ -232,9 +232,10 @@ pipeline {
       }
       steps {
         sh '''
-          mkdir conan-softwipe
+          mkdir -p conan-softwipe
           export CONAN_USER_HOME=$PWD/conan-softwipe
-          mkdir build-softwipe
+          rm -fr build-softwipe
+          mkdir -p build-softwipe
           cd build-softwipe
           /softwipe/softwipe.py -CM .. -e ../run_softwipe.sh
         '''
