@@ -237,7 +237,7 @@ pipeline {
           rm -fr build-softwipe
           mkdir -p build-softwipe
           cd build-softwipe
-          /softwipe/softwipe.py -CM .. -e ../run_softwipe.sh
+          /softwipe/softwipe.py -CM .. -e ../run_softwipe.sh -x /usr,/tmp,../conan-softwipe/.conan
         '''
       }
     }
