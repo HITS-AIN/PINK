@@ -10,3 +10,5 @@
 *__pycache__
 /softwipe_build/
 .ipynb_checkpoints/
+/dist/
+/pink.egg-info/
