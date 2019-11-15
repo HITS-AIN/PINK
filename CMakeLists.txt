@@ -58,9 +58,9 @@ if(OPENMP_FOUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # Download conan-cmake
 find_program(CONAN conan)
@@ -74,7 +74,7 @@ if(CONAN)
     # Conan setup
     include(${CMAKE_BINARY_DIR}/conan.cmake)
     conan_cmake_run(CONANFILE conanfile.py
-                    BASIC_SETUP CMAKE_TARGETS
+                    BASIC_SETUP CMAKE_TARGETS NO_OUTPUT_DIRS
                     SETTINGS compiler.libcxx=libstdc++11
                     BUILD_TYPE "None"
                     BUILD missing)
