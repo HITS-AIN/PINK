@@ -79,14 +79,7 @@ setup(
     ],
     python_requires='>=3.6',
     license='GNU General Public License v3 (GPLv3)',
-    install_requires=[
-        'numpy >= 1.16.0',
-    ],
     ext_modules=[CMakeExtension('pink')],
-    include_package_data=True,
-    package_data={
-        'pink': ['lib/*.so']
-    },
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
 )
