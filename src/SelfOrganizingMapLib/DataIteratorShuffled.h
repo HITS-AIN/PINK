@@ -125,6 +125,7 @@ private:
                 static_cast<std::streamsize>(layout.size() * sizeof(T)));
             ++cur_random_list;
         } else {
+            is.seekg(0, is.beg);
             end_flag = true;
         }
     }
