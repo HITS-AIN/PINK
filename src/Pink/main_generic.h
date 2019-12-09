@@ -78,6 +78,8 @@ void main_generic(InputData const& input_data)
         uint32_t count = 0;
         for (uint32_t i = 0; i < input_data.m_number_of_iterations; ++i)
         {
+        	// Change the seed for DataIteratorShuffled for every iteration by adding
+        	// the loop index number, so that the image order is different in every iteration.
             auto&& iter_data_cur = DataIteratorShuffled<DataLayout, T>(ifs,
                 static_cast<uint64_t>(input_data.m_seed) + i, input_data.m_shuffle_data_input);
             auto&& iter_data_end = DataIteratorShuffled<DataLayout, T>(ifs, true);
