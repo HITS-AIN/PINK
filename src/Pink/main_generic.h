@@ -79,7 +79,7 @@ void main_generic(InputData const& input_data)
         for (uint32_t i = 0; i < input_data.m_number_of_iterations; ++i)
         {
             auto&& iter_data_cur = DataIteratorShuffled<DataLayout, T>(ifs,
-                static_cast<uint64_t>(input_data.m_seed), input_data.m_shuffle_data_input);
+                static_cast<uint64_t>(input_data.m_seed) + i, input_data.m_shuffle_data_input);
             auto&& iter_data_end = DataIteratorShuffled<DataLayout, T>(ifs, true);
             for (; iter_data_cur != iter_data_end; ++iter_data_cur, ++progress_bar)
             {
