@@ -222,25 +222,6 @@ pipeline {
         }
       }
     }
-    stage('Softwipe') {
-      agent {
-        docker {
-          reuseNode true
-          image 'braintwister/ubuntu-18.04-cuda-10.1-cmake-3.15-clang-7-conan-1.19-softwipe-fork-18a7313'
-          args '--runtime=nvidia'
-        }
-      }
-      steps {
-        sh '''
-          mkdir -p conan-softwipe
-          export CONAN_USER_HOME=$PWD/conan-softwipe
-          rm -fr build-softwipe
-          mkdir -p build-softwipe
-          cd build-softwipe
-          /softwipe/softwipe.py -CM .. -e ../run_softwipe.sh -x /usr,/tmp,../conan- 2>&1 |tee softwipe_general.txt
-        '''
-      }
-    }
     stage('Deploy') {
       agent {
         dockerfile {
