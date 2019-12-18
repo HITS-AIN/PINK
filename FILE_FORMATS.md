@@ -23,6 +23,33 @@ The layout for data, som, and neuron can be
   
 followed by the dimensionality and the dimensions.
 
+## Cartesian layout
+
+The data layout is row-major (C-style), which means that the strides grow from right to left.
+
+### 2-dim example 10x10
+
+The layout description is: `0 2 10 10`, the strides will be `(10, 0)` and the element `[i, j]` is at memory position `i * 10 + j`.
+
+### 3-dim example 10x10x3
+
+The layout description is: `0 3 10 10 3`, the strides will be `(30, 3, 0)` and the element `[i, j, k]` is at memory position `i * 30 + j * 3 + k`.
+
+## Hexagonal layout
+### 2-dim example 11x11
+
+The layout description is: `1 2 11 11`. The row- and column-dimension must be odd and equal (`d`). The memory position `p` can be calculated by
+
+```python
+r = int((d - 1) / 2)
+row_size = [d - abs(r - i) for i in range(d)]
+row_offset = [sum(size[0:i]) for i in range(d+1)]
+p = offset[i] + j
+if (r > i) p -= r - i
+```
+Please see also https://www.redblobgames.com/grids/hexagons/#map-storage
+
+
 ## Data file for training and mapping
 
 ```
