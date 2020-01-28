@@ -28,7 +28,7 @@
     #include "CudaLib/update_neurons.h"
 #endif
 
-//#define PRINT_DEBUG
+#define PRINT_DEBUG
 
 namespace pink {
 

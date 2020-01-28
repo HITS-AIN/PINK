@@ -108,12 +108,20 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_3d_float)
     std::iota(raw_data.begin(), raw_data.end(), 1.0);
 
     DataType data(data_dim, raw_data);
-    SOMType som(som_dim, neuron_dim, std::vector<float>(32, 0.0));
+
+    std::vector<float> raw_som(32, 0.0);
+    std::vector<float> rot1{{4, 3, 2, 1, 8, 7, 6, 5}};
+    std::copy_n(rot1.begin(), 8, &raw_som[8]);
+    SOMType som(som_dim, neuron_dim, raw_som);
+
+    std::cout << som << std::endl;
 
     auto&& f = StepFunctor(0.0f);
 
-    MyTrainer trainer(som, f, 0, 1, false, 0.0, Interpolation::BILINEAR, euclidean_distance_dim);
+    MyTrainer trainer(som, f, 0, 4, false, 0.0, Interpolation::BILINEAR, euclidean_distance_dim);
     trainer(data);
+
+    std::cout << som << std::endl;
 
     DataType expected{neuron_dim, raw_data};
     auto actual = som.get_neuron({0, 0});
