@@ -13,6 +13,13 @@
 #include "SelfOrganizingMapLib/HexagonalLayout.h"
 #include "SelfOrganizingMapLib/Data.h"
 
+template <typename T>
+std::ostream& operator << (std::ostream& os, std::vector<T> const& data)
+{
+    for (auto const& e : data) os << e << " ";
+    return os << std::endl;
+}
+
 namespace pink {
 
 template <typename T>

@@ -13,6 +13,7 @@ add_executable(
     Data.cpp
     DataIterator.cpp
     DataIteratorShuffled.cpp
+    generate_rotated_images.cpp
     Hexagonal.cpp
     main.cpp
     Mapper.cpp
