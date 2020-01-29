@@ -1,50 +1,94 @@
 /**
  * @file   ImageProcessingLib/euclidean_distance.h
- * @date   Dec 18, 2018
+ * @date   Jan 29, 2020
  * @author Bernd Doser, HITS gGmbH
  */
 
 #pragma once
 
+#include <cassert>
+
+#include "SelfOrganizingMapLib/CartesianLayout.h"
+
 namespace pink {
 
-/// Returns dot product of array with itself
+/// Returns euclidean distance of two arrays without sqrt
 template <typename T>
-T dot(std::vector<T> const& v)
+T euclidean_distance(T const* a, T const* b, uint32_t length)
 {
-    T dot = 0;
-    for (auto&& e : v) dot += e * e;
-    return dot;
+    T ed = 0;
+    for (uint32_t i = 0; i < length; ++i) { ed += std::pow((*a) - (*b), 2); ++a; ++b; }
+    return ed;
 }
 
-/// Same as @euclidean_distance but without square root for speed (sum((a[i] - b[i])^2))
-template <typename T>
-T euclidean_distance_square(T const *a, T const *b, uint32_t length)
+/// Primary template for EuclideanDistanceFunctor
+template <typename DataLayout>
+struct EuclideanDistanceFunctor
 {
-    std::vector<T> diff(length);
-    for (uint32_t i = 0; i < length; ++i) diff[i] = a[i] - b[i];
-    return dot(diff);
-}
+	template <typename T>
+    T operator () (T const *a, T const *b, DataLayout const& data_layout,
+        uint32_t euclidean_distance_dim) const;
+};
 
-/// Same as @euclidean_distance but without square root for speed (sum((a[i] - b[i])^2))
-template <typename T>
-T euclidean_distance_square_offset(T const *a, T const *b, uint32_t image_dim,
-    uint32_t euclidean_distance_dim)
+/// EuclideanDistanceFunctor: Specialization for CartesianLayout<1>
+template <>
+struct EuclideanDistanceFunctor<CartesianLayout<1>>
 {
-    uint32_t offset = static_cast<uint32_t>((image_dim - euclidean_distance_dim) * 0.5);
-    std::vector<T> diff(euclidean_distance_dim * euclidean_distance_dim);
-    for (uint32_t i = 0; i < euclidean_distance_dim; ++i)
-      for (uint32_t j = 0; j < euclidean_distance_dim; ++j)
-        diff[i * euclidean_distance_dim + j] = a[(i + offset) * image_dim + j + offset]
-                                             - b[(i + offset) * image_dim + j + offset];
-    return dot(diff);
-}
+	template <typename T>
+    T operator () (T const *a, T const *b, CartesianLayout<1> const& data_layout,
+        uint32_t euclidean_distance_dim) const
+	{
+	    assert(euclidean_distance_dim == data_layout.m_dimension[0]);
+        return euclidean_distance(a, b, data_layout.m_dimension[0]);
+	}
+};
 
-/// Returns euclidean distance of two arrays (sqrt(sum((a[i] - b[i])^2))
-template <typename T>
-T euclidean_distance(T const *a, T const *b, uint32_t length)
+/// EuclideanDistanceFunctor: Specialization for CartesianLayout<2>
+template <>
+struct EuclideanDistanceFunctor<CartesianLayout<2>>
 {
-    return std::sqrt(euclidean_distance_square(a, b, length));
-}
+	template <typename T>
+    T operator () (T const *a, T const *b, CartesianLayout<2> const& data_layout,
+        uint32_t euclidean_distance_dim) const
+	{
+		T ed = 0;
+
+		auto dim = data_layout.m_dimension[0];
+		auto beg = static_cast<uint32_t>((dim - euclidean_distance_dim) * 0.5);
+		auto end = beg + euclidean_distance_dim;
+
+		for (uint32_t i = beg; i < end; ++i) {
+			for (uint32_t j = beg; j < end; ++j) {
+				ed += std::pow(a[i * dim + j] - b[i * dim + j], 2);
+			}
+		}
+		return ed;
+	}
+};
+
+/// EuclideanDistanceFunctor: Specialization for CartesianLayout<3>
+template <>
+struct EuclideanDistanceFunctor<CartesianLayout<3>>
+{
+	template <typename T>
+    T operator () (T const *a, T const *b, CartesianLayout<3> const& data_layout,
+        uint32_t euclidean_distance_dim) const
+	{
+		T ed = 0;
+
+		auto dim = data_layout.m_dimension[0];
+		auto beg = static_cast<uint32_t>((dim - euclidean_distance_dim) * 0.5);
+		auto end = beg + euclidean_distance_dim;
+
+		for (uint32_t i = beg; i < end; ++i) {
+			for (uint32_t j = beg; j < end; ++j) {
+				ed += euclidean_distance(a + (i * data_layout.m_dimension[1] + j) * data_layout.m_dimension[2],
+                                         b + (i * data_layout.m_dimension[1] + j) * data_layout.m_dimension[2],
+										 data_layout.m_dimension[2]);
+			}
+		}
+		return ed;
+	}
+};
 
 } // namespace pink

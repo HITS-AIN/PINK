@@ -28,7 +28,7 @@
     #include "CudaLib/update_neurons.h"
 #endif
 
-#define PRINT_DEBUG
+//#define PRINT_DEBUG
 
 namespace pink {
 
@@ -143,7 +143,7 @@ public:
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             this->m_som.get_number_of_neurons(), m_som.get_data_pointer(),
-            neuron_dim, this->m_number_of_spatial_transformations,
+            m_som.get_neuron_layout(), this->m_number_of_spatial_transformations,
             spatial_transformed_images, this->m_euclidean_distance_dim);
 
 #ifdef PRINT_DEBUG

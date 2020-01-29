@@ -114,16 +114,12 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_3d_float)
     std::copy_n(rot1.begin(), 8, &raw_som[8]);
     SOMType som(som_dim, neuron_dim, raw_som);
 
-    std::cout << som << std::endl;
-
     auto&& f = StepFunctor(0.0f);
 
     MyTrainer trainer(som, f, 0, 4, false, 0.0, Interpolation::BILINEAR, euclidean_distance_dim);
     trainer(data);
 
-    std::cout << som << std::endl;
-
-    DataType expected{neuron_dim, raw_data};
-    auto actual = som.get_neuron({0, 0});
+    DataType expected{neuron_dim, rot1};
+    auto actual = som.get_neuron({0, 1});
     EXPECT_EQ(expected, actual);
 }

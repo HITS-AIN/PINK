@@ -13,6 +13,7 @@ add_executable(
     Data.cpp
     DataIterator.cpp
     DataIteratorShuffled.cpp
+    euclidean_distance.cpp
     generate_rotated_images.cpp
     Hexagonal.cpp
     main.cpp
