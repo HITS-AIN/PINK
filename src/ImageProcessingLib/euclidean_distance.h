@@ -36,7 +36,7 @@ struct EuclideanDistanceFunctor<CartesianLayout<1>>
 {
 	template <typename T>
     T operator () (T const *a, T const *b, CartesianLayout<1> const& data_layout,
-        uint32_t euclidean_distance_dim) const
+        [[maybe_unused]] uint32_t euclidean_distance_dim) const
 	{
 	    assert(euclidean_distance_dim == data_layout.m_dimension[0]);
         return euclidean_distance(a, b, data_layout.m_dimension[0]);
