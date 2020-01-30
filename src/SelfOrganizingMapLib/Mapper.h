@@ -102,7 +102,7 @@ public:
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             this->m_som.get_number_of_neurons(), this->m_som.get_data_pointer(),
-			this->m_som.get_neuron_layout(), this->m_number_of_spatial_transformations,
+            this->m_som.get_neuron_layout(), this->m_number_of_spatial_transformations,
             spatial_transformed_images, this->m_euclidean_distance_dim);
 
         for (auto& e : euclidean_distance_matrix) e = std::sqrt(e);

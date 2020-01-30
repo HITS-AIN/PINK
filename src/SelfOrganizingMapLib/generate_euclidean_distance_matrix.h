@@ -17,8 +17,8 @@ namespace pink {
 template <typename DataLayout, typename T>
 void generate_euclidean_distance_matrix(std::vector<T>& euclidean_distance_matrix,
     std::vector<uint32_t>& best_rotation_matrix, uint32_t som_size, T const *som,
-	DataLayout const& data_layout, uint32_t num_rot, std::vector<T> const& rotated_images,
-	uint32_t euclidean_distance_dim)
+    DataLayout const& data_layout, uint32_t num_rot, std::vector<T> const& rotated_images,
+    uint32_t euclidean_distance_dim)
 {
     T tmp;
     T* pdist = &euclidean_distance_matrix[0];
