@@ -76,12 +76,16 @@ struct EuclideanDistanceFunctor<CartesianLayout<3>>
 	{
 		T ed = 0;
 
-		auto dim = data_layout.m_dimension[0];
-		auto beg = static_cast<uint32_t>((dim - euclidean_distance_dim) * 0.5);
-		auto end = beg + euclidean_distance_dim;
+		auto dim_i = data_layout.m_dimension[0];
+		auto beg_i = static_cast<uint32_t>((dim_i - euclidean_distance_dim) * 0.5);
+		auto end_i = beg_i + euclidean_distance_dim;
 
-		for (uint32_t i = beg; i < end; ++i) {
-			for (uint32_t j = beg; j < end; ++j) {
+		auto dim_j = data_layout.m_dimension[1];
+		auto beg_j = static_cast<uint32_t>((dim_j - euclidean_distance_dim) * 0.5);
+		auto end_j = beg_j + euclidean_distance_dim;
+
+		for (uint32_t i = beg_i; i < end_i; ++i) {
+			for (uint32_t j = beg_j; j < end_j; ++j) {
 				ed += euclidean_distance(a + (i * data_layout.m_dimension[1] + j) * data_layout.m_dimension[2],
                                          b + (i * data_layout.m_dimension[1] + j) * data_layout.m_dimension[2],
 										 data_layout.m_dimension[2]);

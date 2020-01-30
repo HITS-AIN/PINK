@@ -58,6 +58,8 @@ struct CartesianLayout
         return get_distance(get_position(i1), get_position(i2));
     }
 
+    auto get_dimension() const { return m_dimension; }
+
     DimensionType m_dimension;
 
 };

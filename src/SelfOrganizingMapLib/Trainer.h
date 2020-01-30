@@ -125,21 +125,18 @@ public:
 
     void operator () (Data<DataLayout, T> const& data)
     {
-        auto neuron_dim = m_som.get_neuron_dimension()[0];
-        auto neuron_size = m_som.get_neuron_size();
-
-        // Memory allocation
-        std::vector<T> euclidean_distance_matrix(this->m_som.get_number_of_neurons());
-        std::vector<uint32_t> best_rotation_matrix(this->m_som.get_number_of_neurons());
-
-        auto&& spatial_transformed_images = generate_rotated_images(data, this->m_number_of_rotations,
-            this->m_use_flip, this->m_interpolation, neuron_dim);
+        auto&& spatial_transformed_images = SpatialTransformer<DataLayout>()(data, this->m_number_of_rotations,
+            this->m_use_flip, this->m_interpolation, this->m_som.get_neuron_layout());
 
 #ifdef PRINT_DEBUG
         std::cout << "spatial_transformed_images" << std::endl;
         for (auto&& e : spatial_transformed_images) std::cout << e << " ";
         std::cout << std::endl;
 #endif
+
+        // Memory allocation
+        std::vector<T> euclidean_distance_matrix(this->m_som.get_number_of_neurons());
+        std::vector<uint32_t> best_rotation_matrix(this->m_som.get_number_of_neurons());
 
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             this->m_som.get_number_of_neurons(), m_som.get_data_pointer(),
@@ -160,6 +157,7 @@ public:
         auto&& best_match = std::distance(euclidean_distance_matrix.begin(),
             std::min_element(std::begin(euclidean_distance_matrix), std::end(euclidean_distance_matrix)));
 
+        auto neuron_size = m_som.get_neuron_size();
         auto&& current_neuron = m_som.get_data_pointer();
         for (uint32_t i = 0; i < this->m_som.get_number_of_neurons(); ++i) {
             float factor = this->m_update_factors[

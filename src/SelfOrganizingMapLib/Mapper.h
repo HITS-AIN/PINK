@@ -94,10 +94,8 @@ public:
 
     auto operator () (Data<DataLayout, T> const& data)
     {
-        uint32_t neuron_dim = this->m_som.get_neuron_dimension()[0];
-
-        auto&& spatial_transformed_images = generate_rotated_images(data, this->m_number_of_rotations,
-            this->m_use_flip, this->m_interpolation, neuron_dim);
+        auto&& spatial_transformed_images = SpatialTransformer<DataLayout>()(data, this->m_number_of_rotations,
+            this->m_use_flip, this->m_interpolation, this->m_som.get_neuron_layout());
 
         std::vector<T> euclidean_distance_matrix(this->m_som.get_number_of_neurons());
         std::vector<uint32_t> best_rotation_matrix(this->m_som.get_number_of_neurons());

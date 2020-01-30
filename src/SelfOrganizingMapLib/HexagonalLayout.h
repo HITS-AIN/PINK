@@ -117,6 +117,8 @@ struct HexagonalLayout
         return get_distance(get_position(i1), get_position(i2));
     }
 
+    auto get_dimension() const { return m_dimension; }
+
     /// Number of rows and columns must be equal and stored in the first element
     DimensionType m_dimension;
 
