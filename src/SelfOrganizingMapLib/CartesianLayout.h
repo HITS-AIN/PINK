@@ -70,7 +70,7 @@ struct CartesianLayout
     auto get_stride(IndexType i) const
     {
         assert(i < dim);
-        return std::accumulate(m_dimension.begin(), m_dimension.begin() + i, 1UL, std::multiplies<uint32_t>());
+        return std::accumulate(m_dimension.begin() + i + 1, m_dimension.end(), 1UL, std::multiplies<uint32_t>());
     }
 
 

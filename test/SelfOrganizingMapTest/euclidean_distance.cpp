@@ -44,3 +44,25 @@ TEST(EuclideanDistanceTest, euclidean_distance_cartesian_2d_4)
 
     EXPECT_EQ(0, dot);
 }
+
+TEST(EuclideanDistanceTest, euclidean_distance_cartesian_3d_1)
+{
+    CartesianLayout<3> layout{2, 2, 2};
+    std::vector<int> a{{0,0,0,0,0,0,0,0}};
+    std::vector<int> b{{1,1,1,1,1,0,0,1}};
+
+    auto dot = EuclideanDistanceFunctor<CartesianLayout<3>>()(&a[0], &b[0], layout, 2);
+
+    EXPECT_EQ(6, dot);
+}
+
+TEST(EuclideanDistanceTest, euclidean_distance_cartesian_3d_2)
+{
+    CartesianLayout<3> layout{2, 4, 4};
+    std::vector<int> a(32, 0);
+    std::vector<int> b{{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0}};
+
+    auto dot = EuclideanDistanceFunctor<CartesianLayout<3>>()(&a[0], &b[0], layout, 2);
+
+    EXPECT_EQ(8, dot);
+}
