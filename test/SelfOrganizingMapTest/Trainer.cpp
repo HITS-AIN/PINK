@@ -93,7 +93,7 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_2d_float)
     EXPECT_EQ(expected, actual);
 }
 
-TEST(SelfOrganizingMapTest, trainer_cartesian_3d_float)
+TEST(SelfOrganizingMapTest, trainer_cartesian_3d_float_222)
 {
     typedef Data<CartesianLayout<3>, float> DataType;
     typedef SOM<CartesianLayout<2>, CartesianLayout<3>, float> SOMType;
@@ -120,6 +120,32 @@ TEST(SelfOrganizingMapTest, trainer_cartesian_3d_float)
     trainer(data);
 
     DataType expected{neuron_dim, rot1};
+    auto actual = som.get_neuron({0, 1});
+    EXPECT_EQ(expected, actual);
+}
+
+TEST(SelfOrganizingMapTest, trainer_cartesian_3d_float_244)
+{
+    typedef Data<CartesianLayout<3>, float> DataType;
+    typedef SOM<CartesianLayout<2>, CartesianLayout<3>, float> SOMType;
+    typedef Trainer<CartesianLayout<2>, CartesianLayout<3>, float, false> MyTrainer;
+
+    CartesianLayout<2> som_dim{2, 2};
+    CartesianLayout<3> neuron_dim{2, 4, 4};
+    auto data_dim = neuron_dim;
+    uint32_t euclidean_distance_dim = 4;
+
+    std::vector<float> raw_data(32);
+    std::iota(raw_data.begin(), raw_data.end(), 1.0);
+    DataType data(data_dim, raw_data);
+    SOMType som(som_dim, neuron_dim, std::vector<float>(128, 0.0));
+
+    auto&& f = StepFunctor(0.0f);
+
+    MyTrainer trainer(som, f, 0, 4, false, 0.0, Interpolation::BILINEAR, euclidean_distance_dim);
+    trainer(data);
+
+    DataType expected{neuron_dim, std::vector<float>(32, 0.0)};
     auto actual = som.get_neuron({0, 1});
     EXPECT_EQ(expected, actual);
 }

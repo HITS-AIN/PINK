@@ -7,6 +7,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <cmath>
 #include <cstddef>
 #include <iostream>
@@ -59,6 +60,19 @@ struct CartesianLayout
     }
 
     auto get_dimension() const { return m_dimension; }
+
+    auto get_dimension(IndexType i) const
+    {
+        assert(i < dim);
+        return m_dimension[i];
+    }
+
+    auto get_stride(IndexType i) const
+    {
+        assert(i < dim);
+        return std::accumulate(m_dimension.begin(), m_dimension.begin() + i, 1UL, std::multiplies<uint32_t>());
+    }
+
 
     DimensionType m_dimension;
 
