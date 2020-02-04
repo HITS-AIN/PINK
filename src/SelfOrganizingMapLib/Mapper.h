@@ -154,16 +154,15 @@ public:
         /// Device memory for data
         thrust::device_vector<T> d_data = data.get_data();
 
-        uint32_t neuron_dim = this->m_som.get_neuron_dimension()[0];
-        uint32_t neuron_size = neuron_dim * neuron_dim;
-        uint32_t spacing = data.get_layout().dimensionality > 2 ? data.get_dimension()[2] : 1;
-        for (uint32_t i = 3; i < data.get_layout().dimensionality; ++i) spacing *= data.get_dimension()[i];
-
-        generate_rotated_images(d_spatial_transformed_images, d_data, spacing, this->m_number_of_rotations,
-            data.get_dimension()[0], neuron_dim, this->m_use_flip, this->m_interpolation, d_cos_alpha, d_sin_alpha);
+        SpatialTransformerGPU<DataLayout>()(
+            d_spatial_transformed_images, d_data,
+            this->m_number_of_rotations, this->m_use_flip, this->m_interpolation,
+            data.get_layout(),
+            this->m_som.get_neuron_layout(),
+            d_cos_alpha, d_sin_alpha);
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
-            this->m_som.get_number_of_neurons(), neuron_size, d_som, this->m_number_of_spatial_transformations,
+            this->m_som.get_number_of_neurons(), 0, d_som, this->m_number_of_spatial_transformations,
             d_spatial_transformed_images, m_block_size, m_euclidean_distance_type, this->m_euclidean_distance_dim);
 
         std::vector<float> euclidean_distance_matrix(this->m_som.get_number_of_neurons());

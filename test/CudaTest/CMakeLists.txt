@@ -10,6 +10,7 @@ include_directories(SYSTEM
 cuda_add_executable(
     CudaTest
     main.cpp
+    compare_trainer_3d_cpu.cu
     compare_trainer_cpu.cu
     compare_trainer_mixed.cu
     mapper.cu

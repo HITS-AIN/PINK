@@ -28,7 +28,7 @@
     #include "CudaLib/update_neurons.h"
 #endif
 
-//#define PRINT_DEBUG
+#define PRINT_DEBUG
 
 namespace pink {
 
@@ -242,11 +242,12 @@ public:
         /// Device memory for data
         thrust::device_vector<T> d_data = data.get_data();
 
-        auto neuron_dim = m_som.get_neuron_dimension()[0];
-        auto neuron_size = neuron_dim * neuron_dim; // Must be changed into m_som.get_neuron_size()
-
-        generate_rotated_images(d_spatial_transformed_images, d_data, m_spacing, this->m_number_of_rotations,
-            data.get_dimension()[0], neuron_dim, this->m_use_flip, this->m_interpolation, d_cos_alpha, d_sin_alpha);
+        SpatialTransformerGPU<DataLayout>()(
+            d_spatial_transformed_images, d_data,
+            this->m_number_of_rotations, this->m_use_flip, this->m_interpolation,
+            data.get_layout(),
+            this->m_som.get_neuron_layout(),
+            d_cos_alpha, d_sin_alpha);
 
 #ifdef PRINT_DEBUG
         std::cout << "spatial_transformed_images" << std::endl;
@@ -256,7 +257,7 @@ public:
 #endif
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
-            this->m_som.get_number_of_neurons(), neuron_size, d_som, this->m_number_of_spatial_transformations,
+            this->m_som.get_number_of_neurons(), 0, d_som, this->m_number_of_spatial_transformations,
             d_spatial_transformed_images, m_block_size, m_euclidean_distance_type, this->m_euclidean_distance_dim);
 
 #ifdef PRINT_DEBUG
@@ -272,7 +273,7 @@ public:
 #endif
 
         update_neurons(d_som, d_spatial_transformed_images, d_best_rotation_matrix, d_euclidean_distance_matrix,
-            d_best_match, d_update_factors, this->m_som.get_number_of_neurons(), neuron_size);
+            d_best_match, d_update_factors, this->m_som.get_number_of_neurons(), 0);
 
         thrust::host_vector<uint32_t> best_match = d_best_match;
         ++this->m_update_info[best_match[0]];
