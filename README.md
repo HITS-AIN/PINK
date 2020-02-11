@@ -7,6 +7,7 @@
 ![SOM of radio-synthesis data taken from the Radio Galaxy Zoo](doxygen/galaxies_som_hex.jpg)
 
 
+
 ## Requirements
 
   - C++ with ISO 14 standard (GCC 6.1 and above)
