@@ -28,7 +28,7 @@
     #include "CudaLib/update_neurons.h"
 #endif
 
-#define PRINT_DEBUG
+//#define PRINT_DEBUG
 
 namespace pink {
 
@@ -209,7 +209,6 @@ public:
            use_flip, max_update_distance, interpolation, euclidean_distance_dim),
        m_som(som),
        d_som(som.get_data()),
-       m_spacing(get_spacing()),
        m_block_size(block_size),
        m_euclidean_distance_type(euclidean_distance_type),
        d_spatial_transformed_images(this->m_number_of_spatial_transformations * som.get_neuron_size()),
@@ -286,21 +285,11 @@ public:
 
 private:
 
-    auto get_spacing() const
-    {
-        uint32_t spacing = m_som.get_neuron_layout().dimensionality > 2 ? m_som.get_neuron_dimension()[2] : 1;
-        for (uint32_t i = 3; i < m_som.get_neuron_layout().dimensionality; ++i) spacing *= m_som.get_neuron_dimension()[i];
-        return spacing;
-    }
-
     /// A reference to the SOM will be trained
     SOMType& m_som;
 
     /// Device memory for SOM
     thrust::device_vector<T> d_som;
-
-    /// Number of channels
-    uint32_t m_spacing;
 
     uint32_t m_block_size;
 

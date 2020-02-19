@@ -14,7 +14,19 @@
 
 using namespace pink;
 
-TEST(GenericPythonBindingTest, DynamicTrainer)
+struct DynamicTrainerTestData
+{
+	DynamicTrainerTestData(bool use_gpu)
+     : m_use_gpu(use_gpu)
+    {}
+
+    bool m_use_gpu;
+};
+
+class GenericPythonBindingTest : public ::testing::TestWithParam<DynamicTrainerTestData>
+{};
+
+TEST_P(GenericPythonBindingTest, DynamicTrainer)
 {
     std::vector<uint32_t> shape{3, 3};
     std::vector<float> ptr{2.0f, 3.0f, 0.0f, 1.0f};
@@ -28,12 +40,12 @@ TEST(GenericPythonBindingTest, DynamicTrainer)
 
     auto&& f = GaussianFunctor(1.1f, 0.2f);
 
-    DynamicTrainer trainer(som, f, 0, 16, true, -1.0, Interpolation::BILINEAR, true, 3, DataType::UINT8);
+    DynamicTrainer trainer(som, f, 0, 16, true, -1.0, Interpolation::BILINEAR, GetParam().m_use_gpu, 3, DataType::UINT8);
 
     trainer(data);
 }
 
-TEST(GenericPythonBindingTest, DynamicTrainer_hex)
+TEST_P(GenericPythonBindingTest, DynamicTrainer_hex)
 {
     std::vector<uint32_t> shape{3, 3};
     std::vector<float> ptr{2.0f, 3.0f, 0.0f, 1.0f};
@@ -47,7 +59,13 @@ TEST(GenericPythonBindingTest, DynamicTrainer_hex)
 
     auto&& f = GaussianFunctor(1.1f, 0.2f);
 
-    DynamicTrainer trainer(som, f, 0, 16, true, -1.0, Interpolation::BILINEAR, true, 3, DataType::UINT8);
+    DynamicTrainer trainer(som, f, 0, 16, true, -1.0, Interpolation::BILINEAR, GetParam().m_use_gpu, 3, DataType::UINT8);
 
     trainer(data);
 }
+
+INSTANTIATE_TEST_CASE_P(GenericPythonBindingTest_all, GenericPythonBindingTest,
+    ::testing::Values(
+        DynamicTrainerTestData(false),
+        DynamicTrainerTestData(true)
+));
