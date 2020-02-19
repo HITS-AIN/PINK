@@ -256,7 +256,7 @@ public:
 #endif
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
-            this->m_som.get_number_of_neurons(), 0, d_som, this->m_number_of_spatial_transformations,
+            this->m_som.get_number_of_neurons(), this->m_som.get_neuron_layout(), d_som, this->m_number_of_spatial_transformations,
             d_spatial_transformed_images, m_block_size, m_euclidean_distance_type, this->m_euclidean_distance_dim);
 
 #ifdef PRINT_DEBUG
@@ -272,7 +272,7 @@ public:
 #endif
 
         update_neurons(d_som, d_spatial_transformed_images, d_best_rotation_matrix, d_euclidean_distance_matrix,
-            d_best_match, d_update_factors, this->m_som.get_number_of_neurons(), 0);
+            d_best_match, d_update_factors, this->m_som.get_number_of_neurons(), this->m_som.get_neuron_layout().size());
 
         thrust::host_vector<uint32_t> best_match = d_best_match;
         ++this->m_update_info[best_match[0]];

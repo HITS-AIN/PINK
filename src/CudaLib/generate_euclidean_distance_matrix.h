@@ -22,9 +22,9 @@ namespace pink {
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
-template <typename T>
+template <typename DataLayout, typename T>
 void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_distance_matrix,
-    thrust::device_vector<uint32_t>& d_best_rotation_matrix, uint32_t som_size, uint32_t neuron_size,
+    thrust::device_vector<uint32_t>& d_best_rotation_matrix, uint32_t som_size, DataLayout const& data_layout,
     thrust::device_vector<T> const& d_som, uint32_t number_of_spatial_transformations,
     thrust::device_vector<T> const& d_spatial_transformed_images, uint32_t block_size,
     DataType euclidean_distance_type, uint32_t euclidean_distance_dim)
@@ -37,8 +37,8 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
     uint32_t d_som_size = som_size * euclidean_distance_size;
     uint32_t d_spatial_transformed_images_size = number_of_spatial_transformations * euclidean_distance_size;
 
-    uint32_t neuron_dim = static_cast<uint32_t>(std::sqrt(neuron_size));
-    uint32_t offset = static_cast<uint32_t>((neuron_dim - euclidean_distance_dim) * 0.5);
+    auto neuron_dim = data_layout.get_dimension(0);
+    auto offset = static_cast<uint32_t>((neuron_dim - euclidean_distance_dim) * 0.5);
 
     // First step ...
     if (euclidean_distance_type == DataType::UINT8)

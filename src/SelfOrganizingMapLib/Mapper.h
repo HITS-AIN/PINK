@@ -162,7 +162,7 @@ public:
             d_cos_alpha, d_sin_alpha);
 
         generate_euclidean_distance_matrix(d_euclidean_distance_matrix, d_best_rotation_matrix,
-            this->m_som.get_number_of_neurons(), 0, d_som, this->m_number_of_spatial_transformations,
+            this->m_som.get_number_of_neurons(), this->m_som.get_neuron_layout(), d_som, this->m_number_of_spatial_transformations,
             d_spatial_transformed_images, m_block_size, m_euclidean_distance_type, this->m_euclidean_distance_dim);
 
         std::vector<float> euclidean_distance_matrix(this->m_som.get_number_of_neurons());
