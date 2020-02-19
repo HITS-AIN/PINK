@@ -22,9 +22,9 @@ namespace pink {
 /**
  * Host function that prepares data array and passes it to the CUDA kernel.
  */
-template <typename DataLayout, typename T>
+template <typename NeuronLayout, typename T>
 void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_distance_matrix,
-    thrust::device_vector<uint32_t>& d_best_rotation_matrix, uint32_t som_size, DataLayout const& data_layout,
+    thrust::device_vector<uint32_t>& d_best_rotation_matrix, uint32_t som_size, NeuronLayout const& neuron_layout,
     thrust::device_vector<T> const& d_som, uint32_t number_of_spatial_transformations,
     thrust::device_vector<T> const& d_spatial_transformed_images, uint32_t block_size,
     DataType euclidean_distance_type, uint32_t euclidean_distance_dim)
@@ -33,11 +33,10 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
     if (d_first_step.size() != som_size * number_of_spatial_transformations)
         d_first_step.resize(som_size * number_of_spatial_transformations);
 
-    uint32_t euclidean_distance_size = euclidean_distance_dim * euclidean_distance_dim;
-    uint32_t d_som_size = som_size * euclidean_distance_size;
-    uint32_t d_spatial_transformed_images_size = number_of_spatial_transformations * euclidean_distance_size;
-
-    auto neuron_dim = data_layout.get_dimension(0);
+    auto euclidean_distance_size = euclidean_distance_dim * euclidean_distance_dim * neuron_layout.get_spacing();
+    auto d_som_size = som_size * euclidean_distance_size;
+    auto d_spatial_transformed_images_size = number_of_spatial_transformations * euclidean_distance_size;
+    auto neuron_dim = neuron_layout.get_last_dimension();
     auto offset = static_cast<uint32_t>((neuron_dim - euclidean_distance_dim) * 0.5);
 
     // First step ...
@@ -55,7 +54,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         uint32_t grid_size = static_cast<uint32_t>(ceil(static_cast<float>(euclidean_distance_dim) / 16));
 
         dim3 dim_block(16, 16);
-        dim3 dim_grid(grid_size, grid_size, som_size);
+        dim3 dim_grid(grid_size, grid_size, som_size * neuron_layout.get_spacing());
 
         copy_and_transform_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_uint8[0]),
             thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 255);
@@ -63,7 +62,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
 
-        dim3 dim_grid2(grid_size, grid_size, number_of_spatial_transformations);
+        dim3 dim_grid2(grid_size, grid_size, number_of_spatial_transformations * neuron_layout.get_spacing());
 
         copy_and_transform_kernel<<<dim_grid2, dim_block>>>(
             thrust::raw_pointer_cast(&d_spatial_transformed_images_uint8[0]),
@@ -95,7 +94,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         uint32_t grid_size = static_cast<uint32_t>(ceil(static_cast<float>(euclidean_distance_dim) / 16));
 
         dim3 dim_block(16, 16);
-        dim3 dim_grid(grid_size, grid_size, som_size);
+        dim3 dim_grid(grid_size, grid_size, som_size * neuron_layout.get_spacing());
 
         copy_and_transform_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_uint16[0]),
             thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 65535);
@@ -103,7 +102,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
 
-        dim3 dim_grid2(grid_size, grid_size, number_of_spatial_transformations);
+        dim3 dim_grid2(grid_size, grid_size, number_of_spatial_transformations * neuron_layout.get_spacing());
 
         copy_and_transform_kernel<<<dim_grid2, dim_block>>>(
             thrust::raw_pointer_cast(&d_spatial_transformed_images_uint16[0]),
@@ -135,7 +134,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         uint32_t grid_size = static_cast<uint32_t>(ceil(static_cast<float>(euclidean_distance_dim) / 16));
 
         dim3 dim_block(16, 16);
-        dim3 dim_grid(grid_size, grid_size, som_size);
+        dim3 dim_grid(grid_size, grid_size, som_size * neuron_layout.get_spacing());
 
         copy_and_transform_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_float[0]),
             thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 1);
@@ -143,7 +142,7 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
 
-        dim3 dim_grid2(grid_size, grid_size, number_of_spatial_transformations);
+        dim3 dim_grid2(grid_size, grid_size, number_of_spatial_transformations * neuron_layout.get_spacing());
 
         copy_and_transform_kernel<<<dim_grid2, dim_block>>>(
             thrust::raw_pointer_cast(&d_spatial_transformed_images_float[0]),

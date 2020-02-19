@@ -1,4 +1,4 @@
-FROM braintwister/ubuntu-18.04-cuda-10.1
+FROM braintwister/ubuntu-18.04-cuda-10.2
 
 LABEL maintainer="Bernd Doser <bernd.doser@h-its.org>"
 

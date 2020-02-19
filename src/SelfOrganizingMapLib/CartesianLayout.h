@@ -73,6 +73,9 @@ struct CartesianLayout
         return std::accumulate(m_dimension.begin() + i + 1, m_dimension.end(), 1UL, std::multiplies<uint32_t>());
     }
 
+    auto get_last_dimension() const { return m_dimension[dimensionality - 1]; }
+
+    auto get_spacing() const;
 
     DimensionType m_dimension;
 
@@ -117,6 +120,24 @@ inline auto CartesianLayout<3>::get_position(IndexType i) const
     IndexType y = (i - z * m_dimension[0] * m_dimension[1]) / m_dimension[1];
     IndexType x = i % m_dimension[1];
     return DimensionType({x, y, z});
+}
+
+template <>
+inline auto CartesianLayout<1>::get_spacing() const
+{
+    return 1;
+}
+
+template <>
+inline auto CartesianLayout<2>::get_spacing() const
+{
+    return 1;
+}
+
+template <>
+inline auto CartesianLayout<3>::get_spacing() const
+{
+    return m_dimension[0];
 }
 
 } // namespace pink
