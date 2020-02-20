@@ -61,7 +61,7 @@ with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setup(
-    name='pink',
+    name='astro-pink',
     version='2.4',
     author='Bernd Doser',
     author_email='bernd.doser@h-its.org',
