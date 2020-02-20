@@ -20,6 +20,6 @@ target_link_libraries(
 
 ADD_TEST(
     ImageProcessingTest
-    ${CMAKE_BINARY_DIR}/bin/ImageProcessingTest
+    ${CMAKE_BINARY_DIR}/test/ImageProcessingTest/ImageProcessingTest
     --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/ImageProcessingTest.xml
 )

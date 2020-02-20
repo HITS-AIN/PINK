@@ -20,6 +20,6 @@ target_link_libraries(
 
 ADD_TEST(
     PythonBindingTest
-    ${CMAKE_BINARY_DIR}/bin/PythonBindingTest
+    ${CMAKE_BINARY_DIR}/test/PythonBindingTest/PythonBindingTest
     --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/PythonBindingTest.xml
 )

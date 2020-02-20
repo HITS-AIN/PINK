@@ -23,6 +23,6 @@ target_link_libraries(
 
 ADD_TEST(
     UtilitiesTest
-    ${CMAKE_BINARY_DIR}/bin/UtilitiesTest
+    ${CMAKE_BINARY_DIR}/test/UtilitiesTest/UtilitiesTest
     --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/UtilitiesTest.xml
 )

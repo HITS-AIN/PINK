@@ -29,6 +29,6 @@ target_link_libraries(
 
 ADD_TEST(
     SelfOrganizingMapTest
-    ${CMAKE_BINARY_DIR}/bin/SelfOrganizingMapTest
+    ${CMAKE_BINARY_DIR}/test/SelfOrganizingMapTest/SelfOrganizingMapTest
     --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/SelfOrganizingMapTest.xml
 )
