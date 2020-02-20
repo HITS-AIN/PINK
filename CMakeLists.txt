@@ -58,10 +58,6 @@ if(OPENMP_FOUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-
 # Download conan-cmake
 find_program(CONAN conan)
 if(CONAN)
@@ -81,7 +77,7 @@ if(CONAN)
     
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     set(CONAN_SYSTEM_INCLUDES "On")
-    conan_basic_setup()
+    conan_basic_setup(NO_OUTPUT_DIRS)
 endif()
 
 # Get Git revision
