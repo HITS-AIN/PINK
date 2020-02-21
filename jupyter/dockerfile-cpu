@@ -1,4 +1,4 @@
-FROM braintwister/ubuntu-18.04-cmake-3.15-gcc-8-conan-1.19
+FROM braintwister/ubuntu-18.04
 
 LABEL maintainer="Bernd Doser <bernd.doser@h-its.org>"
 
@@ -25,33 +25,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip3 install --upgrade pip && \
     hash -r pip3 && \
     pip3 install -I \
+    astro-pink \
     googledrivedownloader \
     jupyter \
     matplotlib \
     numpy \
     opencv-python \
-    tensorflow \
     tqdm
 
-RUN git clone https://github.com/HITS-AIN/PINK.git && \
-    cd PINK && \
-    git checkout 2.4-rc3 && \
-    mkdir build && cd build && \
-    cmake .. && \
-    make
-
-ENV PYTHONPATH /PINK/build/lib:/PINK/scripts
-ENV JUPYTER_PATH /PINK/build/lib:/PINK/scripts
-
-# Add entrypoint
-RUN cp /PINK/jupyter/chmod_notebooks.sh /entrypoint.d
-
 # Set up notebook config
-RUN mkdir /jupyter-config/ && \
-    cp /PINK/jupyter/jupyter_notebook_config.py /jupyter-config/
+COPY jupyter_notebook_config.py /jupyter-config/
 ENV JUPYTER_CONFIG_DIR /jupyter-config
 
-RUN cp -r /PINK/jupyter/notebooks /
+# Add entrypoint
+ADD chmod_notebooks.sh /entrypoint.d/
+
+# Add jupyter notebooks
+ADD notebooks /notebooks
 
 WORKDIR /notebooks
 EXPOSE 8888
