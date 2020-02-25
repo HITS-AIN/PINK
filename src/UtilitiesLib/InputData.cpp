@@ -433,9 +433,9 @@ InputData::InputData(int argc, char **argv)
     }
 
     if (m_neuron_dim == 0) {
-        m_neuron_dim = m_data_dimension[0];
+        m_neuron_dim = m_data_dimension[1];
         if (m_number_of_rotations != 1)
-            m_neuron_dim = static_cast<uint32_t>(2 * m_data_dimension[0] / std::sqrt(2.0) + 1);
+            m_neuron_dim = static_cast<uint32_t>(2 * m_data_dimension[1] / std::sqrt(2.0) + 1);
     }
     assert(m_neuron_dim != 0);
 
@@ -445,8 +445,14 @@ InputData::InputData(int argc, char **argv)
         m_neuron_dimension[1] = m_neuron_dim;
     }
 
+    if (m_neuron_dimension.size() == 3) {
+        m_neuron_dimension[1] = m_neuron_dim;
+        m_neuron_dimension[2] = m_neuron_dim;
+    }
+
+
     if (m_euclidean_distance_dim == 0) {
-        m_euclidean_distance_dim = m_data_dimension[0];
+        m_euclidean_distance_dim = m_data_dimension[1];
         if (m_number_of_rotations != 1)
             m_euclidean_distance_dim = static_cast<uint32_t>(m_euclidean_distance_dim * std::sqrt(2.0) / 2);
     }
