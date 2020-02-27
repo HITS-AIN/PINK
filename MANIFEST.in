@@ -1,2 +1,3 @@
 include CMakeLists.txt
+include conanfile.py
 graft src
