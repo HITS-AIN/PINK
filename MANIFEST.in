@@ -1,3 +1,6 @@
 include CMakeLists.txt
 include conanfile.py
+include LICENSE
+include pyproject.toml
 graft src
+graft test
