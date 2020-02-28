@@ -32,6 +32,14 @@ cmake -DCMAKE_INSTALL_PREFIX=<INSTALL_PATH> .
 make install
 ```
 
+## PyPI installation
+
+PINK is also available as [PyPi package](https://pypi.org/project/astro-pink/) which can be installed by
+
+```bash
+pip install astro-pink
+```
+
 
 ## Usage
 

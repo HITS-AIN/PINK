@@ -62,7 +62,7 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='astro-pink',
-    version='2.4',
+    version='2.4.1',
     author='Bernd Doser',
     author_email='bernd.doser@h-its.org',
     description='Parallelized rotation and flipping INvariant Kohonen maps',
