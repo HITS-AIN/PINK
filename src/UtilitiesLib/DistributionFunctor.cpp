@@ -28,7 +28,8 @@ GaussianFunctor::GaussianFunctor(float sigma, float damping)
 
 float GaussianFunctor::operator () (float distance) const
 {
-    return m_damping * std::exp(-0.5f * std::pow((distance/m_sigma), 2.0f));
+    return m_damping / (m_sigma * std::sqrt(2.0f * static_cast<float>(M_PI)))
+                   * std::exp(-0.5f * std::pow((distance/m_sigma), 2.0f));
 }
 
 MexicanHatFunctor::MexicanHatFunctor(float sigma, float damping)
