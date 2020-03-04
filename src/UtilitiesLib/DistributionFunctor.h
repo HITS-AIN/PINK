@@ -56,6 +56,23 @@ private:
 };
 
 /**
+ * @brief Functor for gaussian normalised to unity
+ *
+ * 1.0 * math.exp(-1.0/2.0 * (x / sigma)**2 )
+ */
+struct UnityGaussianFunctor : public DistributionFunctorBase
+{
+    UnityGaussianFunctor(float sigma, float damping);
+
+    float operator () (float distance) const;
+
+private:
+
+    float m_sigma;
+    float m_damping;
+};
+
+/**
  * @brief Functor for mexican hat.
  *
  * 2.0 / ( math.sqrt(3.0 * sigma) * math.pow(math.pi, 0.25))

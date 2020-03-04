@@ -32,6 +32,17 @@ float GaussianFunctor::operator () (float distance) const
                    * std::exp(-0.5f * std::pow((distance/m_sigma), 2.0f));
 }
 
+UnityGaussianFunctor::UnityGaussianFunctor(float sigma, float damping)
+ : m_sigma(sigma),
+   m_damping(damping)
+{}
+
+float UnityGaussianFunctor::operator () (float distance) const
+{
+    return m_damping * std::exp(-0.5f * std::pow((distance/m_sigma), 2.0f));
+}
+
+
 MexicanHatFunctor::MexicanHatFunctor(float sigma, float damping)
  : m_sigma(sigma),
    m_damping(damping)
