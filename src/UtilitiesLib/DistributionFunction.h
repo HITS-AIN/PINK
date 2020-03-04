@@ -13,6 +13,7 @@ namespace pink {
 //! Type for distribution function for SOM update
 enum class DistributionFunction {
     GAUSSIAN,
+    UNITYGAUSSIAN,
     MEXICANHAT
 };
 
@@ -20,6 +21,7 @@ enum class DistributionFunction {
 inline std::ostream& operator << (std::ostream& os, DistributionFunction function)
 {
     if (function == DistributionFunction::GAUSSIAN) os << "gaussian";
+    else if (function == DistributionFunction::UNITYGAUSSIAN) os << "unitygaussian";
     else if (function == DistributionFunction::MEXICANHAT) os << "mexicanhat";
     else os << "undefined";
     return os;

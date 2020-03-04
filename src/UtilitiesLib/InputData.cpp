@@ -353,6 +353,9 @@ InputData::InputData(int argc, char **argv)
                 if (str == "GAUSSIAN") {
                     m_distribution_function = DistributionFunction::GAUSSIAN;
                 }
+                else if (str == "UNITYGAUSSIAN") {
+                    m_distribution_function = DistributionFunction::UNITYGAUSSIAN;
+                }
                 else if (str == "MEXICANHAT") {
                     m_distribution_function = DistributionFunction::MEXICANHAT;
                 }
@@ -628,6 +631,7 @@ void InputData::print_usage() const
                  "    <string> <float> <float>\n"
                  "\n"
                  "    gaussian sigma damping-factor\n"
+                 "    unitygaussian sigma damping-factor\n"
                  "    mexicanHat sigma damping-factor\n"
               << std::endl;
 }
@@ -637,6 +641,8 @@ std::function<float(float)> InputData::get_distribution_function() const
     std::function<float(float)> result;
     if (m_distribution_function == DistributionFunction::GAUSSIAN)
         result = GaussianFunctor(m_sigma, m_damping);
+    else if (m_distribution_function == DistributionFunction::UNITYGAUSSIAN)
+        result = UnityGaussianFunctor(m_sigma, m_damping);
     else if (m_distribution_function == DistributionFunction::MEXICANHAT)
         result = MexicanHatFunctor(m_sigma, m_damping);
     else
