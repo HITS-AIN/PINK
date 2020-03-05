@@ -82,6 +82,6 @@ setup(
     ext_modules=[CMakeExtension('pink')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
-    packages=find_packages('src'),
-    package_dir={'':'src'},
+    packages=['pink'],
+    package_dir={'pink':'./src/PythonBinding'},
 )
