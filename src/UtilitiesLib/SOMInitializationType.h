@@ -10,15 +10,16 @@
 
 namespace pink {
 
-//! Type for SOM initialization
-enum class SOMInitialization {
+/// Type for SOM initialization
+enum class SOMInitialization
+{
     ZERO,
     RANDOM,
     RANDOM_WITH_PREFERRED_DIRECTION,
     FILEINIT
 };
 
-//! Pretty printing of SOM layout type
+/// Pretty printing of SOM layout type
 inline std::ostream& operator << (std::ostream& os, SOMInitialization init)
 {
     if (init == SOMInitialization::ZERO) os << "zero";

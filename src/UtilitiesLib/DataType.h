@@ -12,14 +12,15 @@
 
 namespace pink {
 
-//! Type for execution path
-enum class DataType {
+/// Type for execution path
+enum class DataType
+{
     FLOAT,
     UINT16,
     UINT8
 };
 
-//! Pretty printing of IntermediateStorageType.
+/// Pretty printing of IntermediateStorageType.
 inline std::ostream& operator << (std::ostream& os, DataType type)
 {
     if (type == DataType::FLOAT) os << "float";
