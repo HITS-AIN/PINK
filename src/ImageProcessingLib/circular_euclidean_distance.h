@@ -20,7 +20,7 @@ struct CircularEuclideanDistanceFunctor
     T operator () (T const *a, T const *b, DataLayout const& data_layout) const;
 };
 
-/// EuclideanDistanceFunctor: Specialization for CartesianLayout<2>
+/// CircularEuclideanDistanceFunctor: Specialization for CartesianLayout<2>
 template <>
 struct CircularEuclideanDistanceFunctor<CartesianLayout<2>>
 {
@@ -35,8 +35,8 @@ struct CircularEuclideanDistanceFunctor<CartesianLayout<2>>
 
         for (uint32_t i = 0; i < dim; ++i) {
             for (uint32_t j = 0; j < dim; ++j) {
-                auto dx = x - radius;
-                auto dy = y - radius;
+                auto dx = i - radius;
+                auto dy = j - radius;
                 auto distance_squared = dx * dx + dy * dy;
 
                 if (distance_squared <= radius_squared) {
