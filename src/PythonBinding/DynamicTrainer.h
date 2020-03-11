@@ -126,7 +126,7 @@ private:
 
     std::string m_neuron_layout;
 
-    [[maybe_unused]] bool m_use_gpu;
+    bool m_use_gpu;
 };
 
 } // namespace pink
