@@ -77,7 +77,8 @@ InputData::InputData()
    m_dimensionality(1),
    m_write_rot_flip(false),
    m_euclidean_distance_type(DataType::UINT8),
-   m_shuffle_data_input(true)
+   m_shuffle_data_input(true),
+   m_euclidean_distance_shape(EuclideanDistanceShape::QUADRATIC)
 {}
 
 InputData::InputData(int argc, char **argv)
@@ -112,6 +113,7 @@ InputData::InputData(int argc, char **argv)
         {"store-rot-flip",               1, nullptr, 15},
         {"euclidean-distance-type",      1, nullptr, 16},
         {"input-shuffle-off",            0, nullptr, 17},
+        {"euclidean-distance-shape" ,    1, nullptr, 18},
         {nullptr,                        0, nullptr, 0}
     };
 
@@ -336,6 +338,20 @@ InputData::InputData(int argc, char **argv)
                 m_shuffle_data_input = false;
                 break;
             }
+            case 18:
+            {
+                auto str = str_to_upper(optarg);
+                if (str == "QUADRATIC") {
+                    m_euclidean_distance_shape = EuclideanDistanceShape::QUADRATIC;
+                }
+                else if (str == "CIRCULAR") {
+                    m_euclidean_distance_shape = EuclideanDistanceShape::CIRCULAR;
+                }
+                else {
+                    throw pink::exception("Unknown euclidean distance shape " + str);
+                }
+                break;
+            }
             case 'v':
             {
                 std::cout << "Pink version " << PROJECT_VERSION << std::endl;
@@ -529,6 +545,7 @@ void InputData::print_parameters() const
               << "  Euclidean distance dimension = "
               << m_euclidean_distance_dim << "x" << m_euclidean_distance_dim << "\n"
               << "  Data type for euclidean distance calculation = " << m_euclidean_distance_type << "\n"
+              << "  Shape of euclidean distance region = " << m_euclidean_distance_shape << "\n"
               << "  Maximal number of progress information prints = " << m_max_number_of_progress_prints << "\n"
               << "  Intermediate storage of SOM = " << m_intermediate_storage << "\n"
               << "  Layout = " << m_layout << "\n"
@@ -583,6 +600,8 @@ void InputData::print_usage() const
                  "Dimension for euclidean distance calculation (default = image-dimension * sqrt(2) / 2).\n"
                  "    --euclidean-distance-type                     "
                  "Data type for euclidean distance calculation (unit8 = default, uint16, float).\n"
+                 "    --euclidean-distance-shape                    "
+                 "Shape of euclidean distance region (quadratic = default, circular).\n"
                  "    --flip-off                                    "
                  "Switch off usage of mirrored images.\n"
                  "    --help, -h                                    "
