@@ -44,7 +44,8 @@ class MapperCommon
 public:
 
     MapperCommon(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations,
-        bool use_flip, Interpolation interpolation, uint32_t euclidean_distance_dim)
+        bool use_flip, Interpolation interpolation, uint32_t euclidean_distance_dim,
+        EuclideanDistanceShape const& euclidean_distance_shape)
      : m_som(som),
        m_verbosity(verbosity),
        m_number_of_rotations(number_of_rotations),
@@ -52,7 +53,8 @@ public:
        m_number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
        m_angle_step_radians(static_cast<float>(0.5 * M_PI) / number_of_rotations / 4),
        m_interpolation(interpolation),
-       m_euclidean_distance_dim(euclidean_distance_dim)
+       m_euclidean_distance_dim(euclidean_distance_dim),
+       m_euclidean_distance_shape(euclidean_distance_shape)
     {
         if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
@@ -73,6 +75,9 @@ protected:
 
     /// Dimension for calculation of euclidean distance
     uint32_t m_euclidean_distance_dim;
+
+    /// Shape of euclidean distance region
+    EuclideanDistanceShape m_euclidean_distance_shape;
 };
 
 /// Primary template will never be instantiated
@@ -87,9 +92,10 @@ public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity,
         uint32_t number_of_rotations, bool use_flip,
-        Interpolation interpolation, uint32_t euclidean_distance_dim)
+        Interpolation interpolation, uint32_t euclidean_distance_dim,
+        EuclideanDistanceShape const& euclidean_distance_shape = EuclideanDistanceShape::QUADRATIC)
      : MapperCommon<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
-                                            use_flip, interpolation, euclidean_distance_dim)
+        use_flip, interpolation, euclidean_distance_dim, euclidean_distance_shape)
     {}
 
     auto operator () (Data<DataLayout, T> const& data)
@@ -103,7 +109,7 @@ public:
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             this->m_som.get_number_of_neurons(), this->m_som.get_data_pointer(),
             this->m_som.get_neuron_layout(), this->m_number_of_spatial_transformations,
-            spatial_transformed_images, this->m_euclidean_distance_dim);
+            spatial_transformed_images, this->m_euclidean_distance_dim, this->m_euclidean_distance_shape);
 
         for (auto& e : euclidean_distance_matrix) e = std::sqrt(e);
         return std::make_tuple(euclidean_distance_matrix, best_rotation_matrix);
@@ -121,9 +127,10 @@ public:
 
     Mapper(SOM<SOMLayout, DataLayout, T> const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
         Interpolation interpolation, uint32_t euclidean_distance_dim,
+        EuclideanDistanceShape const& euclidean_distance_shape = EuclideanDistanceShape::QUADRATIC,
         uint32_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
      : MapperCommon<SOMLayout, DataLayout, T>(som, verbosity, number_of_rotations,
-                                            use_flip, interpolation, euclidean_distance_dim),
+        use_flip, interpolation, euclidean_distance_dim, euclidean_distance_shape),
        d_som(som.get_data()),
        m_block_size(block_size),
        m_euclidean_distance_type(euclidean_distance_type),

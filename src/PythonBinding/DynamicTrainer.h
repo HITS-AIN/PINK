@@ -75,7 +75,7 @@ private:
             return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, true>>(
                 *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
                 distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
-                interpolation, euclidean_distance_dim, 256, euclidean_distance_type);
+                interpolation, euclidean_distance_dim, EuclideanDistanceShape::QUADRATIC, 256, euclidean_distance_type);
         } else {
 #endif
             return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, false>>(

@@ -14,10 +14,11 @@
 
 #include "Data.h"
 #include "find_best_match.h"
-#include "generate_rotated_images.h"
 #include "generate_euclidean_distance_matrix.h"
+#include "generate_rotated_images.h"
 #include "SOM.h"
 #include "SOMIO.h"
+#include "UtilitiesLib/InputData.h"
 #include "UtilitiesLib/Interpolation.h"
 #include "UtilitiesLib/pink_exception.h"
 
@@ -47,7 +48,7 @@ public:
 
     TrainerCommon(SOM<SOMLayout, DataLayout, T> const& som, std::function<float(float)> const& distribution_function,
         int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-        Interpolation interpolation, uint32_t euclidean_distance_dim)
+        Interpolation interpolation, uint32_t euclidean_distance_dim, EuclideanDistanceShape const& euclidean_distance_shape)
      : m_distribution_function(distribution_function),
        m_verbosity(verbosity),
        m_number_of_rotations(number_of_rotations),
@@ -58,7 +59,8 @@ public:
        m_update_info(som.get_som_layout()),
        m_som_size(static_cast<uint32_t>(som.get_som_layout().size())),
        m_update_factors(m_som_size * m_som_size, 0.0),
-       m_euclidean_distance_dim(euclidean_distance_dim)
+       m_euclidean_distance_dim(euclidean_distance_dim),
+       m_euclidean_distance_shape(euclidean_distance_shape)
     {
         if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
@@ -99,6 +101,9 @@ protected:
 
     /// Dimension for calculation of euclidean distance
     uint32_t m_euclidean_distance_dim;
+
+    /// Shape of euclidean distance region
+    EuclideanDistanceShape m_euclidean_distance_shape;
 };
 
 /// Primary template will never be instantiated
@@ -117,9 +122,10 @@ public:
 
     Trainer(SOMType& som, std::function<float(float)> const& distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-        Interpolation interpolation, uint32_t euclidean_distance_dim)
+        Interpolation interpolation, uint32_t euclidean_distance_dim,
+        EuclideanDistanceShape const& euclidean_distance_shape = EuclideanDistanceShape::QUADRATIC)
      : TrainerCommon<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
-           use_flip, max_update_distance, interpolation, euclidean_distance_dim),
+           use_flip, max_update_distance, interpolation, euclidean_distance_dim, euclidean_distance_shape),
        m_som(som)
     {}
 
@@ -141,7 +147,7 @@ public:
         generate_euclidean_distance_matrix(euclidean_distance_matrix, best_rotation_matrix,
             this->m_som.get_number_of_neurons(), m_som.get_data_pointer(),
             m_som.get_neuron_layout(), this->m_number_of_spatial_transformations,
-            spatial_transformed_images, this->m_euclidean_distance_dim);
+            spatial_transformed_images, this->m_euclidean_distance_dim, this->m_euclidean_distance_shape);
 
 #ifdef PRINT_DEBUG
         std::cout << "euclidean_distance_matrix" << std::endl;
@@ -204,9 +210,10 @@ public:
     Trainer(SOMType& som, std::function<float(float)> const& distribution_function, int verbosity,
         uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, uint32_t euclidean_distance_dim,
+        EuclideanDistanceShape const& euclidean_distance_shape = EuclideanDistanceShape::QUADRATIC,
         uint32_t block_size = 256, DataType euclidean_distance_type = DataType::FLOAT)
      : TrainerCommon<SOMLayout, DataLayout, T>(som, distribution_function, verbosity, number_of_rotations,
-           use_flip, max_update_distance, interpolation, euclidean_distance_dim),
+           use_flip, max_update_distance, interpolation, euclidean_distance_dim, euclidean_distance_shape),
        m_som(som),
        d_som(som.get_data()),
        m_block_size(block_size),
