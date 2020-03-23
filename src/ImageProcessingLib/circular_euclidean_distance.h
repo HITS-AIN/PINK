@@ -44,17 +44,20 @@ struct CircularEuclideanDistanceFunctor<CartesianLayout<2>>
         T ed = 0;
 
         auto dim = data_layout.get_dimension(0);
-        auto radius = dim / 2;
+        auto center = dim / 2;
+        auto radius = euclidean_distance_dim / 2;
         auto radius_squared = radius * radius;
+        auto pa = a;
+        auto pb = b;
 
         for (uint32_t i = 0; i < dim; ++i) {
-            for (uint32_t j = 0; j < dim; ++j) {
-                auto dx = i - radius;
-                auto dy = j - radius;
+            for (uint32_t j = 0; j < dim; ++j, ++pa, ++pb) {
+                auto dx = i - center;
+                auto dy = j - center;
                 auto distance_squared = dx * dx + dy * dy;
 
                 if (distance_squared <= radius_squared) {
-                    ed += std::pow(a[i * dim + j] - b[i * dim + j], 2);
+                    ed += std::pow(*pa - *pb, 2);
                 }
             }
         }

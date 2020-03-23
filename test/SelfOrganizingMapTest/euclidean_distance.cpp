@@ -70,13 +70,13 @@ TEST(EuclideanDistanceTest, euclidean_distance_cartesian_3d_2)
 
 TEST(EuclideanDistanceTest, circular_euclidean_distance_cartesian_2d)
 {
-    uint32_t dim = 200;
+    uint32_t dim = 300;
     CartesianLayout<2> layout{dim, dim};
     std::vector<int> a(dim * dim, 0);
     std::vector<int> b(dim * dim, 1);
 
-    auto dot = CircularEuclideanDistanceFunctor<CartesianLayout<2>>()(&a[0], &b[0], layout, 0);
+    auto dot = CircularEuclideanDistanceFunctor<CartesianLayout<2>>()(&a[0], &b[0], layout, 200);
 
     /// Do you know the number? Isn't it beautiful?
-    EXPECT_EQ(31415, dot);
+    EXPECT_EQ(31417, dot);
 }

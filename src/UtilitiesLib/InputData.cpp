@@ -469,11 +469,11 @@ InputData::InputData(int argc, char **argv)
         m_neuron_dimension[2] = m_neuron_dim;
     }
 
-
     if (m_euclidean_distance_dim == 0) {
         m_euclidean_distance_dim = m_data_dimension[1];
-        if (m_number_of_rotations != 1)
+        if (m_number_of_rotations != 1 and m_euclidean_distance_shape == EuclideanDistanceShape::QUADRATIC) {
             m_euclidean_distance_dim = static_cast<uint32_t>(m_euclidean_distance_dim * std::sqrt(2.0) / 2);
+        }
     }
     assert(m_euclidean_distance_dim != 0);
 
@@ -542,8 +542,7 @@ void InputData::print_parameters() const
               << "  SOM size = " << m_som_size << "\n"
               << "  Number of iterations = " << m_number_of_iterations << "\n"
               << "  Neuron dimension = " << m_neuron_dim << "x" << m_neuron_dim << "\n"
-              << "  Euclidean distance dimension = "
-              << m_euclidean_distance_dim << "x" << m_euclidean_distance_dim << "\n"
+              << "  Euclidean distance dimension = " << m_euclidean_distance_dim << "\n"
               << "  Data type for euclidean distance calculation = " << m_euclidean_distance_type << "\n"
               << "  Shape of euclidean distance region = " << m_euclidean_distance_shape << "\n"
               << "  Maximal number of progress information prints = " << m_max_number_of_progress_prints << "\n"
