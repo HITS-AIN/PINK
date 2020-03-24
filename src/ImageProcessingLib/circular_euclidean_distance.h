@@ -46,21 +46,15 @@ struct CircularEuclideanDistanceFunctor<CartesianLayout<2>>
         auto dim = data_layout.get_dimension(0);
         auto center = dim / 2;
         auto radius = euclidean_distance_dim / 2;
-        auto radius_squared = radius * radius;
-        auto pa = a;
-        auto pb = b;
 
-        for (uint32_t i = 0; i < dim; ++i) {
-            for (uint32_t j = 0; j < dim; ++j, ++pa, ++pb) {
-                auto dx = i - center;
-                auto dy = j - center;
-                auto distance_squared = dx * dx + dy * dy;
-
-                if (distance_squared <= radius_squared) {
-                    ed += std::pow(*pa - *pb, 2);
-                }
+        for (uint32_t i = 0; i < euclidean_distance_dim; ++i) {
+            auto delta = std::sqrt(2 * radius * i - std::pow(i, 2));
+            uint32_t global_i = i + (dim - euclidean_distance_dim) / 2;
+            for (uint32_t j = center - delta; j < center + delta; ++j) {
+                ed += std::pow(a[global_i * dim + j] - b[global_i * dim + j], 2);
             }
         }
+
         return ed;
     }
 };
@@ -76,23 +70,16 @@ struct CircularEuclideanDistanceFunctor<CartesianLayout<3>>
         T ed = 0;
 
         auto depth = data_layout.get_dimension(0);
-        auto dim = data_layout.get_dimension(1);
+        auto dim = data_layout.get_dimension(0);
         auto center = dim / 2;
         auto radius = euclidean_distance_dim / 2;
-        auto radius_squared = radius * radius;
-        auto pa = a;
-        auto pb = b;
 
         for (uint32_t d = 0; d < depth; ++d) {
-            for (uint32_t i = 0; i < dim; ++i) {
-                for (uint32_t j = 0; j < dim; ++j, ++pa, ++pb) {
-                    auto dx = i - center;
-                    auto dy = j - center;
-                    auto distance_squared = dx * dx + dy * dy;
-
-                    if (distance_squared <= radius_squared) {
-                        ed += std::pow(*pa - *pb, 2);
-                    }
+            for (uint32_t i = 0; i < euclidean_distance_dim; ++i) {
+                auto delta = std::sqrt(2 * radius * i - std::pow(i, 2));
+                uint32_t global_i = i + (dim - euclidean_distance_dim) / 2;
+                for (uint32_t j = center - delta; j < center + delta; ++j) {
+                    ed += std::pow(a[global_i * dim + j] - b[global_i * dim + j], 2);
                 }
             }
         }
