@@ -48,9 +48,9 @@ struct CircularEuclideanDistanceFunctor<CartesianLayout<2>>
         auto radius = euclidean_distance_dim / 2;
 
         for (uint32_t i = 0; i < euclidean_distance_dim; ++i) {
-            auto delta = std::sqrt(2 * radius * i - std::pow(i, 2));
+            auto delta = std::sqrt(2 * radius * (i + 0.5) - std::pow((i + 0.5), 2));
             uint32_t global_i = i + (dim - euclidean_distance_dim) / 2;
-            for (uint32_t j = center - delta; j < center + delta; ++j) {
+            for (uint32_t j = std::round(center - delta); j < std::round(center + delta); ++j) {
                 ed += std::pow(a[global_i * dim + j] - b[global_i * dim + j], 2);
             }
         }
@@ -76,9 +76,9 @@ struct CircularEuclideanDistanceFunctor<CartesianLayout<3>>
 
         for (uint32_t d = 0; d < depth; ++d) {
             for (uint32_t i = 0; i < euclidean_distance_dim; ++i) {
-                auto delta = std::sqrt(2 * radius * i - std::pow(i, 2));
+                auto delta = std::sqrt(2 * radius * (i + 0.5) - std::pow((i + 0.5), 2));
                 uint32_t global_i = i + (dim - euclidean_distance_dim) / 2;
-                for (uint32_t j = center - delta; j < center + delta; ++j) {
+                for (uint32_t j = std::round(center - delta); j < std::round(center + delta); ++j) {
                     ed += std::pow(a[global_i * dim + j] - b[global_i * dim + j], 2);
                 }
             }

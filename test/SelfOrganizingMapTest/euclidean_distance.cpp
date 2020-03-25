@@ -85,5 +85,5 @@ TEST(EuclideanDistanceTest, circular_euclidean_distance_cartesian_2d)
     auto dot = CircularEuclideanDistanceFunctor<CartesianLayout<2>>()(&a[0], &b[0], layout, ed_dim);
 
     /// Do you know the number? Isn't it beautiful?
-    EXPECT_EQ(31596, dot);
+    EXPECT_EQ(31428, dot);
 }
