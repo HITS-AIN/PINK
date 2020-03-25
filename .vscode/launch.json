@@ -30,7 +30,26 @@
         "program": "${workspaceFolder}/build/src/Pink/Pink",
         "args": ["--train", "data.bin", "som.bin"],
         "stopAtEntry": false,
-        "cwd": "/home/bernd/pink/test-3d",
+        "cwd": "${workspaceFolder}/test-man/test-3d",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    },
+    {
+        "name": "(gdb) test-circular-ed",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/src/Pink/Pink",
+        "args": ["--train", "~/data/pink/all_shapes_shuffled/images_scaled_v2.bin", "som.bin", "--euclidean-distance-shape", "circular"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}/test-man/test-circular-ed",
         "environment": [],
         "externalConsole": false,
         "MIMode": "gdb",
@@ -43,7 +62,7 @@
         ]
     },
         {
-            "name": "(gdb) Launch",
+            "name": "(gdb) map",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/src/Pink/Pink",

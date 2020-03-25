@@ -33,7 +33,7 @@ template <typename T>
 __global__
 void copy_and_transform_circular_kernel(T *dst, float const *src, uint32_t dst_dim,
     uint32_t src_dim, uint32_t offset, uint32_t factor,
-    uint32_t const *circle_delta, uint32_t const *circle_offset)
+    uint32_t const *circle_offset, uint32_t const *circle_delta)
 {
     assert(offset == static_cast<uint32_t>((src_dim - dst_dim) * 0.5));
 
