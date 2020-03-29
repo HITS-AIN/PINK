@@ -20,10 +20,6 @@ void rotate_90_degrees(T *src, T *dst, uint32_t height, uint32_t width)
 
     for (uint32_t x = 0; x < width; ++x) {
         for (uint32_t y = 0; y < height; ++y) {
-            // TG: I think this actually is counter-clockwise, which
-            // TG: throws off the angle in transform by factors of pi
-            // TG: radians between pi/2 to pi and 3pi/2 to 2pi
-            // dst[(height-y-1)*width + x] = src[x*height + y];
             dst[x*height + y] = src[  (height-y-1)*width + x];
         }
     }

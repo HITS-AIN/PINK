@@ -25,8 +25,6 @@ void rotate_90_degrees_list(T *images, uint32_t dim, uint32_t size, uint32_t off
 
     if (x >= dim or y >= dim) return;
 
-    // TG: I think this is anti-clockwise
-    // images[offset + blockIdx.z*size + (dim-y-1)*dim + x] = images[blockIdx.z*size + x*dim + y];
     images[offset + blockIdx.z*size + x*dim + y] = images[blockIdx.z*size + (dim-y-1)*dim + x];
 }
 
