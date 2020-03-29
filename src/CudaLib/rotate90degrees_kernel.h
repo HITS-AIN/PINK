@@ -26,8 +26,6 @@ rotate90degrees_kernel(thrust::device_ptr<T> dest, thrust::device_ptr<T> source,
 
     if (x >= dim or y >= dim) return;
 
-    // TG: I think this is anti-clockwise
-    // atomicExch(dest + (dim-y-1)*dim + x, source[x*dim + y]);
     atomicExch(dest + x*dim + y, source[(dim-y-1)*dim + x]);
 }
 
