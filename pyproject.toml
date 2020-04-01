@@ -1,0 +1,2 @@
+[build-system]
+requires = ["cmake", "conan", "setuptools>=40.8.0", "wheel"]

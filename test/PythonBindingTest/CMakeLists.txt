@@ -15,6 +15,7 @@ add_executable(
 target_link_libraries(
     PythonBindingTest
     PythonBindingLib
+    UtilitiesLib
     ${GTEST_BOTH_LIBRARIES}
 )
 
