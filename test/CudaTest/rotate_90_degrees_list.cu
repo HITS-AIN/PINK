@@ -24,6 +24,6 @@ TEST(RotationTest, rotate_90_degrees_list)
     rotate_90_degrees_list<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_image[0]), 2, 4, 4);
 
     thrust::host_vector<uint32_t> result = d_image;
-    thrust::host_vector<uint32_t> expected = std::vector<uint32_t>{1, 2, 3, 4, 2, 4, 1, 3};
+    thrust::host_vector<uint32_t> expected = std::vector<uint32_t>{1, 2, 3, 4, 3, 1, 4, 2};
     EXPECT_EQ(expected, result);
 }
