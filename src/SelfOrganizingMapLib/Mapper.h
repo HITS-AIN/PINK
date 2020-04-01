@@ -51,7 +51,7 @@ public:
        m_number_of_rotations(number_of_rotations),
        m_use_flip(use_flip),
        m_number_of_spatial_transformations(number_of_rotations * (use_flip ? 2 : 1)),
-       m_angle_step_radians(static_cast<float>(0.5 * M_PI) / number_of_rotations / 4),
+       m_angle_step_radians(static_cast<float>(2.0 * M_PI) / number_of_rotations),
        m_interpolation(interpolation),
        m_euclidean_distance_dim(euclidean_distance_dim),
        m_euclidean_distance_shape(euclidean_distance_shape)
