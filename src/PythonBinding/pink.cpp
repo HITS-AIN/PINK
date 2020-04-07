@@ -16,6 +16,7 @@
 #include "UtilitiesLib/DataType.h"
 #include "UtilitiesLib/DistributionFunctor.h"
 #include "UtilitiesLib/Interpolation.h"
+#include "UtilitiesLib/EuclideanDistanceShape.h"
 #include "UtilitiesLib/Layout.h"
 #include "UtilitiesLib/Version.h"
 
@@ -42,6 +43,11 @@ PYBIND11_MODULE(pink, m)
     py::enum_<Layout>(m, "Layout")
        .value("CARTESIAN", Layout::CARTESIAN)
        .value("HEXAGONAL", Layout::HEXAGONAL)
+       .export_values();
+
+    py::enum_<EuclideanDistanceShape>(m, "EuclideanDistanceShape")
+       .value("QUADRATIC", EuclideanDistanceShape::QUADRATIC)
+       .value("CIRCULAR", EuclideanDistanceShape::CIRCULAR)
        .export_values();
 
     py::class_<GaussianFunctor>(m, "GaussianFunctor")
@@ -106,7 +112,7 @@ PYBIND11_MODULE(pink, m)
 
     py::class_<DynamicTrainer>(m, "Trainer")
         .def(py::init<DynamicSOM&, std::function<float(float)> const&, int,
-            uint32_t, bool, float, Interpolation, bool, uint32_t, DataType>(),
+            uint32_t, bool, float, Interpolation, bool, uint32_t, EuclideanDistanceShape, DataType>(),
             py::arg("som"),
             py::arg("distribution_function") = GaussianFunctor(1.1f, 0.2f),
             py::arg("verbosity") = 0,
@@ -116,6 +122,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("interpolation") = Interpolation::BILINEAR,
             py::arg("use_gpu") = true,
             py::arg("euclidean_distance_dim"),
+            py::arg("euclidean_distance_shape") = EuclideanDistanceShape::QUADRATIC,
             py::arg("euclidean_distance_type") = DataType::UINT8
         )
         .def("__call__", [](DynamicTrainer& trainer, DynamicData const& data)
@@ -128,7 +135,7 @@ PYBIND11_MODULE(pink, m)
         });
 
     py::class_<DynamicMapper>(m, "Mapper")
-        .def(py::init<DynamicSOM const&, int, uint32_t, bool, Interpolation, bool, uint32_t, DataType>(),
+        .def(py::init<DynamicSOM const&, int, uint32_t, bool, Interpolation, bool, uint32_t, EuclideanDistanceShape, DataType>(),
             py::arg("som"),
             py::arg("verbosity") = 0,
             py::arg("number_of_rotations") = 360UL,
@@ -136,6 +143,7 @@ PYBIND11_MODULE(pink, m)
             py::arg("interpolation") = Interpolation::BILINEAR,
             py::arg("use_gpu") = true,
             py::arg("euclidean_distance_dim"),
+            py::arg("euclidean_distance_shape") = EuclideanDistanceShape::QUADRATIC,
             py::arg("euclidean_distance_type") = DataType::UINT8
         )
         .def("__call__", [](DynamicMapper& mapper, DynamicData const& data)
