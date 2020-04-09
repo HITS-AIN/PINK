@@ -10,6 +10,7 @@ add_executable(
     SelfOrganizingMapTest
     add_binary_section.cpp
     Cartesian.cpp
+    circular_ed.cpp
     Data.cpp
     DataIterator.cpp
     DataIteratorShuffled.cpp
