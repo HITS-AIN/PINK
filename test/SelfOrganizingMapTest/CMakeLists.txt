@@ -27,8 +27,7 @@ target_link_libraries(
     ${GTEST_BOTH_LIBRARIES}
 )
 
-ADD_TEST(
-    SelfOrganizingMapTest
-    ${CMAKE_BINARY_DIR}/test/SelfOrganizingMapTest/SelfOrganizingMapTest
-    --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/SelfOrganizingMapTest.xml
+add_test(
+    NAME SelfOrganizingMapTest
+    COMMAND SelfOrganizingMapTest --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/SelfOrganizingMapTest.xml
 )

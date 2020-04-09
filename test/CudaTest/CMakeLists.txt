@@ -27,7 +27,6 @@ target_link_libraries(
 )
 
 add_test(
-    CudaTest
-    ${CMAKE_BINARY_DIR}/test/CudaTest/CudaTest
-    --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/CudaTest.xml
+    NAME CudaTest
+    COMMAND CudaTest --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/CudaTest.xml
 )

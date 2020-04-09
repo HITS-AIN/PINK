@@ -21,8 +21,7 @@ target_link_libraries(
     ${GTEST_BOTH_LIBRARIES}
 )
 
-ADD_TEST(
-    UtilitiesTest
-    ${CMAKE_BINARY_DIR}/test/UtilitiesTest/UtilitiesTest
-    --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/UtilitiesTest.xml
+add_test(
+    NAME UtilitiesTest
+    COMMAND UtilitiesTest --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/UtilitiesTest.xml
 )
