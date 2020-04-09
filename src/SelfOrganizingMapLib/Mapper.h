@@ -57,7 +57,13 @@ public:
        m_euclidean_distance_shape(euclidean_distance_shape)
     {
         if (number_of_rotations == 0 or (number_of_rotations != 1 and number_of_rotations % 4 != 0))
+        {
             throw pink::exception("Number of rotations must be 1 or larger then 1 and divisible by 4");
+        }
+        if (euclidean_distance_dim > m_som.get_neuron_layout().get_last_dimension())
+        {
+            throw pink::exception("Euclidean distance dimension larger than neuron dimension");
+        }
     }
 
 protected:
