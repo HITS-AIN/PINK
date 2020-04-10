@@ -1,5 +1,5 @@
 /**
- * @file   SelfOrganizingMapTest/circular_ed.cpp
+ * @file   CudaTest/circular_ed.cu
  * @date   Apr 9, 2020
  * @author Bernd Doser, HITS gGmbH
  */
@@ -20,11 +20,11 @@
 
 using namespace pink;
 
-TEST(SelfOrganizingMapTest, circular_ed)
+TEST(CudaTest, circular_ed)
 {
     typedef Data<CartesianLayout<2>, float> DataType;
     typedef SOM<CartesianLayout<2>, CartesianLayout<2>, float> SOMType;
-    typedef Mapper<CartesianLayout<2>, CartesianLayout<2>, float, false> MapperType;
+    typedef Mapper<CartesianLayout<2>, CartesianLayout<2>, float, true> MapperType;
 
     auto image_dim = 4U;
     auto image_vec = std::vector<float>(image_dim * image_dim, 0.0);

@@ -248,10 +248,10 @@ public:
             delta[0] = std::sqrt(euclidean_distance_dim * 0.5 - std::pow(0.5, 2));
             offset[0] = 0;
             for (uint32_t i = 1; i < euclidean_distance_dim; ++i) {
-                delta[i] = std::sqrt(euclidean_distance_dim * (i + 0.5) - std::pow((i + 0.5), 2));
-                offset[i] = offset[i - 1] + delta[i - 1];
+                delta[i] = std::round(std::sqrt(euclidean_distance_dim * (i + 0.5) - std::pow((i + 0.5), 2)));
+                offset[i] = offset[i - 1] + 2 * delta[i - 1];
             }
-            offset[euclidean_distance_dim] = offset[euclidean_distance_dim - 1] + delta[euclidean_distance_dim - 1];
+            offset[euclidean_distance_dim] = offset[euclidean_distance_dim - 1] + 2 * delta[euclidean_distance_dim - 1];
 
             d_circle_offset = offset;
             d_circle_delta = delta;

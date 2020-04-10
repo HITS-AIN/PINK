@@ -5,7 +5,26 @@
     "version": "0.2.0",
     "configurations": [
     {
-        "name": "(gdb) test-circular-ed",
+        "name": "(gdb) CudaTest",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/bin/CudaTest",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    },
+    {
+        "name": "(gdb) SelfOrganizingMapTest",
         "type": "cppdbg",
         "request": "launch",
         "program": "${workspaceFolder}/build/bin/SelfOrganizingMapTest",
