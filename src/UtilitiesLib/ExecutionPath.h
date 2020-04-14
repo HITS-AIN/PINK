@@ -8,8 +8,9 @@
 
 namespace pink {
 
-//! Type for execution path
-enum class ExecutionPath {
+/// Type for execution path
+enum class ExecutionPath
+{
     UNDEFINED,
     TRAIN,
     MAP

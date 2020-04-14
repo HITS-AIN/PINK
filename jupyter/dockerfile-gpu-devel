@@ -33,9 +33,9 @@ RUN pip3 install --upgrade pip && \
     tensorflow \
     tqdm
 
-ENV PYTHONPATH /PINK/build/default/lib:/PINK/scripts
-ENV JUPYTER_PATH /PINK/build/default/lib:/PINK/scripts
-ENV LD_LIBRARY_PATH /PINK/build/default/lib
+ENV PYTHONPATH /PINK/build/lib:/PINK/scripts
+ENV JUPYTER_PATH /PINK/build/lib:/PINK/scripts
+ENV LD_LIBRARY_PATH /PINK/build/lib
 
 # Set up notebook config
 COPY jupyter_notebook_config.py /jupyter-config/

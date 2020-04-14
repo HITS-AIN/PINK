@@ -24,7 +24,7 @@ struct DynamicTrainer
     DynamicTrainer(DynamicSOM& som, std::function<float(float)> const& distribution_function,
         int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, bool use_gpu, uint32_t euclidean_distance_dim,
-        DataType euclidean_distance_type);
+        EuclideanDistanceShape euclidean_distance_shape, DataType euclidean_distance_type);
 
     DynamicTrainer(DynamicTrainer const&) = delete;
 
@@ -38,25 +38,26 @@ private:
     auto get_trainer(DynamicSOM& dynamic_som, std::function<float(float)> const& distribution_function,
         int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, uint32_t euclidean_distance_dim,
+        EuclideanDistanceShape euclidean_distance_shape,
         DataType euclidean_distance_type) -> std::shared_ptr<TrainerBase>
     {
         if (m_neuron_layout == "cartesian-1d")
         {
             return get_trainer<SOM_Layout, CartesianLayout<1U>>(dynamic_som, distribution_function,
-                verbosity, number_of_rotations, use_flip, max_update_distance,
-                interpolation, euclidean_distance_dim, euclidean_distance_type);
+                verbosity, number_of_rotations, use_flip, max_update_distance, interpolation,
+                euclidean_distance_dim, euclidean_distance_shape, euclidean_distance_type);
         }
         else if (m_neuron_layout == "cartesian-2d")
         {
             return get_trainer<SOM_Layout, CartesianLayout<2U>>(dynamic_som, distribution_function,
-                verbosity, number_of_rotations, use_flip, max_update_distance,
-                interpolation, euclidean_distance_dim, euclidean_distance_type);
+                verbosity, number_of_rotations, use_flip, max_update_distance, interpolation,
+                euclidean_distance_dim, euclidean_distance_shape, euclidean_distance_type);
         }
         else if (m_neuron_layout == "cartesian-3d")
         {
             return get_trainer<SOM_Layout, CartesianLayout<3U>>(dynamic_som, distribution_function,
-                verbosity, number_of_rotations, use_flip, max_update_distance,
-                interpolation, euclidean_distance_dim, euclidean_distance_type);
+                verbosity, number_of_rotations, use_flip, max_update_distance, interpolation,
+                euclidean_distance_dim, euclidean_distance_shape, euclidean_distance_type);
         }
         else
         {
@@ -68,6 +69,7 @@ private:
     auto get_trainer(DynamicSOM& dynamic_som, std::function<float(float)> const& distribution_function,
         int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
         Interpolation interpolation, uint32_t euclidean_distance_dim,
+        EuclideanDistanceShape euclidean_distance_shape,
         [[maybe_unused]] DataType euclidean_distance_type) -> std::shared_ptr<TrainerBase>
     {
 #ifdef __CUDACC__
@@ -75,13 +77,13 @@ private:
             return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, true>>(
                 *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
                 distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
-                interpolation, euclidean_distance_dim, 256, euclidean_distance_type);
+                interpolation, euclidean_distance_dim, euclidean_distance_shape, 256, euclidean_distance_type);
         } else {
 #endif
             return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, false>>(
                 *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
                 distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
-                interpolation, euclidean_distance_dim);
+                interpolation, euclidean_distance_dim, euclidean_distance_shape);
 #ifdef __CUDACC__
         }
 #endif
@@ -126,7 +128,7 @@ private:
 
     std::string m_neuron_layout;
 
-    [[maybe_unused]] bool m_use_gpu;
+    bool m_use_gpu;
 };
 
 } // namespace pink

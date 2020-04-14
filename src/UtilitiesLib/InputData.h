@@ -16,9 +16,10 @@
 #include "UtilitiesLib/DataType.h"
 #include "UtilitiesLib/DistributionFunction.h"
 #include "UtilitiesLib/DistributionFunctor.h"
+#include "UtilitiesLib/EuclideanDistanceShape.h"
 #include "UtilitiesLib/ExecutionPath.h"
-#include "UtilitiesLib/Layout.h"
 #include "UtilitiesLib/Interpolation.h"
+#include "UtilitiesLib/Layout.h"
 #include "Version.h"
 
 namespace pink {
@@ -84,6 +85,7 @@ struct InputData
     bool m_write_rot_flip;
     DataType m_euclidean_distance_type;
     bool m_shuffle_data_input;
+    EuclideanDistanceShape m_euclidean_distance_shape;
 };
 
 } // namespace pink

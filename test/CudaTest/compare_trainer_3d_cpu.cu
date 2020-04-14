@@ -72,7 +72,7 @@ TEST_P(compare_trainer_3d_cpu, cartesian_3d_float)
     trainer1(data);
 
     MyTrainer_gpu trainer2(som2, f, 0, GetParam().m_num_rot, GetParam().m_use_flip, -1.0,
-        Interpolation::BILINEAR, GetParam().m_euclidean_distance_dim, 256, DataType::FLOAT);
+        Interpolation::BILINEAR, GetParam().m_euclidean_distance_dim, EuclideanDistanceShape::QUADRATIC, 256, DataType::FLOAT);
     trainer2(data);
     trainer2.update_som();
 

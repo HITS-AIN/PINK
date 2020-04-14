@@ -11,11 +11,11 @@
 
 namespace pink {
 
-///! Interpolation type for images.
+/// Interpolation type for images.
 enum class Interpolation
 {
-    NEAREST_NEIGHBOR,  //!< Refuse values behind the comma.
-    BILINEAR           //!< Interpolate value by distance to pixels.
+    NEAREST_NEIGHBOR,  ///< Refuse values behind the comma.
+    BILINEAR           ///< Interpolate value by distance to pixels.
 };
 
 inline std::ostream& operator << (std::ostream& os, Interpolation interpolation)

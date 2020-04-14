@@ -61,9 +61,11 @@ TEST_P(MapperTest, mapper_cartesian_2d_float)
     auto data = GetParam();
 
     MyData image({data.image_dim, data.image_dim}, std::vector<float>(data.image_size, 0.0));
-    SOMType som({data.som_dim, data.som_dim}, {data.neuron_dim, data.neuron_dim}, std::vector<float>(data.som_total_size, 1.0));
+    SOMType som({data.som_dim, data.som_dim}, {data.neuron_dim, data.neuron_dim},
+        std::vector<float>(data.som_total_size, 1.0));
 
-    MapperType mapper(som, 0, data.num_rot, data.flip, Interpolation::BILINEAR, data.euclidean_distance_dim, 256, DataType::FLOAT);
+    MapperType mapper(som, 0, data.num_rot, data.flip, Interpolation::BILINEAR,
+        data.euclidean_distance_dim, EuclideanDistanceShape::QUADRATIC, 256, DataType::FLOAT);
     auto result = mapper(image);
 
     EXPECT_EQ(data.result, std::get<0>(result));
@@ -78,9 +80,11 @@ TEST_P(MapperTest, mapper_cartesian_2d_uint8)
     auto data = GetParam();
 
     MyData image({data.image_dim, data.image_dim}, std::vector<float>(data.image_size, 0.0));
-    SOMType som({data.som_dim, data.som_dim}, {data.neuron_dim, data.neuron_dim}, std::vector<float>(data.som_total_size, 1.0));
+    SOMType som({data.som_dim, data.som_dim}, {data.neuron_dim, data.neuron_dim},
+        std::vector<float>(data.som_total_size, 1.0));
 
-    MapperType mapper(som, 0, data.num_rot, data.flip, Interpolation::BILINEAR, data.euclidean_distance_dim, 256, DataType::UINT8);
+    MapperType mapper(som, 0, data.num_rot, data.flip, Interpolation::BILINEAR,
+        data.euclidean_distance_dim, EuclideanDistanceShape::QUADRATIC, 256, DataType::UINT8);
     auto result = mapper(image);
 
     EXPECT_EQ(data.result, std::get<0>(result));
@@ -95,9 +99,11 @@ TEST_P(MapperTest, mapper_cartesian_2d_uint16)
     auto data = GetParam();
 
     MyData image({data.image_dim, data.image_dim}, std::vector<float>(data.image_size, 0.0));
-    SOMType som({data.som_dim, data.som_dim}, {data.neuron_dim, data.neuron_dim}, std::vector<float>(data.som_total_size, 1.0));
+    SOMType som({data.som_dim, data.som_dim}, {data.neuron_dim, data.neuron_dim},
+        std::vector<float>(data.som_total_size, 1.0));
 
-    MapperType mapper(som, 0, data.num_rot, data.flip, Interpolation::BILINEAR, data.euclidean_distance_dim, 256, DataType::UINT16);
+    MapperType mapper(som, 0, data.num_rot, data.flip, Interpolation::BILINEAR,
+        data.euclidean_distance_dim, EuclideanDistanceShape::QUADRATIC, 256, DataType::UINT16);
     auto result = mapper(image);
 
     EXPECT_EQ(data.result, std::get<0>(result));

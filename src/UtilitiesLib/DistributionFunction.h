@@ -10,14 +10,15 @@
 
 namespace pink {
 
-//! Type for distribution function for SOM update
-enum class DistributionFunction {
+/// Type for distribution function for SOM update
+enum class DistributionFunction
+{
     GAUSSIAN,
     UNITYGAUSSIAN,
     MEXICANHAT
 };
 
-//! Pretty printing of distribution function
+/// Pretty printing of distribution function
 inline std::ostream& operator << (std::ostream& os, DistributionFunction function)
 {
     if (function == DistributionFunction::GAUSSIAN) os << "gaussian";

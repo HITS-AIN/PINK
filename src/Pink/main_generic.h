@@ -65,6 +65,7 @@ void main_generic(InputData const& input_data)
             ,input_data.m_max_update_distance
             ,input_data.m_interpolation
             ,input_data.m_euclidean_distance_dim
+            ,input_data.m_euclidean_distance_shape
 #ifdef __CUDACC__
             ,input_data.m_block_size_1
             ,input_data.m_euclidean_distance_type
@@ -167,6 +168,7 @@ void main_generic(InputData const& input_data)
             ,input_data.m_use_flip
             ,input_data.m_interpolation
             ,input_data.m_euclidean_distance_dim
+            ,input_data.m_euclidean_distance_shape
 #ifdef __CUDACC__
             ,input_data.m_block_size_1
             ,input_data.m_euclidean_distance_type

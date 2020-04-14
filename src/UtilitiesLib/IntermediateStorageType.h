@@ -11,7 +11,8 @@
 namespace pink {
 
 //! Type for storage of intermediate SOMs
-enum class IntermediateStorageType {
+enum class IntermediateStorageType
+{
     OFF,
     OVERWRITE,
     KEEP

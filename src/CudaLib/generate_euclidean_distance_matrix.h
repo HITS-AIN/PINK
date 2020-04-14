@@ -27,13 +27,22 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
     thrust::device_vector<uint32_t>& d_best_rotation_matrix, uint32_t som_size, NeuronLayout const& neuron_layout,
     thrust::device_vector<T> const& d_som, uint32_t number_of_spatial_transformations,
     thrust::device_vector<T> const& d_spatial_transformed_images, uint32_t block_size,
-    DataType euclidean_distance_type, uint32_t euclidean_distance_dim)
+    DataType euclidean_distance_type, uint32_t euclidean_distance_dim,
+    EuclideanDistanceShape const& euclidean_distance_shape,
+    thrust::device_vector<uint32_t> const& d_circle_offset,
+    thrust::device_vector<uint32_t> const& d_circle_delta)
 {
     static thrust::device_vector<T> d_first_step(som_size * number_of_spatial_transformations);
     if (d_first_step.size() != som_size * number_of_spatial_transformations)
         d_first_step.resize(som_size * number_of_spatial_transformations);
 
-    auto euclidean_distance_size = euclidean_distance_dim * euclidean_distance_dim * neuron_layout.get_spacing();
+    uint32_t euclidean_distance_size = 0;
+    if (euclidean_distance_shape == EuclideanDistanceShape::QUADRATIC) {
+        euclidean_distance_size = euclidean_distance_dim * euclidean_distance_dim * neuron_layout.get_spacing();
+    } else if (euclidean_distance_shape == EuclideanDistanceShape::CIRCULAR) {
+        euclidean_distance_size = d_circle_offset[euclidean_distance_dim] * neuron_layout.get_spacing();
+    }
+
     auto d_som_size = som_size * euclidean_distance_size;
     auto d_spatial_transformed_images_size = number_of_spatial_transformations * euclidean_distance_size;
     auto neuron_dim = neuron_layout.get_last_dimension();
@@ -56,18 +65,48 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         dim3 dim_block(16, 16);
         dim3 dim_grid(grid_size, grid_size, som_size * neuron_layout.get_spacing());
 
-        copy_and_transform_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_uint8[0]),
-            thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 255);
+        switch (euclidean_distance_shape)
+        {
+            case EuclideanDistanceShape::QUADRATIC:
+            {
+                copy_and_transform_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_uint8[0]),
+                    thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 255);
+                break;
+            }
+            case EuclideanDistanceShape::CIRCULAR:
+            {
+                copy_and_transform_circular_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_uint8[0]),
+                    thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 255,
+                    thrust::raw_pointer_cast(&d_circle_offset[0]), thrust::raw_pointer_cast(&d_circle_delta[0]));
+                break;
+            }
+        }
 
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
 
         dim3 dim_grid2(grid_size, grid_size, number_of_spatial_transformations * neuron_layout.get_spacing());
 
-        copy_and_transform_kernel<<<dim_grid2, dim_block>>>(
-            thrust::raw_pointer_cast(&d_spatial_transformed_images_uint8[0]),
-            thrust::raw_pointer_cast(&d_spatial_transformed_images[0]),
-            euclidean_distance_dim, neuron_dim, offset, 255);
+        switch (euclidean_distance_shape)
+        {
+            case EuclideanDistanceShape::QUADRATIC:
+            {
+                copy_and_transform_kernel<<<dim_grid2, dim_block>>>(
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images_uint8[0]),
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images[0]),
+                    euclidean_distance_dim, neuron_dim, offset, 255);
+                break;
+            }
+            case EuclideanDistanceShape::CIRCULAR:
+            {
+                copy_and_transform_circular_kernel<<<dim_grid2, dim_block>>>(
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images_uint8[0]),
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images[0]),
+                    euclidean_distance_dim, neuron_dim, offset, 255,
+                    thrust::raw_pointer_cast(&d_circle_offset[0]), thrust::raw_pointer_cast(&d_circle_delta[0]));
+                break;
+            }
+        }
 
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
@@ -96,18 +135,48 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         dim3 dim_block(16, 16);
         dim3 dim_grid(grid_size, grid_size, som_size * neuron_layout.get_spacing());
 
-        copy_and_transform_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_uint16[0]),
-            thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 65535);
+        switch (euclidean_distance_shape)
+        {
+            case EuclideanDistanceShape::QUADRATIC:
+            {
+                copy_and_transform_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_uint16[0]),
+                    thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 65535);
+                break;
+            }
+            case EuclideanDistanceShape::CIRCULAR:
+            {
+                copy_and_transform_circular_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_uint16[0]),
+                    thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 65535,
+                    thrust::raw_pointer_cast(&d_circle_offset[0]), thrust::raw_pointer_cast(&d_circle_delta[0]));
+                break;
+            }
+        }
 
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
 
         dim3 dim_grid2(grid_size, grid_size, number_of_spatial_transformations * neuron_layout.get_spacing());
 
-        copy_and_transform_kernel<<<dim_grid2, dim_block>>>(
-            thrust::raw_pointer_cast(&d_spatial_transformed_images_uint16[0]),
-            thrust::raw_pointer_cast(&d_spatial_transformed_images[0]),
-            euclidean_distance_dim, neuron_dim, offset, 65535);
+        switch (euclidean_distance_shape)
+        {
+            case EuclideanDistanceShape::QUADRATIC:
+            {
+                copy_and_transform_kernel<<<dim_grid2, dim_block>>>(
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images_uint16[0]),
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images[0]),
+                    euclidean_distance_dim, neuron_dim, offset, 65535);
+                break;
+            }
+            case EuclideanDistanceShape::CIRCULAR:
+            {
+                copy_and_transform_circular_kernel<<<dim_grid2, dim_block>>>(
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images_uint16[0]),
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images[0]),
+                    euclidean_distance_dim, neuron_dim, offset, 65535,
+                    thrust::raw_pointer_cast(&d_circle_offset[0]), thrust::raw_pointer_cast(&d_circle_delta[0]));
+                break;
+            }
+        }
 
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
@@ -136,18 +205,48 @@ void generate_euclidean_distance_matrix(thrust::device_vector<T>& d_euclidean_di
         dim3 dim_block(16, 16);
         dim3 dim_grid(grid_size, grid_size, som_size * neuron_layout.get_spacing());
 
-        copy_and_transform_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_float[0]),
-            thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 1);
+        switch (euclidean_distance_shape)
+        {
+            case EuclideanDistanceShape::QUADRATIC:
+            {
+                copy_and_transform_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_float[0]),
+                    thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 1);
+                break;
+            }
+            case EuclideanDistanceShape::CIRCULAR:
+            {
+                copy_and_transform_circular_kernel<<<dim_grid, dim_block>>>(thrust::raw_pointer_cast(&d_som_float[0]),
+                    thrust::raw_pointer_cast(&d_som[0]), euclidean_distance_dim, neuron_dim, offset, 1,
+                    thrust::raw_pointer_cast(&d_circle_offset[0]), thrust::raw_pointer_cast(&d_circle_delta[0]));
+                break;
+            }
+        }
 
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
 
         dim3 dim_grid2(grid_size, grid_size, number_of_spatial_transformations * neuron_layout.get_spacing());
 
-        copy_and_transform_kernel<<<dim_grid2, dim_block>>>(
-            thrust::raw_pointer_cast(&d_spatial_transformed_images_float[0]),
-            thrust::raw_pointer_cast(&d_spatial_transformed_images[0]),
-            euclidean_distance_dim, neuron_dim, offset, 1);
+        switch (euclidean_distance_shape)
+        {
+            case EuclideanDistanceShape::QUADRATIC:
+            {
+                copy_and_transform_kernel<<<dim_grid2, dim_block>>>(
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images_float[0]),
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images[0]),
+                    euclidean_distance_dim, neuron_dim, offset, 1);
+                break;
+            }
+            case EuclideanDistanceShape::CIRCULAR:
+            {
+                copy_and_transform_circular_kernel<<<dim_grid2, dim_block>>>(
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images_float[0]),
+                    thrust::raw_pointer_cast(&d_spatial_transformed_images[0]),
+                    euclidean_distance_dim, neuron_dim, offset, 1,
+                    thrust::raw_pointer_cast(&d_circle_offset[0]), thrust::raw_pointer_cast(&d_circle_delta[0]));
+                break;
+            }
+        }
 
         gpuErrchk(cudaPeekAtLastError());
         gpuErrchk(cudaDeviceSynchronize());
