@@ -80,24 +80,75 @@
             }
         ]
     },
-        {
-            "name": "(gdb) map",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/bin/Pink",
-            "args": ["--map", "~/data/pink/all_shapes_shuffled/images_scaled_v2.bin", "map.bin", "som.bin", "--store-rot-flip", "rot-flip.bin"],
-            "stopAtEntry": false,
-            "cwd": "/home/bernd/pink",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
-        }
+    {
+        "name": "(gdb) map",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/bin/Pink",
+        "args": ["--map", "~/data/pink/all_shapes_shuffled/images_scaled_v2.bin", "map.bin", "som.bin", "--store-rot-flip", "rot-flip.bin"],
+        "stopAtEntry": false,
+        "cwd": "/home/bernd/pink",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    },
+    {
+        "name": "(gdb) rot-flip cpu",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/bin/Pink",
+        "args": ["--cuda-off",
+                 "--store-rot-flip", "test_rotations.bin",
+                 "--euclidean-distance-type", "float",
+                 "--euclidean-distance-shape", "quadratic",
+                 "--som-width", "2",
+                 "--som-height", "2",
+                 "--map", "test_data.bin",
+                 "test_map.bin", "test_som.bin"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}/test-man/test-rot-flip",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    },
+    {
+        "name": "(gdb) rot-flip gpu",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/bin/Pink",
+        "args": ["--store-rot-flip", "test_rotations.bin",
+                 "--euclidean-distance-type", "float",
+                 "--euclidean-distance-shape", "quadratic",
+                 "--som-width", "2",
+                 "--som-height", "2",
+                 "--map", "test_data.bin",
+                 "test_map.bin", "test_som.bin"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}/test-man/test-rot-flip",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    }
     ]
 }
