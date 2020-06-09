@@ -22,12 +22,6 @@ void generate_euclidean_distance_matrix(std::vector<T>& euclidean_distance_matri
     DataLayout const& data_layout, uint32_t num_rot, std::vector<T> const& rotated_images,
     uint32_t euclidean_distance_dim, EuclideanDistanceShape const& euclidean_distance_shape)
 {
-    T tmp;
-    T* pdist = &euclidean_distance_matrix[0];
-    uint32_t* prot = &best_rotation_matrix[0];
-
-    std::fill(euclidean_distance_matrix.begin(), euclidean_distance_matrix.end(), std::numeric_limits<T>::max());
-
     std::function<T(T const*, T const*, DataLayout const&, uint32_t)> ed_func;
     switch (euclidean_distance_shape)
     {
@@ -43,15 +37,25 @@ void generate_euclidean_distance_matrix(std::vector<T>& euclidean_distance_matri
         }
     }
 
-    for (uint32_t i = 0; i < som_size; ++i, ++pdist, ++prot) {
-        #pragma omp parallel for private(tmp)
-        for (uint32_t j = 0; j < num_rot; ++j) {
-            tmp = ed_func(&som[i * data_layout.size()],
-                &rotated_images[j * data_layout.size()], data_layout, euclidean_distance_dim);
+    std::fill(euclidean_distance_matrix.begin(), euclidean_distance_matrix.end(),
+        std::numeric_limits<T>::max());
+
+    for (uint32_t i = 0; i < som_size; ++i)
+    {
+        euclidean_distance_matrix[i] = ed_func(&som[i * data_layout.size()],
+                   &rotated_images[0], data_layout, euclidean_distance_dim);
+
+        #pragma omp parallel
+        for (uint32_t j = 1; j < num_rot; ++j)
+        {
+            auto tmp = ed_func(&som[i * data_layout.size()],
+                       &rotated_images[j * data_layout.size()], data_layout, euclidean_distance_dim);
+
             #pragma omp critical
-            if (tmp < *pdist) {
-                *pdist = tmp;
-                *prot = j;
+            if (tmp < euclidean_distance_matrix[i])
+            {
+                euclidean_distance_matrix[i] = tmp;
+                best_rotation_matrix[i] = j;
             }
         }
     }
