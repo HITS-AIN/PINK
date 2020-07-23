@@ -11,12 +11,12 @@ import tools
 class MAPVisualizer():
     def __init__(self, fileName):
         self.__fileName = fileName
-        self.__numberOfChannels = 0
-        self.__somWidth = 0
-        self.__somHeight = 0
-        self.__somDepth = 0
-        self.__neuronWidth = 0
-        self.__neuronHeight = 0
+        self.__numberOfChannels = 1
+        self.__somWidth = 1
+        self.__somHeight = 1
+        self.__somDepth = 1
+        self.__neuronWidth = 1
+        self.__neuronHeight = 1
         self.__neurons = []
 
     def getNumberOfChannels(self):
@@ -44,20 +44,26 @@ class MAPVisualizer():
         print('data type:', data_type)
         print('som layout:', som_layout)
         print('som dimensionality:', som_dimensionality)
-        som_dimensions = struct.unpack('i' * som_dimensionality, inputStream.read(4 * som_dimensionality))
-        print('som dimensions:', som_dimensions)
+
+        self.__somDepth = struct.unpack('i', inputStream.read(4))[0] if som_dimensionality > 2 else 1
+        self.__somHeight = struct.unpack('i', inputStream.read(4))[0] if som_dimensionality > 1 else 1
+        self.__somWidth = struct.unpack('i', inputStream.read(4))[0]
+
+        print('som depth:', self.__somDepth)
+        print('som height:', self.__somHeight)
+        print('som width:', self.__somWidth)
+
         neuron_layout, neuron_dimensionality = struct.unpack('i' * 2, inputStream.read(4 * 2))
         print('neuron layout:', neuron_layout)
         print('neuron dimensionality:', som_dimensionality)
-        neuron_dimensions = struct.unpack('i' * neuron_dimensionality, inputStream.read(4 * neuron_dimensionality))
-        print('neuron dimensions:', neuron_dimensions)
 
-        self.__somWidth = som_dimensions[0]
-        self.__somHeight = som_dimensions[1] if som_dimensionality > 1 else 1
-        self.__somDepth = som_dimensions[2] if som_dimensionality > 2 else 1
-        self.__neuronWidth = neuron_dimensions[0]
-        self.__neuronHeight = neuron_dimensions[1] if neuron_dimensionality > 1 else 1
-        self.__numberOfChannels = neuron_dimensions[2] if neuron_dimensionality > 2 else 1
+        self.__numberOfChannels = struct.unpack('i', inputStream.read(4))[0] if neuron_dimensionality > 2 else 1
+        self.__neuronHeight = struct.unpack('i', inputStream.read(4))[0] if neuron_dimensionality > 1 else 1
+        self.__neuronWidth = struct.unpack('i', inputStream.read(4))[0]
+
+        print('neuron depth:', self.__numberOfChannels)
+        print('neuron height:', self.__neuronHeight)
+        print('neuron width:', self.__neuronWidth)
 
         #Unpacks data
         try:
