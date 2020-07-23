@@ -68,7 +68,45 @@
         "program": "${workspaceFolder}/build/bin/Pink",
         "args": ["--train", "~/data/pink/all_shapes_shuffled/images_scaled_v2.bin", "som.bin", "--euclidean-distance-shape", "circular"],
         "stopAtEntry": false,
-        "cwd": "${workspaceFolder}/test-man/test-circular-ed",
+        "cwd": "${workspaceFolder}/test-man/circular-ed",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    },
+    {
+        "name": "(gdb) map-circular-ed",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/bin/Pink",
+        "args": ["--map", "~/data/pink/all_shapes_shuffled/images_scaled_v2.bin", "map.bin", "som.bin", "--store-rot-flip", "rot-flip.bin"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}/test-man/circular-ed",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    },
+    {
+        "name": "(gdb) map-circular-ed cpu",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/bin/Pink",
+        "args": ["--map", "~/data/pink/all_shapes_shuffled/images_scaled_v2.bin", "map.bin", "som.bin", "--store-rot-flip", "rot-flip.bin", "--cuda-off"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}/test-man/circular-ed",
         "environment": [],
         "externalConsole": false,
         "MIMode": "gdb",
@@ -139,6 +177,52 @@
                  "test_map.bin", "test_som.bin"],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}/test-man/test-rot-flip",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    },
+    {
+        "name": "(gdb) test-cpu-train",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/bin/Pink",
+        "args": ["--train", "${workspaceFolder}/test-man/test-cpu-map/data.bin", "som.bin",
+                 "--som-width", "2",
+                 "--som-height", "2",
+                 "--num-iter", "1",
+                 "--cuda-off",
+                 "--numrot", "1"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}/test-man/test-cpu-map",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "setupCommands": [
+            {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    },
+    {
+        "name": "(gdb) test-cpu-map",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/bin/Pink",
+        "args": ["--map", "${workspaceFolder}/test-man/test-cpu-map/data.bin", "map.bin", "som.bin",
+                 "--som-width", "2",
+                 "--som-height", "2",
+                 "--cuda-off"],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}/test-man/test-cpu-map",
         "environment": [],
         "externalConsole": false,
         "MIMode": "gdb",
