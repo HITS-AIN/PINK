@@ -70,7 +70,7 @@ struct CircularEuclideanDistanceFunctor<CartesianLayout<3>>
         T ed = 0;
 
         auto depth = data_layout.get_dimension(0);
-        auto dim = data_layout.get_dimension(0);
+        auto dim = data_layout.get_dimension(1);
         auto center = dim / 2;
         auto radius = euclidean_distance_dim / 2;
 
