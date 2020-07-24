@@ -49,9 +49,10 @@ def main():
         floatlist = [1.0 for _ in range(number_of_pixels)]
         output.write(struct.pack('%sf' % len(floatlist), *floatlist))
     elif args.fill_with == 'diag':
-        images = np.zeros((args.depth, args.height, args.width)).astype(np.float32)
+        images = np.zeros((args.number_of_images, args.depth, args.height, args.width)).astype(np.float32)
         for i in range(args.height):
-            images[0,i,i] = 1
+            for j in range(args.number_of_images):
+                images[j,0,i,i] = 1
         floatlist = images.flatten().tolist()
         output.write(struct.pack('%sf' % len(floatlist), *floatlist))
 
