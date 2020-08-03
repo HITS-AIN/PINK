@@ -37,15 +37,12 @@ void generate_euclidean_distance_matrix(std::vector<T>& euclidean_distance_matri
         }
     }
 
-    std::fill(euclidean_distance_matrix.begin(), euclidean_distance_matrix.end(),
-        std::numeric_limits<T>::max());
-
     for (uint32_t i = 0; i < som_size; ++i)
     {
         euclidean_distance_matrix[i] = ed_func(&som[i * data_layout.size()],
                    &rotated_images[0], data_layout, euclidean_distance_dim);
 
-        #pragma omp parallel
+        #pragma omp parallel for
         for (uint32_t j = 1; j < num_rot; ++j)
         {
             auto tmp = ed_func(&som[i * data_layout.size()],
