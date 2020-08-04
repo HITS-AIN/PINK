@@ -66,7 +66,7 @@ TEST_P(GenericPythonBindingTest, DynamicTrainer_hex)
     trainer(data);
 }
 
-INSTANTIATE_TEST_CASE_P(GenericPythonBindingTest_all, GenericPythonBindingTest,
+INSTANTIATE_TEST_SUITE_P(GenericPythonBindingTest_all, GenericPythonBindingTest,
     ::testing::Values(
         DynamicTrainerTestData(false),
         DynamicTrainerTestData(true)
