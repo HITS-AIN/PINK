@@ -16,7 +16,7 @@ target_link_libraries(
     PythonBindingTest
     PythonBindingLib
     UtilitiesLib
-    ${GTEST_BOTH_LIBRARIES}
+    ${CONAN_LIBS}
 )
 
 add_test(

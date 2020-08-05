@@ -24,7 +24,7 @@ cuda_add_executable(
 target_link_libraries(
     CudaTest
     CudaLib
-    ${GTEST_BOTH_LIBRARIES}
+    ${CONAN_LIBS}
 )
 
 add_test(

@@ -25,7 +25,7 @@ add_executable(
 target_link_libraries(
     SelfOrganizingMapTest
     UtilitiesLib
-    ${GTEST_BOTH_LIBRARIES}
+    ${CONAN_LIBS}
 )
 
 add_test(

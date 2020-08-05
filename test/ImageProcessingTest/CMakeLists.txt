@@ -15,7 +15,7 @@ add_executable(
     
 target_link_libraries(
     ImageProcessingTest
-    ${GTEST_BOTH_LIBRARIES}
+    ${CONAN_LIBS}
 )
 
 add_test(
