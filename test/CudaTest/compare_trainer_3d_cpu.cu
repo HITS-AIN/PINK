@@ -80,7 +80,7 @@ TEST_P(compare_trainer_3d_cpu, cartesian_3d_float)
     EXPECT_TRUE(EqualFloatArrays(som1.get_data_pointer(), som2.get_data_pointer(), som1.size(), 1e-4f));
 }
 
-INSTANTIATE_TEST_CASE_P(TrainerCompare3DTest_all, compare_trainer_3d_cpu,
+INSTANTIATE_TEST_SUITE_P(TrainerCompare3DTest_all, compare_trainer_3d_cpu,
     ::testing::Values(
         // som_dim, image_dim, image_depth, neuron_dim, euclidean_distance_dim, num_rot, use_flip
         TrainerCompare3DTestData(2,   2,   2,   2,   2,   1, false)
