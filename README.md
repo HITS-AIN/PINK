@@ -40,6 +40,10 @@ PINK is also available as [PyPi package](https://pypi.org/project/astro-pink/) w
 pip install astro-pink
 ```
 
+## HPC deployment with EasyBuild
+
+The [EasyBuild](http://easybuilders.github.io/easybuild/) recipe is available at https://github.com/BerndDoser/easybuild-easyconfigs/tree/hits/easybuild/easyconfigs/p/PINK. 
+
 
 ## Usage
 
@@ -90,7 +94,7 @@ All times are in seconds.
   - CPU-1: Intel Gold 5118 (2 sockets, 12 physical cores per socket)
   - CPU-2: Intel Core i7-8700K (1 socket, 6 physical cores per socket)
   - CPU-3: Intel Core i7-4790K (1 socket, 4 physical cores per socket)
-  - CPU-4: Intel Gold 6230 (1 socket, 20 physical cores per socket)
+  - CPU-4: Intel Gold 6230 (1 socket, 20 physical cores per socket)
 
 
 ## Publication
