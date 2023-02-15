@@ -23,6 +23,7 @@
 #include "UtilitiesLib/pink_exception.h"
 
 #ifdef __CUDACC__
+    #include <thrust/host_vector.h>
     #include "CudaLib/CudaLib.h"
     #include "CudaLib/generate_euclidean_distance_matrix.h"
     #include "CudaLib/generate_rotated_images.h"
