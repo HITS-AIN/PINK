@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.9)
-project(Pink VERSION 2.5 LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.18)
+project(Pink VERSION 2.5 LANGUAGES CUDA CXX)
 
 message(STATUS "${PROJECT_NAME} version ${PROJECT_VERSION}")
 
@@ -122,22 +122,16 @@ if (USE_CUDA)
     if(CUDA_FOUND)
         set(PINK_USE_CUDA true)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
+
+        if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+            set(CMAKE_CUDA_ARCHITECTURES 75)
+        endif()
+
         # Set flags for CUDA compiler
         list(APPEND CUDA_NVCC_FLAGS "
         --expt-extended-lambda
         --expt-relaxed-constexpr
         --default-stream per-thread
-        -arch=sm_52
-        -gencode=arch=compute_52,code=sm_52
-        -gencode=arch=compute_60,code=sm_60
-        -gencode=arch=compute_61,code=sm_61
-        -gencode=arch=compute_70,code=sm_70
-        -gencode=arch=compute_75,code=sm_75
-        -gencode=arch=compute_80,code=sm_80
-        -gencode=arch=compute_86,code=sm_86
-        -gencode=arch=compute_87,code=sm_87
-        -gencode=arch=compute_90,code=sm_90
-        -gencode=arch=compute_90,code=compute_90
         ")
     endif()
 endif()
