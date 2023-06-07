@@ -16,9 +16,9 @@ pipeline {
       parallel {
         stage('gcc') {
           agent {
-            docker {
+            dockerfile {
               reuseNode true
-              image 'mcr.microsoft.com/vscode/devcontainers/cpp:0-ubuntu-22.04'
+              dir '.devcontainer'
             }
           }
           steps {
@@ -36,9 +36,9 @@ pipeline {
         }
         stage('clang') {
           agent {
-            docker {
+            dockerfile {
               reuseNode true
-              image 'mcr.microsoft.com/vscode/devcontainers/cpp:0-ubuntu-22.04'
+              dir '.devcontainer'
             }
           }
           steps {
@@ -60,9 +60,9 @@ pipeline {
       parallel {
         stage('gcc') {
           agent {
-            docker {
+            dockerfile {
               reuseNode true
-              image 'mcr.microsoft.com/vscode/devcontainers/cpp:0-ubuntu-22.04'
+              dir '.devcontainer'
             }
           }
           steps {
@@ -80,9 +80,9 @@ pipeline {
         }
         stage('clang') {
           agent {
-            docker {
+            dockerfile {
               reuseNode true
-              image 'mcr.microsoft.com/vscode/devcontainers/cpp:0-ubuntu-22.04'
+              dir '.devcontainer'
             }
           }
           steps {
