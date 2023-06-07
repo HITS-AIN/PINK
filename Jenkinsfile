@@ -23,6 +23,7 @@ pipeline {
           }
           steps {
             sh '''
+              export CONAN_HOME=$PWD/.conan
               cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -B build-gcc
               cmake --build build-gcc 2>&1 |tee build-gcc/make.out
             '''
@@ -43,6 +44,7 @@ pipeline {
           }
           steps {
             sh '''
+              export CONAN_HOME=$PWD/.conan
               cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -B build-clang
               cmake --build build-clang 2>&1 |tee build-clang/make.out
             '''
