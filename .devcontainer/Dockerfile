@@ -15,6 +15,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         dirmngr \
         ffmpeg \
         git \
+        libomp-dev \
         libsm6 \
         libxext6 \
         moreutils \
