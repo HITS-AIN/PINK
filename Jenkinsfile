@@ -4,6 +4,10 @@ pipeline {
 
   agent {
     label 'docker-gpu-host'
+    dockerfile {
+      dir '.devcontainer'
+      additionalBuildArgs '--build-arg USER_UID=520 --build-arg USER_GID=500'
+    }
   }
 
   options {
@@ -15,16 +19,9 @@ pipeline {
     stage('Build') {
       parallel {
         stage('gcc') {
-          agent {
-            dockerfile {
-              reuseNode true
-              dir '.devcontainer'
-            }
-          }
           steps {
             sh '''
               export CONAN_HOME=$PWD/.conan
-              conan --version
               cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -B build-gcc
               cmake --build build-gcc 2>&1 |tee build-gcc/make.out
             '''
@@ -37,12 +34,6 @@ pipeline {
           }
         }
         stage('clang') {
-          agent {
-            dockerfile {
-              reuseNode true
-              dir '.devcontainer'
-            }
-          }
           steps {
             sh '''
               export CONAN_HOME=$PWD/.conan
@@ -62,12 +53,6 @@ pipeline {
     stage('Test') {
       parallel {
         stage('gcc') {
-          agent {
-            dockerfile {
-              reuseNode true
-              dir '.devcontainer'
-            }
-          }
           steps {
             sh 'cmake --build build-gcc --target check'
           }
@@ -82,12 +67,6 @@ pipeline {
           }
         }
         stage('clang') {
-          agent {
-            dockerfile {
-              reuseNode true
-              dir '.devcontainer'
-            }
-          }
           steps {
             sh 'cmake --build build-clang --target check'
           }
