@@ -24,6 +24,7 @@ pipeline {
           steps {
             sh '''
               export CONAN_HOME=$PWD/.conan
+              conan --version
               cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -B build-gcc
               cmake --build build-gcc 2>&1 |tee build-gcc/make.out
             '''
