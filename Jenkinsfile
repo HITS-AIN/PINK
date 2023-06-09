@@ -3,8 +3,8 @@
 pipeline {
 
   agent {
-    label 'docker-gpu-host'
     dockerfile {
+      label 'docker-gpu-host'
       dir '.devcontainer'
       additionalBuildArgs '--build-arg USER_UID=520 --build-arg USER_GID=500'
     }
