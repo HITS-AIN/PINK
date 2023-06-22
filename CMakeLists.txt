@@ -124,6 +124,7 @@ if (USE_CUDA)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
         # Set flags for CUDA compiler
         list(APPEND CUDA_NVCC_FLAGS "
+        -std=c++17
         --expt-extended-lambda
         --expt-relaxed-constexpr
         --default-stream per-thread
