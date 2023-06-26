@@ -54,7 +54,7 @@ pipeline {
       parallel {
         stage('gcc') {
           steps {
-            sh 'cmake --build build-gcc --target check'
+            sh 'cmake --build build-gcc --target test'
           }
           post {
             always {
@@ -68,7 +68,7 @@ pipeline {
         }
         stage('clang') {
           steps {
-            sh 'cmake --build build-clang --target check'
+            sh 'cmake --build build-clang --target test'
           }
           post {
             always {
