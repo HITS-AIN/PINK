@@ -62,7 +62,7 @@ pipeline {
               step([
                 $class: 'XUnitPublisher',
                 thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-                tools: [[$class: 'GoogleTestType', pattern: 'build-gcc/Testing/Temporary/*.xml']]
+                tools: [[$class: 'GoogleTestType', pattern: 'build-gcc/Testing/*.xml']]
               ])
             }
           }
@@ -76,7 +76,7 @@ pipeline {
               step([
                 $class: 'XUnitPublisher',
                 thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-                tools: [[$class: 'GoogleTestType', pattern: 'build-clang/Testing/Temporary/*.xml']]
+                tools: [[$class: 'GoogleTestType', pattern: 'build-clang/Testing/*.xml']]
               ])
             }
           }
