@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.0)
-project(Pink VERSION 2.4.1 LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.9)
+project(Pink VERSION 2.5 LANGUAGES C CXX)
 
 message(STATUS "${PROJECT_NAME} version ${PROJECT_VERSION}")
 
@@ -44,7 +44,7 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_INSTALL_PREFIX})
     message(FATAL_ERROR "CMAKE_INSTALL_PREFIX must not be CMAKE_SOURCE_DIR.")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 if(${CMAKE_CXX_COMPILER} MATCHES "clang")
@@ -52,29 +52,33 @@ if(${CMAKE_CXX_COMPILER} MATCHES "clang")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabsolute-value -Wbad-function-cast -Wconditional-uninitialized -Wconstant-conversion -Wconversion -Wdelete-non-virtual-dtor -Wfloat-conversion -Wfloat-equal -Wformat-security -Wheader-hygiene -Wimplicit-fallthrough -Winfinite-recursion -Wliteral-conversion -Wmultichar -Wnon-virtual-dtor -Wnull-arithmetic -Wnull-conversion -Woverlength-strings -Wpointer-bool-conversion -Wpointer-sign -Wreturn-type -Wself-assign -Wself-assign-field -Wself-assign-overloaded -Wself-move -Wshift-sign-overflow -Wshorten-64-to-32 -Wsign-compare -Wsign-conversion -Wsometimes-uninitialized -Wstatic-self-init -Wstring-plus-int -Wstring-compare -Wstring-conversion -Wtautological-constant-compare -Wtautological-pointer-compare -Wtautological-type-limit-compare -Wtautological-unsigned-zero-compare -Wundef -Wuninitialized -Wvector-conversion")
 endif()
 
+set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
+
 find_package(OpenMP REQUIRED)
 if(OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-# Download conan-cmake
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
 find_program(CONAN conan)
 if(CONAN)
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
        message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-       file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.15/conan.cmake"
-                     "${CMAKE_BINARY_DIR}/conan.cmake")
+       file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.16.1/conan.cmake"
+                     "${CMAKE_BINARY_DIR}/conan.cmake"
+                     TLS_VERIFY ON)
     endif()
-    
-    # Conan setup
+
     include(${CMAKE_BINARY_DIR}/conan.cmake)
     conan_cmake_run(CONANFILE conanfile.py
                     BASIC_SETUP CMAKE_TARGETS NO_OUTPUT_DIRS
                     SETTINGS compiler.libcxx=libstdc++11
-                    BUILD_TYPE "None"
                     BUILD missing)
-    
+
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     set(CONAN_SYSTEM_INCLUDES "On")
     conan_basic_setup(NO_OUTPUT_DIRS)
@@ -104,7 +108,7 @@ configure_file (
 
 # set RPATH for build and installed executable
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
@@ -123,25 +127,23 @@ if (USE_CUDA)
         --expt-extended-lambda
         --expt-relaxed-constexpr
         --default-stream per-thread
-        -arch=sm_61
-         -gencode=arch=compute_30,code=sm_30
-         -gencode=arch=compute_50,code=sm_50
-         -gencode=arch=compute_52,code=sm_52
-         -gencode=arch=compute_60,code=sm_60
-         -gencode=arch=compute_61,code=sm_61
-         -gencode=arch=compute_70,code=sm_70
-         -gencode=arch=compute_70,code=compute_70
+        -arch=sm_52
+        -gencode=arch=compute_52,code=sm_52
+        -gencode=arch=compute_60,code=sm_60
+        -gencode=arch=compute_61,code=sm_61
+        -gencode=arch=compute_70,code=sm_70
+        -gencode=arch=compute_75,code=sm_75
+        -gencode=arch=compute_80,code=sm_80
+        -gencode=arch=compute_86,code=sm_86
+        -gencode=arch=compute_87,code=sm_87
+        -gencode=arch=compute_90,code=sm_90
+        -gencode=arch=compute_90,code=compute_90
         ")
     endif()
 endif()
 
 set(PYBIND11_PYTHON_VERSION 3)
-find_package(pybind11 QUIET)
-if(pybind11_FOUND)
-    add_subdirectory(src/PythonBinding)
-else()
-    message(STATUS "Could NOT find pybind11")
-endif()
+find_package(pybind11)
 
 add_subdirectory(src)
 

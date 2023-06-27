@@ -18,9 +18,9 @@ def print_usage():
     print ('  --channel, -c <int>     Number of channel to visualize (default = 0).')
     print ('  --help, -h              Print this lines.')
     print ('  --image, -i <int>       Number of image to visualize (default = 0).')
-    print ('  --save, -s <String>          Location to save JPGs to.')
-    print ('  --name, -n <String>          Name of saved file.')
-    print ('  --display, -d <int>          1 to display SOM as well as save it. Default 0.')
+    print ('  --save, -s <String>     Location to save JPGs to.')
+    print ('  --name, -n <String>     Name of saved file.')
+    print ('  --display, -d <int>     1 to display SOM as well as save it. Default 0.')
     print ('')
 
 if __name__ == "__main__":
@@ -85,16 +85,14 @@ if __name__ == "__main__":
     print('numberOfImages:', numberOfImages)
     print('layout:', layout)
     print('dimensionality:', dimensionality)
-    dimensions = struct.unpack('i' * dimensionality, file.read(4 * dimensionality))
-    print('dimensions:', dimensions)
-    
-    width = dimensions[0]
-    height = dimensions[1] if dimensionality > 1 else 1
-    numberOfChannels = dimensions[2] if dimensionality > 2 else 1
 
-    print ('Number of channels = ', numberOfChannels)
-    print ('Width = ', width)
-    print ('Height = ', height)
+    numberOfChannels = struct.unpack('i', file.read(4))[0] if dimensionality > 2 else 1
+    height = struct.unpack('i', file.read(4))[0] if dimensionality > 1 else 1
+    width = struct.unpack('i', file.read(4))[0]
+
+    print('width:', width)
+    print('height:', height)
+    print('numberOfChannels:', numberOfChannels)
 
     if imageNumber >= numberOfImages:
         print ('Image number too large.')

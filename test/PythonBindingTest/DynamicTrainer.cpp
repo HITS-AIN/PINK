@@ -40,7 +40,8 @@ TEST_P(GenericPythonBindingTest, DynamicTrainer)
 
     auto&& f = GaussianFunctor(1.1f, 0.2f);
 
-    DynamicTrainer trainer(som, f, 0, 16, true, -1.0, Interpolation::BILINEAR, GetParam().m_use_gpu, 3, DataType::UINT8);
+    DynamicTrainer trainer(som, f, 0, 16, true, -1.0, Interpolation::BILINEAR, GetParam().m_use_gpu,
+    3, EuclideanDistanceShape::QUADRATIC, DataType::UINT8);
 
     trainer(data);
 }
@@ -59,12 +60,13 @@ TEST_P(GenericPythonBindingTest, DynamicTrainer_hex)
 
     auto&& f = GaussianFunctor(1.1f, 0.2f);
 
-    DynamicTrainer trainer(som, f, 0, 16, true, -1.0, Interpolation::BILINEAR, GetParam().m_use_gpu, 3, DataType::UINT8);
+    DynamicTrainer trainer(som, f, 0, 16, true, -1.0, Interpolation::BILINEAR, GetParam().m_use_gpu,
+    3, EuclideanDistanceShape::QUADRATIC, DataType::UINT8);
 
     trainer(data);
 }
 
-INSTANTIATE_TEST_CASE_P(GenericPythonBindingTest_all, GenericPythonBindingTest,
+INSTANTIATE_TEST_SUITE_P(GenericPythonBindingTest_all, GenericPythonBindingTest,
     ::testing::Values(
         DynamicTrainerTestData(false),
         DynamicTrainerTestData(true)

@@ -10,13 +10,14 @@
 
 namespace pink {
 
-//! SOM layout type
-enum class Layout {
+/// SOM layout type
+enum class Layout
+{
     CARTESIAN,
     HEXAGONAL
 };
 
-//! Pretty printing of SOM layout type
+/// Pretty printing of SOM layout type
 inline std::ostream& operator << (std::ostream& os, Layout layout)
 {
     if (layout == Layout::CARTESIAN) os << "cartesian";

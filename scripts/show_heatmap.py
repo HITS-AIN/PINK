@@ -40,12 +40,12 @@ class HeatmapVisualizer():
         tools.ignore_header_comments(inputStream)
         
         # <file format version> 2 <data-type> <number of entries> <som layout> <data>
-        version, file_type, data_type, number_of_data_entries, som_layout, som_dimensionality = struct.unpack('i' * 6, inputStream.read(4 * 6))
+        version, file_type, data_type, number_of_data_entries, self.__som_layout, som_dimensionality = struct.unpack('i' * 6, inputStream.read(4 * 6))
         print('version:', version)
         print('file_type:', file_type)
         print('data_type:', data_type)
         print('number_of_data_entries:', number_of_data_entries)
-        print('som_layout:', som_layout)
+        print('som_layout:', self.__som_layout)
         print('som dimensionality:', som_dimensionality)
         som_dimensions = struct.unpack('i' * som_dimensionality, inputStream.read(4 * som_dimensionality))
         print('som dimensions:', som_dimensions)
@@ -60,38 +60,25 @@ class HeatmapVisualizer():
         print ("height: " + str(self.__somHeight))
         print ("depth: " + str(self.__somDepth))
 
-        start = inputStream.tell()      
-        if os.path.getsize(self.__fileName) < self.__numberOfImages * self.__somWidth * self.__somHeight * self.__somDepth * 4 + start:
-            self.__shape = "hex"
-        else:
-            self.__shape = "box"
+        if self.__som_layout == 0: # box
+            data = numpy.ones(self.__somWidth * self.__somHeight * self.__somDepth)
+            for i in range(self.__somWidth * self.__somHeight * self.__somDepth):
+                data[i] = struct.unpack_from("f", inputStream.read(4))[0]
+            self.__maps.append(data)
+        else: # hex
+            data = numpy.ones(hexSize)
+            for i in range(hexSize):
+                data[i] = struct.unpack_from("f", inputStream.read(4))[0]
+            self.__maps.append(data)
 
-        #Unpacks data
-        hexSize=int(1.0 + 6.0 * (( (self.__somWidth-1)/2.0 + 1.0) * (self.__somHeight-1)/ 4.0))
-        try:
-            while True:
-                if self.__shape == "box":
-                    data = numpy.ones(self.__somWidth * self.__somHeight * self.__somDepth)
-                    for i in range(self.__somWidth * self.__somHeight * self.__somDepth):
-                        data[i] = struct.unpack_from("f", inputStream.read(4))[0]
-                    self.__maps.append(data)
-                else:
-                    
-                    data = numpy.ones(hexSize)
-                    for i in range(hexSize):
-                        data[i] = struct.unpack_from("f", inputStream.read(4))[0]
-                    self.__maps.append(data)
-
-        except:
-            inputStream.close()
         self.__maps = numpy.array(self.__maps)
         print (str(len(self.__maps)) + " maps loaded")
 
-    #Checks if hexagonal or cartesian map is used
+    # Checks if hexagonal or cartesian map is used
     def isHexMap(self):
-        return self.__shape == "hex"
+        return self.__som_layout == 1
 
-    #Creates the SOM and saves it to the specified location. Displays map if --display, -d is set to 1.
+    # Creates the SOM and saves it to the specified location. Displays map if --display, -d is set to 1.
     def showMap(self, imageNumber, neuronSize, shareIntensity = False, borderWidth = 2, facecolor = '#ffaadd'):
         print(shareIntensity)
         if facecolor != "#ffaadd":
@@ -101,7 +88,7 @@ class HeatmapVisualizer():
         figure.patch.set_facecolor(facecolor)
         pyplot.subplots_adjust(left = 0.01, right = 0.99, bottom = 0.01, top = 0.99, wspace = 0.1, hspace = 0.1)
 
-        if self.isHexMap():
+        if self.__som_layout == 1:
             print ("hexagonal map")
             image = tools.calculate_map(self.__somWidth, self.__somHeight, self.__maps[imageNumber], neuronSize, neuronSize, shareIntensity=shareIntensity, border=borderWidth, shape="hex")
         else:

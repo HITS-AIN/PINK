@@ -12,7 +12,8 @@ namespace pink {
 
 DynamicTrainer::DynamicTrainer(DynamicSOM& dynamic_som, std::function<float(float)> const& distribution_function,
     int verbosity, uint32_t number_of_rotations, bool use_flip, float max_update_distance,
-    Interpolation interpolation, bool use_gpu, uint32_t euclidean_distance_dim, DataType euclidean_distance_type)
+    Interpolation interpolation, bool use_gpu, uint32_t euclidean_distance_dim,
+    EuclideanDistanceShape euclidean_distance_shape, DataType euclidean_distance_type)
  : m_data_type(dynamic_som.m_data_type),
    m_som_layout(dynamic_som.m_som_layout),
    m_neuron_layout(dynamic_som.m_neuron_layout),
@@ -24,11 +25,11 @@ DynamicTrainer::DynamicTrainer(DynamicSOM& dynamic_som, std::function<float(floa
     if (m_som_layout == "cartesian-2d") {
         m_trainer = get_trainer<CartesianLayout<2>>(dynamic_som, distribution_function,
             verbosity, number_of_rotations, use_flip, max_update_distance,
-            interpolation, euclidean_distance_dim, euclidean_distance_type);
+            interpolation, euclidean_distance_dim, euclidean_distance_shape, euclidean_distance_type);
     } else if (m_som_layout == "hexagonal-2d") {
         m_trainer = get_trainer<HexagonalLayout>(dynamic_som, distribution_function,
             verbosity, number_of_rotations, use_flip, max_update_distance,
-            interpolation, euclidean_distance_dim, euclidean_distance_type);
+            interpolation, euclidean_distance_dim, euclidean_distance_shape, euclidean_distance_type);
     } else {
         throw pink::exception("som layout " + m_som_layout + " is not supported");
     }

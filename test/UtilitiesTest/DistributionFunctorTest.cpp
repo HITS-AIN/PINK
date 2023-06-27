@@ -70,7 +70,7 @@ TEST_P(FullDistributionFunctorTest, MexicanHat)
     }
 }
 
-INSTANTIATE_TEST_CASE_P(FullDistributionFunctorTest_all, FullDistributionFunctorTest,
+INSTANTIATE_TEST_SUITE_P(FullDistributionFunctorTest_all, FullDistributionFunctorTest,
     ::testing::Values(
         DistributionFunctorTestData( 1.0f, 1.0f),
         DistributionFunctorTestData( 1.2f, 1.0f),

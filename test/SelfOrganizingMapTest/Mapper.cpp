@@ -77,7 +77,7 @@ TEST_P(MapperTest, mapper_cartesian_2d_float)
     EXPECT_EQ(data.result, std::get<0>(result));
 }
 
-INSTANTIATE_TEST_CASE_P(MapperTest_all, MapperTest,
+INSTANTIATE_TEST_SUITE_P(MapperTest_all, MapperTest,
     ::testing::Values(
         // som_dim, neuron_dim, image_dim, euclidean_distance_dim, num_rot, flip, neuron_value, image_value, result
         MapperTestData(1, 2, 2, 2,   1, false, 0.0, 1.0, {2.0}),

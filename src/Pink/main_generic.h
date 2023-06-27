@@ -65,6 +65,7 @@ void main_generic(InputData const& input_data)
             ,input_data.m_max_update_distance
             ,input_data.m_interpolation
             ,input_data.m_euclidean_distance_dim
+            ,input_data.m_euclidean_distance_shape
 #ifdef __CUDACC__
             ,input_data.m_block_size_1
             ,input_data.m_euclidean_distance_type
@@ -167,6 +168,7 @@ void main_generic(InputData const& input_data)
             ,input_data.m_use_flip
             ,input_data.m_interpolation
             ,input_data.m_euclidean_distance_dim
+            ,input_data.m_euclidean_distance_shape
 #ifdef __CUDACC__
             ,input_data.m_block_size_1
             ,input_data.m_euclidean_distance_type
@@ -184,7 +186,7 @@ void main_generic(InputData const& input_data)
                 static_cast<std::streamsize>(som.get_number_of_neurons() * sizeof(float)));
 
             if (input_data.m_write_rot_flip) {
-                float angle_step_radians = static_cast<float>(0.5 * M_PI) / input_data.m_number_of_rotations / 4;
+                float angle_step_radians = static_cast<float>(2.0 * M_PI) / input_data.m_number_of_rotations;
                 for (uint32_t i = 0; i != som.get_number_of_neurons(); ++i) {
                     char flip = static_cast<char>(std::get<1>(result)[i] / input_data.m_number_of_rotations);
                     float angle = (std::get<1>(result)[i] % input_data.m_number_of_rotations) * angle_step_radians;

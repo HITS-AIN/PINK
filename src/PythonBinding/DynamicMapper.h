@@ -23,7 +23,7 @@ struct DynamicMapper
 {
     DynamicMapper(DynamicSOM const& som, int verbosity, uint32_t number_of_rotations, bool use_flip,
         Interpolation interpolation, bool use_gpu, uint32_t euclidean_distance_dim,
-        DataType euclidean_distance_type);
+        EuclideanDistanceShape euclidean_distance_shape, DataType euclidean_distance_type);
 
     DynamicMapper(DynamicMapper const&) = delete;
 
@@ -34,13 +34,13 @@ private:
 
     template <typename SOM_Layout>
     auto get_mapper(DynamicSOM const& dynamic_som, int verbosity, uint32_t number_of_rotations, bool use_flip,
-        Interpolation interpolation, uint32_t euclidean_distance_dim,
+        Interpolation interpolation, uint32_t euclidean_distance_dim, EuclideanDistanceShape euclidean_distance_shape,
         DataType euclidean_distance_type) -> std::shared_ptr<MapperBase>
     {
         if (m_neuron_layout == "cartesian-2d") {
             return get_mapper<SOM_Layout, CartesianLayout<2>>(dynamic_som, verbosity,
                 number_of_rotations, use_flip, interpolation, euclidean_distance_dim,
-                euclidean_distance_type);
+                euclidean_distance_shape, euclidean_distance_type);
         } else {
             throw pink::exception("neuron layout " + m_neuron_layout + " is not supported");
         }
@@ -48,20 +48,21 @@ private:
 
     template <typename SOM_Layout, typename Neuron_Layout>
     auto get_mapper(DynamicSOM const& dynamic_som, int verbosity, uint32_t number_of_rotations, bool use_flip,
-        Interpolation interpolation, uint32_t euclidean_distance_dim,
+        Interpolation interpolation, uint32_t euclidean_distance_dim, EuclideanDistanceShape euclidean_distance_shape,
         [[maybe_unused]] DataType euclidean_distance_type) -> std::shared_ptr<MapperBase>
     {
 #ifdef __CUDACC__
         if (m_use_gpu == true) {
             return std::make_shared<Mapper<SOM_Layout, Neuron_Layout, float, true>>(
                 *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
-                verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim,
-                256, euclidean_distance_type);
+                verbosity, number_of_rotations, use_flip, interpolation,
+                euclidean_distance_dim, euclidean_distance_shape, 256, euclidean_distance_type);
         } else {
 #endif
             return std::make_shared<Mapper<SOM_Layout, Neuron_Layout, float, false>>(
                 *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
-                verbosity, number_of_rotations, use_flip, interpolation, euclidean_distance_dim);
+                verbosity, number_of_rotations, use_flip, interpolation,
+                euclidean_distance_dim, euclidean_distance_shape);
 #ifdef __CUDACC__
         }
 #endif
@@ -103,7 +104,7 @@ private:
 
     std::string m_neuron_layout;
 
-    [[maybe_unused]] bool m_use_gpu;
+    bool m_use_gpu;
 };
 
 } // namespace pink

@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "ImageProcessingLib/euclidean_distance.h"
+#include "ImageProcessingLib/circular_euclidean_distance.h"
+#include "UtilitiesLib/InputData.h"
 
 namespace pink {
 
@@ -18,23 +20,39 @@ template <typename DataLayout, typename T>
 void generate_euclidean_distance_matrix(std::vector<T>& euclidean_distance_matrix,
     std::vector<uint32_t>& best_rotation_matrix, uint32_t som_size, T const *som,
     DataLayout const& data_layout, uint32_t num_rot, std::vector<T> const& rotated_images,
-    uint32_t euclidean_distance_dim)
+    uint32_t euclidean_distance_dim, EuclideanDistanceShape const& euclidean_distance_shape)
 {
-    T tmp;
-    T* pdist = &euclidean_distance_matrix[0];
-    uint32_t* prot = &best_rotation_matrix[0];
+    std::function<T(T const*, T const*, DataLayout const&, uint32_t)> ed_func;
+    switch (euclidean_distance_shape)
+    {
+        case EuclideanDistanceShape::QUADRATIC:
+        {
+            ed_func = EuclideanDistanceFunctor<DataLayout>();
+            break;
+        }
+        case EuclideanDistanceShape::CIRCULAR:
+        {
+            ed_func = CircularEuclideanDistanceFunctor<DataLayout>();
+            break;
+        }
+    }
 
-    std::fill(euclidean_distance_matrix.begin(), euclidean_distance_matrix.end(), std::numeric_limits<T>::max());
+    for (uint32_t i = 0; i < som_size; ++i)
+    {
+        euclidean_distance_matrix[i] = ed_func(&som[i * data_layout.size()],
+                   &rotated_images[0], data_layout, euclidean_distance_dim);
 
-    for (uint32_t i = 0; i < som_size; ++i, ++pdist, ++prot) {
-        #pragma omp parallel for private(tmp)
-        for (uint32_t j = 0; j < num_rot; ++j) {
-            tmp = EuclideanDistanceFunctor<DataLayout>()(&som[i * data_layout.size()],
-                &rotated_images[j * data_layout.size()], data_layout, euclidean_distance_dim);
+        #pragma omp parallel for
+        for (uint32_t j = 1; j < num_rot; ++j)
+        {
+            auto tmp = ed_func(&som[i * data_layout.size()],
+                       &rotated_images[j * data_layout.size()], data_layout, euclidean_distance_dim);
+
             #pragma omp critical
-            if (tmp < *pdist) {
-                *pdist = tmp;
-                *prot = j;
+            if (tmp < euclidean_distance_matrix[i])
+            {
+                euclidean_distance_matrix[i] = tmp;
+                best_rotation_matrix[i] = j;
             }
         }
     }

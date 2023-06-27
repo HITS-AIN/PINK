@@ -16,11 +16,10 @@ target_link_libraries(
     PythonBindingTest
     PythonBindingLib
     UtilitiesLib
-    ${GTEST_BOTH_LIBRARIES}
+    ${CONAN_LIBS}
 )
 
-ADD_TEST(
-    PythonBindingTest
-    ${CMAKE_BINARY_DIR}/test/PythonBindingTest/PythonBindingTest
-    --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/PythonBindingTest.xml
+add_test(
+    NAME PythonBindingTest
+    COMMAND PythonBindingTest --gtest_output=xml:${CMAKE_BINARY_DIR}/Testing/PythonBindingTest.xml
 )

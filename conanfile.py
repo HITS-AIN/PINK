@@ -1,26 +1,24 @@
 from conans import ConanFile, CMake
 
 class RecordConan(ConanFile):
-    
+
     name = "pink"
-    version = "2.4.1"
+    version = "2.5"
     license = "GPLv3"
     description = "Parallelized rotation and flipping INvariant Kohonen maps"
     homepage = "https://github.com/HITS-AIN/PINK"
     url = "https://github.com/HITS-AIN/PINK.git"
-    
+
     exports_sources = "include/*", "test/*", "CMakeLists.txt"
     no_copy_source = True
-    
+
     settings = "os", "compiler", "build_type", "arch"
     requires = \
-        "gtest/1.8.1@bincrafters/stable", \
-        "pybind11/2.3.0@conan/stable"
-    generators = "cmake"
-    default_options = "Boost:header_only=True"
+        "gtest/1.13.0", \
+        "pybind11/2.5.0"
+    generators = "cmake_find_package"
 
     def build(self):
-        # This is not building a library, just test
         cmake = CMake(self)
         cmake.configure()
         cmake.build()

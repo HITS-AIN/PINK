@@ -63,12 +63,12 @@ TEST_P(compare_trainer_mixed, cartesian_2d_float)
     auto&& f = GaussianFunctor(1.1f, 0.2f);
 
     MyTrainer_gpu trainer1(som1, f, 0, GetParam().m_num_rot, GetParam().m_use_flip, 0.0,
-        Interpolation::BILINEAR, GetParam().m_euclidean_distance_dim, 256, DataType::FLOAT);
+        Interpolation::BILINEAR, GetParam().m_euclidean_distance_dim, EuclideanDistanceShape::QUADRATIC, 256, DataType::FLOAT);
     trainer1(data);
     trainer1.update_som();
 
     MyTrainer_gpu trainer2(som2, f, 0, GetParam().m_num_rot, GetParam().m_use_flip, 0.0,
-        Interpolation::BILINEAR, GetParam().m_euclidean_distance_dim, 256, DataType::UINT8);
+        Interpolation::BILINEAR, GetParam().m_euclidean_distance_dim, EuclideanDistanceShape::QUADRATIC, 256, DataType::UINT8);
     trainer2(data);
     trainer2.update_som();
 
@@ -76,7 +76,7 @@ TEST_P(compare_trainer_mixed, cartesian_2d_float)
     EXPECT_TRUE(EqualFloatArrays(som1.get_data_pointer(), som2.get_data_pointer(), som1.size(), 1e-4f));
 }
 
-INSTANTIATE_TEST_CASE_P(TrainerCompareTest_all, compare_trainer_mixed,
+INSTANTIATE_TEST_SUITE_P(TrainerCompareTest_all, compare_trainer_mixed,
     ::testing::Values(
         // som_dim, image_dim, neuron_dim, euclidean_distance_dim, num_rot, use_flip
         TrainerCompareTestData(2,  2,   2,   2,   1, false)
