@@ -82,8 +82,6 @@ setup(
     python_requires='>=3.6',
     license='GNU General Public License v3 (GPLv3)',
     ext_modules=[CMakeExtension('pink')],
-    cmdclass=dict(build_ext=CMakeBuild),
+    cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
-    packages=['pink'],
-    package_dir={'pink':'./src/PythonBinding'},
 )
