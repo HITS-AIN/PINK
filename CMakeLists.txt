@@ -169,8 +169,8 @@ if(DOXYGEN_FOUND)
     )
 endif()
 
-install(DIRECTORY scripts/
-    DESTINATION scripts
+install(DIRECTORY python/
+    DESTINATION python
     FILES_MATCHING PATTERN "*.py"
     PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                 GROUP_EXECUTE GROUP_READ
