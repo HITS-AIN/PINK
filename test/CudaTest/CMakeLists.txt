@@ -2,9 +2,8 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src
 )
 
-include_directories(SYSTEM 
+include_directories(SYSTEM
     ${CUDA_INCLUDE_DIRS}
-    ${GTEST_INCLUDE_DIR}
 )
 
 cuda_add_executable(
@@ -20,11 +19,12 @@ cuda_add_executable(
     rotate_90_degrees_list.cu
     update_neurons.cu
 )
-    
+
 target_link_libraries(
     CudaTest
     CudaLib
-    ${CONAN_LIBS}
+    GTest::gtest
+    GTest::gtest_main
 )
 
 add_test(
