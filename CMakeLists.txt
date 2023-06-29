@@ -71,20 +71,20 @@ find_program(CONAN conan)
 if(CONAN)
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
        message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-       file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.16.1/conan.cmake"
+       file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake"
                      "${CMAKE_BINARY_DIR}/conan.cmake"
                      TLS_VERIFY ON)
     endif()
 
     include(${CMAKE_BINARY_DIR}/conan.cmake)
-    conan_cmake_run(CONANFILE conanfile.py
-                    BASIC_SETUP CMAKE_TARGETS NO_OUTPUT_DIRS
-                    SETTINGS compiler.libcxx=libstdc++11
-                    BUILD missing)
 
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    set(CONAN_SYSTEM_INCLUDES "On")
-    conan_basic_setup(NO_OUTPUT_DIRS)
+    conan_cmake_configure(REQUIRES gtest/1.13.0 pybind11/2.10.4
+                          GENERATORS cmake_find_package)
+    conan_cmake_autodetect(settings)
+    conan_cmake_install(PATH_OR_REFERENCE .
+                        BUILD missing
+                        REMOTE conancenter
+                        SETTINGS ${settings})
 endif()
 
 # Get Git revision
