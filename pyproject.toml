@@ -1,3 +1,7 @@
+[project]
+name = "astro-pink"
+version = "2.5"
+
 [build-system]
 requires = [
     "cmake>=3.9",
@@ -7,3 +11,8 @@ requires = [
     "wheel",
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["python"]
+include = ["pink*"]
+namespaces = false
