@@ -83,5 +83,6 @@ setup(
     license='GNU General Public License v3 (GPLv3)',
     ext_modules=[CMakeExtension('pink')],
     cmdclass={"build_ext": CMakeBuild},
+    packages=find_packages(include=['pink', 'pink.*']),
     zip_safe=False,
 )
