@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.15)
 project(Pink VERSION 2.5 LANGUAGES C CXX)
 
 message(STATUS "${PROJECT_NAME} version ${PROJECT_VERSION}")

@@ -6,5 +6,6 @@
         "ms-vscode.cmake-tools",
         "ms-vscode.cpptools-extension-pack",
         "ms-vscode.cpptools",
+        "tamasfe.even-better-toml",
     ]
 }

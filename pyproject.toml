@@ -1,18 +1,38 @@
-[project]
-name = "astro-pink"
-version = "2.5"
-
 [build-system]
 requires = [
-    "cmake>=3.9",
+    "cmake>=3.15",
     "conan==1.*",
     "ninja",
+    "pybind11",
+    "scikit-build-core",
     "setuptools>=42",
     "wheel",
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "scikit_build_core.build"
 
-[tool.setuptools.packages.find]
-where = ["python"]
-include = ["pink*"]
-namespaces = false
+[project]
+name = "astro-pink"
+version = "2.5"
+authors = [
+  { name="Bernd Doser", email="bernd.doser@h-its.org" },
+]
+description = "Parallelized rotation and flipping INvariant Kohonen maps"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.7"
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+    'Programming Language :: Python :: 3',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Scientific/Engineering :: Mathematics',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+]
+
+# [tool.setuptools.packages.find]
+# where = ["python"]
+# include = ["pink*"]
+# namespaces = false
+
+[tool.pytest.ini_options]
+testpaths = ["python/tests"]
