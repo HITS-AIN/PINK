@@ -55,3 +55,4 @@ target_link_libraries(
 set_target_properties(pink PROPERTIES PREFIX "")
 
 install(TARGETS pink DESTINATION .)
+install(TARGETS PythonBindingLib DESTINATION lib)
