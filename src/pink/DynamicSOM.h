@@ -1,5 +1,5 @@
 /**
- * @file   PythonBinding/DynamicSOM.h
+ * @file   pink/DynamicSOM.h
  * @date   Aug 5, 2019
  * @author Bernd Doser, HITS gGmbH
  */

@@ -1,5 +1,5 @@
 /**
- * @file   PythonBinding/DynamicData.h
+ * @file   pink/DynamicData.h
  * @date   Aug 2, 2019
  * @author Bernd Doser, HITS gGmbH
  */

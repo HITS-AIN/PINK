@@ -19,7 +19,7 @@ if(PINK_USE_CUDA)
         DynamicSOM.cpp
         DynamicTrainer.cpp
     )
-    
+
     target_link_libraries(
         PythonBindingLib
         CudaLib
@@ -34,7 +34,7 @@ else()
         DynamicSOM.cpp
         DynamicTrainer.cpp
     )
-    
+
     target_link_libraries(
         PythonBindingLib PRIVATE
         UtilitiesLib
@@ -54,7 +54,4 @@ target_link_libraries(
 
 set_target_properties(pink PROPERTIES PREFIX "")
 
-install( 
-    TARGETS pink
-    LIBRARY DESTINATION lib
-)
+install(TARGETS pink DESTINATION .)

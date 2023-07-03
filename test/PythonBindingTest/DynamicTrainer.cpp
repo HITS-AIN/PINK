@@ -7,9 +7,9 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-#include "PythonBinding/DynamicData.h"
-#include "PythonBinding/DynamicSOM.h"
-#include "PythonBinding/DynamicTrainer.h"
+#include "pink/DynamicData.h"
+#include "pink/DynamicSOM.h"
+#include "pink/DynamicTrainer.h"
 #include "UtilitiesLib/DistributionFunctor.h"
 
 using namespace pink;

@@ -6,5 +6,5 @@ if(CUDA_FOUND)
 endif()
 
 if(pybind11_FOUND)
-    add_subdirectory(PythonBinding)
+    add_subdirectory(pink)
 endif()

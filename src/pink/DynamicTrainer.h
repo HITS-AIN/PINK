@@ -1,5 +1,5 @@
 /**
- * @file   PythonBinding/DynamicTrainer.h
+ * @file   pink/DynamicTrainer.h
  * @date   Aug 8, 2019
  * @author Bernd Doser, HITS gGmbH
  */
@@ -114,8 +114,8 @@ private:
 #endif
             std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, false>>(m_trainer)->operator()(
                 *(std::dynamic_pointer_cast<Data<Neuron_Layout, float>>(data.m_data)));
-           
-#ifdef __CUDACC__     
+
+#ifdef __CUDACC__
         }
 #endif
     }
