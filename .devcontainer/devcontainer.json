@@ -18,6 +18,7 @@
 				"ms-vscode.cpptools-extension-pack",
 				"ms-python.python",
 				"ms-toolsai.jupyter",
+				"tamasfe.even-better-toml",
 			]
 		}
 	},

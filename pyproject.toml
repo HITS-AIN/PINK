@@ -29,10 +29,10 @@ classifiers = [
     'Topic :: Scientific/Engineering :: Artificial Intelligence',
 ]
 
-# [tool.setuptools.packages.find]
-# where = ["python"]
-# include = ["pink*"]
-# namespaces = false
+[tool.setuptools.packages.find]
+where = ["python"]
+include = ["pink*"]
+namespaces = false
 
 [tool.pytest.ini_options]
 testpaths = ["python/tests"]
