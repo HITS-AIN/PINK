@@ -15,10 +15,12 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         dirmngr \
         ffmpeg \
         git \
+        ipykernel \
         libomp-dev \
         libsm6 \
         libxext6 \
         moreutils \
+        patchelf \
         python3 \
         python3-dev \
         python3-pip \
