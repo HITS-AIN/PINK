@@ -18,5 +18,8 @@
 				"ms-vscode.cpptools-extension-pack"
 			]
 		}
-	}
+	},
+	"mounts": [
+        "source=${localEnv:HOME}/data/machine-learning,target=/workspaces/PINK/data,type=bind,consistency=cached"
+    ]
 }
