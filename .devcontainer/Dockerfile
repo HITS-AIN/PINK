@@ -15,7 +15,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         dirmngr \
         ffmpeg \
         git \
-        ipykernel \
         libomp-dev \
         libsm6 \
         libxext6 \
@@ -40,6 +39,8 @@ RUN pip install --upgrade pip \
         build \
         cmake \
         conan==1.* \
+        ipykernel \
+        ipywidgets \
         matplotlib \
         numpy \
         twine \
