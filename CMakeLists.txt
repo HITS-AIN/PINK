@@ -87,6 +87,13 @@ if(CONAN)
                         SETTINGS ${settings})
 endif()
 
+if (APPLE)
+    set(CMAKE_INSTALL_RPATH "@executable_path/lib")
+else()
+    set(CMAKE_INSTALL_RPATH "$ORIGIN/lib")
+endif()
+set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+
 # Get Git revision
 if(EXISTS ${PROJECT_SOURCE_DIR}/.git)
     find_package(Git)

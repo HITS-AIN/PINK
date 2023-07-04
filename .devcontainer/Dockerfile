@@ -23,6 +23,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         python3-dev \
         python3-pip \
         python3-tk \
+        python3-venv \
         software-properties-common \
         sudo \
         vim \
@@ -33,10 +34,14 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 RUN pip install --upgrade pip \
  && hash -r pip3 \
  && pip install \
+        auditwheel \
+        build \
         cmake \
         conan==1.* \
         matplotlib \
-        numpy
+        numpy \
+        twine \
+        wheel
 
 ARG USERNAME=vscode
 ARG USER_UID=15005
