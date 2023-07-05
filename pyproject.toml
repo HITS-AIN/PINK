@@ -18,8 +18,8 @@ authors = [
 ]
 description = "Parallelized rotation and flipping INvariant Kohonen maps"
 readme = "README.md"
-license = { file="LICENSE" }
-requires-python = ">=3.7"
+license = {text = "GPL-3.0"}
+requires-python = ">=3.8"
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
@@ -29,10 +29,8 @@ classifiers = [
     'Topic :: Scientific/Engineering :: Artificial Intelligence',
 ]
 
-[tool.setuptools.packages.find]
-where = ["python"]
-include = ["pink*"]
-namespaces = false
+[tool.scikit-build]
+sdist.include = ["python/"]
 
 [tool.pytest.ini_options]
 testpaths = ["python/tests"]
