@@ -39,6 +39,7 @@ RUN pip install --upgrade pip \
         build \
         cmake \
         conan==1.* \
+        ipympl \
         ipykernel \
         ipywidgets \
         matplotlib \
