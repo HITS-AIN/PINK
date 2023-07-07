@@ -26,7 +26,7 @@ PYBIND11_MODULE(pink, m)
 {
     using namespace pink;
 
-    m.doc() = "PINK python interface";
+    m.doc() = "Parallelized rotation and flipping INvariant Kohonen maps (PINK)";
     m.attr("__version__") = std::string(PROJECT_VERSION) + " revision " + std::string(GIT_REVISION);
 
     py::enum_<Interpolation>(m, "Interpolation")
