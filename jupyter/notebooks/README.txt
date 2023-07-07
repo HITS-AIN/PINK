@@ -1,1 +1,0 @@
-Please download the data using the jupyter notebook `./download_data.ipynb`, before starting the PINK demo notebooks.
