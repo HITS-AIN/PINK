@@ -149,6 +149,3 @@ if __name__ == "__main__":
         print(myRotations.getAllImages(mapping))
     else:
         print(myRotations.getImageBestNeuron(image,mapping))
-
-
-

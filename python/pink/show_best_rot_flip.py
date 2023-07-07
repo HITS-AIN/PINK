@@ -10,7 +10,7 @@ def print_usage():
     print ('')
     print ('Usage:')
     print ('')
-    print ('  showBestRotFlip.py [Options] <inputfile>')
+    print ('  show_best_rot_flip.py [Options] <inputfile>')
     print ('')
     print ('Options:')
     print ('')
