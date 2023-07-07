@@ -4,7 +4,7 @@ requires = [
     "conan==1.*",
     "ninja",
     "pybind11",
-    "scikit-build-core",
+    "scikit-build-core[pyproject]",
 ]
 build-backend = "scikit_build_core.build"
 
@@ -28,7 +28,19 @@ classifiers = [
 ]
 
 [tool.scikit-build]
-sdist.include = ["python/"]
+# Ref: https://scikit-build-core.readthedocs.io/en/latest/configuration.html
+
+# Include and exclude patterns, in gitignore syntax. Include overrides exclude.
+sdist.include = [
+    "CMakeLists.txt",
+    "LICENSE",
+    "README.md",
+    "pyproject.toml",
+    "src",
+    "python/pink/*.py",
+    "python/tests/*.py",
+]
+sdist.exclude = ["*"]
 
 [tool.pytest.ini_options]
 testpaths = ["python/tests"]
