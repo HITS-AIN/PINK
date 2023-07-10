@@ -87,13 +87,6 @@ if(CONAN)
                         SETTINGS ${settings})
 endif()
 
-if (APPLE)
-    set(CMAKE_INSTALL_RPATH "@executable_path/lib")
-else()
-    set(CMAKE_INSTALL_RPATH "$ORIGIN/lib")
-endif()
-set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
-
 # Get Git revision
 if(EXISTS ${PROJECT_SOURCE_DIR}/.git)
     find_package(Git)
@@ -159,7 +152,7 @@ find_package(pybind11)
 add_subdirectory(src)
 
 find_package(GTest)
-if(GTEST_FOUND)
+if(GTEST_FOUND AND (NOT DEFINED SKBUILD))
     ENABLE_TESTING()
     add_subdirectory(test)
 endif()
@@ -176,13 +169,15 @@ if(DOXYGEN_FOUND)
     )
 endif()
 
-install(DIRECTORY python/
-    DESTINATION python
-    FILES_MATCHING PATTERN "*.py"
-    PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-                GROUP_EXECUTE GROUP_READ
-                WORLD_EXECUTE WORLD_READ
-)
+if(NOT DEFINED SKBUILD)
+    install(DIRECTORY python/
+        DESTINATION python
+        FILES_MATCHING PATTERN "*.py"
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+                    GROUP_EXECUTE GROUP_READ
+                    WORLD_EXECUTE WORLD_READ
+    )
+endif()
 
 if(UNIX)
     set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
