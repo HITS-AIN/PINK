@@ -58,6 +58,9 @@ find_package(OpenMP REQUIRED)
 if(OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    if(${CMAKE_CXX_COMPILER} MATCHES "clang")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp-version=45")
+    endif()
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -124,6 +127,7 @@ if (USE_CUDA)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
         # Set flags for CUDA compiler
         list(APPEND CUDA_NVCC_FLAGS "
+        -std=c++17
         --expt-extended-lambda
         --expt-relaxed-constexpr
         --default-stream per-thread
