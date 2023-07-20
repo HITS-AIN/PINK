@@ -10,21 +10,23 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         apt-transport-https \
         build-essential \
         ca-certificates \
+        clang \
         curl \
         dirmngr \
         ffmpeg \
         git \
+        libomp-dev \
         libsm6 \
         libxext6 \
+        moreutils \
         python3 \
         python3-dev \
         python3-pip \
+        python3-tk \
         software-properties-common \
         sudo \
         vim \
         wget \
-        moreutils \
-        python3-tk \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
@@ -32,7 +34,7 @@ RUN pip install --upgrade pip \
  && hash -r pip3 \
  && pip install \
         cmake \
-        conan \
+        conan==1.* \
         matplotlib \
         numpy
 

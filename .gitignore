@@ -1,3 +1,4 @@
+.conan/
 .ipynb_checkpoints/
 *__pycache__
 *.egg-info/
@@ -10,7 +11,6 @@
 /devel/.env
 /dist/
 /output/
-/softwipe_build/
 /src/UtilitiesLib/Version.h
 /test-man
 jupyter/.env

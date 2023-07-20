@@ -15,7 +15,7 @@ class RecordConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     requires = \
         "gtest/1.13.0", \
-        "pybind11/2.5.0"
+        "pybind11/2.10.4"
     generators = "cmake_find_package"
 
     def build(self):
