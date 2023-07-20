@@ -1,4 +1,6 @@
-# Create PyPI package
+# For developers
+
+## Create PyPI package
 
 ```
 python3 -m build
@@ -13,6 +15,8 @@ mv astro_pink-2.5-cp310-cp310-manylinux_2_35_x86_64.whl dist/
 
 python3 -m twine upload --repository [pypi|testpypi] dist/*
 ```
+
+### Overwrite deployed wheels
 
 It is not allowed to upload the same filename twice to testpypi or pypi.
 Therefore, build numbers can be used:

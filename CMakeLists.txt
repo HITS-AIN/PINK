@@ -169,7 +169,9 @@ if(DOXYGEN_FOUND)
     )
 endif()
 
-if(NOT DEFINED SKBUILD)
+if(DEFINED SKBUILD)
+    install(FILES python/pink/tools.py DESTINATION pink)
+else()
     install(DIRECTORY python/
         DESTINATION python
         FILES_MATCHING PATTERN "*.py"
