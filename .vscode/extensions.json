@@ -7,5 +7,6 @@
         "ms-vscode.cpptools-extension-pack",
         "ms-vscode.cpptools",
         "tamasfe.even-better-toml",
+        "mhutchie.git-graph"
     ]
 }
