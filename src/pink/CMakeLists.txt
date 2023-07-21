@@ -48,16 +48,16 @@ else()
 endif()
 
 pybind11_add_module(
-    pink MODULE
+    _pink MODULE
     pink.cpp
 )
 
 target_link_libraries(
-    pink PRIVATE
+    _pink PRIVATE
     PythonBindingLib
     UtilitiesLib
 )
 
-set_target_properties(pink PROPERTIES PREFIX "")
+set_target_properties(_pink PROPERTIES PREFIX "")
 
-install(TARGETS pink PythonBindingLib DESTINATION .)
+install(TARGETS _pink PythonBindingLib DESTINATION pink)

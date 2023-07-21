@@ -22,7 +22,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(pink, m)
+PYBIND11_MODULE(_pink, m)
 {
     using namespace pink;
 

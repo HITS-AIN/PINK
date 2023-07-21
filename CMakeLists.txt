@@ -170,7 +170,7 @@ if(DOXYGEN_FOUND)
 endif()
 
 if(DEFINED SKBUILD)
-    install(FILES python/pink/tools.py DESTINATION pink)
+    install(FILES python/pink/tools.py python/pink/__init__.py DESTINATION pink)
 else()
     install(DIRECTORY python/
         DESTINATION python
