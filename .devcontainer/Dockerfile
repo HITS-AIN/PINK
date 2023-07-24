@@ -42,6 +42,7 @@ RUN pip install --upgrade pip \
         ipympl \
         ipykernel \
         ipywidgets \
+        h5py \
         matplotlib \
         numpy \
         twine \
