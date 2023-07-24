@@ -44,7 +44,7 @@ pip install astro-pink
 
 ## HPC deployment with EasyBuild
 
-The [EasyBuild](http://easybuilders.github.io/easybuild/) recipe is available at https://github.com/BerndDoser/easybuild-easyconfigs/tree/hits/easybuild/easyconfigs/p/PINK. 
+The [EasyBuild](http://easybuilders.github.io/easybuild/) recipe is available at https://github.com/BerndDoser/easybuild-easyconfigs/tree/hits/easybuild/easyconfigs/p/PINK.
 
 
 ## Usage
@@ -73,30 +73,6 @@ For conversion and visualization of images and SOM some python scripts are avail
   - show_images.py:                 Visualize binary images file format
   - show_som.py:                    Visualize binary SOM file format
   - train.py:                       SOM training using the PINK Python interface
-
-
-## Benchmarks
-
-The input data for the SOM training are radio-synthesis images of Radio Galaxy Zoo containing 176750 images of the dimension 124x124.
-The SOM layout is hexagonal of the dimension 21x21 which has 331 neurons (see image above). The size of the neurons is 64x64.
-The accuracy for the rotational invariance is 1 degree and the flip invariance is used.
-
-|                                   | PINK 1 | Pink 2 |
-| :---                              |   ---: |   ---: |
-| CPU-1                             |        |  35373 |
-| CPU-1 +    NVIDIA Tesla P40       |   3069 |    909 |
-| CPU-1 + 2x NVIDIA Tesla P40       |   2069 |    636 |
-| CPU-1 + 4x NVIDIA Tesla P40       |   1891 |    858 |
-| CPU-2 +    NVIDIA RTX 2080        |        |    673 |
-| CPU-3 +    NVIDIA GTX 750 Ti      |        |   7185 |
-| CPU-4 + 2x NVIDIA RTX 2080 SUPER  |        |    477 |
-
-All times are in seconds.
-
-  - CPU-1: Intel Gold 5118 (2 sockets, 12 physical cores per socket)
-  - CPU-2: Intel Core i7-8700K (1 socket, 6 physical cores per socket)
-  - CPU-3: Intel Core i7-4790K (1 socket, 4 physical cores per socket)
-  - CPU-4: Intel Gold 6230 (1 socket, 20 physical cores per socket)
 
 
 ## Publication
