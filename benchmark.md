@@ -7,11 +7,12 @@ SOM dim: (8, 8)
 Rotations: 360
 GPU: RTX 2080
 
-| Execution                | s/it    |
-|:---                      |     ---:|
-| binary with CUDA [^1]    |   7.013 |
-| binary without CUDA [^2] | 134.549 |
-| colab demo without CUDA  | 169.75  |
+| Execution                                           | s/it |
+|:---------                                           |  ---:|
+| binary with CUDA [^1]                               |    7 |
+| binary without CUDA [^2]                            |  135 |
+| colab demo without CUDA                             |  127 |
+| colab demo without CUDA @ colab.research.google.com |  170 |
 
 
 [^1]
