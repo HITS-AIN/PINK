@@ -100,16 +100,16 @@ def main():
         plt.matshow(np_som.swapaxes(1, 2).reshape((new_dim, new_dim)))
         plt.show()
 
-    som = pink.som(np_som)
+    som = pink.SOM(np_som)
     
-#     trainer = pink.trainer(som, use_gpu=args.use_gpu)
-    trainer = pink.trainer(som, GaussianFunctor(sigma=1.1, damping=1.0), verbosity=0,
-                           number_of_rotations=180, interpolation=pink.interpolation.BILINEAR,
-                           use_gpu=args.use_gpu, euclidean_distance_type=pink.data_type.UINT8)
+    trainer = pink.Trainer(som, euclidean_distance_dim=neuron_dim, verbosity=0,
+                           distribution_function=pink.GaussianFunctor(sigma=1.1, damping=1.0),
+                           number_of_rotations=180, interpolation=pink.Interpolation.BILINEAR,
+                           use_gpu=args.use_gpu, euclidean_distance_type=pink.DataType.UINT8)
     
     for i in range(images.shape[0]):
         
-        data = pink.data(images[i])
+        data = pink.Data(images[i])
         trainer(data)
 
         if args.display and i % 100 == 0:
