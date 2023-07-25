@@ -44,6 +44,7 @@ RUN pip install --upgrade pip \
         ipywidgets \
         h5py \
         matplotlib \
+        ninja-build \
         numpy \
         twine \
         wheel

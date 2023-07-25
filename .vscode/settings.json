@@ -1,6 +1,9 @@
 {
-    "C_Cpp.dimInactiveRegions": false,
+    "cmake.configureSettings": {
+        "GMX_BUILD_VERBOSE": "TRUE"
+    },
+    "cmake.generator": "Ninja",
     "files.associations": {
         "*.cuh": "cpp"
-    }
+    },
 }

@@ -182,7 +182,7 @@ else()
 endif()
 
 if(UNIX)
-    set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
+    set(CPACK_CMAKE_GENERATOR "Ninja")
     set(CPACK_SOURCE_GENERATOR "TGZ;TBZ2")
     set(CPACK_GENERATOR "TGZ;TBZ2;DEB;RPM")
     set(CPACK_PACKAGE_MAINTAINER "Bernd Doser")
