@@ -11,9 +11,9 @@ GPU: RTX 2080
 |:---------                                           |  ---:|
 | binary with CUDA [^1]                               |    7 |
 | binary without CUDA [^2]                            |  135 |
+| train.py [^3]                                       |  127 |
 | colab demo without CUDA                             |  127 |
 | colab demo without CUDA @ colab.research.google.com |  170 |
-
 
 [^1]
 ```
@@ -21,6 +21,11 @@ GPU: RTX 2080
 ```
 
 [^2] `--cuda-off`
+
+[^3]
+```
+./python/pink/train.py /data/pink/shapes/* -v
+```
 
 
 ## Radio Galaxy Zoo

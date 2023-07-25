@@ -13,7 +13,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pink
-import tools
+from tqdm import tqdm
 
 class GaussianFunctor():
     """ Returns the value of a Gaussian distribution """
@@ -36,12 +36,13 @@ def main():
     parser.add_argument('images', nargs='+', help='Input file of images')
     parser.add_argument('-i', '--input-som', help='Input file of SOM initialization')
     parser.add_argument('-o', '--output-som', help='Output file of resulting SOM')
-    parser.add_argument('--som-dim', type=int, default=5, help='Dimension of SOM if initialized from scratch')
+    parser.add_argument('--som-dim', type=int, default=8, help='Dimension of SOM if initialized from scratch')
     parser.add_argument('--neuron-dim', type=int, default=-1, help='Dimension of neurons')
     parser.add_argument('-d', '--display', action='store_true', help='Display SOM during training')
     parser.add_argument('-v', '--verbose', action='store_true', help='Be talkative')
     parser.add_argument('-g', '--use-gpu', action='store_true', help='Acceleration by using GPU devices')
     parser.add_argument('-s', '--scale', action='store_true', help='Scale the input images to be within the range [0, 1]')
+    parser.add_argument('-e', '--epochs', type=int, default=1, help='Number of epochs [default: 1]')
 
     args = parser.parse_args()
     if args.verbose:
@@ -60,9 +61,10 @@ def main():
         images = np.squeeze(images, axis=1)
 
     image_dim = images.shape[1]
-    neuron_dim = args.neuron_dim if args.neuron_dim != -1 else int(image_dim * math.sqrt(2.0) / 2.0)
-
+    neuron_dim = args.neuron_dim if args.neuron_dim != -1 else int(image_dim / math.sqrt(2.0) * 2.0)
+    euclid_dim = int(image_dim * math.sqrt(2.0) / 2.0)
     print('Neuron dimension:', neuron_dim)
+    print('Euclid dimension:', euclid_dim)
 
     if args.scale:
         min_element = np.amin(images)
@@ -102,22 +104,23 @@ def main():
 
     som = pink.SOM(np_som)
     
-    trainer = pink.Trainer(som, euclidean_distance_dim=neuron_dim, verbosity=0,
+    trainer = pink.Trainer(som, euclidean_distance_dim=euclid_dim, verbosity=0,
                            distribution_function=pink.GaussianFunctor(sigma=1.1, damping=1.0),
-                           number_of_rotations=180, interpolation=pink.Interpolation.BILINEAR,
+                           number_of_rotations=360, interpolation=pink.Interpolation.BILINEAR,
                            use_gpu=args.use_gpu, euclidean_distance_type=pink.DataType.UINT8)
     
-    for i in range(images.shape[0]):
+    for _ in tqdm(range(args.epochs), desc="epoch"):
+        for i in tqdm(range(images.shape[0]), desc="train", leave=False):
         
-        data = pink.Data(images[i])
-        trainer(data)
+            data = pink.Data(images[i])
+            trainer(data)
 
-        if args.display and i % 100 == 0:
-            trainer.update_som()
-            np_som = np.array(som, copy=False)
-            new_dim = np_som.shape[0] * np_som.shape[2]
-            plt.matshow(np_som.swapaxes(1, 2).reshape((new_dim, new_dim)))
-            plt.show()
+            if args.display and i % 100 == 0:
+                trainer.update_som()
+                np_som = np.array(som, copy=False)
+                new_dim = np_som.shape[0] * np_som.shape[2]
+                plt.matshow(np_som.swapaxes(1, 2).reshape((new_dim, new_dim)))
+                plt.show()
 
     if args.output_som:
         trainer.update_som()
