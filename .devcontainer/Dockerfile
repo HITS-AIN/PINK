@@ -19,6 +19,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         libsm6 \
         libxext6 \
         moreutils \
+        ninja-build \
         patchelf \
         python3 \
         python3-dev \
@@ -44,7 +45,6 @@ RUN pip install --upgrade pip \
         ipywidgets \
         h5py \
         matplotlib \
-        ninja-build \
         numpy \
         twine \
         wheel
