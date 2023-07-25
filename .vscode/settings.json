@@ -1,6 +1,6 @@
 {
     "cmake.configureSettings": {
-        "GMX_BUILD_VERBOSE": "TRUE"
+        "CMAKE_VERBOSE_MAKEFILE": "OFF"
     },
     "cmake.generator": "Ninja",
     "files.associations": {
