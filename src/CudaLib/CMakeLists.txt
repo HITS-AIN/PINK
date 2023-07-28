@@ -20,7 +20,4 @@ target_link_libraries(
     ${CUDA_LIBRARIES}
 )
 
-install( 
-    TARGETS CudaLib
-    LIBRARY DESTINATION lib
-)
+install(TARGETS CudaLib DESTINATION pink)

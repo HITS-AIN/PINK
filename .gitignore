@@ -14,3 +14,4 @@
 /src/UtilitiesLib/Version.h
 /test-man
 jupyter/.env
+_skbuild/

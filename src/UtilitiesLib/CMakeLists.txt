@@ -11,4 +11,4 @@ add_library(
     InputData.cpp
 )
 
-set_property(TARGET UtilitiesLib PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(UtilitiesLib PROPERTIES POSITION_INDEPENDENT_CODE ON)

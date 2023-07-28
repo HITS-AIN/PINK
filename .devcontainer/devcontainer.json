@@ -15,8 +15,14 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-vscode.cpptools-extension-pack"
+				"ms-vscode.cpptools-extension-pack",
+				"ms-python.python",
+				"ms-toolsai.jupyter",
+				"tamasfe.even-better-toml",
 			]
 		}
-	}
+	},
+	"mounts": [
+        "source=${localEnv:HOME}/data/machine-learning,target=/data,type=bind,consistency=cached"
+    ]
 }

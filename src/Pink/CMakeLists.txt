@@ -20,7 +20,6 @@ if(PINK_USE_CUDA)
     )
 endif()
 
-install( 
-    TARGETS Pink
-    RUNTIME DESTINATION bin
-)
+if(NOT DEFINED SKBUILD)
+    install(TARGETS Pink DESTINATION .)
+endif()

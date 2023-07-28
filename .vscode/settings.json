@@ -1,6 +1,9 @@
 {
-    "C_Cpp.dimInactiveRegions": false,
+    "cmake.configureSettings": {
+        "CMAKE_VERBOSE_MAKEFILE": "OFF"
+    },
+    "cmake.generator": "Ninja",
     "files.associations": {
         "*.cuh": "cpp"
-    }
+    },
 }

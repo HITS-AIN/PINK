@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.15)
 project(Pink VERSION 2.5 LANGUAGES C CXX)
 
 message(STATUS "${PROJECT_NAME} version ${PROJECT_VERSION}")
@@ -71,20 +71,20 @@ find_program(CONAN conan)
 if(CONAN)
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
        message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-       file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.16.1/conan.cmake"
+       file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake"
                      "${CMAKE_BINARY_DIR}/conan.cmake"
                      TLS_VERIFY ON)
     endif()
 
     include(${CMAKE_BINARY_DIR}/conan.cmake)
-    conan_cmake_run(CONANFILE conanfile.py
-                    BASIC_SETUP CMAKE_TARGETS NO_OUTPUT_DIRS
-                    SETTINGS compiler.libcxx=libstdc++11
-                    BUILD missing)
 
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    set(CONAN_SYSTEM_INCLUDES "On")
-    conan_basic_setup(NO_OUTPUT_DIRS)
+    conan_cmake_configure(REQUIRES gtest/1.13.0 pybind11/2.10.4
+                          GENERATORS cmake_find_package)
+    conan_cmake_autodetect(settings)
+    conan_cmake_install(PATH_OR_REFERENCE .
+                        BUILD missing
+                        REMOTE conancenter
+                        SETTINGS ${settings})
 endif()
 
 # Get Git revision
@@ -152,7 +152,7 @@ find_package(pybind11)
 add_subdirectory(src)
 
 find_package(GTest)
-if(GTEST_FOUND)
+if(GTEST_FOUND AND (NOT DEFINED SKBUILD))
     ENABLE_TESTING()
     add_subdirectory(test)
 endif()
@@ -169,16 +169,20 @@ if(DOXYGEN_FOUND)
     )
 endif()
 
-install(DIRECTORY scripts/
-    DESTINATION scripts
-    FILES_MATCHING PATTERN "*.py"
-    PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-                GROUP_EXECUTE GROUP_READ
-                WORLD_EXECUTE WORLD_READ
-)
+if(DEFINED SKBUILD)
+    install(FILES python/pink/tools.py python/pink/__init__.py DESTINATION pink)
+else()
+    install(DIRECTORY python/
+        DESTINATION python
+        FILES_MATCHING PATTERN "*.py"
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+                    GROUP_EXECUTE GROUP_READ
+                    WORLD_EXECUTE WORLD_READ
+    )
+endif()
 
 if(UNIX)
-    set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
+    set(CPACK_CMAKE_GENERATOR "Ninja")
     set(CPACK_SOURCE_GENERATOR "TGZ;TBZ2")
     set(CPACK_GENERATOR "TGZ;TBZ2;DEB;RPM")
     set(CPACK_PACKAGE_MAINTAINER "Bernd Doser")
