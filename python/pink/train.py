@@ -40,7 +40,6 @@ def main():
     parser.add_argument('--neuron-dim', type=int, default=-1, help='Dimension of neurons')
     parser.add_argument('-d', '--display', action='store_true', help='Display SOM during training')
     parser.add_argument('-v', '--verbose', action='store_true', help='Be talkative')
-    parser.add_argument('-g', '--use-gpu', action='store_true', help='Acceleration by using GPU devices')
     parser.add_argument('-s', '--scale', action='store_true', help='Scale the input images to be within the range [0, 1]')
     parser.add_argument('-e', '--epochs', type=int, default=1, help='Number of epochs [default: 1]')
 
@@ -55,7 +54,7 @@ def main():
     images = np.load(args.images[0]).astype(np.float32)
     for image_file in args.images[1:]:
         images = np.append(images, np.load(image_file).astype(np.float32), axis=0)
-    
+
     # Remove channels
     if len(images.shape) == 4 and images.shape[1] == 1:
         images = np.squeeze(images, axis=1)
@@ -70,13 +69,13 @@ def main():
         min_element = np.amin(images)
         max_element = np.amax(images)
         factor = 1 / (max_element - min_element)
-        
+
         print('min value: ', min_element)
         print('max value: ', max_element)
         print('factor: ', factor)
-        
+
         images = (images - min_element) * factor
-    
+
     print('min value: ', np.amin(images))
     print('max value: ', np.amax(images))
 
@@ -103,15 +102,15 @@ def main():
         plt.show()
 
     som = pink.SOM(np_som)
-    
+
     trainer = pink.Trainer(som, euclidean_distance_dim=euclid_dim, verbosity=0,
                            distribution_function=pink.GaussianFunctor(sigma=1.1, damping=1.0),
                            number_of_rotations=360, interpolation=pink.Interpolation.BILINEAR,
-                           use_gpu=args.use_gpu, euclidean_distance_type=pink.DataType.UINT8)
-    
+                           euclidean_distance_type=pink.DataType.UINT8)
+
     for _ in tqdm(range(args.epochs), desc="epoch"):
         for i in tqdm(range(images.shape[0]), desc="train", leave=False):
-        
+
             data = pink.Data(images[i])
             trainer(data)
 
