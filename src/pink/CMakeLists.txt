@@ -21,9 +21,9 @@ if(PINK_USE_CUDA)
         PythonBindingLib
         SHARED
         DynamicData.cpp
-        DynamicMapper.cpp
+        DynamicMapper.cu
         DynamicSOM.cpp
-        DynamicTrainer.cpp
+        DynamicTrainer.cu
     )
 
     target_link_libraries(
