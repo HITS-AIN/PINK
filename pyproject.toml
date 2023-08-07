@@ -1,2 +1,46 @@
 [build-system]
-requires = ["cmake", "conan==1.*", "setuptools>=40.8.0", "wheel"]
+requires = [
+    "cmake>=3.15",
+    "conan==1.*",
+    "ninja",
+    "pybind11",
+    "scikit-build-core[pyproject]",
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "astro-pink"
+version = "2.5"
+authors = [
+  { name="Bernd Doser", email="bernd.doser@h-its.org" },
+]
+description = "Parallelized rotation and flipping INvariant Kohonen maps"
+readme = "README.md"
+license = {text = "GPL-3.0"}
+requires-python = ">=3.8"
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+    'Programming Language :: Python :: 3',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Scientific/Engineering :: Mathematics',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+]
+
+[tool.scikit-build]
+# Ref: https://scikit-build-core.readthedocs.io/en/latest/configuration.html
+
+# Include and exclude patterns, in gitignore syntax. Include overrides exclude.
+sdist.include = [
+    "CMakeLists.txt",
+    "LICENSE",
+    "README.md",
+    "pyproject.toml",
+    "src",
+    "python/pink/*.py",
+    "python/tests/*.py",
+]
+sdist.exclude = ["*"]
+
+[tool.pytest.ini_options]
+testpaths = ["python/tests"]

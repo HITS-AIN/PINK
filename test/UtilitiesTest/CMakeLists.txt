@@ -2,10 +2,6 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src
 )
 
-include_directories(SYSTEM
-    ${GTEST_INCLUDE_DIR}
-)
-
 add_executable(
     UtilitiesTest
     main.cpp
@@ -14,11 +10,12 @@ add_executable(
     ipowTest.cpp
     ProgressBarTest.cpp
 )
-    
+
 target_link_libraries(
     UtilitiesTest
     UtilitiesLib
-    ${CONAN_LIBS}
+    GTest::gtest
+    GTest::gtest_main
 )
 
 add_test(

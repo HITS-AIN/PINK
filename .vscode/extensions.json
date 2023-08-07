@@ -4,7 +4,9 @@
         "kriegalex.vscode-cudacpp",
         "ms-python.python",
         "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools-extension-pack",
         "ms-vscode.cpptools",
-        "twxs.cmake"
+        "tamasfe.even-better-toml",
+        "mhutchie.git-graph"
     ]
 }

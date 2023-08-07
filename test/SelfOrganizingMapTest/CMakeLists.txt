@@ -2,10 +2,6 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src
 )
 
-include_directories(SYSTEM
-    ${GTEST_INCLUDE_DIR}
-)
-
 add_executable(
     SelfOrganizingMapTest
     add_binary_section.cpp
@@ -21,11 +17,12 @@ add_executable(
     Mapper.cpp
     Trainer.cpp
 )
-    
+
 target_link_libraries(
     SelfOrganizingMapTest
     UtilitiesLib
-    ${CONAN_LIBS}
+    GTest::gtest
+    GTest::gtest_main
 )
 
 add_test(

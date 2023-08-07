@@ -19,10 +19,13 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         libsm6 \
         libxext6 \
         moreutils \
+        ninja-build \
+        patchelf \
         python3 \
         python3-dev \
         python3-pip \
         python3-tk \
+        python3-venv \
         software-properties-common \
         sudo \
         vim \
@@ -33,10 +36,18 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 RUN pip install --upgrade pip \
  && hash -r pip3 \
  && pip install \
+        auditwheel \
+        build \
         cmake \
         conan==1.* \
+        ipympl \
+        ipykernel \
+        ipywidgets \
+        h5py \
         matplotlib \
-        numpy
+        numpy \
+        twine \
+        wheel
 
 ARG USERNAME=vscode
 ARG USER_UID=15005
