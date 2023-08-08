@@ -6,10 +6,13 @@ enable_language(CXX)
 
 check_language(CUDA)
 if(CMAKE_CUDA_COMPILER)
-  message(STATUS "CUDA support")
-  enable_language(CUDA)
+    message(STATUS "CUDA support")
+    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+        set(CMAKE_CUDA_ARCHITECTURES 75)
+    endif()
+    enable_language(CUDA)
 else()
-  message(STATUS "No CUDA support")
+    message(STATUS "No CUDA support")
 endif()
 
 message(STATUS "${PROJECT_NAME} version ${PROJECT_VERSION}")
@@ -134,9 +137,7 @@ if(CMAKE_CUDA_COMPILER)
     set(PINK_USE_CUDA true)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
 
-    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-        set(CMAKE_CUDA_ARCHITECTURES 75)
-    endif()
+    message("CMAKE_CUDA_ARCHITECTURES : ${CMAKE_CUDA_ARCHITECTURES}")
 
     # Set flags for CUDA compiler
     list(APPEND CUDA_NVCC_FLAGS "
