@@ -16,15 +16,22 @@ add_library(
     PythonBindingLib
     SHARED
     DynamicData.cpp
-    DynamicMapper.cpp
+    DynamicMapper.cu
     DynamicSOM.cpp
-    DynamicTrainer.cpp
+    DynamicTrainer.cu
 )
 
 target_link_libraries(
     PythonBindingLib PRIVATE
     UtilitiesLib
 )
+
+if(CMAKE_CUDA_COMPILER)
+    target_link_libraries(
+        PythonBindingLib PRIVATE
+        CudaLib
+    )
+endif()
 
 pybind11_add_module(
     _pink MODULE

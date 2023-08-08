@@ -72,21 +72,23 @@ private:
         EuclideanDistanceShape euclidean_distance_shape,
         [[maybe_unused]] DataType euclidean_distance_type) -> std::shared_ptr<TrainerBase>
     {
-#ifdef __CUDACC__
+// #ifdef __CUDACC__
         if (m_use_gpu == true) {
+            std::cout << "hey GPU" << std::endl;
             return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, true>>(
                 *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
                 distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
                 interpolation, euclidean_distance_dim, euclidean_distance_shape, 256, euclidean_distance_type);
         } else {
-#endif
+// #endif
+            std::cout << "hey cpu" << std::endl;
             return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, false>>(
                 *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
                 distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
                 interpolation, euclidean_distance_dim, euclidean_distance_shape);
-#ifdef __CUDACC__
+// #ifdef __CUDACC__
         }
-#endif
+// #endif
     }
 
     template <typename SOM_Layout>
@@ -106,18 +108,18 @@ private:
     template <typename SOM_Layout, typename Neuron_Layout>
     void train(DynamicData const& data)
     {
-#ifdef __CUDACC__
+// #ifdef __CUDACC__
         if (m_use_gpu == true) {
             std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, true>>(m_trainer)->operator()(
                 *(std::dynamic_pointer_cast<Data<Neuron_Layout, float>>(data.m_data)));
         } else {
-#endif
+// #endif
             std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, false>>(m_trainer)->operator()(
                 *(std::dynamic_pointer_cast<Data<Neuron_Layout, float>>(data.m_data)));
 
-#ifdef __CUDACC__
+// #ifdef __CUDACC__
         }
-#endif
+// #endif
     }
 
     std::shared_ptr<TrainerBase> m_trainer;
