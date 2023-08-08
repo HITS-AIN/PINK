@@ -16,17 +16,19 @@ add_library(
     PythonBindingLib
     SHARED
     DynamicData.cpp
-    DynamicMapper.cu
+    DynamicMapper.cpp
     DynamicSOM.cpp
-    DynamicTrainer.cu
+    DynamicTrainer.cpp
 )
+
 
 target_link_libraries(
     PythonBindingLib PRIVATE
     UtilitiesLib
 )
-
+    
 if(CMAKE_CUDA_COMPILER)
+    set_source_files_properties(DynamicMapper.cpp DynamicTrainer.cpp PROPERTIES LANGUAGE CUDA)
     target_link_libraries(
         PythonBindingLib PRIVATE
         CudaLib

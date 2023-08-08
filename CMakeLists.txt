@@ -139,12 +139,16 @@ if(CMAKE_CUDA_COMPILER)
 
     message("CMAKE_CUDA_ARCHITECTURES : ${CMAKE_CUDA_ARCHITECTURES}")
 
+    if(NOT DEFINED CMAKE_CUDA_STANDARD)
+        set(CMAKE_CUDA_STANDARD 17)
+        set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+    endif()
+
     # Set flags for CUDA compiler
     list(APPEND CUDA_NVCC_FLAGS "
-    -std=c++17
-    --expt-extended-lambda
-    --expt-relaxed-constexpr
-    --default-stream per-thread
+        --expt-extended-lambda
+        --expt-relaxed-constexpr
+        --default-stream per-thread
     ")
 endif()
 
