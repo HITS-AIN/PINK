@@ -2,7 +2,7 @@ add_subdirectory(ImageProcessingTest)
 add_subdirectory(SelfOrganizingMapTest)
 add_subdirectory(UtilitiesTest)
 
-if(CUDA_FOUND)
+if(CMAKE_CUDA_COMPILER)
     add_subdirectory(CudaTest)
 endif()
 

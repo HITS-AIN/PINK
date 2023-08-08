@@ -2,11 +2,7 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src
 )
 
-include_directories(SYSTEM
-    ${CUDA_INCLUDE_DIRS}
-)
-
-cuda_add_executable(
+add_executable(
     CudaTest
     circular_ed.cu
     compare_trainer_3d_cpu.cu

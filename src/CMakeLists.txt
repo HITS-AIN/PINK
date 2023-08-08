@@ -4,7 +4,7 @@ endif()
 
 add_subdirectory(UtilitiesLib)
 
-if(CUDA_FOUND)
+if(CMAKE_CUDA_COMPILER)
     add_subdirectory(CudaLib)
 endif()
 

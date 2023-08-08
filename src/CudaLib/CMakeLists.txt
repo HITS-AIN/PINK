@@ -6,7 +6,7 @@ include_directories(SYSTEM
     ${CUDA_INCLUDE_DIRS}
 )
 
-cuda_add_library(
+add_library(
     CudaLib
     SHARED
     CudaLib.cu
