@@ -144,7 +144,7 @@ if(CMAKE_CUDA_COMPILER)
     endif()
 endif()
 
-set(PYBIND11_PYTHON_VERSION 3)
+find_package(Python 3.8 COMPONENTS Interpreter Development)
 find_package(pybind11)
 
 add_subdirectory(src)
