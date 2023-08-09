@@ -72,21 +72,22 @@ private:
         EuclideanDistanceShape euclidean_distance_shape,
         [[maybe_unused]] DataType euclidean_distance_type) -> std::shared_ptr<TrainerBase>
     {
-#ifdef __CUDACC__
-        if (m_use_gpu == true) {
-            return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, true>>(
-                *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
-                distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
-                interpolation, euclidean_distance_dim, euclidean_distance_shape, 256, euclidean_distance_type);
-        } else {
-#endif
+        if (m_use_gpu == false) {
             return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, false>>(
                 *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
                 distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
                 interpolation, euclidean_distance_dim, euclidean_distance_shape);
+        } else {
 #ifdef __CUDACC__
-        }
+            return std::make_shared<Trainer<SOM_Layout, Neuron_Layout, float, true>>(
+                *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
+                distribution_function, verbosity, number_of_rotations, use_flip, max_update_distance,
+                interpolation, euclidean_distance_dim, euclidean_distance_shape, 256, euclidean_distance_type);
+#else
+            throw pink::exception("GPU is not supported");
+
 #endif
+        }
     }
 
     template <typename SOM_Layout>
@@ -106,18 +107,17 @@ private:
     template <typename SOM_Layout, typename Neuron_Layout>
     void train(DynamicData const& data)
     {
-#ifdef __CUDACC__
-        if (m_use_gpu == true) {
-            std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, true>>(m_trainer)->operator()(
-                *(std::dynamic_pointer_cast<Data<Neuron_Layout, float>>(data.m_data)));
-        } else {
-#endif
+        if (m_use_gpu == false) {
             std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, false>>(m_trainer)->operator()(
                 *(std::dynamic_pointer_cast<Data<Neuron_Layout, float>>(data.m_data)));
-
+        } else {
 #ifdef __CUDACC__
-        }
+            std::dynamic_pointer_cast<Trainer<SOM_Layout, Neuron_Layout, float, true>>(m_trainer)->operator()(
+                *(std::dynamic_pointer_cast<Data<Neuron_Layout, float>>(data.m_data)));
+#else
+            throw pink::exception("GPU is not supported");
 #endif
+        }
     }
 
     std::shared_ptr<TrainerBase> m_trainer;

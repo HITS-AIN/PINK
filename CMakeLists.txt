@@ -1,5 +1,18 @@
-cmake_minimum_required(VERSION 3.15)
-project(Pink VERSION 2.5 LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.18)
+project(Pink VERSION 2.5)
+enable_language(CXX)
+
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+    message(STATUS "CUDA support")
+    if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+        set(CMAKE_CUDA_ARCHITECTURES 75)
+    endif()
+    enable_language(CUDA)
+else()
+    message(STATUS "No CUDA support")
+endif()
 
 message(STATUS "${PROJECT_NAME} version ${PROJECT_VERSION}")
 
@@ -119,34 +132,19 @@ if("${isSystemDir}" STREQUAL "-1")
     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
-option(USE_CUDA "Use CUDA" ON)
-if (USE_CUDA)
-    find_package(CUDA)
-    if(CUDA_FOUND)
-        set(PINK_USE_CUDA true)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
-        # Set flags for CUDA compiler
-        list(APPEND CUDA_NVCC_FLAGS "
-        -std=c++17
-        --expt-extended-lambda
-        --expt-relaxed-constexpr
-        --default-stream per-thread
-        -arch=sm_52
-        -gencode=arch=compute_52,code=sm_52
-        -gencode=arch=compute_60,code=sm_60
-        -gencode=arch=compute_61,code=sm_61
-        -gencode=arch=compute_70,code=sm_70
-        -gencode=arch=compute_75,code=sm_75
-        -gencode=arch=compute_80,code=sm_80
-        -gencode=arch=compute_86,code=sm_86
-        -gencode=arch=compute_87,code=sm_87
-        -gencode=arch=compute_90,code=sm_90
-        -gencode=arch=compute_90,code=compute_90
-        ")
+if(CMAKE_CUDA_COMPILER)
+    set(PINK_USE_CUDA true)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPINK_USE_CUDA")
+
+    message("CMAKE_CUDA_ARCHITECTURES : ${CMAKE_CUDA_ARCHITECTURES}")
+
+    if(NOT DEFINED CMAKE_CUDA_STANDARD)
+        set(CMAKE_CUDA_STANDARD 17)
+        set(CMAKE_CUDA_STANDARD_REQUIRED ON)
     endif()
 endif()
 
-set(PYBIND11_PYTHON_VERSION 3)
+find_package(Python 3.8 COMPONENTS Interpreter Development)
 find_package(pybind11)
 
 add_subdirectory(src)

@@ -12,38 +12,26 @@ include_directories(SYSTEM
     ${PYTHON_INCLUDE_DIRS}
 )
 
-if(PINK_USE_CUDA)
-    include_directories(
-        ${CUDA_INCLUDE_DIRS}
-    )
+add_library(
+    PythonBindingLib
+    SHARED
+    DynamicData.cpp
+    DynamicMapper.cpp
+    DynamicSOM.cpp
+    DynamicTrainer.cpp
+)
 
-    cuda_add_library(
-        PythonBindingLib
-        SHARED
-        DynamicData.cpp
-        DynamicMapper.cpp
-        DynamicSOM.cpp
-        DynamicTrainer.cpp
-    )
 
-    target_link_libraries(
-        PythonBindingLib
-        CudaLib
-        UtilitiesLib
-    )
-else()
-    add_library(
-        PythonBindingLib
-        SHARED
-        DynamicData.cpp
-        DynamicMapper.cpp
-        DynamicSOM.cpp
-        DynamicTrainer.cpp
-    )
-
+target_link_libraries(
+    PythonBindingLib PRIVATE
+    UtilitiesLib
+)
+    
+if(CMAKE_CUDA_COMPILER)
+    set_source_files_properties(DynamicMapper.cpp DynamicTrainer.cpp PROPERTIES LANGUAGE CUDA)
     target_link_libraries(
         PythonBindingLib PRIVATE
-        UtilitiesLib
+        CudaLib
     )
 endif()
 

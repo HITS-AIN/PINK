@@ -51,21 +51,21 @@ private:
         Interpolation interpolation, uint32_t euclidean_distance_dim, EuclideanDistanceShape euclidean_distance_shape,
         [[maybe_unused]] DataType euclidean_distance_type) -> std::shared_ptr<MapperBase>
     {
-#ifdef __CUDACC__
-        if (m_use_gpu == true) {
-            return std::make_shared<Mapper<SOM_Layout, Neuron_Layout, float, true>>(
-                *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
-                verbosity, number_of_rotations, use_flip, interpolation,
-                euclidean_distance_dim, euclidean_distance_shape, 256, euclidean_distance_type);
-        } else {
-#endif
+        if (m_use_gpu == false) {
             return std::make_shared<Mapper<SOM_Layout, Neuron_Layout, float, false>>(
                 *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
                 verbosity, number_of_rotations, use_flip, interpolation,
                 euclidean_distance_dim, euclidean_distance_shape);
+        } else {
 #ifdef __CUDACC__
-        }
+            return std::make_shared<Mapper<SOM_Layout, Neuron_Layout, float, true>>(
+                *(std::dynamic_pointer_cast<SOM<SOM_Layout, Neuron_Layout, float>>(dynamic_som.m_som)),
+                verbosity, number_of_rotations, use_flip, interpolation,
+                euclidean_distance_dim, euclidean_distance_shape, 256, euclidean_distance_type);
+#else
+            throw pink::exception("GPU support is not supported");
 #endif
+        }
     }
 
     template <typename SOM_Layout>
@@ -83,17 +83,17 @@ private:
     auto map(DynamicData const& data) const
         -> std::tuple<std::vector<float>, std::vector<uint32_t>>
     {
-#ifdef __CUDACC__
-        if (m_use_gpu == true) {
-            return std::dynamic_pointer_cast<Mapper<SOM_Layout, Neuron_Layout, float, true>>(m_mapper)->operator()(
-                *(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data)));
-        } else {
-#endif
+        if (m_use_gpu == false) {
             return std::dynamic_pointer_cast<Mapper<SOM_Layout, Neuron_Layout, float, false>>(m_mapper)->operator()(
                 *(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data)));
+        } else {
 #ifdef __CUDACC__
-        }
+            return std::dynamic_pointer_cast<Mapper<SOM_Layout, Neuron_Layout, float, true>>(m_mapper)->operator()(
+                *(std::dynamic_pointer_cast<Data<CartesianLayout<2>, float>>(data.m_data)));
+#else
+            throw pink::exception("GPU support is not supported");
 #endif
+        }
     }
 
     std::shared_ptr<MapperBase> m_mapper;

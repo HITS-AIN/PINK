@@ -12,9 +12,9 @@
 
 ## Requirements
 
-  - C++ with ISO 14 standard (GCC 6.1 and above)
-  - [CMake](https://cmake.org/) >= 3.0
-  - CUDA >= 9.1 (highly recommended because of the speed-up)
+  - C++ with ISO 17 standard
+  - [CMake](https://cmake.org/) >= 3.18
+  - CUDA >= 9.1 (highly recommended)
   - [conan.io](https://conan.io/) (optional for C++ dependencies) or
     - [PyBind11](https://github.com/pybind/pybind11) (optional for Python interface)
     - [google-test](https://github.com/google/googletest) 1.8.1 (optional for unit tests)
