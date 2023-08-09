@@ -1,9 +1,8 @@
-include(CheckLanguage)
-
 cmake_minimum_required(VERSION 3.18)
 project(Pink VERSION 2.5)
 enable_language(CXX)
 
+include(CheckLanguage)
 check_language(CUDA)
 if(CMAKE_CUDA_COMPILER)
     message(STATUS "CUDA support")
@@ -143,13 +142,6 @@ if(CMAKE_CUDA_COMPILER)
         set(CMAKE_CUDA_STANDARD 17)
         set(CMAKE_CUDA_STANDARD_REQUIRED ON)
     endif()
-
-    # Set flags for CUDA compiler
-    list(APPEND CUDA_NVCC_FLAGS "
-        --expt-extended-lambda
-        --expt-relaxed-constexpr
-        --default-stream per-thread
-    ")
 endif()
 
 set(PYBIND11_PYTHON_VERSION 3)

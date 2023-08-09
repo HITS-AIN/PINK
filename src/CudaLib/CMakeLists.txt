@@ -2,10 +2,6 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src
 )
 
-include_directories(SYSTEM
-    ${CUDA_INCLUDE_DIRS}
-)
-
 add_library(
     CudaLib
     SHARED
@@ -17,7 +13,6 @@ add_library(
 target_link_libraries(
     CudaLib
     UtilitiesLib
-    ${CUDA_LIBRARIES}
 )
 
 install(TARGETS CudaLib DESTINATION pink)
